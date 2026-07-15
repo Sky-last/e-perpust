@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { BookOpen, Star, Heart, ArrowRight, Shield, Award, Users, BookMarked, CheckCircle } from 'lucide-react';
 import { Book, ViewType } from '../types';
 
@@ -14,6 +15,38 @@ export default function LandingPage({
   onToggleFavorite,
   favorites
 }: LandingPageProps) {
+  // Active section tracking
+  const [activeSection, setActiveSection] = useState<'home' | 'katalog' | 'tentang' | 'kontak'>('home');
+
+  // Track scroll position to highlight active section
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = ['home', 'katalog', 'tentang', 'kontak'];
+      const scrollPosition = window.scrollY + 150; // Offset for navbar
+
+      // Check if at top of page
+      if (window.scrollY < 100) {
+        setActiveSection('home');
+        return;
+      }
+
+      // Check which section is in view
+      const tentangSection = document.getElementById('tentang');
+      const kontakSection = document.getElementById('kontak');
+
+      if (kontakSection && scrollPosition >= kontakSection.offsetTop) {
+        setActiveSection('kontak');
+      } else if (tentangSection && scrollPosition >= tentangSection.offsetTop) {
+        setActiveSection('tentang');
+      } else {
+        setActiveSection('home');
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   // Take 4 popular books (rating >= 4.8)
   const popularBooks = books.filter(b => b.rating >= 4.8).slice(0, 4);
 
@@ -22,71 +55,277 @@ export default function LandingPage({
   const totalUniqueBooks = books.length;
   
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans antialiased selection:bg-blue-100 selection:text-blue-900">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden pt-12 pb-20 md:py-32 px-6 bg-gradient-to-b from-white to-slate-50">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
-            <div className="inline-flex items-center space-x-2 bg-blue-50 text-blue-700 px-3 py-1.5 rounded-full text-xs font-semibold tracking-wide">
-              <Award className="w-4 h-4" />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-50 text-slate-800 font-sans antialiased selection:bg-blue-100 selection:text-blue-900">
+      {/* Sticky Navigation Bar */}
+      <nav className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md border-b border-slate-200/60 z-50 shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          {/* Logo */}
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-blue-600 rounded-xl">
+              <BookOpen className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <span className="text-lg font-bold tracking-tight text-slate-900">Pustaka<span className="text-blue-600">Digital</span></span>
+            </div>
+          </div>
+
+          {/* Navigation Links */}
+          <div className="hidden md:flex items-center space-x-8">
+            <button 
+              onClick={() => {
+                setActiveSection('home');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }} 
+              className={`text-sm font-semibold transition-colors relative group ${
+                activeSection === 'home' ? 'text-blue-600' : 'text-slate-600 hover:text-blue-600'
+              }`}
+            >
+              Home
+              <span className={`absolute -bottom-1 left-0 w-full h-0.5 bg-blue-600 transform transition-transform ${
+                activeSection === 'home' ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+              }`}></span>
+            </button>
+            <button 
+              onClick={() => {
+                setActiveSection('katalog');
+                onNavigate('katalog');
+              }} 
+              className={`text-sm font-semibold transition-colors relative group ${
+                activeSection === 'katalog' ? 'text-blue-600' : 'text-slate-600 hover:text-blue-600'
+              }`}
+            >
+              Katalog
+              <span className={`absolute -bottom-1 left-0 w-full h-0.5 bg-blue-600 transform transition-transform ${
+                activeSection === 'katalog' ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+              }`}></span>
+            </button>
+            <a 
+              href="#tentang"
+              onClick={() => setActiveSection('tentang')}
+              className={`text-sm font-semibold transition-colors relative group ${
+                activeSection === 'tentang' ? 'text-blue-600' : 'text-slate-600 hover:text-blue-600'
+              }`}
+            >
+              Tentang
+              <span className={`absolute -bottom-1 left-0 w-full h-0.5 bg-blue-600 transform transition-transform ${
+                activeSection === 'tentang' ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+              }`}></span>
+            </a>
+            <a 
+              href="#kontak"
+              onClick={() => setActiveSection('kontak')}
+              className={`text-sm font-semibold transition-colors relative group ${
+                activeSection === 'kontak' ? 'text-blue-600' : 'text-slate-600 hover:text-blue-600'
+              }`}
+            >
+              Kontak
+              <span className={`absolute -bottom-1 left-0 w-full h-0.5 bg-blue-600 transform transition-transform ${
+                activeSection === 'kontak' ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+              }`}></span>
+            </a>
+          </div>
+
+          {/* CTA Buttons */}
+          <div className="flex items-center space-x-3">
+            <button 
+              onClick={() => onNavigate('login')}
+              className="hidden sm:block px-5 py-2 text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors"
+            >
+              Masuk
+            </button>
+            <button 
+              onClick={() => onNavigate('register')}
+              className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl transition-all shadow-md hover:shadow-lg"
+            >
+              Daftar
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Navigation */}
+        <div className="md:hidden px-6 pb-4">
+          <div className="flex items-center justify-around border-t border-slate-200 pt-4">
+            <button 
+              onClick={() => {
+                setActiveSection('home');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }} 
+              className={`text-xs font-semibold transition-colors relative ${
+                activeSection === 'home' ? 'text-blue-600' : 'text-slate-600 hover:text-blue-600'
+              }`}
+            >
+              Home
+              {activeSection === 'home' && (
+                <span className="absolute -bottom-2 left-0 w-full h-0.5 bg-blue-600"></span>
+              )}
+            </button>
+            <button 
+              onClick={() => {
+                setActiveSection('katalog');
+                onNavigate('katalog');
+              }} 
+              className={`text-xs font-semibold transition-colors relative ${
+                activeSection === 'katalog' ? 'text-blue-600' : 'text-slate-600 hover:text-blue-600'
+              }`}
+            >
+              Katalog
+              {activeSection === 'katalog' && (
+                <span className="absolute -bottom-2 left-0 w-full h-0.5 bg-blue-600"></span>
+              )}
+            </button>
+            <a 
+              href="#tentang"
+              onClick={() => setActiveSection('tentang')}
+              className={`text-xs font-semibold transition-colors relative ${
+                activeSection === 'tentang' ? 'text-blue-600' : 'text-slate-600 hover:text-blue-600'
+              }`}
+            >
+              Tentang
+              {activeSection === 'tentang' && (
+                <span className="absolute -bottom-2 left-0 w-full h-0.5 bg-blue-600"></span>
+              )}
+            </a>
+            <a 
+              href="#kontak"
+              onClick={() => setActiveSection('kontak')}
+              className={`text-xs font-semibold transition-colors relative ${
+                activeSection === 'kontak' ? 'text-blue-600' : 'text-slate-600 hover:text-blue-600'
+              }`}
+            >
+              Kontak
+              {activeSection === 'kontak' && (
+                <span className="absolute -bottom-2 left-0 w-full h-0.5 bg-blue-600"></span>
+              )}
+            </a>
+          </div>
+        </div>
+      </nav>
+
+      {/* Hero Section with animated background */}
+      <section className="relative overflow-hidden pt-24 pb-20 md:pt-32 md:pb-32 px-6">
+        {/* Animated background elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-20 left-10 w-72 h-72 bg-blue-400/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-indigo-400/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-blue-400/5 to-indigo-400/5 rounded-full blur-3xl"></div>
+        </div>
+
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
+          <div className="lg:col-span-7 space-y-8 text-center lg:text-left">
+            {/* Badge with shine effect */}
+            <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 text-blue-700 px-4 py-2 rounded-full text-xs font-semibold tracking-wide shadow-sm hover:shadow-md transition-shadow group">
+              <Award className="w-4 h-4 group-hover:rotate-12 transition-transform" />
               <span>Platform Peminjaman Buku No.1 di Indonesia</span>
             </div>
             
-            <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-slate-900 leading-tight">
-              Eksplorasi Dunia Lewat <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Pustaka Digital</span> Terlengkap.
+            {/* Main heading with gradient */}
+            <h1 className="text-5xl md:text-7xl font-black tracking-tight text-slate-900 leading-[1.1]">
+              Eksplorasi Dunia Lewat{' '}
+              <span className="relative inline-block">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 animate-gradient">
+                  Pustaka Digital
+                </span>
+                <svg className="absolute -bottom-2 left-0 w-full" height="8" viewBox="0 0 200 8" fill="none">
+                  <path d="M0 4C50 4 50 0 100 0C150 0 150 4 200 4" stroke="url(#gradient)" strokeWidth="3" strokeLinecap="round"/>
+                  <defs>
+                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#3B82F6"/>
+                      <stop offset="50%" stopColor="#6366F1"/>
+                      <stop offset="100%" stopColor="#8B5CF6"/>
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </span>
+              {' '}Terlengkap.
             </h1>
             
-            <p className="text-base md:text-lg text-slate-500 max-w-xl mx-auto lg:mx-0 leading-relaxed">
-              Dapatkan akses instan ke lebih dari {totalUniqueBooks} judul buku berkualitas. Pinjam buku, simpan favorit, dan pantau durasi peminjaman dalam satu dashboard yang modern dan intuitif.
+            <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+              Dapatkan akses instan ke lebih dari <span className="font-bold text-blue-600">{totalUniqueBooks}+ judul</span> buku berkualitas. Pinjam buku, simpan favorit, dan pantau durasi peminjaman dalam satu dashboard yang modern dan intuitif.
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start space-y-3 sm:space-y-0 sm:space-x-4">
+            {/* CTA Buttons with enhanced styling */}
+            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start space-y-4 sm:space-y-0 sm:space-x-4 pt-4">
               <button 
                 onClick={() => onNavigate('katalog')} 
-                className="w-full sm:w-auto px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-2xl shadow-lg shadow-blue-100 hover:shadow-blue-200 flex items-center justify-center space-x-2 transition-all cursor-pointer group"
+                className="group relative w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-2xl shadow-xl shadow-blue-200 hover:shadow-2xl hover:shadow-blue-300 flex items-center justify-center space-x-2 transition-all cursor-pointer overflow-hidden hover:scale-105"
               >
-                <span>Mulai Pinjam Buku</span>
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <span className="relative z-10">Mulai Pinjam Buku</span>
+                <ArrowRight className="w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform" />
               </button>
               <button 
                 onClick={() => onNavigate('katalog')} 
-                className="w-full sm:w-auto px-8 py-4 bg-white border border-slate-200 hover:border-slate-300 text-slate-700 font-semibold rounded-2xl flex items-center justify-center space-x-2 hover:bg-slate-50 transition-all cursor-pointer"
+                className="w-full sm:w-auto px-8 py-4 bg-white/80 backdrop-blur-sm border-2 border-slate-200 hover:border-blue-300 text-slate-700 hover:text-blue-600 font-semibold rounded-2xl flex items-center justify-center space-x-2 hover:bg-white transition-all cursor-pointer hover:scale-105"
               >
+                <BookOpen className="w-5 h-5" />
                 <span>Lihat Katalog</span>
               </button>
+            </div>
+
+            {/* Stats bar */}
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-6 pt-8 text-sm">
+              <div className="flex items-center space-x-2">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-center justify-center text-white font-bold shadow-lg">
+                  {totalUniqueBooks}+
+                </div>
+                <span className="text-slate-600 font-medium">Judul Buku</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-green-500 to-emerald-500 flex items-center justify-center text-white font-bold shadow-lg">
+                  24/7
+                </div>
+                <span className="text-slate-600 font-medium">Akses Online</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold shadow-lg">
+                  100%
+                </div>
+                <span className="text-slate-600 font-medium">Gratis</span>
+              </div>
             </div>
           </div>
 
           <div className="lg:col-span-5 relative flex justify-center">
-            {/* Elegant Floating UI Card Mockup */}
-            <div className="relative w-full max-w-sm aspect-[3/4] bg-gradient-to-tr from-blue-600 to-indigo-900 rounded-3xl p-8 text-white shadow-2xl shadow-blue-200 overflow-hidden group">
-              <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              {/* Abstract decorative graphic */}
-              <div className="absolute -right-16 -top-16 w-48 h-48 rounded-full bg-white/10 blur-xl" />
-              <div className="absolute -left-16 -bottom-16 w-48 h-48 rounded-full bg-blue-400/20 blur-xl" />
+            {/* Enhanced Floating UI Card Mockup */}
+            <div className="relative w-full max-w-sm">
+              {/* Glow effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-3xl blur-2xl opacity-20 animate-pulse"></div>
               
-              <div className="h-full flex flex-col justify-between relative z-10">
-                <div className="flex justify-between items-start">
-                  <div className="bg-white/15 backdrop-blur-md px-3 py-1.5 rounded-xl text-[11px] font-semibold uppercase tracking-wider">
-                    REKOMENDASI BULAN INI
+              <div className="relative aspect-[3/4] bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 rounded-3xl p-8 text-white shadow-2xl shadow-blue-300/50 overflow-hidden group hover:scale-105 transition-transform duration-500">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                
+                {/* Abstract decorative graphics */}
+                <div className="absolute -right-20 -top-20 w-64 h-64 rounded-full bg-white/10 blur-3xl group-hover:scale-110 transition-transform duration-700" />
+                <div className="absolute -left-20 -bottom-20 w-64 h-64 rounded-full bg-blue-400/20 blur-3xl group-hover:scale-110 transition-transform duration-700" />
+                
+                <div className="h-full flex flex-col justify-between relative z-10">
+                  <div className="flex justify-between items-start">
+                    <div className="bg-white/20 backdrop-blur-md px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider border border-white/30">
+                      ⭐ Rekomendasi Bulan Ini
+                    </div>
+                    <div className="p-2 bg-white/20 backdrop-blur-md rounded-xl">
+                      <BookOpen className="w-6 h-6 text-white" />
+                    </div>
                   </div>
-                  <BookOpen className="w-7 h-7 text-blue-300" />
-                </div>
 
-                <div className="space-y-3">
-                  <span className="text-blue-300 text-xs font-mono tracking-widest uppercase block">Kategori: Teknologi</span>
-                  <h3 className="text-2xl font-bold leading-tight">Arsitektur Microservices Modern</h3>
-                  <p className="text-white/75 text-xs line-clamp-2">Buku terlaris bagi pengembang software berskala global yang ingin menguasai arsitektur cloud native dan Kubernetes.</p>
-                </div>
-
-                <div className="pt-6 border-t border-white/10 flex items-center justify-between">
-                  <div>
-                    <p className="text-[10px] text-white/65 uppercase tracking-wide">Penulis</p>
-                    <p className="text-sm font-semibold">Sky last</p>
-                  </div>
-                  <div className="flex items-center space-x-1 bg-amber-400 text-slate-900 px-2.5 py-1 rounded-lg text-xs font-bold">
-                    <Star className="w-3.5 h-3.5 fill-current" />
-                    <span>4.8</span>
+                  <div className="space-y-4">
+                    <div className="inline-block bg-gradient-to-r from-blue-400 to-indigo-400 text-white text-xs font-mono tracking-widest uppercase px-3 py-1 rounded-lg">
+                      Teknologi
+                    </div>
+                    <h3 className="text-3xl font-black leading-tight">Arsitektur Microservices Modern</h3>
+                    <p className="text-white/80 text-sm leading-relaxed">Buku terlaris bagi pengembang software berskala global yang ingin menguasai arsitektur cloud native dan Kubernetes.</p>
+                    
+                    <div className="flex items-center justify-between pt-4 border-t border-white/20">
+                      <div className="flex items-center space-x-1">
+                        {[1,2,3,4,5].map(i => (
+                          <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                        ))}
+                        <span className="ml-2 text-sm font-semibold">5.0</span>
+                      </div>
+                      <button className="px-4 py-2 bg-white text-blue-600 rounded-lg text-sm font-bold hover:bg-blue-50 transition-colors">
+                        Pinjam
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>

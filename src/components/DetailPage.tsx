@@ -42,12 +42,13 @@ export default function DetailPage({
   const pageCount = (parseInt(book.isbn.replace(/[^0-9]/g, '')) % 150) + 180;
 
   return (
-    <div className="space-y-6">
-      {/* Back to catalog button */}
-      <div>
-        <button 
-          onClick={() => onNavigate('katalog')}
-          className="inline-flex items-center space-x-2 text-xs font-bold text-slate-500 hover:text-blue-600 transition-colors cursor-pointer"
+    <div className="min-h-screen bg-slate-50 pt-24 px-6 pb-12">
+      <div className="max-w-7xl mx-auto space-y-6">
+        {/* Back to catalog button */}
+        <div>
+          <button 
+            onClick={() => onNavigate('katalog')}
+            className="inline-flex items-center space-x-2 text-xs font-bold text-slate-500 hover:text-blue-600 transition-colors cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Kembali ke Katalog Buku</span>
@@ -193,6 +194,7 @@ export default function DetailPage({
             <span>Peminjaman online aman, jatah durasi pinjam default adalah 7 hari kalender.</span>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

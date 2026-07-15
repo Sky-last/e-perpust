@@ -25,7 +25,7 @@ import ToastNotification, { Toast } from './components/ToastNotification';
 // Lucide Icons for dashboard shell
 import { 
   BookOpen, LayoutDashboard, Layers, Clock, Heart, User as UserIcon, Shield, 
-  LogOut, Menu, X, Award, ChevronRight, HelpCircle
+  LogOut, Menu, X, Award, ChevronRight, HelpCircle, ArrowRight
 } from 'lucide-react';
 
 // Role-specific Dashboards
@@ -1223,62 +1223,118 @@ export default function App() {
   if (isOuterPage) {
     const showHeader = ['landing', 'katalog', 'detail-buku'].includes(currentView);
     return (
-      <div className="relative min-h-screen bg-slate-50 overflow-x-hidden selection:bg-blue-100 selection:text-blue-900 flex flex-col">
+      <div className="relative min-h-screen bg-slate-50 overflow-x-hidden selection:bg-blue-100 selection:text-blue-900">
         {showHeader && (
-          <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100 px-6 py-4 transition-all duration-300">
-            <div className="max-w-7xl mx-auto flex items-center justify-between">
-              <div className="flex items-center space-x-3 cursor-pointer" onClick={() => handleNavigate('landing')}>
-                <div className="p-2.5 bg-blue-600 rounded-xl text-white shadow-md shadow-blue-200">
-                  <BookOpen className="w-6 h-6" />
+          <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/50 transition-all duration-300">
+            <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+              {/* Logo with gradient effect */}
+              <div className="flex items-center space-x-3 cursor-pointer group" onClick={() => handleNavigate('landing')}>
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl blur opacity-75 group-hover:opacity-100 transition-opacity"></div>
+                  <div className="relative p-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl text-white shadow-lg shadow-blue-200/50 group-hover:scale-110 transition-transform">
+                    <BookOpen className="w-6 h-6" />
+                  </div>
                 </div>
                 <div>
-                  <span className="text-xl font-bold tracking-tight text-slate-900">Pustaka<span className="text-blue-600">Digital</span></span>
-                  <p className="text-[9px] text-slate-400 tracking-wider uppercase font-semibold font-mono">Modern Library</p>
+                  <span className="text-xl font-bold tracking-tight text-slate-900 group-hover:text-blue-600 transition-colors">
+                    Pustaka<span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Digital</span>
+                  </span>
+                  <p className="text-[9px] text-slate-400 tracking-wider uppercase font-semibold font-mono">Modern Library System</p>
                 </div>
               </div>
 
-              {/* Nav Links */}
-              <div className="hidden md:flex items-center space-x-8">
-                <button onClick={() => handleNavigate('landing')} className={`text-sm font-semibold transition-colors cursor-pointer ${currentView === 'landing' ? 'text-blue-600' : 'text-slate-650 hover:text-blue-600'}`}>Home</button>
-                <button onClick={() => handleNavigate('katalog')} className={`text-sm font-semibold transition-colors cursor-pointer ${currentView === 'katalog' ? 'text-blue-600' : 'text-slate-650 hover:text-blue-600'}`}>Katalog</button>
-                {currentView === 'landing' && (
-                  <>
-                    <a href="#tentang" className="text-sm font-semibold text-slate-650 hover:text-blue-600 transition-colors">Tentang</a>
-                    <a href="#kontak" className="text-sm font-semibold text-slate-650 hover:text-blue-600 transition-colors">Kontak</a>
-                  </>
-                )}
+              {/* Nav Links with hover effects */}
+              <div className="hidden md:flex items-center space-x-1">
+                <button 
+                  onClick={() => handleNavigate('landing')} 
+                  className={`relative px-4 py-2 text-base font-semibold transition-all cursor-pointer rounded-xl ${
+                    currentView === 'landing' 
+                      ? 'text-blue-600 bg-blue-50' 
+                      : 'text-slate-600 hover:text-blue-600 hover:bg-slate-50'
+                  }`}
+                >
+                  Home
+                  {currentView === 'landing' && (
+                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full"></span>
+                  )}
+                </button>
+                <button 
+                  onClick={() => handleNavigate('katalog')} 
+                  className={`relative px-4 py-2 text-base font-semibold transition-all cursor-pointer rounded-xl ${
+                    currentView === 'katalog' 
+                      ? 'text-blue-600 bg-blue-50' 
+                      : 'text-slate-600 hover:text-blue-600 hover:bg-slate-50'
+                  }`}
+                >
+                  Katalog
+                  {currentView === 'katalog' && (
+                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full"></span>
+                  )}
+                </button>
+                <button 
+                  onClick={() => {
+                    if (currentView !== 'landing') {
+                      handleNavigate('landing');
+                      setTimeout(() => {
+                        document.getElementById('tentang')?.scrollIntoView({ behavior: 'smooth' });
+                      }, 100);
+                    } else {
+                      document.getElementById('tentang')?.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }}
+                  className="px-4 py-2 text-base font-semibold text-slate-600 hover:text-blue-600 hover:bg-slate-50 transition-all cursor-pointer rounded-xl"
+                >
+                  Tentang
+                </button>
+                <button 
+                  onClick={() => {
+                    if (currentView !== 'landing') {
+                      handleNavigate('landing');
+                      setTimeout(() => {
+                        document.getElementById('kontak')?.scrollIntoView({ behavior: 'smooth' });
+                      }, 100);
+                    } else {
+                      document.getElementById('kontak')?.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }}
+                  className="px-4 py-2 text-base font-semibold text-slate-600 hover:text-blue-600 hover:bg-slate-50 transition-all cursor-pointer rounded-xl"
+                >
+                  Kontak
+                </button>
               </div>
 
-              {/* Right Action */}
+              {/* Right Action with modern buttons */}
               <div className="flex items-center space-x-3">
                 {currentUser ? (
                   <div className="flex items-center space-x-3">
                     <button 
                       onClick={() => handleNavigate(['admin', UserRole.ADMIN].includes(currentUser.role as any) ? 'admin' : 'dashboard')} 
-                      className="px-4.5 py-2 bg-slate-100 text-slate-800 rounded-xl text-sm font-semibold hover:bg-slate-200 transition-all cursor-pointer"
+                      className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-base font-semibold transition-all cursor-pointer flex items-center space-x-2 group"
                     >
-                      {['admin', UserRole.ADMIN].includes(currentUser.role as any) ? 'Admin Panel' : 'Dashboard'}
+                      <span>{['admin', UserRole.ADMIN].includes(currentUser.role as any) ? 'Admin Panel' : 'Dashboard'}</span>
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </button>
                     <button 
                       onClick={handleLogout} 
-                      className="px-4.5 py-2 text-red-650 hover:bg-red-50 rounded-xl text-sm font-medium transition-all cursor-pointer"
+                      className="px-5 py-2.5 text-red-600 hover:bg-red-50 rounded-xl text-base font-semibold transition-all cursor-pointer"
                     >
                       Keluar
                     </button>
                   </div>
                 ) : (
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-3">
                     <button 
                       onClick={() => handleNavigate('login')} 
-                      className="px-4 py-2 text-slate-655 hover:text-blue-600 rounded-xl text-sm font-semibold transition-all cursor-pointer"
+                      className="px-5 py-2.5 text-slate-600 hover:text-blue-600 hover:bg-slate-50 rounded-xl text-base font-semibold transition-all cursor-pointer"
                     >
                       Masuk
                     </button>
                     <button 
                       onClick={() => handleNavigate('register')} 
-                      className="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-200 transition-all cursor-pointer"
+                      className="relative group px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl text-base font-bold overflow-hidden transition-all cursor-pointer shadow-lg shadow-blue-200/50 hover:shadow-xl hover:shadow-blue-300/50 hover:scale-105"
                     >
-                      Daftar
+                      <span className="relative z-10">Daftar Sekarang</span>
+                      <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     </button>
                   </div>
                 )}
@@ -1286,7 +1342,7 @@ export default function App() {
             </div>
           </nav>
         )}
-        <div className={`flex-1 ${showHeader ? "max-w-7xl w-full mx-auto p-5 md:p-8" : ""}`}>
+        <div className={showHeader ? "pt-16 w-full min-h-screen" : "min-h-screen"}>
           {renderViewContent()}
         </div>
         <ToastNotification toasts={toasts} onDismiss={handleDismissToast} />
@@ -1326,7 +1382,7 @@ export default function App() {
     <div className="min-h-screen bg-slate-50 flex font-sans text-slate-800 selection:bg-blue-100 selection:text-blue-900">
       
       {/* MOBILE HEADER (Always visible on mobile) */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-slate-200/60 z-30 flex items-center justify-between px-4">
+      <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white/95 backdrop-blur-md border-b border-slate-200 z-30 flex items-center justify-between px-4 shadow-sm">
         <div className="flex items-center space-x-2.5">
           <div className="p-2 bg-blue-600 text-white rounded-xl shadow-md shadow-blue-100">
             <BookOpen className="w-5 h-5" />
@@ -1487,7 +1543,7 @@ export default function App() {
       <main className="flex-1 flex flex-col min-w-0 pt-16 lg:pt-0">
         
         {/* TOP BAR / BREADCRUMB (Desktop only) */}
-        <header className="hidden lg:flex h-16 bg-white border-b border-slate-200/60 items-center justify-between px-8 z-10 flex-shrink-0">
+        <header className="hidden lg:flex h-16 bg-white border-b border-slate-200 items-center justify-between px-8 z-10 flex-shrink-0 shadow-sm sticky top-0">
           <div className="flex items-center space-x-1.5 text-xs font-semibold text-slate-400">
             <span>Pustaka Digital</span>
             <ChevronRight className="w-3 h-3" />
