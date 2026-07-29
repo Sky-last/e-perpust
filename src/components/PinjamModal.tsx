@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Book, User } from '../types';
 import { X, Calendar, Shield, Sparkles } from 'lucide-react';
+import Book3D from './Book3D';
 
 interface PinjamModalProps {
   isOpen: boolean;
@@ -56,10 +57,9 @@ export default function PinjamModal({
           </div>
 
           {/* Miniature book info card */}
-          <div className="p-3.5 bg-slate-50 border border-slate-100 rounded-[16px] flex items-center space-x-3.5">
-            <div className={`w-10 h-13 rounded bg-gradient-to-tr ${book.coverColor} p-1 text-white flex flex-col justify-between shadow-xs flex-shrink-0`}>
-              <span className="text-[4px] uppercase font-bold opacity-60 leading-none">{book.category}</span>
-              <span className="text-[6px] font-extrabold leading-tight line-clamp-3">{book.title}</span>
+          <div className="p-3.5 bg-slate-50 border border-slate-100 rounded-[16px] flex items-center space-x-3.5 overflow-visible">
+            <div className="flex-shrink-0">
+              <Book3D book={book} size="xs" />
             </div>
             <div className="space-y-0.5">
               <h4 className="font-bold text-slate-800 text-xs line-clamp-1">{book.title}</h4>

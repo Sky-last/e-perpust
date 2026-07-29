@@ -1,5 +1,6 @@
-import { User, ViewType } from '../types';
+import { User, ViewType, Book } from '../types';
 import { Calendar, RefreshCw, CheckCircle, Clock, ChevronRight, BookOpen } from 'lucide-react';
+import Book3D from './Book3D';
 
 interface PinjamanPageProps {
   currentUser: User;
@@ -60,18 +61,24 @@ export default function PinjamanPage({
                             onClick={() => onNavigate('detail-buku', item.bookId)}
                             className="cursor-pointer group flex-shrink-0"
                           >
-                            {item.coverUrl ? (
-                              <img 
-                                src={item.coverUrl} 
-                                alt={item.bookTitle} 
-                                className="w-9 h-12 object-cover rounded-md shadow-sm group-hover:scale-105 transition-transform" 
-                                referrerPolicy="no-referrer"
-                              />
-                            ) : (
-                              <div className={`w-9 h-12 rounded-md bg-gradient-to-tr ${item.coverColor} p-1 text-white flex flex-col justify-between shadow-sm relative group-hover:scale-105 transition-transform`}>
-                                <h5 className="text-[5px] font-extrabold leading-tight line-clamp-2">{item.bookTitle}</h5>
-                              </div>
-                            )}
+                            <Book3D 
+                              book={{
+                                id: item.bookId,
+                                title: item.bookTitle,
+                                coverColor: item.coverColor,
+                                coverUrl: item.coverUrl,
+                                category: 'Pinjaman',
+                                author: 'Pustaka',
+                                publisher: 'Pustaka Digital',
+                                isbn: '000-000',
+                                description: '',
+                                year: 2026,
+                                rating: 5,
+                                status: 'Tersedia',
+                                stock: 1
+                              }} 
+                              size="xs" 
+                            />
                           </div>
                           <div>
                             <h4 

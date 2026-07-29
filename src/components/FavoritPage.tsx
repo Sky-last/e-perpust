@@ -1,5 +1,6 @@
 import { Book, User, ViewType } from '../types';
 import { Heart, Star, Trash2, ChevronRight } from 'lucide-react';
+import Book3D from './Book3D';
 
 interface FavoritPageProps {
   currentUser: User;
@@ -42,20 +43,9 @@ export default function FavoritPage({
                   {/* Miniature Cover representation */}
                   <div 
                     onClick={() => onNavigate('detail-buku', book.id)}
-                    className="w-16 h-22 rounded-xl bg-gradient-to-tr bg-slate-50 border border-slate-100 p-1 flex items-center justify-center cursor-pointer overflow-hidden flex-shrink-0"
+                    className="w-16 h-22 flex items-center justify-center cursor-pointer flex-shrink-0"
                   >
-                    {book.coverUrl ? (
-                      <img 
-                        src={book.coverUrl} 
-                        alt={book.title} 
-                        className="w-full h-full object-cover rounded shadow-inner" 
-                        referrerPolicy="no-referrer"
-                      />
-                    ) : (
-                      <div className={`w-full h-full rounded bg-gradient-to-tr ${book.coverColor} p-2 text-white flex flex-col justify-between shadow-inner`}>
-                        <h5 className="text-[6px] font-extrabold leading-tight line-clamp-3">{book.title}</h5>
-                      </div>
-                    )}
+                    <Book3D book={book} size="xs" />
                   </div>
 
                   <div className="space-y-1">

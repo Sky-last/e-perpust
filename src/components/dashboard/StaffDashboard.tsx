@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   LayoutDashboard, 
@@ -21,10 +21,24 @@ import {
   Shield,
   Coins,
   FileSpreadsheet,
-  PlusCircle,
-  X
+  X,
+  CheckCircle2,
+  XCircle,
+  Clock,
+  AlertCircle,
+  Download,
+  ChevronDown,
+  BarChart3,
+  Activity,
+  Package,
+  UserCheck,
+  Bell,
+  Calendar,
+  RefreshCw,
+  Menu
 } from 'lucide-react';
 import { User, Book, Category, Borrowing, LibrarySettings, UserRole } from '../../types';
+import Book3D from '../Book3D';
 
 interface StaffDashboardProps {
   currentUser: User;
@@ -68,12 +82,17 @@ export default function StaffDashboard({
   onUpdateUser,
   onAddUser,
   onDeleteUser,
-  onUpdateSettings,
-  onPayFine
+  onUpdateSettings
 }: StaffDashboardProps) {
   const isAdmin = currentUser.role === UserRole.ADMIN;
   const [activeMenu, setActiveMenu] = useState<'dashboard' | 'books' | 'categories' | 'transactions' | 'users' | 'reports' | 'settings'>('dashboard');
   const [searchQuery, setSearchQuery] = useState('');
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const chartRef = useRef<HTMLCanvasElement>(null);
+  
+  // Responsive resize trigger state
+  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
 
   // Modals / Editors states
   const [editingBook, setEditingBook] = useState<Book | null>(null);
@@ -113,6 +132,9 @@ export default function StaffDashboard({
   const [localMaxBooks, setLocalMaxBooks] = useState(settings.maxBorrowBooks);
   const [localFinePerDay, setLocalFinePerDay] = useState(settings.finePerDay);
 
+  // Transactions filter state
+  const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'approved' | 'overdue' | 'returned'>('all');
+
   // Statistics calculations
   const totalBooks = books.reduce((sum, b) => sum + (b.totalStock ?? b.stock), 0);
   const availableBooks = books.reduce((sum, b) => sum + b.stock, 0);
@@ -120,6 +142,155 @@ export default function StaffDashboard({
   const pendingApprovals = borrowings.filter(b => b.status === 'pending').length;
   const overdueLoansCount = borrowings.filter(b => b.status === 'overdue').length;
   const totalCollectedFines = borrowings.filter(b => b.finePaid).reduce((sum, b) => sum + (b.fineAmount ?? 0), 0);
+  const totalMembers = users.filter(u => u.role === UserRole.SISWA).length;
+  const returnedBooks = borrowings.filter(b => b.status === 'returned').length;
+  const rejectedRequests = borrowings.filter(b => b.status === 'rejected').length;
+  
+  // Track window resizing for responsive canvas redrawing
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Canvas drawing for analytics chart
+  useEffect(() => {
+    if (!chartRef.current) return;
+    const ctx = chartRef.current.getContext('2d');
+    if (!ctx) return;
+
+    const canvas = chartRef.current;
+    
+    // Clear and match visual container bounds
+    const containerWidth = canvas.parentElement?.offsetWidth || canvas.offsetWidth || 500;
+    canvas.width = containerWidth * 2; // high-dpi density resolution
+    canvas.height = 480; 
+    canvas.style.width = '100%';
+    canvas.style.height = '240px';
+    ctx.scale(2, 2);
+
+    ctx.clearRect(0, 0, containerWidth, 240);
+
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul'];
+    const borrowData = [45, 52, 48, 65, 58, 72, activeLoans];
+    const returnData = [42, 49, 51, 60, 55, 68, returnedBooks];
+    
+    const maxValue = Math.max(...borrowData, ...returnData) + 15;
+    const padding = 45;
+    const chartHeight = 240 - padding * 2;
+    const chartWidth = containerWidth - padding * 2;
+    const stepX = chartWidth / (months.length - 1);
+
+    // Draw beautiful dashed gridlines & Y-axis labels
+    ctx.strokeStyle = '#F1F5F9';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([5, 5]);
+    for (let i = 0; i <= 4; i++) {
+      const y = padding + (chartHeight / 4) * i;
+      ctx.beginPath();
+      ctx.moveTo(padding, y);
+      ctx.lineTo(containerWidth - padding, y);
+      ctx.stroke();
+
+      // Y-axis value
+      ctx.fillStyle = '#94A3B8';
+      ctx.font = '500 10px Poppins, sans-serif';
+      ctx.textAlign = 'right';
+      const labelVal = Math.round(maxValue - (maxValue / 4) * i);
+      ctx.fillText(String(labelVal), padding - 10, y + 3.5);
+    }
+    ctx.setLineDash([]); // Reset dashed state
+
+    // Helper: Map data coordinate arrays
+    const getCoordinates = (dataList: number[]) => {
+      return dataList.map((val, idx) => ({
+        x: padding + stepX * idx,
+        y: padding + chartHeight - (val / maxValue) * chartHeight
+      }));
+    };
+
+    const borrowPoints = getCoordinates(borrowData);
+    const returnPoints = getCoordinates(returnData);
+
+    // Draw curve function using cubic Bezier interpolation
+    const drawAreaCurve = (
+      points: { x: number; y: number }[],
+      strokeColor: string,
+      fillColorStart: string,
+      fillColorEnd: string
+    ) => {
+      if (points.length === 0) return;
+
+      // 1. Draw gradient area fill
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, padding + chartHeight);
+      ctx.lineTo(points[0].x, points[0].y);
+      
+      for (let i = 0; i < points.length - 1; i++) {
+        const p0 = points[i];
+        const p1 = points[i + 1];
+        const cpX1 = p0.x + (p1.x - p0.x) / 2;
+        const cpY1 = p0.y;
+        const cpX2 = p0.x + (p1.x - p0.x) / 2;
+        const cpY2 = p1.y;
+        ctx.bezierCurveTo(cpX1, cpY1, cpX2, cpY2, p1.x, p1.y);
+      }
+      
+      ctx.lineTo(points[points.length - 1].x, padding + chartHeight);
+      ctx.closePath();
+      
+      const grad = ctx.createLinearGradient(0, padding, 0, padding + chartHeight);
+      grad.addColorStop(0, fillColorStart);
+      grad.addColorStop(1, fillColorEnd);
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      // 2. Draw curved stroke line
+      ctx.strokeStyle = strokeColor;
+      ctx.lineWidth = 3;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, points[0].y);
+      
+      for (let i = 0; i < points.length - 1; i++) {
+        const p0 = points[i];
+        const p1 = points[i + 1];
+        const cpX1 = p0.x + (p1.x - p0.x) / 2;
+        const cpY1 = p0.y;
+        const cpX2 = p0.x + (p1.x - p0.x) / 2;
+        const cpY2 = p1.y;
+        ctx.bezierCurveTo(cpX1, cpY1, cpX2, cpY2, p1.x, p1.y);
+      }
+      ctx.stroke();
+
+      // 3. Draw dot markers
+      points.forEach((pt) => {
+        ctx.fillStyle = strokeColor;
+        ctx.beginPath();
+        ctx.arc(pt.x, pt.y, 5, 0, Math.PI * 2);
+        ctx.fill();
+        
+        ctx.fillStyle = '#FFFFFF';
+        ctx.beginPath();
+        ctx.arc(pt.x, pt.y, 2.5, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    };
+
+    // Draw datasets
+    drawAreaCurve(borrowPoints, '#3B82F6', 'rgba(59, 130, 246, 0.15)', 'rgba(59, 130, 246, 0.01)');
+    drawAreaCurve(returnPoints, '#10B981', 'rgba(16, 185, 129, 0.15)', 'rgba(16, 185, 129, 0.01)');
+
+    // Draw X-axis labels
+    ctx.fillStyle = '#64748B';
+    ctx.font = '600 11px Poppins, sans-serif';
+    ctx.textAlign = 'center';
+    months.forEach((month, idx) => {
+      const x = padding + stepX * idx;
+      ctx.fillText(month, x, 240 - padding + 22);
+    });
+  }, [activeLoans, returnedBooks, windowWidth, sidebarCollapsed, activeMenu]);
 
   // Filter lists based on search
   const filteredBooks = books.filter(b => 
@@ -310,926 +481,1432 @@ export default function StaffDashboard({
     alert('Konfigurasi pengaturan perpustakaan diperbarui!');
   };
 
-  return (
-    <div className="min-h-screen bg-gray-50 flex text-gray-900" id="staff-dashboard">
-      
-      {/* SIDEBAR NAVIGATION */}
-      <aside className="w-64 bg-white border-r border-gray-200 flex flex-col justify-between p-5 shrink-0 hidden md:flex shadow-xs">
-        <div className="space-y-6">
-          {/* Logo Brand */}
-          <div className="flex items-center gap-2.5 pb-5 border-b border-gray-100">
-            <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center shadow-xs">
-              <Shield className="w-4.5 h-4.5 text-white" />
+  // Helper function to render Dashboard content
+  const renderDashboardContent = () => {
+    return (
+      <div className="space-y-6">
+        {/* Hero Stats Grid - Elegant Custom Border Highlight Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {/* Card 1: Total Books */}
+          <motion.div 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            whileHover={{ y: -4, transition: { duration: 0.2 } }}
+            className="bg-white rounded-2xl p-5 border border-slate-200/60 shadow-sm relative overflow-hidden flex flex-col justify-between hover:shadow-md hover:shadow-blue-500/5 hover:border-blue-500/40 transition-all duration-300"
+          >
+            {/* Soft decorative background radial glow */}
+            <div className="absolute right-0 bottom-0 w-24 h-24 bg-blue-500/5 rounded-full blur-xl pointer-events-none" />
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-blue-50/80 rounded-xl text-blue-600 border border-blue-100/50">
+                <Package className="w-5.5 h-5.5" />
+              </div>
+              <TrendingUp className="w-4.5 h-4.5 text-blue-500" />
             </div>
             <div>
-              <h2 className="text-xs font-bold text-gray-900 tracking-wider uppercase">PERPUS PANEL</h2>
-              <span className="text-[9px] text-blue-600 font-bold uppercase">{currentUser.role}</span>
+              <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Total Koleksi Buku</h3>
+              <p className="text-3xl font-extrabold text-slate-900 tracking-tight">{totalBooks}</p>
+            </div>
+            <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+              <span>Status Ketersediaan</span>
+              <span className="font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">{availableBooks} Buku</span>
+            </div>
+          </motion.div>
+
+          {/* Card 2: Active Loans */}
+          <motion.div 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            whileHover={{ y: -4, transition: { duration: 0.2 } }}
+            className="bg-white rounded-2xl p-5 border border-slate-200/60 shadow-sm relative overflow-hidden flex flex-col justify-between hover:shadow-md hover:shadow-emerald-500/5 hover:border-emerald-500/40 transition-all duration-300"
+          >
+            <div className="absolute right-0 bottom-0 w-24 h-24 bg-emerald-500/5 rounded-full blur-xl pointer-events-none" />
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-emerald-50/80 rounded-xl text-emerald-600 border border-emerald-100/50">
+                <ArrowLeftRight className="w-5.5 h-5.5" />
+              </div>
+              <Activity className="w-4.5 h-4.5 text-emerald-500" />
+            </div>
+            <div>
+              <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Peminjaman Aktif</h3>
+              <p className="text-3xl font-extrabold text-slate-900 tracking-tight">{activeLoans}</p>
+            </div>
+            <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+              <span>Keterlambatan</span>
+              <span className={`font-semibold px-2 py-0.5 rounded-md ${overdueLoansCount > 0 ? 'text-rose-600 bg-rose-50' : 'text-emerald-600 bg-emerald-50'}`}>
+                {overdueLoansCount} Siswa
+              </span>
+            </div>
+          </motion.div>
+
+          {/* Card 3: Pending Approvals */}
+          <motion.div 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            whileHover={{ y: -4, transition: { duration: 0.2 } }}
+            className="bg-white rounded-2xl p-5 border border-slate-200/60 shadow-sm relative overflow-hidden flex flex-col justify-between hover:shadow-md hover:shadow-amber-500/5 hover:border-amber-500/40 transition-all duration-300"
+          >
+            <div className="absolute right-0 bottom-0 w-24 h-24 bg-amber-500/5 rounded-full blur-xl pointer-events-none" />
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-amber-50/80 rounded-xl text-amber-600 border border-amber-100/50">
+                <Clock className="w-5.5 h-5.5" />
+              </div>
+              {pendingApprovals > 0 && <Bell className="w-4.5 h-4.5 text-amber-500 animate-bounce" />}
+            </div>
+            <div>
+              <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Menunggu Approval</h3>
+              <p className="text-3xl font-extrabold text-slate-900 tracking-tight">{pendingApprovals}</p>
+            </div>
+            <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+              <span>Verifikasi Berkas</span>
+              <span className={`font-semibold px-2 py-0.5 rounded-md ${pendingApprovals > 0 ? 'text-amber-600 bg-amber-50 animate-pulse' : 'text-slate-500 bg-slate-50'}`}>
+                {pendingApprovals > 0 ? 'Perlu Respon' : 'Selesai'}
+              </span>
+            </div>
+          </motion.div>
+
+          {/* Card 4: Total Fines */}
+          <motion.div 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25 }}
+            whileHover={{ y: -4, transition: { duration: 0.2 } }}
+            className="bg-white rounded-2xl p-5 border border-slate-200/60 shadow-sm relative overflow-hidden flex flex-col justify-between hover:shadow-md hover:shadow-rose-500/5 hover:border-rose-500/40 transition-all duration-300"
+          >
+            <div className="absolute right-0 bottom-0 w-24 h-24 bg-rose-500/5 rounded-full blur-xl pointer-events-none" />
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-rose-50/80 rounded-xl text-rose-600 border border-rose-100/50">
+                <Coins className="w-5.5 h-5.5" />
+              </div>
+              <BarChart3 className="w-4.5 h-4.5 text-rose-500" />
+            </div>
+            <div>
+              <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Kas Denda Terbayar</h3>
+              <p className="text-3xl font-extrabold text-slate-900 tracking-tight">Rp {(totalCollectedFines / 1000).toFixed(0)}K</p>
+            </div>
+            <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+              <span>Akumulasi Denda</span>
+              <span className="font-semibold text-rose-650 bg-rose-50 px-2 py-0.5 rounded-md">Rp {totalCollectedFines.toLocaleString()}</span>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Analytics Chart & Quick Stats Columns */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Elegant Chart Section */}
+          <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-slate-200/60 shadow-sm flex flex-col justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+              <div>
+                <h3 className="text-md font-bold text-slate-950 flex items-center gap-2">
+                  <BarChart3 className="w-5 h-5 text-blue-600" />
+                  Tren Aktivitas Peminjaman & Pengembalian
+                </h3>
+                <p className="text-xs text-slate-400 font-medium mt-1">Data representasi kumulatif 7 bulan terakhir</p>
+              </div>
+              <div className="flex items-center gap-4 text-xs font-semibold self-start sm:self-auto">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-blue-500" />
+                  <span className="text-slate-600">Peminjaman</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-emerald-500" />
+                  <span className="text-slate-600">Pengembalian</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="relative w-full h-[240px] bg-slate-50/20 border border-slate-100 rounded-2xl p-2">
+              <canvas ref={chartRef} className="w-full h-full" />
             </div>
           </div>
 
-          {/* Nav Links */}
-          <nav className="space-y-1.5">
-            <button
-              onClick={() => setActiveMenu('dashboard')}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
-                activeMenu === 'dashboard' ? 'bg-blue-600 text-white shadow-xs shadow-blue-100 font-bold' : 'text-gray-600 hover:text-gray-950 hover:bg-gray-100/70'
-              }`}
-            >
-              <LayoutDashboard className="w-4 h-4" /> Dashboard Ringkasan
-            </button>
+          {/* Quick Stats Panel */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-5">
+            {/* Members Card */}
+            <div className="bg-white rounded-2xl p-5 border border-slate-200/60 shadow-sm flex flex-col justify-between">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Anggota Terdaftar</h4>
+                  <p className="text-3xl font-extrabold text-slate-900 mt-1.5">{totalMembers}</p>
+                </div>
+                <div className="p-2.5 bg-indigo-50 text-indigo-600 rounded-xl border border-indigo-100/50">
+                  <Users className="w-5 h-5" />
+                </div>
+              </div>
+              <p className="text-xs text-slate-400 font-medium">Akun siswa aktif bersertifikat perpustakaan</p>
+              <div className="mt-4 flex items-center gap-3">
+                <div className="flex-1 bg-indigo-50 rounded-full h-2">
+                  <div 
+                    className="bg-gradient-to-r from-indigo-500 to-purple-500 h-2 rounded-full transition-all duration-500"
+                    style={{ width: `${Math.min(100, (totalMembers / 150) * 100)}%` }}
+                  />
+                </div>
+                <span className="text-xs font-bold text-indigo-600">{Math.round((totalMembers / 150) * 100)}%</span>
+              </div>
+            </div>
 
-            <button
-              onClick={() => setActiveMenu('books')}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
-                activeMenu === 'books' ? 'bg-blue-600 text-white shadow-xs shadow-blue-100 font-bold' : 'text-gray-600 hover:text-gray-950 hover:bg-gray-100/70'
-              }`}
-            >
-              <BookOpen className="w-4 h-4" /> Kelola Buku
-            </button>
+            {/* Return Rate Card */}
+            <div className="bg-white rounded-2xl p-5 border border-slate-200/60 shadow-sm flex flex-col justify-between">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider">Tingkat Pengembalian</h4>
+                  <p className="text-3xl font-extrabold text-emerald-600 mt-1.5">
+                    {borrowings.length > 0 ? Math.round((returnedBooks / borrowings.length) * 100) : 0}%
+                  </p>
+                </div>
+                <div className="p-2.5 bg-emerald-50 text-emerald-600 rounded-xl border border-emerald-100/50">
+                  <CheckCircle2 className="w-5 h-5" />
+                </div>
+              </div>
+              <p className="text-xs text-slate-400 font-medium">{returnedBooks} sukses diselesaikan dari {borrowings.length} peminjaman</p>
+              
+              <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                  <span className="text-slate-500">Sukses: <strong className="text-slate-800">{returnedBooks}</strong></span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-rose-500" />
+                  <span className="text-slate-500">Ditolak: <strong className="text-slate-800">{rejectedRequests}</strong></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-            <button
-              onClick={() => setActiveMenu('categories')}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
-                activeMenu === 'categories' ? 'bg-blue-600 text-white shadow-xs shadow-blue-100 font-bold' : 'text-gray-600 hover:text-gray-950 hover:bg-gray-100/70'
-              }`}
+        {/* Recent Activity Table - Beautiful Slate styling */}
+        <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
+          <div className="p-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h3 className="text-md font-bold text-slate-900 flex items-center gap-2">
+                <Activity className="w-5 h-5 text-blue-600" />
+                Aktivitas Peminjaman Terkini
+              </h3>
+              <p className="text-xs text-slate-400 font-medium mt-1">Daftar verifikasi transaksi sirkulasi aktif</p>
+            </div>
+            <button 
+              onClick={() => setActiveMenu('transactions')} 
+              className="px-4 py-2 text-xs font-bold text-blue-600 hover:text-blue-700 bg-blue-50/60 hover:bg-blue-50 rounded-xl border border-blue-100/60 transition-all cursor-pointer self-start sm:self-auto"
             >
-              <FolderClosed className="w-4 h-4" /> Kelola Kategori
+              Kelola Semua Sirkulasi →
             </button>
+          </div>
 
-            <button
-              onClick={() => setActiveMenu('transactions')}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 text-xs font-semibold rounded-lg transition-all cursor-pointer relative ${
-                activeMenu === 'transactions' ? 'bg-blue-600 text-white shadow-xs shadow-blue-100 font-bold' : 'text-gray-600 hover:text-gray-950 hover:bg-gray-100/70'
-              }`}
-            >
-              <ArrowLeftRight className="w-4 h-4" /> Verifikasi Transaksi
-              {pendingApprovals > 0 && (
-                <span className="absolute right-3 top-2.5 px-1.5 py-0.5 text-[8px] font-bold bg-amber-500 text-white rounded-full">
-                  {pendingApprovals}
+          <div className="overflow-x-auto w-full">
+            <table className="w-full text-sm text-left">
+              <thead>
+                <tr className="bg-slate-50/70 border-b border-slate-150">
+                  <th className="py-3.5 px-6 font-bold text-slate-500 text-xs uppercase tracking-wider">Nama Siswa</th>
+                  <th className="py-3.5 px-6 font-bold text-slate-500 text-xs uppercase tracking-wider">Judul Buku</th>
+                  <th className="py-3.5 px-6 font-bold text-slate-500 text-xs uppercase tracking-wider">Tgl Pinjam</th>
+                  <th className="py-3.5 px-6 font-bold text-slate-500 text-xs uppercase tracking-wider">Jatuh Tempo</th>
+                  <th className="py-3.5 px-6 font-bold text-slate-500 text-xs uppercase tracking-wider">Status Denda</th>
+                  <th className="py-3.5 px-6 font-bold text-slate-500 text-xs text-right uppercase tracking-wider">Aksi</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {borrowings.filter(b => b.status === 'approved' || b.status === 'overdue').slice(0, 5).map((b) => {
+                  const studentName = getUserName(b.studentId ?? '');
+                  const bookObj = books.find(x => x.id === b.bookId);
+                  const bookTitleName = bookObj?.title || 'Buku';
+                  const isOverdue = b.status === 'overdue';
+                  return (
+                    <tr key={b.id} className="hover:bg-slate-50/50 transition-colors group">
+                      <td className="py-3.5 px-6">
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-xs shadow-sm">
+                            {studentName.substring(0, 2).toUpperCase()}
+                          </div>
+                          <div>
+                            <p className="font-bold text-slate-900 text-sm">{studentName}</p>
+                            <p className="text-[10px] text-slate-400 font-mono">ID: {b.id.substring(0, 8)}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="py-3.5 px-6 max-w-[240px]">
+                        <p className="font-semibold text-slate-900 text-sm truncate">{bookTitleName}</p>
+                        <p className="text-[10px] text-slate-400 mt-0.5 font-medium">ISBN: {bookObj?.isbn || '-'}</p>
+                      </td>
+                      <td className="py-3.5 px-6 text-slate-600 font-medium text-xs">{b.borrowDate}</td>
+                      <td className="py-3.5 px-6">
+                        <span className={`font-bold text-xs ${isOverdue ? 'text-rose-600' : 'text-slate-600'}`}>
+                          {b.dueDate}
+                        </span>
+                      </td>
+                      <td className="py-3.5 px-6">
+                        {isOverdue ? (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-bold rounded-lg bg-rose-50 text-rose-700 border border-rose-250">
+                            <AlertCircle className="w-3 h-3" />
+                            Terlambat
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-bold rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-250">
+                            <CheckCircle2 className="w-3 h-3" />
+                            Aktif Pinjam
+                          </span>
+                        )}
+                      </td>
+                      <td className="py-3.5 px-6 text-right">
+                        <button
+                          onClick={() => onVerifyReturn(b.id, true)}
+                          className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold cursor-pointer shadow-sm hover:shadow transition-all opacity-90 lg:opacity-0 group-hover:opacity-100"
+                        >
+                          Kembalikan
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+                {borrowings.filter(b => b.status === 'approved' || b.status === 'overdue').length === 0 && (
+                  <tr>
+                    <td colSpan={6} className="text-center py-10">
+                      <Package className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                      <p className="text-sm font-medium text-slate-400">Belum ada sirkulasi peminjaman aktif saat ini.</p>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Helper function to render Books content
+  const renderBooksContent = () => (
+    <div className="space-y-6">
+      {/* Header with Add Button */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h2 className="text-xl lg:text-2xl font-extrabold text-slate-900 flex items-center gap-2.5">
+            <BookOpen className="w-6 h-6 text-blue-600" />
+            Kelola Koleksi Buku
+          </h2>
+          <p className="text-xs text-slate-400 font-medium mt-1">Gudang penyimpanan dan modifikasi metadata buku</p>
+        </div>
+        <button
+          onClick={() => handleOpenBookModal(null)}
+          className="flex items-center gap-2 px-4.5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-sm shadow-md shadow-blue-500/20 hover:shadow-blue-500/30 transition-all cursor-pointer self-stretch sm:self-auto justify-center"
+        >
+          <Plus className="w-4 h-4" />
+          Tambah Buku Baru
+        </button>
+      </div>
+
+      {/* Search Bar */}
+      <div className="bg-white rounded-2xl p-4 border border-slate-200/60 shadow-sm">
+        <div className="relative">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+          <input
+            type="text"
+            placeholder="Cari buku berdasarkan judul, penulis, nomor ISBN, atau rak..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-600 focus:bg-white transition-all font-medium"
+          />
+        </div>
+      </div>
+
+      {/* Books Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5">
+        {filteredBooks.map((book) => (
+          <motion.div
+            key={book.id}
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden flex flex-col justify-between group hover:shadow-md hover:border-slate-350 transition-all duration-300"
+          >
+            {/* Book Cover */}
+            <div className="relative h-48 overflow-hidden bg-slate-50 flex items-center justify-center border-b border-slate-100 p-4">
+              <Book3D book={book} size="sm" />
+              <div className="absolute top-3 right-3 px-2.5 py-1 bg-white/95 backdrop-blur-sm rounded-lg text-[10px] font-extrabold text-slate-700 shadow-sm border border-slate-100 z-10">
+                Stok: {book.stock} / {book.totalStock ?? book.stock}
+              </div>
+            </div>
+
+            {/* Book Details */}
+            <div className="p-4 flex-1 flex flex-col justify-between gap-4">
+              <div>
+                <span className="px-2 py-0.5 bg-blue-50 text-blue-600 border border-blue-100/50 rounded-md text-[10px] font-extrabold uppercase tracking-wide">
+                  {getCategoryName(book.categoryId)}
                 </span>
+                <h3 className="font-bold text-slate-900 text-sm line-clamp-2 mt-2 leading-snug">{book.title}</h3>
+                <p className="text-xs text-slate-500 mt-1 font-semibold">Oleh: {book.author}</p>
+              </div>
+
+              <div className="space-y-3.5">
+                <div className="flex items-center justify-between text-[11px] font-medium text-slate-500 py-1.5 border-y border-slate-50">
+                  <span className="flex items-center gap-1">
+                    Rak: <strong className="text-slate-800 font-mono">{book.rackLocation || 'N/A'}</strong>
+                  </span>
+                  <span>Tahun: <strong className="text-slate-800 font-mono">{book.year}</strong></span>
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleOpenBookModal(book)}
+                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg text-xs font-bold transition-all cursor-pointer"
+                  >
+                    <Edit className="w-3.5 h-3.5" />
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (window.confirm(`Hapus buku "${book.title}"?`)) {
+                        onDeleteBook(book.id);
+                      }
+                    }}
+                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-xs font-bold transition-all cursor-pointer"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    Hapus
+                  </button>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+
+      {filteredBooks.length === 0 && (
+        <div className="bg-white rounded-2xl p-12 border border-slate-200/60 shadow-sm text-center">
+          <BookOpen className="w-14 h-14 text-slate-250 mx-auto mb-4" />
+          <h3 className="text-md font-bold text-slate-800 mb-1.5">Buku tidak ditemukan</h3>
+          <p className="text-xs text-slate-400 font-medium">
+            {searchQuery ? 'Gunakan kata kunci pencarian yang lain' : 'Perpustakaan belum memiliki koleksi buku'}
+          </p>
+        </div>
+      )}
+    </div>
+  );
+
+  // Helper function to render Categories content
+  const renderCategoriesContent = () => (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h2 className="text-xl lg:text-2xl font-extrabold text-slate-900 flex items-center gap-2.5">
+            <FolderClosed className="w-6 h-6 text-blue-600" />
+            Klasifikasi Kategori
+          </h2>
+          <p className="text-xs text-slate-400 font-medium mt-1">Pembagian katalog genre buku perpustakaan</p>
+        </div>
+        <button
+          onClick={() => handleOpenCategoryModal(null)}
+          className="flex items-center gap-2 px-4.5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-sm shadow-md shadow-blue-500/20 hover:shadow-blue-500/30 transition-all cursor-pointer self-stretch sm:self-auto justify-center"
+        >
+          <Plus className="w-4 h-4" />
+          Tambah Kategori Baru
+        </button>
+      </div>
+
+      {/* Categories Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {categories.map((cat) => {
+          const bookCount = books.filter(b => b.categoryId === cat.id).length;
+          return (
+            <motion.div
+              key={cat.id}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white rounded-2xl p-5 border border-slate-200/60 shadow-sm hover:shadow-md transition-all flex flex-col justify-between gap-5 group"
+            >
+              <div>
+                <div className="flex items-start justify-between mb-4">
+                  <div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-sm">
+                    <FolderClosed className="w-5.5 h-5.5" />
+                  </div>
+                  <span className="px-2.5 py-1 bg-slate-50 border border-slate-100 text-slate-650 rounded-lg text-xs font-bold">
+                    {bookCount} Koleksi
+                  </span>
+                </div>
+
+                <h3 className="font-bold text-slate-900 text-base mb-1.5">{cat.name}</h3>
+                <p className="text-xs text-slate-500 leading-relaxed line-clamp-2 font-medium">{cat.description}</p>
+              </div>
+
+              <div className="flex gap-2 pt-3 border-t border-slate-50">
+                <button
+                  onClick={() => handleOpenCategoryModal(cat)}
+                  className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg text-xs font-bold transition-all cursor-pointer"
+                >
+                  <Edit className="w-3.5 h-3.5" />
+                  Edit
+                </button>
+                <button
+                  onClick={() => {
+                    if (bookCount > 0) {
+                      alert(`Tidak bisa menghapus kategori yang masih memiliki ${bookCount} buku!`);
+                      return;
+                    }
+                    if (window.confirm(`Hapus kategori "${cat.name}"?`)) {
+                      onDeleteCategory(cat.id);
+                    }
+                  }}
+                  className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-xs font-bold transition-all cursor-pointer"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  Hapus
+                </button>
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
+    </div>
+  );
+
+  // Helper function to render Transactions content  
+  const renderTransactionsContent = () => {
+    const filteredTransactions = borrowings.filter(b => {
+      if (filterStatus === 'all') return true;
+      return b.status === filterStatus;
+    });
+
+    const getStatusBadge = (status: string) => {
+      switch (status) {
+        case 'pending':
+          return <span className="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-bold rounded-lg bg-amber-50 text-amber-700 border border-amber-250">
+            <Clock className="w-3 h-3" />
+            Menunggu
+          </span>;
+        case 'approved':
+          return <span className="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-bold rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-250">
+            <CheckCircle2 className="w-3 h-3" />
+            Aktif Pinjam
+          </span>;
+        case 'overdue':
+          return <span className="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-bold rounded-lg bg-rose-50 text-rose-700 border border-rose-250 animate-pulse">
+            <AlertCircle className="w-3 h-3" />
+            Terlambat
+          </span>;
+        case 'returned':
+          return <span className="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-bold rounded-lg bg-blue-50 text-blue-700 border border-blue-250">
+            <CheckCircle2 className="w-3 h-3" />
+            Kembali
+          </span>;
+        case 'rejected':
+          return <span className="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-bold rounded-lg bg-slate-100 text-slate-600 border border-slate-200">
+            <XCircle className="w-3 h-3" />
+            Ditolak
+          </span>;
+        default:
+          return null;
+      }
+    };
+
+    return (
+      <div className="space-y-6">
+        {/* Header */}
+        <div>
+          <h2 className="text-xl lg:text-2xl font-extrabold text-slate-900 flex items-center gap-2.5">
+            <ArrowLeftRight className="w-6 h-6 text-blue-600" />
+            Daftar Sirkulasi Transaksi
+          </h2>
+          <p className="text-xs text-slate-400 font-medium mt-1">Verifikasi pengajuan peminjaman dan pengembalian sirkulasi buku</p>
+        </div>
+
+        {/* Filter Tabs - Premium Pill Bar */}
+        <div className="bg-slate-100/70 p-1.5 rounded-2xl border border-slate-200/40 inline-flex flex-wrap gap-1">
+          {[
+            { value: 'all', label: 'Semua', count: borrowings.length },
+            { value: 'pending', label: 'Menunggu', count: pendingApprovals },
+            { value: 'approved', label: 'Aktif', count: activeLoans },
+            { value: 'overdue', label: 'Terlambat', count: overdueLoansCount },
+            { value: 'returned', label: 'Kembali', count: returnedBooks }
+          ].map((filter) => (
+            <button
+              key={filter.value}
+              onClick={() => setFilterStatus(filter.value as any)}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                filterStatus === filter.value
+                  ? 'bg-white text-slate-900 shadow-sm border border-slate-200/50'
+                  : 'text-slate-500 hover:text-slate-800'
+              }`}
+            >
+              {filter.label} <span className="opacity-60">({filter.count})</span>
+            </button>
+          ))}
+        </div>
+
+        {/* Transactions Table */}
+        <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
+          <div className="overflow-x-auto w-full">
+            <table className="w-full text-sm text-left">
+              <thead>
+                <tr className="bg-slate-50/70 border-b border-slate-150">
+                  <th className="py-3.5 px-6 font-bold text-slate-500 text-xs uppercase tracking-wider">ID</th>
+                  <th className="py-3.5 px-6 font-bold text-slate-500 text-xs uppercase tracking-wider">Anggota</th>
+                  <th className="py-3.5 px-6 font-bold text-slate-500 text-xs uppercase tracking-wider">Buku Terpinjam</th>
+                  <th className="py-3.5 px-6 font-bold text-slate-500 text-xs uppercase tracking-wider">Tgl Pinjam</th>
+                  <th className="py-3.5 px-6 font-bold text-slate-500 text-xs uppercase tracking-wider">Jatuh Tempo</th>
+                  <th className="py-3.5 px-6 font-bold text-slate-500 text-xs uppercase tracking-wider">Status</th>
+                  <th className="py-3.5 px-6 font-bold text-slate-500 text-xs uppercase tracking-wider">Kas Denda</th>
+                  <th className="py-3.5 px-6 font-bold text-slate-500 text-xs text-right uppercase tracking-wider">Aksi</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {filteredTransactions.map((b) => {
+                  const student = users.find(u => u.id === b.studentId);
+                  const book = books.find(bk => bk.id === b.bookId);
+                  return (
+                    <tr key={b.id} className="hover:bg-slate-50/50 transition-colors">
+                      <td className="py-4 px-6">
+                        <span className="font-mono text-xs font-semibold text-slate-500">{b.id.substring(0, 8)}</span>
+                      </td>
+                      <td className="py-4 px-6">
+                        <div>
+                          <p className="font-bold text-slate-900 text-sm">{student?.name || 'Unknown'}</p>
+                          <p className="text-[10px] text-slate-400 font-medium">{student?.email}</p>
+                        </div>
+                      </td>
+                      <td className="py-4 px-6 max-w-[200px]">
+                        <p className="font-semibold text-slate-900 text-sm truncate">{book?.title || 'Unknown'}</p>
+                        <p className="text-[10px] text-slate-400 mt-0.5">Author: {book?.author}</p>
+                      </td>
+                      <td className="py-4 px-6 text-slate-650 font-medium text-xs">{b.borrowDate}</td>
+                      <td className="py-4 px-6">
+                        <span className={`text-xs font-bold ${b.status === 'overdue' ? 'text-rose-600' : 'text-slate-650'}`}>
+                          {b.dueDate}
+                        </span>
+                      </td>
+                      <td className="py-4 px-6">{getStatusBadge(b.status)}</td>
+                      <td className="py-4 px-6">
+                        {b.fineAmount && b.fineAmount > 0 ? (
+                          <div>
+                            <p className="font-extrabold text-rose-600 text-sm">Rp {b.fineAmount.toLocaleString()}</p>
+                            {b.finePaid && <p className="text-[9px] font-bold text-emerald-600 mt-0.5">✓ PAID / Lunas</p>}
+                          </div>
+                        ) : (
+                          <span className="text-slate-400 font-medium">-</span>
+                        )}
+                      </td>
+                      <td className="py-4 px-6 text-right">
+                        <div className="flex justify-end gap-2">
+                          {b.status === 'pending' && (
+                            <>
+                              <button
+                                onClick={() => onVerifyBorrow(b.id, true)}
+                                className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold cursor-pointer shadow-sm transition-all"
+                              >
+                                Setujui
+                              </button>
+                              <button
+                                onClick={() => onVerifyBorrow(b.id, false)}
+                                className="px-3.5 py-1.5 bg-rose-650 hover:bg-rose-700 text-white rounded-lg text-xs font-bold cursor-pointer shadow-sm transition-all"
+                              >
+                                Tolak
+                              </button>
+                            </>
+                          )}
+                          {(b.status === 'approved' || b.status === 'overdue') && (
+                            <button
+                              onClick={() => onVerifyReturn(b.id, true)}
+                              className="px-3.5 py-1.5 bg-blue-650 hover:bg-blue-700 text-white rounded-lg text-xs font-bold cursor-pointer shadow-sm transition-all"
+                            >
+                              Kembalikan
+                            </button>
+                          )}
+                          {b.status === 'returned' && (
+                            <span className="text-xs font-bold text-slate-400 mr-2">Selesai</span>
+                          )}
+                          {b.status === 'rejected' && (
+                            <span className="text-xs font-bold text-slate-400 mr-2">Ditolak</span>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+                {filteredTransactions.length === 0 && (
+                  <tr>
+                    <td colSpan={8} className="text-center py-12">
+                      <ArrowLeftRight className="w-14 h-14 text-slate-250 mx-auto mb-4" />
+                      <h3 className="text-md font-bold text-slate-800 mb-1">Transaksi tidak ditemukan</h3>
+                      <p className="text-xs text-slate-400 font-medium">Tidak ada data sirkulasi untuk kategori status ini</p>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Helper function to render Users content
+  const renderUsersContent = () => (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h2 className="text-xl lg:text-2xl font-extrabold text-slate-900 flex items-center gap-2.5">
+            <Users className="w-6 h-6 text-blue-600" />
+            Kelola Anggota & Staff
+          </h2>
+          <p className="text-xs text-slate-400 font-medium mt-1">Registrasi data otorisasi dan profil civitas sekolah</p>
+        </div>
+        {isAdmin && (
+          <button
+            onClick={() => handleOpenUserModal(null)}
+            className="flex items-center gap-2 px-4.5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-sm shadow-md shadow-blue-500/20 hover:shadow-blue-500/30 transition-all cursor-pointer self-stretch sm:self-auto justify-center"
+          >
+            <Plus className="w-4 h-4" />
+            Daftarkan User Baru
+          </button>
+        )}
+      </div>
+
+      {/* Search */}
+      <div className="bg-white rounded-2xl p-4 border border-slate-200/60 shadow-sm">
+        <div className="relative">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+          <input
+            type="text"
+            placeholder="Cari anggota berdasarkan nama lengkap, email, NISN siswa, atau NIP pegawai..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-600 focus:bg-white transition-all font-medium"
+          />
+        </div>
+      </div>
+
+      {/* Users Table */}
+      <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
+        <div className="overflow-x-auto w-full">
+          <table className="w-full text-sm text-left">
+            <thead>
+              <tr className="bg-slate-50/70 border-b border-slate-150">
+                <th className="py-3.5 px-6 font-bold text-slate-500 text-xs uppercase tracking-wider">Identitas Pengguna</th>
+                <th className="py-3.5 px-6 font-bold text-slate-500 text-xs uppercase tracking-wider">Hak Akses (Role)</th>
+                <th className="py-3.5 px-6 font-bold text-slate-500 text-xs uppercase tracking-wider">NISN / NIP</th>
+                <th className="py-3.5 px-6 font-bold text-slate-500 text-xs uppercase tracking-wider">Kelas / Unit Kerja</th>
+                <th className="py-3.5 px-6 font-bold text-slate-500 text-xs uppercase tracking-wider">Status Akun</th>
+                <th className="py-3.5 px-6 font-bold text-slate-500 text-xs uppercase tracking-wider">Buku Dipinjam</th>
+                {isAdmin && <th className="py-3.5 px-6 font-bold text-slate-500 text-xs text-right uppercase tracking-wider">Aksi</th>}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {filteredUsers.map((user) => {
+                const userBorrowings = borrowings.filter(b => b.studentId === user.id && (b.status === 'approved' || b.status === 'overdue'));
+                return (
+                  <tr key={user.id} className="hover:bg-slate-50/50 transition-colors">
+                    <td className="py-4 px-6">
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-500 to-indigo-600 flex items-center justify-center text-white font-extrabold text-xs shadow-sm">
+                          {user.name.substring(0, 2).toUpperCase()}
+                        </div>
+                        <div>
+                          <p className="font-bold text-slate-900 text-sm">{user.name}</p>
+                          <p className="text-[10px] text-slate-400 font-medium">{user.email}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="py-4 px-6">
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wide border ${
+                        user.role === UserRole.ADMIN ? 'bg-purple-50 text-purple-700 border-purple-200/50' :
+                        user.role === UserRole.PETUGAS ? 'bg-blue-50 text-blue-700 border-blue-200/50' :
+                        'bg-emerald-50 text-emerald-700 border-emerald-200/50'
+                      }`}>
+                        {user.role}
+                      </span>
+                    </td>
+                    <td className="py-4 px-6">
+                      <span className="font-mono text-xs font-semibold text-slate-650">
+                        {user.nisn || user.nip || '-'}
+                      </span>
+                    </td>
+                    <td className="py-4 px-6 text-slate-600 font-medium text-xs">
+                      {user.class || '-'}
+                    </td>
+                    <td className="py-4 px-6">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+                        user.status === 'active' 
+                          ? 'bg-emerald-100 text-emerald-800' 
+                          : 'bg-slate-100 text-slate-600'
+                      }`}>
+                        {user.status === 'active' ? 'Aktif' : 'Nonaktif'}
+                      </span>
+                    </td>
+                    <td className="py-4 px-6">
+                      <span className="font-bold text-slate-950 text-sm">{userBorrowings.length}</span>
+                      <span className="text-xs text-slate-400 font-medium"> / {settings.maxBorrowBooks} Buku</span>
+                    </td>
+                    {isAdmin && (
+                      <td className="py-4 px-6 text-right">
+                        <div className="flex justify-end gap-2">
+                          <button
+                            onClick={() => handleOpenUserModal(user)}
+                            className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg text-xs font-bold cursor-pointer transition-all"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => {
+                              if (user.id === currentUser.id) {
+                                alert('Tidak bisa menghapus akun sendiri!');
+                                return;
+                              }
+                              if (window.confirm(`Hapus pengguna "${user.name}"?`)) {
+                                onDeleteUser(user.id);
+                              }
+                            }}
+                            className="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-xs font-bold cursor-pointer transition-all"
+                          >
+                            Hapus
+                          </button>
+                        </div>
+                      </td>
+                    )}
+                  </tr>
+                );
+              })}
+              {filteredUsers.length === 0 && (
+                <tr>
+                  <td colSpan={7} className="text-center py-10">
+                    <Users className="w-12 h-12 text-slate-250 mx-auto mb-3" />
+                    <p className="text-sm font-medium text-slate-400">Tidak ada anggota yang sesuai filter pencarian.</p>
+                  </td>
+                </tr>
               )}
-            </button>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
 
-            <button
-              onClick={() => setActiveMenu('users')}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
-                activeMenu === 'users' ? 'bg-blue-600 text-white shadow-xs shadow-blue-100 font-bold' : 'text-gray-600 hover:text-gray-950 hover:bg-gray-100/70'
-              }`}
-            >
-              <Users className="w-4 h-4" /> Kelola Anggota
-            </button>
+  // Helper function to render Reports content
+  const renderReportsContent = () => (
+    <div className="space-y-6">
+      {/* Header */}
+      <div>
+        <h2 className="text-xl lg:text-2xl font-extrabold text-slate-900 flex items-center gap-2.5">
+          <FileSpreadsheet className="w-6 h-6 text-blue-600" />
+          Laporan & Statistik Kumulatif
+        </h2>
+        <p className="text-xs text-slate-400 font-medium mt-1">Ekstraksi berkas sirkulasi dan rekapitulasi data perpustakaan</p>
+      </div>
 
-            <button
-              onClick={() => setActiveMenu('reports')}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
-                activeMenu === 'reports' ? 'bg-blue-600 text-white shadow-xs shadow-blue-100 font-bold' : 'text-gray-600 hover:text-gray-950 hover:bg-gray-100/70'
-              }`}
-            >
-              <FileSpreadsheet className="w-4 h-4" /> Laporan Transaksi
-            </button>
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-gradient-to-tr from-slate-800 to-slate-950 rounded-2xl p-5 text-white shadow-sm flex flex-col justify-between min-h-[110px]">
+          <Package className="w-6 h-6 opacity-60 self-end" />
+          <div>
+            <p className="text-[10px] opacity-75 font-bold uppercase tracking-wider">Total Koleksi Buku</p>
+            <p className="text-2xl font-extrabold mt-1">{totalBooks} Buku</p>
+          </div>
+        </div>
+        <div className="bg-gradient-to-tr from-blue-600 to-indigo-800 rounded-2xl p-5 text-white shadow-sm flex flex-col justify-between min-h-[110px]">
+          <Users className="w-6 h-6 opacity-60 self-end" />
+          <div>
+            <p className="text-[10px] opacity-75 font-bold uppercase tracking-wider">Total Anggota Siswa</p>
+            <p className="text-2xl font-extrabold mt-1">{totalMembers} Orang</p>
+          </div>
+        </div>
+        <div className="bg-gradient-to-tr from-emerald-600 to-teal-850 rounded-2xl p-5 text-white shadow-sm flex flex-col justify-between min-h-[110px]">
+          <ArrowLeftRight className="w-6 h-6 opacity-60 self-end" />
+          <div>
+            <p className="text-[10px] opacity-75 font-bold uppercase tracking-wider">Total Transaksi Sirkulasi</p>
+            <p className="text-2xl font-extrabold mt-1">{borrowings.length} Kali</p>
+          </div>
+        </div>
+        <div className="bg-gradient-to-tr from-rose-600 to-red-800 rounded-2xl p-5 text-white shadow-sm flex flex-col justify-between min-h-[110px]">
+          <Coins className="w-6 h-6 opacity-60 self-end" />
+          <div>
+            <p className="text-[10px] opacity-75 font-bold uppercase tracking-wider">Kas Denda Terkumpul</p>
+            <p className="text-2xl font-extrabold mt-1">Rp {totalCollectedFines.toLocaleString()}</p>
+          </div>
+        </div>
+      </div>
 
-            {isAdmin && (
+      {/* Detailed Reports */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Borrowing Stats */}
+        <div className="bg-white rounded-2xl p-5 border border-slate-200/60 shadow-sm">
+          <h3 className="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2">
+            <BarChart3 className="w-5 h-5 text-blue-600" />
+            Statistik Status Sirkulasi
+          </h3>
+          <div className="space-y-2">
+            <div className="flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-100">
+              <span className="text-xs font-semibold text-slate-500">Peminjaman Berjalan</span>
+              <span className="text-sm font-extrabold text-slate-800">{activeLoans} Buku</span>
+            </div>
+            <div className="flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-100">
+              <span className="text-xs font-semibold text-slate-500">Menunggu Persetujuan</span>
+              <span className="text-sm font-extrabold text-amber-600">{pendingApprovals} Pengajuan</span>
+            </div>
+            <div className="flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-100">
+              <span className="text-xs font-semibold text-slate-500">Sirkulasi Keterlambatan</span>
+              <span className="text-sm font-extrabold text-rose-650">{overdueLoansCount} Buku</span>
+            </div>
+            <div className="flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-100">
+              <span className="text-xs font-semibold text-slate-500">Sukses Dikembalikan</span>
+              <span className="text-sm font-extrabold text-emerald-600">{returnedBooks} Buku</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Top Books */}
+        <div className="bg-white rounded-2xl p-5 border border-slate-200/60 shadow-sm">
+          <h3 className="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2">
+            <TrendingUp className="w-5 h-5 text-blue-600" />
+            Buku Favorit & Paling Diminati
+          </h3>
+          <div className="space-y-2.5">
+            {books.slice(0, 4).map((book, idx) => (
+              <div key={book.id} className="flex items-center gap-3 p-2 bg-slate-50 rounded-xl border border-slate-100/50">
+                <div className="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-extrabold text-xs shadow-xs border border-blue-100/50 shrink-0">
+                  {idx + 1}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-bold text-slate-800 truncate">{book.title}</p>
+                  <p className="text-[10px] text-slate-400 mt-0.5 font-semibold">Oleh: {book.author}</p>
+                </div>
+                <span className="text-[10px] font-extrabold text-slate-650 bg-slate-200/50 px-2 py-0.5 rounded-md font-mono">
+                  {book.totalStock ?? book.stock} Pcs
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Export Section */}
+      <div className="bg-white rounded-2xl p-6 border border-slate-200/60 shadow-sm text-center max-w-xl mx-auto">
+        <Download className="w-12 h-12 text-slate-250 mx-auto mb-3" />
+        <h3 className="text-md font-bold text-slate-900 mb-1">Cetak Dokumen Sirkulasi</h3>
+        <p className="text-xs text-slate-400 font-medium mb-4">Export tabel laporan sirkulasi saat ini ke format berkas digital (.xlsx / .pdf)</p>
+        <button className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-xs shadow-sm hover:shadow transition-all cursor-pointer">
+          <Download className="w-4 h-4 inline mr-1.5" />
+          Download Rekap Laporan
+        </button>
+      </div>
+    </div>
+  );
+
+  // Helper function to render Settings content
+  const renderSettingsContent = () => (
+    <div className="space-y-6">
+      {/* Header */}
+      <div>
+        <h2 className="text-xl lg:text-2xl font-extrabold text-slate-900 flex items-center gap-2.5">
+          <Settings className="w-6 h-6 text-blue-600" />
+          Pengaturan Aturan Perpustakaan
+        </h2>
+        <p className="text-xs text-slate-400 font-medium mt-1">Konfigurasi batas sirkulasi peminjaman siswa</p>
+      </div>
+
+      {/* Settings Form */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-slate-200/60 shadow-sm space-y-5">
+          <h3 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-3">Aturan Main Sirkulasi</h3>
+          
+          <div className="space-y-4">
+            <div>
+              <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase">
+                Maksimal Tenggat Waktu Pinjam (Hari)
+              </label>
+              <input
+                type="number"
+                min="1"
+                value={localMaxDays}
+                onChange={(e) => setLocalMaxDays(Number(e.target.value))}
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-600 focus:bg-white transition-all"
+              />
+              <p className="text-[10px] text-slate-400 mt-1 font-medium">Batas jatuh tempo peminjaman untuk kategori umum</p>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase">
+                Batas Jumlah Peminjaman Buku Maksimal
+              </label>
+              <input
+                type="number"
+                min="1"
+                value={localMaxBooks}
+                onChange={(e) => setLocalMaxBooks(Number(e.target.value))}
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-600 focus:bg-white transition-all"
+              />
+              <p className="text-[10px] text-slate-400 mt-1 font-medium">Batas kuota jumlah peminjaman buku aktif per siswa</p>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase">
+                Besar Nominal Denda per Hari (Rupiah)
+              </label>
+              <input
+                type="number"
+                min="0"
+                step="1000"
+                value={localFinePerDay}
+                onChange={(e) => setLocalFinePerDay(Number(e.target.value))}
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-600 focus:bg-white transition-all"
+              />
+              <p className="text-[10px] text-slate-400 mt-1 font-medium">Tarif denda keterlambatan pengembalian buku: Rp {localFinePerDay.toLocaleString()} / hari</p>
+            </div>
+
+            <div className="pt-3 border-t border-slate-100">
               <button
-                onClick={() => setActiveMenu('settings')}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
-                  activeMenu === 'settings' ? 'bg-blue-600 text-white shadow-xs shadow-blue-100 font-bold' : 'text-gray-600 hover:text-gray-950 hover:bg-gray-100/70'
-                }`}
+                onClick={handleSaveSettings}
+                className="w-full px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-xs shadow-sm hover:shadow transition-all cursor-pointer"
               >
-                <Settings className="w-4 h-4" /> Pengaturan Sistem
+                Terapkan Konfigurasi Aturan
               </button>
-            )}
+            </div>
+          </div>
+        </div>
+
+        {/* System Info */}
+        <div className="bg-white rounded-2xl p-6 border border-slate-200/60 shadow-sm self-start space-y-4">
+          <h3 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-3">Status Aplikasi</h3>
+          <div className="space-y-3 text-xs">
+            <div className="flex justify-between py-1 border-b border-slate-50 font-medium">
+              <span className="text-slate-500">Versi Rilis</span>
+              <span className="font-extrabold text-slate-800">v1.1.0</span>
+            </div>
+            <div className="flex justify-between py-1 border-b border-slate-50 font-medium">
+              <span className="text-slate-500">Total User Terdaftar</span>
+              <span className="font-extrabold text-slate-800">{users.length} Account</span>
+            </div>
+            <div className="flex justify-between py-1 border-b border-slate-50 font-medium">
+              <span className="text-slate-500">Koleksi Buku</span>
+              <span className="font-extrabold text-slate-800">{books.length} Judul</span>
+            </div>
+            <div className="flex justify-between py-1 font-medium">
+              <span className="text-slate-500">Kategori Genre</span>
+              <span className="font-extrabold text-slate-800">{categories.length} Klasifikasi</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Helper function to render content based on active menu
+  const renderContentByMenu = () => {
+    switch(activeMenu) {
+      case 'dashboard':
+        return renderDashboardContent();
+      case 'books':
+        return renderBooksContent();
+      case 'categories':
+        return renderCategoriesContent();
+      case 'transactions':
+        return renderTransactionsContent();
+      case 'users':
+        return renderUsersContent();
+      case 'reports':
+        return renderReportsContent();
+      case 'settings':
+        return renderSettingsContent();
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="h-screen bg-slate-50 flex text-slate-900 overflow-hidden font-sans" id="staff-dashboard">
+      
+      {/* MODERN DARK SIDEBAR NAVIGATION */}
+      <aside className={`${sidebarCollapsed ? 'w-20' : 'w-72'} bg-slate-900 border-r border-slate-800 shrink-0 hidden lg:flex flex-col shadow-2xl transition-all duration-300 h-screen sticky top-0 overflow-hidden z-20`}>
+        {/* Logo Brand with Animation */}
+        <div className="p-5 border-b border-slate-800 flex items-center justify-between shrink-0">
+          {!sidebarCollapsed ? (
+            <motion.div 
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="flex items-center gap-2.5 flex-1"
+            >
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/25 shrink-0">
+                <Shield className="w-5 h-5 text-white" />
+              </div>
+              <div className="min-w-0">
+                <h2 className="text-xs font-black text-white tracking-wider uppercase truncate">Staff Panel</h2>
+                <span className="text-[9px] text-blue-400 font-extrabold uppercase tracking-widest">{currentUser.role}</span>
+              </div>
+            </motion.div>
+          ) : (
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shrink-0 mx-auto">
+              <Shield className="w-5 h-5 text-white" />
+            </div>
+          )}
+          
+          <button
+            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+            className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-500 hover:text-slate-300 transition-all cursor-pointer shrink-0 hidden sm:block"
+            title={sidebarCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
+          >
+            <motion.div
+              animate={{ rotate: sidebarCollapsed ? 180 : 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <ChevronDown className="w-4 h-4 rotate-90" />
+            </motion.div>
+          </button>
+        </div>
+
+        {/* Scrollable Navigation Links */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-1.5 scrollbar-thin scrollbar-thumb-slate-800 scrollbar-track-transparent">
+          <nav className="space-y-1">
+            {[
+              { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, badge: null },
+              { id: 'books', label: 'Kelola Buku', icon: BookOpen, badge: null },
+              { id: 'categories', label: 'Klasifikasi Kategori', icon: FolderClosed, badge: null },
+              { id: 'transactions', label: 'Transaksi Sirkulasi', icon: ArrowLeftRight, badge: pendingApprovals },
+              { id: 'users', label: 'Anggota & Staff', icon: Users, badge: null },
+              { id: 'reports', label: 'Laporan & Chart', icon: FileSpreadsheet, badge: null },
+              ...(isAdmin ? [{ id: 'settings' as const, label: 'Aturan Sistem', icon: Settings, badge: null }] : [])
+            ].map((item) => {
+              const Icon = item.icon;
+              const isActive = activeMenu === item.id;
+              return (
+                <motion.button
+                  key={item.id}
+                  onClick={() => {
+                    setActiveMenu(item.id as any);
+                    setMobileMenuOpen(false);
+                  }}
+                  whileHover={{ scale: 1.015 }}
+                  whileTap={{ scale: 0.985 }}
+                  className={`w-full flex items-center gap-3.5 px-3 py-3 text-xs font-bold rounded-xl transition-all cursor-pointer relative overflow-hidden ${
+                    isActive 
+                      ? 'bg-gradient-to-r from-blue-600 to-indigo-650 text-white shadow-md shadow-blue-500/10' 
+                      : 'text-slate-400 hover:text-white hover:bg-slate-800/40'
+                  }`}
+                >
+                  <Icon className="w-4.5 h-4.5 shrink-0" />
+                  {!sidebarCollapsed && (
+                    <>
+                      <span className="flex-1 text-left truncate">{item.label}</span>
+                      {item.badge !== null && item.badge > 0 && (
+                        <span className="px-2 py-0.5 text-[9px] font-black bg-amber-500 text-slate-900 rounded-full shrink-0">
+                          {item.badge}
+                        </span>
+                      )}
+                    </>
+                  )}
+                  {sidebarCollapsed && item.badge !== null && item.badge > 0 && (
+                    <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
+                  )}
+                </motion.button>
+              );
+            })}
           </nav>
         </div>
 
-        {/* Bottom Profile / Logout */}
-        <div className="pt-5 border-t border-gray-100">
-          <div className="flex items-center gap-2.5 mb-4">
-            <img 
-              src={currentUser.avatarUrl} 
-              alt={currentUser.name} 
-              className="w-9 h-9 rounded-full object-cover border border-gray-200"
-            />
-            <div className="overflow-hidden">
-              <h4 className="text-xs font-bold text-gray-900 truncate">{currentUser.name}</h4>
-              <span className="text-[9px] text-gray-500 block truncate">{currentUser.email}</span>
+        {/* Bottom Profile Details - Fixed */}
+        <div className="p-4 border-t border-slate-800 space-y-3 shrink-0">
+          {!sidebarCollapsed && (
+            <div className="flex items-center gap-3 p-2.5 bg-slate-800/30 rounded-xl border border-slate-850">
+              <div className="w-8.5 h-8.5 rounded-lg bg-gradient-to-tr from-blue-500 to-indigo-600 flex items-center justify-center text-white font-extrabold text-xs shadow-sm shrink-0">
+                {currentUser.name.substring(0, 2).toUpperCase()}
+              </div>
+              <div className="min-w-0 flex-1">
+                <h4 className="text-[11px] font-bold text-white truncate">{currentUser.name}</h4>
+                <p className="text-[9px] text-slate-500 truncate mt-0.5">{currentUser.email}</p>
+              </div>
             </div>
-          </div>
+          )}
           <button
             onClick={onLogout}
-            className="w-full flex items-center justify-center gap-2 py-2 bg-rose-50 hover:bg-rose-100 text-xs font-bold text-rose-700 rounded-lg border border-rose-200 transition-all cursor-pointer"
+            className="w-full flex items-center justify-center gap-2 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl transition-all cursor-pointer text-xs font-bold shadow-md shadow-rose-900/10"
           >
-            <LogOut className="w-3.5 h-3.5" /> Logout Panel
+            <LogOut className="w-4 h-4" />
+            {!sidebarCollapsed && <span>Keluar Panel</span>}
           </button>
         </div>
       </aside>
 
-      {/* MAIN LAYOUT CANVAS */}
-      <main className="flex-1 min-h-screen flex flex-col overflow-y-auto bg-gray-50">
-        {/* Top bar */}
-        <header className="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center sticky top-0 z-10 shadow-xs">
-          <div>
-            <h1 className="text-md font-bold text-gray-900 capitalize">
-              {activeMenu === 'dashboard' ? 'Dashboard Utama' : `Kelola ${activeMenu}`}
-            </h1>
-            <p className="text-[10px] text-gray-500 mt-0.5">Sistem Pengelolaan Digital Perpustakaan SMA</p>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <span className="text-xs text-gray-500 font-medium hidden sm:inline">
-              Petugas: <strong className="text-gray-800">{currentUser.name}</strong>
-            </span>
-            <div className="md:hidden">
-              <button 
-                onClick={onLogout}
-                className="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded border border-rose-200 text-xs font-bold cursor-pointer transition-all"
-              >
-                Logout
-              </button>
-            </div>
-          </div>
-        </header>
-
-        {/* Content Container */}
-        <div className="p-6 flex-1 space-y-6">
-          
-          {/* MENU 1: RINGKASAN DASHBOARD */}
-          {activeMenu === 'dashboard' && (
-            <div className="space-y-6">
-              {/* Stat Cards Bento Grid */}
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-white border border-gray-200 shadow-xs rounded-xl p-4.5 flex items-center justify-between">
+      {/* MOBILE DRAWER NAVIGATION */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <>
+            {/* Dark Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.6 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setMobileMenuOpen(false)}
+              className="fixed inset-0 bg-slate-950 z-40 lg:hidden"
+            />
+            
+            {/* Sliding Mobile Sidebar */}
+            <motion.aside
+              initial={{ x: -300 }}
+              animate={{ x: 0 }}
+              exit={{ x: -300 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 220 }}
+              className="fixed left-0 top-0 bottom-0 w-72 bg-slate-900 border-r border-slate-800 z-50 lg:hidden flex flex-col shadow-2xl"
+            >
+              {/* Header inside drawer */}
+              <div className="p-5 border-b border-slate-800 flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg">
+                    <Shield className="w-5 h-5 text-white" />
+                  </div>
                   <div>
-                    <span className="text-[10px] text-gray-400 font-bold uppercase block">Stok Buku Total</span>
-                    <span className="text-2xl font-extrabold text-gray-900 block mt-1">{totalBooks} Pcs</span>
-                    <span className="text-[9px] text-emerald-600 block mt-0.5 font-semibold">{availableBooks} Tersedia</span>
-                  </div>
-                  <div className="p-3 bg-blue-50 text-blue-600 rounded-lg border border-blue-100">
-                    <BookOpen className="w-6 h-6" />
+                    <h2 className="text-xs font-black text-white uppercase tracking-wider">Staff Panel</h2>
+                    <span className="text-[9px] text-blue-400 font-extrabold uppercase">{currentUser.role}</span>
                   </div>
                 </div>
-
-                <div className="bg-white border border-gray-200 shadow-xs rounded-xl p-4.5 flex items-center justify-between">
-                  <div>
-                    <span className="text-[10px] text-gray-400 font-bold uppercase block">Peminjaman Aktif</span>
-                    <span className="text-2xl font-extrabold text-gray-900 block mt-1">{activeLoans} Sesi</span>
-                    <span className="text-[9px] text-rose-600 block mt-0.5 font-semibold">{overdueLoansCount} Terlambat</span>
-                  </div>
-                  <div className="p-3 bg-emerald-50 text-emerald-600 rounded-lg border border-emerald-100">
-                    <ArrowLeftRight className="w-6 h-6" />
-                  </div>
-                </div>
-
-                <div className="bg-white border border-gray-200 shadow-xs rounded-xl p-4.5 flex items-center justify-between">
-                  <div>
-                    <span className="text-[10px] text-gray-400 font-bold uppercase block">Pending Persetujuan</span>
-                    <span className="text-2xl font-extrabold text-gray-900 block mt-1">{pendingApprovals} Antrean</span>
-                    <span className="text-[9px] text-amber-600 block mt-0.5 font-semibold">Butuh Verifikasi</span>
-                  </div>
-                  <div className="p-3 bg-amber-50 text-amber-600 rounded-lg border border-amber-100">
-                    <TrendingUp className="w-6 h-6 animate-pulse" />
-                  </div>
-                </div>
-
-                <div className="bg-white border border-gray-200 shadow-xs rounded-xl p-4.5 flex items-center justify-between">
-                  <div>
-                    <span className="text-[10px] text-gray-400 font-bold uppercase block">Kas Denda Terkumpul</span>
-                    <span className="text-2xl font-extrabold text-gray-900 block mt-1">Rp {totalCollectedFines.toLocaleString()}</span>
-                    <span className="text-[9px] text-gray-500 block mt-0.5">Dari denda keterlambatan</span>
-                  </div>
-                  <div className="p-3 bg-rose-50 text-rose-600 rounded-lg border border-rose-100">
-                    <Coins className="w-6 h-6" />
-                  </div>
-                </div>
-              </div>
-
-              {/* Action Banner / Notification of pending items */}
-              {pendingApprovals > 0 && (
-                <div className="bg-amber-50/70 border border-amber-200 p-4 rounded-xl flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <TrendingUp className="text-amber-600 w-5 h-5 shrink-0" />
-                    <div>
-                      <h4 className="text-xs font-bold text-amber-950">Ada {pendingApprovals} Pengajuan Peminjaman Menunggu Verifikasi</h4>
-                      <p className="text-[10px] text-amber-800 mt-0.5">Silakan lakukan konfirmasi di halaman verifikasi transaksi sesegera mungkin.</p>
-                    </div>
-                  </div>
-                  <button 
-                    onClick={() => setActiveMenu('transactions')}
-                    className="px-3.5 py-1.5 bg-amber-600 hover:bg-amber-700 text-white font-bold text-[10px] rounded cursor-pointer transition-all"
-                  >
-                    Buka Antrean
-                  </button>
-                </div>
-              )}
-
-              {/* Quick Table: Active Loans Overview */}
-              <div className="bg-white border border-gray-200 shadow-xs rounded-xl p-5">
-                <div className="flex justify-between items-center mb-4 pb-2 border-b border-gray-100">
-                  <h3 className="text-xs font-bold text-gray-900 uppercase tracking-wider">Ikhtisar Sesi Peminjaman Aktif</h3>
-                  <button onClick={() => setActiveMenu('transactions')} className="text-[10px] text-blue-600 hover:text-blue-700 hover:underline cursor-pointer font-bold">
-                    Lihat Semua
-                  </button>
-                </div>
-
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs text-gray-700">
-                    <thead>
-                      <tr className="border-b border-gray-100 text-gray-400 font-semibold">
-                        <th className="py-2.5">Siswa</th>
-                        <th>Buku</th>
-                        <th>Tgl Pinjam</th>
-                        <th>Tgl Jatuh Tempo</th>
-                        <th>Status</th>
-                        <th className="text-right">Aksi Cepat</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-100">
-                      {borrowings.filter(b => b.status === 'approved' || b.status === 'overdue').slice(0, 5).map((b) => {
-                        const studentName = getUserName(b.studentId ?? '');
-                        const bookTitleName = books.find(x => x.id === b.bookId)?.title || 'Buku';
-                        return (
-                          <tr key={b.id} className="hover:bg-gray-50/50 transition-colors">
-                            <td className="py-2.5 font-medium text-gray-900">{studentName}</td>
-                            <td className="truncate max-w-[150px]">{bookTitleName}</td>
-                            <td>{b.borrowDate}</td>
-                            <td>{b.dueDate}</td>
-                            <td>
-                              <span className={`px-2 py-0.5 text-[9px] rounded font-bold uppercase border ${
-                                b.status === 'overdue' ? 'bg-rose-50 text-rose-700 border-rose-100' : 'bg-blue-50 text-blue-700 border-blue-100'
-                              }`}>
-                                {b.status === 'overdue' ? 'Jatuh Tempo' : 'Dipinjam'}
-                              </span>
-                            </td>
-                            <td className="text-right">
-                              <button
-                                onClick={() => onVerifyReturn(b.id, true)}
-                                className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[9px] font-bold cursor-pointer transition-all shadow-xs shadow-emerald-100"
-                              >
-                                Kembalikan
-                              </button>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* MENU 2: KELOLA BUKU */}
-          {activeMenu === 'books' && (
-            <div className="space-y-4">
-              <div className="flex flex-col sm:flex-row gap-3 items-center justify-between">
-                <div className="relative w-full sm:max-w-xs">
-                  <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
-                  <input
-                    type="text"
-                    placeholder="Cari judul atau ISBN..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-9 pr-4 py-2 bg-white border border-gray-200 rounded-lg text-xs text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500"
-                  />
-                </div>
-
                 <button
-                  onClick={() => handleOpenBookModal(null)}
-                  className="w-full sm:w-auto px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer shadow-xs shadow-blue-100 transition-all"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="p-1.5 hover:bg-slate-850 rounded-lg text-slate-400 hover:text-slate-200 transition-all cursor-pointer"
                 >
-                  <PlusCircle className="w-4 h-4" /> Tambah Buku Baru
+                  <X className="w-5 h-5" />
                 </button>
               </div>
 
-              {/* Books Inventory List */}
-              <div className="bg-white border border-gray-200 shadow-xs rounded-xl overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs text-gray-700">
-                    <thead className="bg-gray-50 text-gray-500 font-semibold">
-                      <tr>
-                        <th className="p-3">Cover / Info Buku</th>
-                        <th>Kategori</th>
-                        <th>Rak</th>
-                        <th>ISBN</th>
-                        <th>Stok Aktif</th>
-                        <th className="text-right p-3">Aksi</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-100">
-                      {filteredBooks.map((book) => (
-                        <tr key={book.id} className="hover:bg-gray-50/50 transition-colors">
-                          <td className="p-3 flex items-center gap-3">
-                            <img 
-                              src={book.coverUrl || ''} 
-                              alt={book.title} 
-                              className="w-9 h-12 rounded object-cover border border-gray-200"
-                            />
-                            <div>
-                              <h4 className="font-bold text-gray-900 text-xs">{book.title}</h4>
-                              <p className="text-[10px] text-gray-500 mt-0.5">Penulis: {book.author}</p>
-                              <p className="text-[9px] text-gray-400">Penerbit: {book.publisher} • {book.year}</p>
-                            </div>
-                          </td>
-                          <td>
-                            <span className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded-full text-[9px] font-semibold border border-blue-100">
-                              {getCategoryName(book.categoryId)}
-                            </span>
-                          </td>
-                          <td className="font-mono text-blue-600 font-bold">{book.rackLocation || '-'}</td>
-                          <td className="text-gray-400 font-mono text-[10px]">{book.isbn}</td>
-                          <td>
-                            <span className={`font-bold ${book.stock > 0 ? 'text-emerald-600' : 'text-rose-500'}`}>
-                              {book.stock} / {book.totalStock ?? book.stock} Pcs
-                            </span>
-                          </td>
-                          <td className="p-3 text-right">
-                            <div className="flex gap-2 justify-end">
-                              <button
-                                onClick={() => handleOpenBookModal(book)}
-                                className="p-1.5 hover:bg-gray-100 rounded text-gray-500 hover:text-gray-800 transition-all cursor-pointer"
-                              >
-                                <Edit className="w-4 h-4" />
-                              </button>
-                              <button
-                                onClick={() => onDeleteBook(book.id)}
-                                className="p-1.5 hover:bg-rose-50 rounded text-rose-600 hover:text-rose-800 transition-all cursor-pointer"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* MENU 3: KELOLA KATEGORI */}
-          {activeMenu === 'categories' && (
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <p className="text-xs text-gray-500 font-medium">Total {categories.length} kategori buku terdaftar</p>
-                <button
-                  onClick={() => handleOpenCategoryModal(null)}
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-xs shadow-blue-100 transition-all"
-                >
-                  <Plus className="w-4 h-4" /> Tambah Kategori
-                </button>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {categories.map((cat) => {
-                  const catBooksCount = books.filter(b => b.categoryId === cat.id).length;
+              {/* Navigation Links inside drawer */}
+              <div className="flex-1 overflow-y-auto p-5 space-y-1">
+                {[
+                  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, badge: null },
+                  { id: 'books', label: 'Kelola Buku', icon: BookOpen, badge: null },
+                  { id: 'categories', label: 'Klasifikasi Kategori', icon: FolderClosed, badge: null },
+                  { id: 'transactions', label: 'Transaksi Sirkulasi', icon: ArrowLeftRight, badge: pendingApprovals },
+                  { id: 'users', label: 'Anggota & Staff', icon: Users, badge: null },
+                  { id: 'reports', label: 'Laporan & Chart', icon: FileSpreadsheet, badge: null },
+                  ...(isAdmin ? [{ id: 'settings' as const, label: 'Aturan Sistem', icon: Settings, badge: null }] : [])
+                ].map((item) => {
+                  const Icon = item.icon;
+                  const isActive = activeMenu === item.id;
                   return (
-                    <div key={cat.id} className="bg-white border border-gray-200 shadow-xs rounded-xl p-5 flex justify-between items-start">
-                      <div>
-                        <h4 className="text-sm font-bold text-gray-900">{cat.name}</h4>
-                        <p className="text-xs text-gray-500 mt-1">{cat.description}</p>
-                        <span className="inline-block mt-3 px-2 py-0.5 text-[9px] bg-blue-50 text-blue-700 rounded-full font-bold border border-blue-100">
-                          {catBooksCount} Koleksi Buku
+                    <button
+                      key={item.id}
+                      onClick={() => {
+                        setActiveMenu(item.id as any);
+                        setMobileMenuOpen(false);
+                      }}
+                      className={`w-full flex items-center gap-3.5 px-4 py-3.5 text-xs font-bold rounded-xl transition-all cursor-pointer ${
+                        isActive 
+                          ? 'bg-gradient-to-r from-blue-600 to-indigo-650 text-white shadow-md' 
+                          : 'text-slate-400 hover:text-white hover:bg-slate-800/40'
+                      }`}
+                    >
+                      <Icon className="w-4.5 h-4.5" />
+                      <span className="flex-1 text-left">{item.label}</span>
+                      {item.badge !== null && item.badge > 0 && (
+                        <span className="px-2 py-0.5 text-[9px] font-black bg-amber-500 text-slate-900 rounded-full">
+                          {item.badge}
                         </span>
-                      </div>
-                      <div className="flex gap-1">
-                        <button
-                          onClick={() => handleOpenCategoryModal(cat)}
-                          className="p-1.5 hover:bg-gray-100 rounded text-gray-500 hover:text-gray-800 transition-all cursor-pointer"
-                        >
-                          <Edit className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          onClick={() => onDeleteCategory(cat.id)}
-                          className="p-1.5 hover:bg-rose-50 rounded text-rose-600 hover:text-rose-850 transition-all cursor-pointer"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    </div>
+                      )}
+                    </button>
                   );
                 })}
               </div>
+
+              {/* Drawer Footer info */}
+              <div className="p-5 border-t border-slate-800 space-y-3">
+                <div className="flex items-center gap-3 p-2.5 bg-slate-800/30 rounded-xl border border-slate-850">
+                  <div className="w-8.5 h-8.5 rounded-lg bg-gradient-to-tr from-blue-500 to-indigo-600 flex items-center justify-center text-white font-extrabold text-xs shrink-0">
+                    {currentUser.name.substring(0, 2).toUpperCase()}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h4 className="text-[11px] font-bold text-white truncate">{currentUser.name}</h4>
+                    <p className="text-[9px] text-slate-500 truncate mt-0.5">{currentUser.email}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    onLogout();
+                  }}
+                  className="w-full flex items-center justify-center gap-2 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl transition-all cursor-pointer text-xs font-bold shadow-md shadow-rose-900/10"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span>Keluar Panel</span>
+                </button>
+              </div>
+            </motion.aside>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* MAIN CANVAS BLOCK */}
+      <main className="flex-1 flex flex-col overflow-hidden">
+        {/* Glassmorphic Top Header */}
+        <header className="bg-white/80 backdrop-blur-md border-b border-slate-200/50 px-4 lg:px-8 py-3.5 lg:py-4.5 flex justify-between items-center sticky top-0 z-10 shadow-xs shrink-0">
+          <div className="flex items-center gap-4">
+            {/* Mobile Burger toggler */}
+            <button
+              onClick={() => setMobileMenuOpen(true)}
+              className="lg:hidden p-2 hover:bg-slate-100 rounded-xl text-slate-650 hover:text-slate-900 transition-all cursor-pointer"
+            >
+              <Menu className="w-5.5 h-5.5" />
+            </button>
+
+            <div>
+              <h1 className="text-base lg:text-lg font-black text-slate-900 flex items-center gap-2">
+                {activeMenu === 'dashboard' && <LayoutDashboard className="w-5 h-5 text-blue-600" />}
+                {activeMenu === 'books' && <BookOpen className="w-5 h-5 text-blue-600" />}
+                {activeMenu === 'categories' && <FolderClosed className="w-5 h-5 text-blue-600" />}
+                {activeMenu === 'transactions' && <ArrowLeftRight className="w-5 h-5 text-blue-600" />}
+                {activeMenu === 'users' && <Users className="w-5 h-5 text-blue-600" />}
+                {activeMenu === 'reports' && <FileSpreadsheet className="w-5 h-5 text-blue-600" />}
+                {activeMenu === 'settings' && <Settings className="w-5 h-5 text-blue-600" />}
+                <span>
+                  {activeMenu === 'dashboard' && 'Dashboard Analitis'}
+                  {activeMenu === 'books' && 'Katalog Buku'}
+                  {activeMenu === 'categories' && 'Klasifikasi Kategori'}
+                  {activeMenu === 'transactions' && 'Sirkulasi Transaksi'}
+                  {activeMenu === 'users' && 'Daftar Anggota'}
+                  {activeMenu === 'reports' && 'Laporan Statistik'}
+                  {activeMenu === 'settings' && 'Aturan Sistem'}
+                </span>
+              </h1>
+              <p className="text-[10px] sm:text-xs text-slate-400 mt-1 font-semibold flex items-center gap-1.5">
+                <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                {new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+              </p>
             </div>
-          )}
+          </div>
 
-          {/* MENU 4: TRANSAKSI VERIFIKASI */}
-          {activeMenu === 'transactions' && (
-            <div className="space-y-6">
-              {/* Part 1: Pending Approvals */}
-              <div className="space-y-3">
-                <h3 className="text-xs font-extrabold uppercase text-amber-600 tracking-widest">Antrean Persetujuan Peminjaman ({pendingApprovals})</h3>
-                {borrowings.filter(b => b.status === 'pending').length === 0 ? (
-                  <p className="text-xs text-gray-500 py-6 bg-white rounded-xl border border-dashed border-gray-200 text-center shadow-xs">
-                    Tidak ada antrean pengajuan saat ini.
-                  </p>
-                ) : (
-                  <div className="space-y-3">
-                    {borrowings.filter(b => b.status === 'pending').map((b) => {
-                      const student = users.find(u => u.id === b.studentId);
-                      const book = books.find(x => x.id === b.bookId);
-                      return (
-                        <div key={b.id} className="bg-white border border-gray-200 shadow-xs rounded-xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <span className="text-[10px] bg-amber-50 text-amber-700 font-bold px-2 py-0.5 rounded border border-amber-200">
-                                MENUNGGU VERIFIKASI
-                              </span>
-                              <span className="text-[9px] text-gray-400">ID: {b.id}</span>
-                            </div>
-                            <h4 className="text-sm font-bold text-gray-950 mt-1.5">
-                              {student?.name} <span className="text-gray-500 font-medium">({student?.class})</span>
-                            </h4>
-                            <p className="text-xs text-gray-600 mt-1">
-                              Buku: <strong className="text-blue-600">{book?.title}</strong> oleh {book?.author}
-                            </p>
-                            {b.notes && (
-                              <p className="text-[10px] text-gray-500 mt-1 italic">"Catatan Siswa: {b.notes}"</p>
-                            )}
-                          </div>
-
-                          <div className="flex gap-2 self-end md:self-center">
-                            <button
-                              onClick={() => onVerifyBorrow(b.id, false)}
-                              className="px-3 py-1.5 bg-gray-100 hover:bg-rose-50 border border-gray-200 text-gray-600 hover:text-rose-700 rounded-lg text-xs font-semibold transition-all cursor-pointer"
-                            >
-                              Tolak
-                            </button>
-                            <button
-                              onClick={() => onVerifyBorrow(b.id, true)}
-                              className="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition-all cursor-pointer shadow-xs shadow-blue-100"
-                            >
-                              Setujui & Kurangi Stok
-                            </button>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
+          <div className="flex items-center gap-2 lg:gap-4">
+            {/* Quick Status pills - hidden on mobile */}
+            <div className="hidden xl:flex items-center gap-2.5">
+              <div className="px-3.5 py-1.5 bg-blue-50/70 rounded-xl border border-blue-100/50 flex items-center gap-2">
+                <Activity className="w-4 h-4 text-blue-600" />
+                <span className="text-[11px] font-extrabold text-blue-700">{activeLoans} Sirkulasi</span>
               </div>
-
-              {/* Part 2: Active / Overdue Loans */}
-              <div className="space-y-3 pt-4 border-t border-gray-100">
-                <h3 className="text-xs font-extrabold uppercase text-blue-600 tracking-widest">Daftar Peminjaman Aktif / Terlambat ({activeLoans})</h3>
-                {borrowings.filter(b => b.status === 'approved' || b.status === 'overdue').length === 0 ? (
-                  <p className="text-xs text-gray-500 py-6 bg-white rounded-xl border border-dashed border-gray-200 text-center shadow-xs">
-                    Tidak ada transaksi aktif terdaftar.
-                  </p>
-                ) : (
-                  <div className="bg-white border border-gray-200 shadow-xs rounded-xl overflow-hidden">
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-left text-xs text-gray-700">
-                        <thead className="bg-gray-50 text-gray-500 font-semibold">
-                          <tr>
-                            <th className="p-3">Siswa</th>
-                            <th>Buku</th>
-                            <th>Tgl Pinjam / Jatuh Tempo</th>
-                            <th>Status / Denda</th>
-                            <th className="text-right p-3">Verifikasi Kembali</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-100">
-                          {borrowings.filter(b => b.status === 'approved' || b.status === 'overdue').map((b) => {
-                            const student = users.find(u => u.id === b.studentId);
-                            const book = books.find(x => x.id === b.bookId);
-                            return (
-                              <tr key={b.id} className="hover:bg-gray-50/50 transition-colors">
-                                <td className="p-3">
-                                  <h4 className="font-bold text-gray-900">{student?.name}</h4>
-                                  <p className="text-[10px] text-gray-400">{student?.class}</p>
-                                </td>
-                                <td>
-                                  <h4 className="font-bold truncate max-w-[150px] text-gray-900">{book?.title}</h4>
-                                  <p className="text-[9px] text-gray-400 font-mono">ID: {b.id}</p>
-                                </td>
-                                <td>
-                                  <p className="text-gray-700 font-medium">Pinjam: {b.borrowDate}</p>
-                                  <p className="text-rose-600 font-bold">Tempo: {b.dueDate}</p>
-                                </td>
-                                <td>
-                                  <div className="space-y-1">
-                                    <span className={`inline-block px-2 py-0.5 text-[9px] font-bold rounded border ${
-                                      b.status === 'overdue' ? 'bg-rose-50 text-rose-700 border-rose-100' : 'bg-blue-50 text-blue-700 border-blue-100'
-                                    }`}>
-                                      {b.status === 'overdue' ? 'Jatuh Tempo' : 'Dipinjam'}
-                                    </span>
-                                    {(b.fineAmount ?? 0) > 0 && (
-                                      <p className="text-[10px] text-rose-600 font-extrabold">
-                                        Denda: Rp {(b.fineAmount ?? 0).toLocaleString()}
-                                      </p>
-                                    )}
-                                  </div>
-                                </td>
-                                <td className="p-3 text-right space-y-1.5">
-                                  <div className="flex flex-col sm:flex-row gap-2 justify-end">
-                                    {(b.fineAmount ?? 0) > 0 && !b.finePaid && (
-                                      <button
-                                        onClick={() => onPayFine(b.id)}
-                                        className="px-2.5 py-1 bg-amber-600 hover:bg-amber-700 text-white font-bold text-[9px] rounded cursor-pointer transition-all"
-                                      >
-                                        Bayar Denda
-                                      </button>
-                                    )}
-                                    <button
-                                      onClick={() => onVerifyReturn(b.id, true)}
-                                      className="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white text-[9px] font-bold rounded cursor-pointer transition-all shadow-xs shadow-emerald-100"
-                                    >
-                                      Terima Kembali
-                                    </button>
-                                  </div>
-                                </td>
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                )}
-              </div>
+              {pendingApprovals > 0 && (
+                <div className="px-3.5 py-1.5 bg-amber-50/70 rounded-xl border border-amber-100/50 flex items-center gap-2 animate-pulse">
+                  <Bell className="w-4 h-4 text-amber-600" />
+                  <span className="text-[11px] font-extrabold text-amber-700">{pendingApprovals} Tertunda</span>
+                </div>
+              )}
             </div>
-          )}
 
-          {/* MENU 5: KELOLA ANGGOTA (ADMIN / STAFF) */}
-          {activeMenu === 'users' && (
-            <div className="space-y-4">
-              <div className="flex flex-col sm:flex-row gap-3 items-center justify-between">
-                <div className="relative w-full sm:max-w-xs">
-                  <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
-                  <input
-                    type="text"
-                    placeholder="Cari nama, email, NISN, NIP..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-9 pr-4 py-2 bg-white border border-gray-200 rounded-lg text-xs text-gray-850 focus:outline-none focus:border-blue-500"
-                  />
-                </div>
+            {/* Refresh Button with Spinner Animation */}
+            <button 
+              onClick={() => window.location.reload()}
+              className="p-2 lg:p-2.5 hover:bg-slate-50 rounded-xl border border-slate-200 text-slate-500 hover:text-slate-800 transition-all cursor-pointer group"
+              title="Refresh Halaman"
+            >
+              <RefreshCw className="w-4 h-4 group-hover:rotate-180 transition-transform duration-500" />
+            </button>
 
-                {isAdmin && (
-                  <button
-                    onClick={() => handleOpenUserModal(null)}
-                    className="w-full sm:w-auto px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer shadow-xs shadow-blue-100 transition-all"
-                  >
-                    <PlusCircle className="w-4 h-4" /> Tambah Anggota / Petugas
-                  </button>
-                )}
-              </div>
-
-              <div className="bg-white border border-gray-200 shadow-xs rounded-xl overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs text-gray-700">
-                    <thead className="bg-gray-50 text-gray-500 font-semibold">
-                      <tr>
-                        <th className="p-3">Foto / Detail Anggota</th>
-                        <th>Role</th>
-                        <th>Identitas (NISN / NIP)</th>
-                        <th>No HP</th>
-                        <th>Kelas (Siswa)</th>
-                        <th>Status</th>
-                        {isAdmin && <th className="text-right p-3">Aksi</th>}
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-100">
-                      {filteredUsers.map((u) => (
-                        <tr key={u.id} className="hover:bg-gray-50/50 transition-colors">
-                          <td className="p-3 flex items-center gap-3">
-                            <img 
-                              src={u.avatarUrl || "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
-                              alt={u.name} 
-                              className="w-9 h-9 rounded-full object-cover border border-gray-200"
-                            />
-                            <div>
-                              <h4 className="font-bold text-gray-900">{u.name}</h4>
-                              <p className="text-[10px] text-gray-400">{u.email}</p>
-                            </div>
-                          </td>
-                          <td>
-                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase border ${
-                              u.role === UserRole.ADMIN 
-                                ? 'bg-rose-50 text-rose-700 border-rose-100' 
-                                : u.role === UserRole.PETUGAS 
-                                ? 'bg-emerald-50 text-emerald-700 border-emerald-100'
-                                : 'bg-blue-50 text-blue-700 border-blue-100'
-                            }`}>
-                              {u.role}
-                            </span>
-                          </td>
-                          <td className="font-mono text-[10px] text-gray-600">
-                            {u.role === UserRole.SISWA ? `NISN: ${u.nisn || '-'}` : `NIP: ${u.nip || '-'}`}
-                          </td>
-                          <td className="text-gray-500">{u.phone}</td>
-                          <td className="font-bold text-gray-900">{u.class || '-'}</td>
-                          <td>
-                            <button
-                              disabled={!isAdmin || u.id === currentUser.id}
-                              onClick={() => {
-                                onUpdateUser(u.id, { status: u.status === 'active' ? 'inactive' : 'active' });
-                              }}
-                              className={`px-2 py-0.5 text-[9px] font-bold rounded border cursor-pointer transition-all ${
-                                u.status === 'active' 
-                                  ? 'bg-emerald-50 text-emerald-700 border-emerald-100 hover:bg-emerald-100' 
-                                  : 'bg-gray-100 text-gray-400 border-gray-200 hover:bg-gray-200'
-                              }`}
-                            >
-                              {u.status === 'active' ? 'AKTIF' : 'NONAKTIF'}
-                            </button>
-                          </td>
-                          {isAdmin && (
-                            <td className="p-3 text-right">
-                              <div className="flex gap-2 justify-end">
-                                <button
-                                  onClick={() => handleOpenUserModal(u)}
-                                  className="p-1.5 hover:bg-blue-50 rounded text-gray-500 hover:text-blue-700 cursor-pointer transition-all"
-                                  title="Edit Anggota"
-                                >
-                                  <Edit className="w-4 h-4" />
-                                </button>
-                                <button
-                                  disabled={u.id === currentUser.id}
-                                  onClick={() => {
-                                    if (window.confirm(`Apakah Anda yakin ingin menghapus anggota "${u.name}"?`)) {
-                                      onDeleteUser(u.id);
-                                    }
-                                  }}
-                                  className="p-1.5 hover:bg-rose-50 rounded text-rose-500 hover:text-rose-700 cursor-pointer transition-all disabled:opacity-30 disabled:cursor-not-allowed"
-                                  title={u.id === currentUser.id ? 'Tidak bisa hapus akun sendiri' : 'Hapus Anggota'}
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </button>
-                              </div>
-                            </td>
-                          )}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+            {/* User Badge Info */}
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-slate-100/80 rounded-xl border border-slate-200">
+              <UserCheck className="w-3.5 h-3.5 text-slate-650" />
+              <span className="text-xs font-extrabold text-slate-700">{currentUser.name}</span>
             </div>
-          )}
 
-          {/* MENU 6: LAPORAN & TRANSAKSI */}
-          {activeMenu === 'reports' && (
-            <div className="space-y-6">
-              {/* Stat Bento Widget */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-                <div className="bg-white border border-gray-200 shadow-xs rounded-xl p-5">
-                  <span className="text-[10px] text-gray-400 font-bold uppercase block">Rasio Ketersediaan Buku</span>
-                  <span className="text-xl font-bold text-gray-900 mt-1 block">{availableBooks} / {totalBooks} Eks</span>
-                  <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden mt-3">
-                    <div 
-                      className="bg-blue-600 h-full rounded-full" 
-                      style={{ width: `${(availableBooks / totalBooks) * 100}%` }}
-                    />
-                  </div>
-                </div>
+            {/* Logout Shortcut for mobile layout */}
+            <button
+              onClick={onLogout}
+              className="lg:hidden p-2 hover:bg-rose-50 rounded-xl text-rose-600 transition-all cursor-pointer"
+              title="Keluar"
+            >
+              <LogOut className="w-5 h-5" />
+            </button>
+          </div>
+        </header>
 
-                <div className="bg-white border border-gray-200 shadow-xs rounded-xl p-5">
-                  <span className="text-[10px] text-gray-400 font-bold uppercase block">Rasio Buku Dipinjam</span>
-                  <span className="text-xl font-bold text-gray-900 mt-1 block">
-                    {borrowings.filter(b => b.status === 'approved' || b.status === 'overdue').length} Buku Aktif
-                  </span>
-                  <p className="text-[9px] text-gray-400 mt-2">Buku yang saat ini berada di luar perpustakaan.</p>
-                </div>
-
-                <div className="bg-white border border-gray-200 shadow-xs rounded-xl p-5">
-                  <span className="text-[10px] text-gray-400 font-bold uppercase block">Jumlah Transaksi Selesai</span>
-                  <span className="text-xl font-bold text-emerald-600 mt-1 block">
-                    {borrowings.filter(b => b.status === 'returned').length} Transaksi
-                  </span>
-                  <p className="text-[9px] text-gray-400 mt-2">Peminjaman yang dikembalikan tanpa masalah / lunas denda.</p>
-                </div>
-              </div>
-
-              {/* Transactions Log table */}
-              <div className="bg-white border border-gray-200 shadow-xs rounded-xl p-5">
-                <div className="flex justify-between items-center mb-4 border-b border-gray-100 pb-2.5">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-gray-900">Jurnal Transaksi Komprehensif</h3>
-                  <button 
-                    onClick={() => {
-                      alert('Mengunduh Laporan Perpustakaan (Excel/PDF)... Contoh Integrasi Laporan Selesai!');
-                    }}
-                    className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-[10px] rounded flex items-center gap-1 cursor-pointer shadow-xs shadow-blue-100 transition-all"
-                  >
-                    <FileSpreadsheet className="w-3.5 h-3.5" /> Cetak Laporan
-                  </button>
-                </div>
-
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs text-gray-700">
-                    <thead className="bg-gray-50 text-gray-400 font-semibold">
-                      <tr>
-                        <th className="p-2.5">ID Transaksi</th>
-                        <th>Anggota (Siswa)</th>
-                        <th>Judul Buku</th>
-                        <th>Pinjam / Jatuh Tempo / Kembali</th>
-                        <th>Denda</th>
-                        <th>Status</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-100">
-                      {borrowings.map((b) => {
-                        const s = users.find(u => u.id === b.studentId);
-                        const bk = books.find(x => x.id === b.bookId);
-                        return (
-                          <tr key={b.id} className="hover:bg-gray-50/50 text-gray-700 transition-colors">
-                            <td className="p-2.5 font-mono text-[10px] text-gray-400">{b.id}</td>
-                            <td className="font-bold text-gray-900">{s?.name} <span className="font-medium text-gray-500">({s?.class})</span></td>
-                            <td className="text-gray-800 font-medium">{bk?.title}</td>
-                            <td className="text-[10px] text-gray-500">
-                              Pinjam: {b.borrowDate} <br />
-                              Tempo: {b.dueDate} <br />
-                              {b.returnDate && <span className="text-emerald-600 font-bold">Kembali: {b.returnDate}</span>}
-                            </td>
-                            <td>
-                              {(b.fineAmount ?? 0) > 0 ? (
-                                <span className={`font-bold ${b.finePaid ? 'text-emerald-600' : 'text-rose-600'}`}>
-                                  Rp {(b.fineAmount ?? 0).toLocaleString()} ({b.finePaid ? 'Lunas' : 'Belum Bayar'})
-                                </span>
-                              ) : '-'}
-                            </td>
-                            <td>
-                              <span className={`px-2 py-0.5 text-[8px] font-bold uppercase rounded border ${
-                                b.status === 'returned' 
-                                  ? 'bg-emerald-50 text-emerald-700 border-emerald-100' 
-                                  : b.status === 'pending'
-                                  ? 'bg-amber-50 text-amber-700 border-amber-150 animate-pulse'
-                                  : b.status === 'overdue'
-                                  ? 'bg-rose-50 text-rose-700 border-rose-100'
-                                  : b.status === 'rejected'
-                                  ? 'bg-gray-100 text-gray-400 border-gray-200'
-                                  : 'bg-blue-50 text-blue-700 border-blue-100'
-                              }`}>
-                                {b.status === 'approved' ? 'DIPINJAM' : b.status === 'returned' ? 'SELESAI' : b.status === 'rejected' ? 'DITOLAK' : b.status}
-                              </span>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* MENU 7: PENGATURAN PERPUSTAKAAN (ADMIN ONLY) */}
-          {activeMenu === 'settings' && isAdmin && (
-            <div className="bg-white border border-gray-200 shadow-xs rounded-xl p-6 max-w-2xl">
-              <h3 className="text-md font-bold text-gray-900 mb-1.5 flex items-center gap-2">
-                <Settings className="text-blue-600 w-5 h-5" />
-                Konfigurasi Parameter Perpustakaan Digital SMA
-              </h3>
-              <p className="text-xs text-gray-500 mb-6">Atur regulasi peminjaman, durasi aktif, dan nilai denda administratif harian.</p>
-
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-bold text-gray-500 mb-1">Durasi Peminjaman Maksimal</label>
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="number"
-                        value={localMaxDays}
-                        onChange={(e) => setLocalMaxDays(Number(e.target.value))}
-                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-xs text-gray-800 focus:outline-none focus:border-blue-500"
-                      />
-                      <span className="text-xs text-gray-400 font-medium">Hari</span>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-gray-500 mb-1">Batas Maksimal Buku Dipinjam</label>
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="number"
-                        value={localMaxBooks}
-                        onChange={(e) => setLocalMaxBooks(Number(e.target.value))}
-                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-xs text-gray-800 focus:outline-none focus:border-blue-500"
-                      />
-                      <span className="text-xs text-gray-400 font-medium">Buku</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-gray-500 mb-1">Denda Keterlambatan Harian (IDR)</label>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-gray-400 font-bold">Rp</span>
-                    <input
-                      type="number"
-                      value={localFinePerDay}
-                      onChange={(e) => setLocalFinePerDay(Number(e.target.value))}
-                      className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-xs text-gray-800 focus:outline-none focus:border-blue-500"
-                    />
-                    <span className="text-xs text-gray-400 font-medium">/ Hari</span>
-                  </div>
-                </div>
-
-                <div className="pt-4 border-t border-gray-100 flex justify-end">
-                  <button
-                    onClick={handleSaveSettings}
-                    className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition-all cursor-pointer shadow-xs shadow-blue-100"
-                  >
-                    Simpan Konfigurasi
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
+        {/* Scrollable canvas wrapper */}
+        <div className="flex-1 overflow-y-auto p-4 lg:p-6">
+          <div className="max-w-[1600px] mx-auto">{renderContentByMenu()}</div>
         </div>
       </main>
 
       {/* POPUP MODAL: KELOLA BUKU FORM */}
       <AnimatePresence>
         {isBookModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/40 backdrop-blur-md">
             <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
+              initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white border border-gray-200 shadow-xl rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto relative"
+              exit={{ opacity: 0, scale: 0.96 }}
+              className="bg-white border border-slate-100 shadow-2xl rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto relative"
             >
               <button 
                 onClick={() => setIsBookModalOpen(false)}
-                className="absolute top-4 right-4 p-1.5 hover:bg-gray-100 rounded-full text-gray-400 hover:text-gray-700 cursor-pointer transition-all"
+                className="absolute top-4 right-4 p-1.5 hover:bg-slate-100 rounded-full text-slate-400 hover:text-slate-700 cursor-pointer transition-all"
               >
                 <X className="w-5 h-5" />
               </button>
 
-              <h3 className="text-md font-bold text-gray-900 mb-1.5">{editingBook ? 'Edit Data Buku' : 'Tambah Buku Baru'}</h3>
-              <p className="text-xs text-gray-500 mb-6 font-medium">Input metadata lengkap buku untuk disalurkan ke katalog digital.</p>
+              <h3 className="text-base font-bold text-slate-900 mb-1">{editingBook ? 'Modifikasi Data Buku' : 'Tambah Buku Baru'}</h3>
+              <p className="text-xs text-slate-400 mb-5 font-semibold">Tulis data deskripsi metadata buku di bawah ini.</p>
 
-              <form onSubmit={handleSaveBookSubmit} className="space-y-4 text-xs">
+              <form onSubmit={handleSaveBookSubmit} className="space-y-4 text-xs font-semibold text-slate-700">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-gray-500 font-bold mb-1">Judul Buku</label>
+                    <label className="block text-slate-500 font-bold mb-1.5 uppercase">Judul Buku</label>
                     <input
                       type="text"
                       required
                       value={bookTitle}
                       onChange={(e) => setBookTitle(e.target.value)}
                       placeholder="Laskar Pelangi"
-                      className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-xs text-gray-850 placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-600 focus:bg-white transition-all"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-gray-500 font-bold mb-1">Pengarang / Penulis</label>
+                    <label className="block text-slate-500 font-bold mb-1.5 uppercase">Pengarang / Penulis</label>
                     <input
                       type="text"
                       required
                       value={bookAuthor}
                       onChange={(e) => setBookAuthor(e.target.value)}
                       placeholder="Andrea Hirata"
-                      className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-xs text-gray-850 placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-600 focus:bg-white transition-all"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-gray-500 font-bold mb-1">Penerbit</label>
+                    <label className="block text-slate-500 font-bold mb-1.5 uppercase">Penerbit</label>
                     <input
                       type="text"
                       required
                       value={bookPublisher}
                       onChange={(e) => setBookPublisher(e.target.value)}
                       placeholder="Bentang Pustaka"
-                      className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-xs text-gray-850 placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-600 focus:bg-white transition-all"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-gray-500 font-bold mb-1">ISBN</label>
+                    <label className="block text-slate-500 font-bold mb-1.5 uppercase">ISBN</label>
                     <input
                       type="text"
                       required
                       value={bookIsbn}
                       onChange={(e) => setBookIsbn(e.target.value)}
                       placeholder="978-979-XXX-X"
-                      className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-xs text-gray-850 placeholder-gray-400 focus:outline-none focus:border-blue-500 font-mono"
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-600 focus:bg-white transition-all font-mono"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-gray-500 font-bold mb-1">Tahun Terbit</label>
+                    <label className="block text-slate-500 font-bold mb-1.5 uppercase">Tahun Terbit</label>
                     <input
                       type="number"
                       required
                       value={bookYear}
                       onChange={(e) => setBookYear(Number(e.target.value))}
-                      className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-xs text-gray-850 focus:outline-none focus:border-blue-500"
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-600 focus:bg-white transition-all"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
                   <div className="sm:col-span-2">
-                    <label className="block text-gray-500 font-bold mb-1">Kategori Buku</label>
+                    <label className="block text-slate-500 font-bold mb-1.5 uppercase">Kategori Buku</label>
                     <select
                       value={bookCategoryId}
                       onChange={(e) => setBookCategoryId(e.target.value)}
-                      className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-xs text-gray-850 focus:outline-none focus:border-blue-500"
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-805 focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-600 focus:bg-white transition-all"
                     >
                       {categories.map((cat) => (
                         <option key={cat.id} value={cat.id}>{cat.name}</option>
@@ -1238,65 +1915,65 @@ export default function StaffDashboard({
                   </div>
 
                   <div>
-                    <label className="block text-gray-500 font-bold mb-1">Lokasi Rak</label>
+                    <label className="block text-slate-500 font-bold mb-1.5 uppercase">Lokasi Rak</label>
                     <input
                       type="text"
                       required
                       value={bookRack}
                       onChange={(e) => setBookRack(e.target.value)}
                       placeholder="A-1"
-                      className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-xs text-gray-850 placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-600 focus:bg-white transition-all"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-gray-500 font-bold mb-1">Jumlah Stok Buku</label>
+                    <label className="block text-slate-500 font-bold mb-1.5 uppercase">Jumlah Stok</label>
                     <input
                       type="number"
                       required
                       min={1}
                       value={bookStock}
                       onChange={(e) => setBookStock(Number(e.target.value))}
-                      className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-xs text-gray-850 focus:outline-none focus:border-blue-500"
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-600 focus:bg-white transition-all"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-gray-500 font-bold mb-1">URL Cover Buku</label>
+                  <label className="block text-slate-500 font-bold mb-1.5 uppercase">URL Cover Depan Buku</label>
                   <input
                     type="url"
                     value={bookCoverUrl}
                     onChange={(e) => setBookCoverUrl(e.target.value)}
-                    placeholder="https://images.unsplash.com/..."
-                    className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-xs text-gray-850 placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                    placeholder="https://images.unsplash.com/photo-..."
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-600 focus:bg-white transition-all"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-gray-500 font-bold mb-1">Sinopsis</label>
+                  <label className="block text-slate-500 font-bold mb-1.5 uppercase">Sinopsis Buku</label>
                   <textarea
                     rows={4}
                     value={bookSynopsis}
                     onChange={(e) => setBookSynopsis(e.target.value)}
-                    placeholder="Masukkan ringkasan sinopsis cerita buku..."
-                    className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-xs text-gray-850 placeholder-gray-400 focus:outline-none focus:border-blue-500 leading-relaxed"
+                    placeholder="Masukkan ringkasan sinopsis singkat..."
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-600 focus:bg-white transition-all leading-relaxed"
                   />
                 </div>
 
-                <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
+                <div className="flex justify-end gap-2.5 pt-4 border-t border-slate-100">
                   <button
                     type="button"
                     onClick={() => setIsBookModalOpen(false)}
-                    className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg text-xs font-semibold cursor-pointer transition-all"
+                    className="px-4.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-650 rounded-xl text-xs font-bold cursor-pointer transition-all"
                   >
                     Batal
                   </button>
                   <button
                     type="submit"
-                    className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold cursor-pointer shadow-xs shadow-blue-100 transition-all"
+                    className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold cursor-pointer shadow-sm hover:shadow transition-all"
                   >
-                    Simpan Data
+                    Simpan Informasi Buku
                   </button>
                 </div>
               </form>
@@ -1304,62 +1981,60 @@ export default function StaffDashboard({
           </div>
         )}
       </AnimatePresence>
-
-      {/* POPUP MODAL: KELOLA KATEGORI FORM */}
       <AnimatePresence>
         {isCategoryModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/40 backdrop-blur-md">
             <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
+              initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white border border-gray-200 shadow-xl rounded-2xl p-6 max-w-md w-full relative"
+              exit={{ opacity: 0, scale: 0.96 }}
+              className="bg-white border border-slate-100 shadow-2xl rounded-2xl p-6 max-w-md w-full relative"
             >
               <button 
                 onClick={() => setIsCategoryModalOpen(false)}
-                className="absolute top-4 right-4 p-1.5 hover:bg-gray-100 rounded-full text-gray-400 hover:text-gray-700 cursor-pointer transition-all"
+                className="absolute top-4 right-4 p-1.5 hover:bg-slate-100 rounded-full text-slate-400 hover:text-slate-700 cursor-pointer transition-all"
               >
                 <X className="w-5 h-5" />
               </button>
 
-              <h3 className="text-md font-bold text-gray-900 mb-1.5">{editingCategory ? 'Edit Kategori Buku' : 'Tambah Kategori Buku'}</h3>
-              <p className="text-xs text-gray-500 mb-6 font-semibold">Buat klasifikasi sub-katalog buku baru.</p>
+              <h3 className="text-base font-bold text-slate-900 mb-1">{editingCategory ? 'Edit Kategori Buku' : 'Tambah Kategori Baru'}</h3>
+              <p className="text-xs text-slate-400 mb-5 font-semibold">Tentukan genre sub-klasifikasi buku perpustakaan.</p>
 
-              <form onSubmit={handleSaveCategorySubmit} className="space-y-4 text-xs">
+              <form onSubmit={handleSaveCategorySubmit} className="space-y-4 text-xs font-semibold text-slate-750">
                 <div>
-                  <label className="block text-gray-500 font-bold mb-1">Nama Kategori</label>
+                  <label className="block text-slate-500 font-bold mb-1.5 uppercase">Nama Kategori</label>
                   <input
                     type="text"
                     required
                     value={catName}
                     onChange={(e) => setCatName(e.target.value)}
-                    placeholder="Biologi Modern"
-                    className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-xs text-gray-850 placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                    placeholder="Sains Fiksi"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-600 focus:bg-white transition-all"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-gray-500 font-bold mb-1">Deskripsi Kategori</label>
+                  <label className="block text-slate-500 font-bold mb-1.5 uppercase">Deskripsi Ringkas</label>
                   <textarea
                     rows={3}
                     value={catDesc}
                     onChange={(e) => setCatDesc(e.target.value)}
-                    placeholder="Buku-buku seputar sains, pembelahan sel, genetika..."
-                    className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-xs text-gray-850 placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                    placeholder="Genre buku cerita fiktif bertema teknologi..."
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-600 focus:bg-white transition-all leading-relaxed"
                   />
                 </div>
 
-                <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
+                <div className="flex justify-end gap-2.5 pt-4 border-t border-slate-100">
                   <button
                     type="button"
                     onClick={() => setIsCategoryModalOpen(false)}
-                    className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg text-xs font-semibold cursor-pointer transition-all"
+                    className="px-4.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-650 rounded-xl text-xs font-bold cursor-pointer transition-all"
                   >
                     Batal
                   </button>
                   <button
                     type="submit"
-                    className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold cursor-pointer shadow-xs shadow-blue-100 transition-all"
+                    className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold cursor-pointer shadow-sm hover:shadow transition-all"
                   >
                     Simpan Kategori
                   </button>
@@ -1373,57 +2048,57 @@ export default function StaffDashboard({
       {/* POPUP MODAL: KELOLA PENGGUNA FORM (ADMIN ONLY) */}
       <AnimatePresence>
         {isUserModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/40 backdrop-blur-md">
             <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
+              initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white border border-gray-200 shadow-xl rounded-2xl p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto relative"
+              exit={{ opacity: 0, scale: 0.96 }}
+              className="bg-white border border-slate-100 shadow-2xl rounded-2xl p-6 max-w-lg w-full max-h-[95vh] overflow-y-auto relative"
             >
               <button 
                 onClick={() => setIsUserModalOpen(false)}
-                className="absolute top-4 right-4 p-1.5 hover:bg-gray-100 rounded-full text-gray-400 hover:text-gray-700 cursor-pointer transition-all"
+                className="absolute top-4 right-4 p-1.5 hover:bg-slate-100 rounded-full text-slate-400 hover:text-slate-700 cursor-pointer transition-all"
               >
                 <X className="w-5 h-5" />
               </button>
 
-              <h3 className="text-md font-bold text-gray-900 mb-1.5">{editingUser ? 'Edit Data Pengguna' : 'Tambah Anggota / Petugas'}</h3>
-              <p className="text-xs text-gray-500 mb-6 font-semibold">Kelola data login dan otorisasi akses aplikasi.</p>
+              <h3 className="text-base font-bold text-slate-900 mb-1">{editingUser ? 'Edit Data Pengguna' : 'Tambah Anggota Baru'}</h3>
+              <p className="text-xs text-slate-400 mb-5 font-semibold">Tentukan hak akses otorisasi log-in sistem perpustakaan.</p>
 
-              <form onSubmit={handleSaveUserSubmit} className="space-y-4 text-xs">
+              <form onSubmit={handleSaveUserSubmit} className="space-y-4 text-xs font-semibold text-slate-700">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-gray-500 font-bold mb-1">Nama Lengkap</label>
+                    <label className="block text-slate-500 font-bold mb-1.5 uppercase">Nama Lengkap</label>
                     <input
                       type="text"
                       required
                       value={uName}
                       onChange={(e) => setUName(e.target.value)}
                       placeholder="Budi Laksono"
-                      className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-xs text-gray-850 placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-600 focus:bg-white transition-all"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-gray-500 font-bold mb-1">Email Pengguna</label>
+                    <label className="block text-slate-500 font-bold mb-1.5 uppercase">Email Address</label>
                     <input
                       type="email"
                       required
                       value={uEmail}
                       onChange={(e) => setUEmail(e.target.value)}
                       placeholder="budi@perpus.sch.id"
-                      className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-xs text-gray-850 placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-600 focus:bg-white transition-all"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-gray-500 font-bold mb-1">Hak Akses (Role)</label>
+                    <label className="block text-slate-500 font-bold mb-1.5 uppercase">Hak Akses (Role)</label>
                     <select
                       value={uRole}
                       onChange={(e) => setURole(e.target.value as UserRole)}
-                      className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-xs text-gray-850 focus:outline-none focus:border-blue-500"
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-600 focus:bg-white transition-all"
                     >
                       <option value={UserRole.SISWA}>Siswa</option>
                       <option value={UserRole.PETUGAS}>Petugas</option>
@@ -1432,24 +2107,24 @@ export default function StaffDashboard({
                   </div>
 
                   <div>
-                    <label className="block text-gray-500 font-bold mb-1">Nomor HP</label>
+                    <label className="block text-slate-500 font-bold mb-1.5 uppercase">Nomor HP</label>
                     <input
                       type="text"
                       required
                       value={uPhone}
                       onChange={(e) => setUPhone(e.target.value)}
                       placeholder="0812XXXXXXXX"
-                      className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-xs text-gray-850 placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-600 focus:bg-white transition-all"
                     />
                   </div>
 
                   {uRole === UserRole.SISWA ? (
                     <div>
-                      <label className="block text-gray-500 font-bold mb-1">Kelas</label>
+                      <label className="block text-slate-500 font-bold mb-1.5 uppercase">Kelas Siswa</label>
                       <select
                         value={uClass}
                         onChange={(e) => setUClass(e.target.value)}
-                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-xs text-gray-850 focus:outline-none focus:border-blue-500"
+                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-600 focus:bg-white transition-all"
                       >
                         <option value="X MIPA 1">X MIPA 1</option>
                         <option value="X IPS 1">X IPS 1</option>
@@ -1461,13 +2136,13 @@ export default function StaffDashboard({
                     </div>
                   ) : (
                     <div>
-                      <label className="block text-gray-500 font-bold mb-1">NIP (Pegawai)</label>
+                      <label className="block text-slate-500 font-bold mb-1.5 uppercase">NIP Pegawai</label>
                       <input
                         type="text"
                         value={uNip}
                         onChange={(e) => setUNip(e.target.value)}
-                        placeholder="197508... (opsional)"
-                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-xs text-gray-850 placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                        placeholder="197801... (opsional)"
+                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-600 focus:bg-white transition-all"
                       />
                     </div>
                   )}
@@ -1475,30 +2150,30 @@ export default function StaffDashboard({
 
                 {uRole === UserRole.SISWA && (
                   <div>
-                    <label className="block text-gray-500 font-bold mb-1">NISN (Siswa)</label>
+                    <label className="block text-slate-500 font-bold mb-1.5 uppercase">NISN Siswa</label>
                     <input
                       type="text"
                       required
                       maxLength={10}
                       value={uNisn}
                       onChange={(e) => setUNisn(e.target.value)}
-                      placeholder="0054321098"
-                      className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-xs text-gray-850 placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                      placeholder="007XXXXXXX"
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-600 focus:bg-white transition-all"
                     />
                   </div>
                 )}
 
-                <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
+                <div className="flex justify-end gap-2.5 pt-4 border-t border-slate-100">
                   <button
                     type="button"
                     onClick={() => setIsUserModalOpen(false)}
-                    className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg text-xs font-semibold cursor-pointer transition-all"
+                    className="px-4.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-650 rounded-xl text-xs font-bold cursor-pointer transition-all"
                   >
                     Batal
                   </button>
                   <button
                     type="submit"
-                    className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold cursor-pointer shadow-xs shadow-blue-100 transition-all"
+                    className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold cursor-pointer shadow-sm hover:shadow transition-all"
                   >
                     Simpan User
                   </button>

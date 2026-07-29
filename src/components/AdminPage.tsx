@@ -130,6 +130,19 @@ export default function AdminPage({
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  // Handle local image upload via FileReader
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCoverUrl(reader.result as string);
+        addToast('Gambar sampul berhasil diunggah!', 'success');
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const resetForm = () => {
     setIsEditing(false);
     setEditingId('');
@@ -387,13 +400,26 @@ export default function AdminPage({
                     </div>
                   )}
 
+                  {/* Local image file upload */}
+                  <div className="space-y-1.5 pt-2">
+                    <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                      📁 Upload File Gambar (.jpg, .png)
+                    </label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileUpload}
+                      className="block w-full text-[11px] text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-[10px] file:font-bold file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100 cursor-pointer"
+                    />
+                  </div>
+
                   {coverUrl && (
                     <button
                       type="button"
                       onClick={() => setCoverUrl('')}
                       className="w-full py-1.5 border border-red-200 text-red-600 hover:bg-red-50 text-[10px] font-bold rounded-xl cursor-pointer"
                     >
-                      Hapus Cover AI & Gunakan Gradien
+                      Hapus Gambar & Gunakan Gradien
                     </button>
                   )}
                 </div>

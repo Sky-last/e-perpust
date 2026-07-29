@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Book, User, SystemLog, ViewType } from '../types';
 import { Star, Clock, Heart, BookOpen, ChevronRight, Calendar, Award } from 'lucide-react';
+import Book3D from './Book3D';
 
 interface DashboardPageProps {
   currentUser: User;
@@ -29,9 +30,12 @@ export default function DashboardPage({
     .filter(log => log.userEmail === currentUser.email)
     .slice(0, 4);
 
-  const activeBorrowings = currentUser.borrowings.filter(b => b.status === 'Sedang Dipinjam');
-  const favoriteBooks = books.filter(b => favorites.includes(b.id)).slice(0, 3);
-  const recommendedBooks = books.filter(b => !favorites.includes(b.id) && b.rating >= 4.7).slice(0, 2);
+  const userBorrowings = currentUser.borrowings || [];
+  const userFavorites = favorites || [];
+
+  const activeBorrowings = userBorrowings.filter(b => b.status === 'Sedang Dipinjam');
+  const favoriteBooks = books.filter(b => userFavorites.includes(b.id)).slice(0, 3);
+  const recommendedBooks = books.filter(b => !userFavorites.includes(b.id) && b.rating >= 4.7).slice(0, 2);
 
   // Draw ledger-style Canvas chart
   useEffect(() => {
@@ -436,7 +440,7 @@ export default function DashboardPage({
             <Clock className="w-5 h-5" />
           </div>
           <div>
-            <p className="text-2xl font-bold text-[#1B2A2F]" style={{ fontFamily: FONT_MONO }}>{currentUser.borrowings.length}</p>
+            <p className="text-2xl font-bold text-[#1B2A2F]" style={{ fontFamily: FONT_MONO }}>{userBorrowings.length}</p>
             <p className="text-xs text-[#9B8F73] font-bold uppercase tracking-wider">Total Riwayat</p>
           </div>
         </div>
@@ -565,18 +569,18 @@ export default function DashboardPage({
           <div className="space-y-3">
             <div className="flex items-center justify-between text-base">
               <span className="text-[#6B6154] font-semibold">Buku Dibaca</span>
-              <span className="text-[#1B2A2F] font-bold">{currentUser.borrowings.length} / 10 buku</span>
+              <span className="text-[#1B2A2F] font-bold">{userBorrowings.length} / 10 buku</span>
             </div>
             <div className="w-full bg-[#EDE8DA] rounded-full h-3 overflow-hidden">
               <div 
                 className="bg-gradient-to-r from-blue-500 to-blue-600 h-3 rounded-full transition-all duration-500 relative overflow-hidden"
-                style={{ width: `${(currentUser.borrowings.length / 10) * 100}%` }}
+                style={{ width: `${(userBorrowings.length / 10) * 100}%` }}
               >
                 <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
               </div>
             </div>
             <p className="text-sm text-[#9B8F73]">
-              {10 - currentUser.borrowings.length} buku lagi untuk mencapai target!
+              {10 - userBorrowings.length} buku lagi untuk mencapai target!
             </p>
           </div>
 
@@ -626,12 +630,11 @@ export default function DashboardPage({
                 <div
                   key={book.id}
                   onClick={() => onNavigate('detail-buku', book.id)}
-                  className="group cursor-pointer bg-[#FBF7EF] border border-[#EDE8DA] rounded-xl p-3 flex flex-col items-center space-y-2.5 text-center hover:shadow-md hover:bg-white transition-all duration-200"
+                  className="group cursor-pointer bg-[#FBF7EF] border border-[#EDE8DA] rounded-xl p-3 flex flex-col items-center space-y-2.5 text-center hover:shadow-md hover:bg-white transition-all duration-200 overflow-visible"
                 >
-                  <div className={`w-16 h-20 rounded-md bg-gradient-to-tr ${book.coverColor} p-1 text-white flex flex-col justify-between shadow-sm relative group-hover:scale-105 transition-transform duration-300`}>
-                    <span className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 bg-[#B8860B] rounded-full border-2 border-[#FBF7EF]" />
-                    <span className="text-[5px] uppercase tracking-wider font-bold opacity-60" style={{ fontFamily: FONT_MONO }}>{book.category}</span>
-                    <h5 className="text-[7px] font-extrabold leading-tight line-clamp-3">{book.title}</h5>
+                  <div className="relative overflow-visible">
+                    <Book3D book={book} size="xs" />
+                    <span className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 bg-[#B8860B] rounded-full border-2 border-[#FBF7EF] z-10" />
                   </div>
                   <div className="space-y-0.5">
                     <h4 className="font-bold text-[#1B2A2F] text-sm line-clamp-1 group-hover:text-[#0F3D3E]">{book.title}</h4>
@@ -677,12 +680,11 @@ export default function DashboardPage({
               <div
                 key={book.id}
                 onClick={() => onNavigate('detail-buku', book.id)}
-                className="group cursor-pointer bg-[#FBF7EF] border border-[#EDE8DA] rounded-xl p-3 flex items-center justify-between hover:shadow-md hover:bg-white transition-all duration-200"
+                className="group cursor-pointer bg-[#FBF7EF] border border-[#EDE8DA] rounded-xl p-3 flex items-center justify-between hover:shadow-md hover:bg-white transition-all duration-200 overflow-visible"
               >
-                <div className="flex items-center space-x-3.5">
-                  <div className={`w-10 h-13 rounded-md bg-gradient-to-tr ${book.coverColor} p-1 text-white flex flex-col justify-between shadow-sm relative group-hover:scale-105 transition-transform duration-300`}>
-                    <span className="text-[4px] uppercase font-bold opacity-60" style={{ fontFamily: FONT_MONO }}>{book.category}</span>
-                    <h5 className="text-[6px] font-extrabold leading-tight line-clamp-3">{book.title}</h5>
+                <div className="flex items-center space-x-3.5 overflow-visible">
+                  <div className="flex-shrink-0">
+                    <Book3D book={book} size="xs" />
                   </div>
                   <div className="space-y-0.5">
                     <h4 className="font-bold text-[#1B2A2F] text-xs group-hover:text-[#0F3D3E]">{book.title}</h4>

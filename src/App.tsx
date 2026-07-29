@@ -32,97 +32,7 @@ import {
 import SiswaDashboard from './components/dashboard/SiswaDashboard';
 import StaffDashboard from './components/dashboard/StaffDashboard';
 
-// Default categories
-const DEFAULT_CATEGORIES: Category[] = [
-  { id: 'cat-1', name: 'Teknologi', description: 'Buku-buku tentang teknologi dan informatika' },
-  { id: 'cat-2', name: 'Novel', description: 'Karya sastra fiksi dan non-fiksi' },
-  { id: 'cat-3', name: 'Pendidikan', description: 'Buku pendidikan dan pengajaran' },
-  { id: 'cat-4', name: 'Bisnis', description: 'Buku bisnis dan kewirausahaan' },
-  { id: 'cat-5', name: 'Komputer', description: 'Ilmu komputer dan pemrograman' },
-  { id: 'cat-6', name: 'Sejarah', description: 'Sejarah Indonesia dan dunia' },
-  { id: 'cat-7', name: 'Agama', description: 'Buku-buku keagamaan' },
-  { id: 'cat-8', name: 'Sains', description: 'Ilmu pengetahuan alam' },
-];
-
-// Default library settings
-const DEFAULT_SETTINGS: LibrarySettings = {
-  maxBorrowDays: 14,
-  maxBorrowBooks: 3,
-  finePerDay: 1000,
-};
-
-// Seeding Default Users — 3 Roles: admin, staf, siswa
-const DEFAULT_USERS: User[] = [
-  {
-    id: 'u1',
-    name: 'Admin Pustaka',
-    email: 'admin@pustaka.com',
-    password: 'admin',
-    role: UserRole.ADMIN,
-    badge: 'Premium',
-    favorites: [],
-    borrowings: [],
-    nip: '197801012005011001',
-    phone: '081234567890',
-  },
-  {
-    id: 'u1_second',
-    name: 'Admin Kedua',
-    email: 'admin2@pustaka.com',
-    password: 'admin',
-    role: UserRole.ADMIN,
-    badge: 'Premium',
-    favorites: [],
-    borrowings: [],
-    nip: '197801012005011002',
-    phone: '081234567899',
-  },
-  {
-    id: 'u2',
-    name: 'Budi Santoso',
-    email: 'staf@pustaka.com',
-    password: 'staf',
-    role: UserRole.PETUGAS,
-    badge: 'Premium',
-    favorites: [],
-    borrowings: [],
-    nip: '198501012010011002',
-    phone: '081234567891',
-  },
-  {
-    id: 'u3',
-    name: 'Hana Alvira',
-    email: 'siswa@pustaka.com',
-    password: 'siswa',
-    role: UserRole.SISWA,
-    badge: 'Reguler',
-    favorites: [],
-    class: 'XII IPA 1',
-    nisn: '0072345678',
-    phone: '081298765432',
-    borrowings: [
-      {
-        id: 'brw_1',
-        bookId: '1',
-        bookTitle: 'Arsitektur Microservices Modern',
-        coverColor: 'from-blue-600 to-indigo-900',
-        borrowDate: '2026-06-25',
-        dueDate: '2026-07-09',
-        status: 'approved'
-      },
-      {
-        id: 'brw_2',
-        bookId: '4',
-        bookTitle: 'Web Development dengan React dan Next.js',
-        coverColor: 'from-cyan-600 to-blue-800',
-        borrowDate: '2026-06-10',
-        dueDate: '2026-06-24',
-        returnDate: '2026-06-23',
-        status: 'Dikembalikan'
-      }
-    ]
-  }
-];
+import { DEFAULT_CATEGORIES, DEFAULT_SETTINGS, DEFAULT_USERS } from './data/seedData';
 
 export default function App() {
   // Navigation & Core state
@@ -260,6 +170,49 @@ export default function App() {
     setLogs(prev => [newLog, ...prev]);
   };
 
+  // ADD USER HANDLER — registers in Supabase Auth + saves to local state
+  const handleAddUser = async (user: User) => {
+    if (isSupabaseConfigured) {
+      try {
+        // Register in Supabase Auth so the user can actually log in
+        const { data, error } = await supabase.auth.admin
+          ? await (supabase as any).auth.admin.createUser({
+              email: user.email,
+              password: user.password || 'password123',
+              email_confirm: true,
+              user_metadata: { name: user.name }
+            })
+          : await supabase.auth.signUp({
+              email: user.email,
+              password: user.password || 'password123',
+              options: { data: { name: user.name } }
+            });
+
+        if (error) {
+          addToast(`Gagal mendaftarkan ${user.name} ke Supabase: ${error.message}`, 'error');
+        } else {
+          // Update role in profiles table if not default 'siswa'
+          if (data?.user && user.role !== 'siswa') {
+            await supabase
+              .from('profiles')
+              .update({ role: user.role, name: user.name })
+              .eq('id', data.user.id);
+          }
+          addToast(`Pengguna ${user.name} berhasil ditambahkan ke Supabase!`, 'success');
+        }
+      } catch (err: any) {
+        addToast(`Error Supabase: ${err.message}`, 'error');
+      }
+    }
+    // Always also save to local state / LocalStorage as fallback
+    const updatedUsers = [...users, user];
+    setUsers(updatedUsers);
+    localStorage.setItem('digital_library_users', JSON.stringify(updatedUsers));
+    if (!isSupabaseConfigured) {
+      addToast(`Pengguna ${user.name} berhasil ditambahkan!`, 'success');
+    }
+  };
+
   // AUTHENTICATION LOGICS
   const handleLogin = async (email: string, pass: string): Promise<boolean> => {
     if (isSupabaseConfigured) {
@@ -270,19 +223,40 @@ export default function App() {
         });
 
         if (error) {
-          addToast(error.message, 'error');
+          // Check local fallback users for demo credentials (admin / staf / siswa)
+          const localUser = users.find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === pass);
+          if (localUser) {
+            setCurrentUser(localUser);
+            localStorage.setItem('digital_library_active_user', localUser.email);
+            setFavorites(localUser.favorites || []);
+            addToast('Berhasil masuk ke Pustaka Digital (Sesi Demo)!', 'success');
+            setCurrentView('dashboard');
+            return true;
+          }
+
+          addToast(error.message || 'Email atau password yang Anda masukkan tidak sesuai!', 'error');
           return false;
         }
 
         if (data.user) {
-          const profile = await getUserProfile(data.user.id);
-          if (profile) {
-            setCurrentUser(profile);
-            setFavorites(profile.favorites);
-            addToast('Berhasil masuk ke Pustaka Digital!', 'success');
-            setCurrentView('dashboard');
-            return true;
+          let profile = await getUserProfile(data.user.id);
+          if (!profile) {
+            // Fallback profile if Supabase profile row isn't found
+            profile = {
+              id: data.user.id,
+              name: data.user.user_metadata?.name || email.split('@')[0],
+              email: data.user.email || email,
+              role: UserRole.SISWA,
+              badge: 'Reguler',
+              favorites: [],
+              borrowings: []
+            };
           }
+          setCurrentUser(profile);
+          setFavorites(profile.favorites || []);
+          addToast('Berhasil masuk ke Pustaka Digital!', 'success');
+          setCurrentView('dashboard');
+          return true;
         }
         return false;
       } catch (err: any) {
@@ -328,17 +302,48 @@ export default function App() {
         }
 
         if (data.user) {
-          // Wait a brief moment for PostgreSQL trigger to create profile record
-          await new Promise(resolve => setTimeout(resolve, 800));
-          const profile = await getUserProfile(data.user.id);
-          if (profile) {
-            setCurrentUser(profile);
-            setFavorites([]);
-            addToast('Registrasi berhasil! Sesi login Anda telah aktif.', 'success');
-            setCurrentView('dashboard');
-            await pushLog(email, name, 'register', '');
+          // Create profile row in Supabase
+          try {
+            await supabase.from('profiles').upsert({
+              id: data.user.id,
+              name,
+              email,
+              role: 'siswa',
+              badge: 'Reguler'
+            });
+          } catch (e) {
+            console.error('Failed to insert profile row:', e);
+          }
+
+          // Jika session null -> Supabase memerlukan verifikasi email terlebih dahulu
+          if (!data.session) {
+            addToast(
+              `📧 Link verifikasi dikirim ke ${email}. Silakan cek inbox Anda untuk mengaktifkan akun.`,
+              'info'
+            );
+            setCurrentView('login');
             return true;
           }
+
+          // Jika session langsung aktif
+          let profile = await getUserProfile(data.user.id);
+          if (!profile) {
+            profile = {
+              id: data.user.id,
+              name,
+              email,
+              role: UserRole.SISWA,
+              badge: 'Reguler',
+              favorites: [],
+              borrowings: []
+            };
+          }
+          setCurrentUser(profile);
+          setFavorites([]);
+          addToast('Registrasi berhasil! Selamat datang di Pustaka Digital.', 'success');
+          setCurrentView('dashboard');
+          await pushLog(email, name, 'register', '');
+          return true;
         }
         return false;
       } catch (err: any) {
@@ -1001,7 +1006,7 @@ export default function App() {
               onLogout={handleLogout}
               books={books}
               categories={categories}
-              borrowings={currentUser.borrowings.map(b => ({ ...b, studentId: currentUser.id }))}
+              borrowings={(currentUser.borrowings || []).map(b => ({ ...b, studentId: currentUser.id }))}
               notifications={notifications}
               settings={settings}
               onRequestBorrow={(bookId, days, _notes) => {
@@ -1058,12 +1063,7 @@ export default function App() {
                 localStorage.setItem('digital_library_users', JSON.stringify(updatedUsers));
                 addToast('Data pengguna diperbarui!', 'success');
               }}
-              onAddUser={(user) => {
-                const updatedUsers = [...users, user];
-                setUsers(updatedUsers);
-                localStorage.setItem('digital_library_users', JSON.stringify(updatedUsers));
-                addToast(`Pengguna ${user.name} berhasil ditambahkan!`, 'success');
-              }}
+              onAddUser={handleAddUser}
               onDeleteUser={handleDeleteUser}
               onUpdateSettings={(s) => {
                 setSettings(s);
@@ -1115,12 +1115,7 @@ export default function App() {
                 localStorage.setItem('digital_library_users', JSON.stringify(updatedUsers));
                 addToast('Data pengguna diperbarui!', 'success');
               }}
-              onAddUser={(user) => {
-                const updatedUsers = [...users, user];
-                setUsers(updatedUsers);
-                localStorage.setItem('digital_library_users', JSON.stringify(updatedUsers));
-                addToast(`Pengguna ${user.name} berhasil ditambahkan!`, 'success');
-              }}
+              onAddUser={handleAddUser}
               onDeleteUser={handleDeleteUser}
               onUpdateSettings={(s) => {
                 setSettings(s);
@@ -1356,7 +1351,7 @@ export default function App() {
 
   if (isFullScreenDashboard) {
     return (
-      <div className="relative min-h-screen">
+      <div className="relative h-screen overflow-hidden">
         {renderViewContent()}
         <ToastNotification toasts={toasts} onDismiss={handleDismissToast} />
         <PinjamModal 
@@ -1497,13 +1492,13 @@ export default function App() {
             <div className="p-5 bg-gradient-to-br from-blue-600 to-blue-700 rounded-[20px] text-white shadow-lg shadow-blue-100/50">
               <p className="text-[10px] uppercase tracking-wider font-semibold opacity-80 mb-0.5">Limit Pinjaman</p>
               <h4 className="text-lg font-bold mb-3">
-                {currentUser.borrowings.filter(b => b.status === 'Sedang Dipinjam').length} / {currentUser.badge === 'Premium' ? 5 : 3} Buku
+                {(currentUser.borrowings || []).filter(b => b.status === 'Sedang Dipinjam').length} / {currentUser.badge === 'Premium' ? 5 : 3} Buku
               </h4>
               <div className="w-full bg-blue-400/30 h-1.5 rounded-full">
                 <div 
                   className="bg-white h-full rounded-full shadow-[0_0_8px_rgba(255,255,255,0.5)] transition-all duration-500"
                   style={{ 
-                    width: `${Math.min(100, (currentUser.borrowings.filter(b => b.status === 'Sedang Dipinjam').length / (currentUser.badge === 'Premium' ? 5 : 3)) * 100)}%` 
+                    width: `${Math.min(100, (((currentUser.borrowings || []).filter(b => b.status === 'Sedang Dipinjam').length) / (currentUser.badge === 'Premium' ? 5 : 3)) * 100)}%` 
                   }}
                 ></div>
               </div>

@@ -37,7 +37,7 @@ export async function getBooks(): Promise<Book[]> {
           status: b.status,
           stock: b.stock,
           cover_color: b.coverColor,
-          cover_url: b.coverUrl,
+          cover_url: b.pdfUrl || b.coverUrl || null,
           is_ai_generated: b.isAiGenerated || false
         }));
 
@@ -46,22 +46,26 @@ export async function getBooks(): Promise<Book[]> {
         return INITIAL_BOOKS;
       }
 
-      return data.map(b => ({
-        id: b.id,
-        title: b.title,
-        author: b.author,
-        category: b.category,
-        publisher: b.publisher,
-        isbn: b.isbn,
-        description: b.description,
-        year: b.year,
-        rating: Number(b.rating),
-        status: b.status as 'Tersedia' | 'Sedang Dipinjam',
-        stock: b.stock,
-        coverColor: b.cover_color,
-        coverUrl: b.cover_url || undefined,
-        isAiGenerated: b.is_ai_generated
-      }));
+      return data.map(b => {
+        const isPdf = b.cover_url && b.cover_url.endsWith('.pdf');
+        return {
+          id: b.id,
+          title: b.title,
+          author: b.author,
+          category: b.category,
+          publisher: b.publisher,
+          isbn: b.isbn,
+          description: b.description,
+          year: b.year,
+          rating: Number(b.rating),
+          status: b.status as 'Tersedia' | 'Sedang Dipinjam',
+          stock: b.stock,
+          coverColor: b.cover_color,
+          coverUrl: isPdf ? undefined : (b.cover_url || undefined),
+          pdfUrl: isPdf ? b.cover_url : undefined,
+          isAiGenerated: b.is_ai_generated
+        };
+      });
     } catch (e) {
       console.error('Supabase error fetching books, falling back to local:', e);
     }
@@ -95,7 +99,7 @@ export async function saveBook(book: Omit<Book, 'status'>, isNew: boolean): Prom
         status: fullBook.status,
         stock: fullBook.stock,
         cover_color: fullBook.coverColor,
-        cover_url: fullBook.coverUrl || null,
+        cover_url: fullBook.pdfUrl || fullBook.coverUrl || null,
         is_ai_generated: fullBook.isAiGenerated || false
       };
 
@@ -154,13 +158,42 @@ export async function removeBook(id: string): Promise<boolean> {
 export async function getUserProfile(userId: string): Promise<User | null> {
   if (isSupabaseConfigured) {
     try {
-      const { data: profile, error: profileError } = await supabase
+      let { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
-        .single();
+        .maybeSingle();
 
-      if (profileError) throw profileError;
+      if (profileError) {
+        console.warn('Supabase profile query warning:', profileError);
+      }
+
+      // If profile row doesn't exist in Supabase profiles table, attempt auto-creation from auth session
+      if (!profile) {
+        try {
+          const { data: { user } } = await supabase.auth.getUser();
+          if (user && user.id === userId) {
+            const userName = user.user_metadata?.name || user.email?.split('@')[0] || 'Anggota';
+            const userRole = user.user_metadata?.role || 'siswa';
+            
+            const newProfile = {
+              id: userId,
+              name: userName,
+              email: user.email || '',
+              role: userRole,
+              badge: 'Reguler',
+              avatar: undefined
+            };
+
+            await supabase.from('profiles').upsert(newProfile);
+            profile = newProfile;
+          }
+        } catch (err) {
+          console.error('Error auto-creating profile row:', err);
+        }
+      }
+
+      if (!profile) return null;
 
       // Fetch borrowings
       const { data: borrowingsData } = await supabase
@@ -193,7 +226,7 @@ export async function getUserProfile(userId: string): Promise<User | null> {
         name: profile.name,
         email: profile.email,
         role: (profile.role || 'siswa') as 'admin' | 'staf' | 'siswa',
-        badge: profile.badge as 'Premium' | 'Reguler',
+        badge: (profile.badge || 'Reguler') as 'Premium' | 'Reguler',
         avatar: profile.avatar || undefined,
         favorites,
         borrowings
@@ -515,3 +548,90 @@ export async function addSystemLog(
 
   return logData;
 }
+
+// ==========================================
+// 7. AVATAR / FOTO PROFIL
+// ==========================================
+
+export async function uploadAvatar(userId: string, file: File): Promise<string | null> {
+  if (isSupabaseConfigured) {
+    try {
+      const ext = file.name.split('.').pop();
+      const filePath = `${userId}/avatar.${ext}`;
+
+      // Upload ke bucket 'avatars' di Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      // Ambil public URL dari file yang diupload
+      const { data } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      const publicUrl = data.publicUrl;
+
+      // Simpan URL ke tabel profiles
+      await supabase
+        .from('profiles')
+        .update({ avatar: publicUrl })
+        .eq('id', userId);
+
+      return publicUrl;
+    } catch (e) {
+      console.error('Error uploading avatar:', e);
+      return null;
+    }
+  }
+
+  // LocalStorage fallback: simpan sebagai base64
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64 = reader.result as string;
+      localStorage.setItem(`digital_library_avatar_${userId}`, base64);
+      resolve(base64);
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+export async function uploadEbook(bookId: string, file: File): Promise<string | null> {
+  if (isSupabaseConfigured) {
+    try {
+      const ext = file.name.split('.').pop();
+      const filePath = `ebooks/${bookId}_${Date.now()}.${ext}`;
+
+      // Upload ke bucket 'avatars' (karena biasanya bucket ini yang memiliki public RLS read/write di project user)
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      // Ambil public URL
+      const { data } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      return data.publicUrl;
+    } catch (e) {
+      console.error('Error uploading ebook:', e);
+      return null;
+    }
+  }
+
+  // LocalStorage fallback: kembalikan temporary object URL (atau link simulasi)
+  return new Promise((resolve) => {
+    // Sebagai fallback local, kita bisa membuat Object URL sementara untuk sesi berjalan
+    try {
+      const url = URL.createObjectURL(file);
+      resolve(url);
+    } catch (err) {
+      resolve('/buku_digital/Advice_for_the_Muslim.pdf');
+    }
+  });
+}
+

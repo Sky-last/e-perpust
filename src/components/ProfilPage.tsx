@@ -57,8 +57,9 @@ export default function ProfilPage({
     setConfirmPassword('');
   };
 
-  const activeBorrowCount = currentUser.borrowings.filter(b => b.status === 'Sedang Dipinjam').length;
-  const historyBorrowCount = currentUser.borrowings.length;
+  const userBorrowings = currentUser.borrowings || [];
+  const activeBorrowCount = userBorrowings.filter(b => b.status === 'Sedang Dipinjam').length;
+  const historyBorrowCount = userBorrowings.length;
 
   return (
     <div className="space-y-6">

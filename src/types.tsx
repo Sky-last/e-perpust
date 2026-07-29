@@ -21,6 +21,8 @@ export interface Book {
   totalStock?: number;    // For StaffDashboard
   coverColor: string;     // Gradient class or background hex
   coverUrl?: string;      // base64 or URL
+  pdfUrl?: string;        // Path to PDF file for reading e-books
+  pdfFile?: File | null;  // Temporary file object for upload
   isAiGenerated?: boolean;
   rackLocation?: string;  // For StaffDashboard
 }

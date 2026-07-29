@@ -1,5 +1,6 @@
 import { Book, User, ViewType } from '../types';
 import { Star, Heart, ArrowLeft, Shield } from 'lucide-react';
+import Book3D from './Book3D';
 
 interface DetailPageProps {
   book: Book | null;
@@ -61,25 +62,8 @@ export default function DetailPage({
 
         {/* Column Left: Cover */}
         <div className="md:col-span-4 flex flex-col items-center">
-          <div className="w-full max-w-[240px] aspect-[3/4] relative rounded-[20px] overflow-hidden shadow-lg border border-slate-100 flex items-center justify-center bg-slate-50">
-            {book.coverUrl ? (
-              <img 
-                src={book.coverUrl} 
-                alt={book.title} 
-                className="w-full h-full object-cover" 
-                referrerPolicy="no-referrer"
-              />
-            ) : (
-              <div className={`w-full h-full rounded-[20px] bg-gradient-to-tr ${book.coverColor} p-6 text-white flex flex-col justify-between shadow-inner`}>
-                <div className="space-y-2">
-                  <span className="text-[10px] uppercase tracking-wider font-extrabold opacity-75 font-mono">{book.category}</span>
-                  <h3 className="text-xl font-bold leading-tight">{book.title}</h3>
-                </div>
-                <div className="pt-4 border-t border-white/10">
-                  <p className="text-xs font-medium opacity-90">Penulis: {book.author}</p>
-                </div>
-              </div>
-            )}
+          <div className="w-full max-w-[240px] aspect-[3/4] relative flex items-center justify-center bg-transparent">
+            <Book3D book={book} size="lg" />
           </div>
 
           <div className="mt-6 flex space-x-3 w-full max-w-[240px]">
@@ -164,6 +148,16 @@ export default function DetailPage({
 
           {/* CTA actions */}
           <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center gap-3">
+            {book.pdfUrl && (
+              <a 
+                href={book.pdfUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full sm:w-auto px-8 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition-all shadow-md hover:shadow-lg hover:shadow-emerald-250/50 cursor-pointer text-center"
+              >
+                Baca E-Book
+              </a>
+            )}
             <button 
               onClick={() => {
                 if (!currentUser) {
