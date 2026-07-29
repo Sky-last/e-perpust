@@ -110,7 +110,7 @@ export default function LoginPage({ onNavigate, onLogin, addToast }: LoginPagePr
                 <Sparkles className="w-3 h-3" /> Sesi Keanggotaan
               </div>
               <h2 className="text-2xl lg:text-3xl font-black text-white leading-tight">
-                Selamat Datang Kembali di Pustaka 3D
+                Selamat Datang Kembali di Pustaka
               </h2>
               <p className="text-xs text-slate-400 leading-relaxed font-medium">
                 Masuk ke akun Anda untuk melanjutkan riwayat bacaan dan peminjaman buku.

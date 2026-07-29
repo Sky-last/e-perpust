@@ -118,10 +118,10 @@ export default function RegisterPage({ onNavigate, onRegister, addToast }: Regis
                 <Sparkles className="w-3 h-3" /> Registrasi Anggota
               </div>
               <h2 className="text-2xl lg:text-3xl font-black text-white leading-tight">
-                Gabung Ke Komunitas Pustaka 3D
+                Gabung Ke Komunitas Pustaka
               </h2>
               <p className="text-xs text-slate-400 leading-relaxed font-medium">
-                Nikmati akses tak terbatas ke ribuan e-book digital dengan pengalaman membaca 3D yang imersif.
+                Nikmati akses tak terbatas ke ribuan e-book digital dengan pengalaman membaca yang imersif.
               </p>
             </div>
 
