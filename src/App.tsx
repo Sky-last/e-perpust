@@ -21,6 +21,7 @@ import ProfilPage from './components/ProfilPage';
 import AdminPage from './components/AdminPage';
 import PinjamModal from './components/PinjamModal';
 import ToastNotification, { Toast } from './components/ToastNotification';
+import AILibrarianAssistant from './components/AILibrarianAssistant';
 
 // Lucide Icons for dashboard shell
 import { 
@@ -1221,120 +1222,81 @@ export default function App() {
       <div className="relative min-h-screen bg-slate-50 overflow-x-hidden selection:bg-blue-100 selection:text-blue-900">
         {showHeader && (
           <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/50 transition-all duration-300">
-            <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-              {/* Logo with gradient effect */}
-              <div className="flex items-center space-x-3 cursor-pointer group" onClick={() => handleNavigate('landing')}>
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
+              {/* Logo */}
+              <div className="flex items-center space-x-2.5 cursor-pointer group" onClick={() => handleNavigate('landing')}>
                 <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl blur opacity-75 group-hover:opacity-100 transition-opacity"></div>
-                  <div className="relative p-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl text-white shadow-lg shadow-blue-200/50 group-hover:scale-110 transition-transform">
-                    <BookOpen className="w-6 h-6" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl blur opacity-75 group-hover:opacity-100 transition-opacity"></div>
+                  <div className="relative p-2 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl text-white shadow-lg shadow-blue-200/50">
+                    <BookOpen className="w-5 h-5" />
                   </div>
                 </div>
-                <div>
-                  <span className="text-xl font-bold tracking-tight text-slate-900 group-hover:text-blue-600 transition-colors">
-                    Pustaka<span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Digital</span>
-                  </span>
-                  <p className="text-[9px] text-slate-400 tracking-wider uppercase font-semibold font-mono">Modern Library System</p>
-                </div>
+                <span className="text-lg font-bold tracking-tight text-slate-900 group-hover:text-blue-600 transition-colors">
+                  Pustaka<span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Digital</span>
+                </span>
               </div>
 
-              {/* Nav Links with hover effects */}
+              {/* Desktop Nav Links */}
               <div className="hidden md:flex items-center space-x-1">
-                <button 
-                  onClick={() => handleNavigate('landing')} 
-                  className={`relative px-4 py-2 text-base font-semibold transition-all cursor-pointer rounded-xl ${
-                    currentView === 'landing' 
-                      ? 'text-blue-600 bg-blue-50' 
-                      : 'text-slate-600 hover:text-blue-600 hover:bg-slate-50'
-                  }`}
-                >
-                  Home
-                  {currentView === 'landing' && (
-                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full"></span>
-                  )}
-                </button>
-                <button 
-                  onClick={() => handleNavigate('katalog')} 
-                  className={`relative px-4 py-2 text-base font-semibold transition-all cursor-pointer rounded-xl ${
-                    currentView === 'katalog' 
-                      ? 'text-blue-600 bg-blue-50' 
-                      : 'text-slate-600 hover:text-blue-600 hover:bg-slate-50'
-                  }`}
-                >
-                  Katalog
-                  {currentView === 'katalog' && (
-                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full"></span>
-                  )}
-                </button>
-                <button 
-                  onClick={() => {
-                    if (currentView !== 'landing') {
-                      handleNavigate('landing');
-                      setTimeout(() => {
-                        document.getElementById('tentang')?.scrollIntoView({ behavior: 'smooth' });
-                      }, 100);
-                    } else {
-                      document.getElementById('tentang')?.scrollIntoView({ behavior: 'smooth' });
-                    }
-                  }}
-                  className="px-4 py-2 text-base font-semibold text-slate-600 hover:text-blue-600 hover:bg-slate-50 transition-all cursor-pointer rounded-xl"
-                >
-                  Tentang
-                </button>
-                <button 
-                  onClick={() => {
-                    if (currentView !== 'landing') {
-                      handleNavigate('landing');
-                      setTimeout(() => {
-                        document.getElementById('kontak')?.scrollIntoView({ behavior: 'smooth' });
-                      }, 100);
-                    } else {
-                      document.getElementById('kontak')?.scrollIntoView({ behavior: 'smooth' });
-                    }
-                  }}
-                  className="px-4 py-2 text-base font-semibold text-slate-600 hover:text-blue-600 hover:bg-slate-50 transition-all cursor-pointer rounded-xl"
-                >
-                  Kontak
-                </button>
+                <button onClick={() => handleNavigate('landing')} className={`relative px-4 py-2 text-sm font-semibold transition-all cursor-pointer rounded-xl ${currentView === 'landing' ? 'text-blue-600 bg-blue-50' : 'text-slate-600 hover:text-blue-600 hover:bg-slate-50'}`}>Home</button>
+                <button onClick={() => handleNavigate('katalog')} className={`relative px-4 py-2 text-sm font-semibold transition-all cursor-pointer rounded-xl ${currentView === 'katalog' ? 'text-blue-600 bg-blue-50' : 'text-slate-600 hover:text-blue-600 hover:bg-slate-50'}`}>Katalog</button>
+                <button onClick={() => { if (currentView !== 'landing') { handleNavigate('landing'); setTimeout(() => document.getElementById('tentang')?.scrollIntoView({ behavior: 'smooth' }), 100); } else document.getElementById('tentang')?.scrollIntoView({ behavior: 'smooth' }); }} className="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-blue-600 hover:bg-slate-50 transition-all cursor-pointer rounded-xl">Tentang</button>
+                <button onClick={() => { if (currentView !== 'landing') { handleNavigate('landing'); setTimeout(() => document.getElementById('kontak')?.scrollIntoView({ behavior: 'smooth' }), 100); } else document.getElementById('kontak')?.scrollIntoView({ behavior: 'smooth' }); }} className="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-blue-600 hover:bg-slate-50 transition-all cursor-pointer rounded-xl">Kontak</button>
               </div>
 
-              {/* Right Action with modern buttons */}
-              <div className="flex items-center space-x-3">
+              {/* Right Actions (desktop) */}
+              <div className="hidden md:flex items-center space-x-3">
                 {currentUser ? (
                   <div className="flex items-center space-x-3">
-                    <button 
-                      onClick={() => handleNavigate(['admin', UserRole.ADMIN].includes(currentUser.role as any) ? 'admin' : 'dashboard')} 
-                      className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-base font-semibold transition-all cursor-pointer flex items-center space-x-2 group"
-                    >
+                    <button onClick={() => handleNavigate(['admin', UserRole.ADMIN].includes(currentUser.role as any) ? 'admin' : 'dashboard')} className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-sm font-semibold transition-all cursor-pointer flex items-center space-x-2 group">
                       <span>{['admin', UserRole.ADMIN].includes(currentUser.role as any) ? 'Admin Panel' : 'Dashboard'}</span>
                       <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </button>
-                    <button 
-                      onClick={handleLogout} 
-                      className="px-5 py-2.5 text-red-600 hover:bg-red-50 rounded-xl text-base font-semibold transition-all cursor-pointer"
-                    >
-                      Keluar
-                    </button>
+                    <button onClick={handleLogout} className="px-4 py-2 text-red-600 hover:bg-red-50 rounded-xl text-sm font-semibold transition-all cursor-pointer">Keluar</button>
                   </div>
                 ) : (
                   <div className="flex items-center space-x-3">
-                    <button 
-                      onClick={() => handleNavigate('login')} 
-                      className="px-5 py-2.5 text-slate-600 hover:text-blue-600 hover:bg-slate-50 rounded-xl text-base font-semibold transition-all cursor-pointer"
-                    >
-                      Masuk
-                    </button>
-                    <button 
-                      onClick={() => handleNavigate('register')} 
-                      className="relative group px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl text-base font-bold overflow-hidden transition-all cursor-pointer shadow-lg shadow-blue-200/50 hover:shadow-xl hover:shadow-blue-300/50 hover:scale-105"
-                    >
-                      <span className="relative z-10">Daftar Sekarang</span>
-                      <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <button onClick={() => handleNavigate('login')} className="px-4 py-2 text-slate-600 hover:text-blue-600 hover:bg-slate-50 rounded-xl text-sm font-semibold transition-all cursor-pointer">Masuk</button>
+                    <button onClick={() => handleNavigate('register')} className="relative group px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl text-sm font-bold overflow-hidden transition-all cursor-pointer shadow-lg shadow-blue-200/50 hover:shadow-xl hover:scale-105">
+                      <span className="relative z-10">Daftar</span>
                     </button>
                   </div>
                 )}
               </div>
+
+              {/* Mobile: Masuk & Hamburger */}
+              <div className="flex md:hidden items-center space-x-2">
+                {!currentUser && (
+                  <button onClick={() => handleNavigate('login')} className="px-3 py-1.5 text-sm font-semibold text-blue-600 border border-blue-200 rounded-lg">Masuk</button>
+                )}
+                {currentUser && (
+                  <button onClick={() => handleNavigate('dashboard')} className="px-3 py-1.5 text-xs font-bold bg-blue-600 text-white rounded-lg">Dashboard</button>
+                )}
+                <button
+                  onClick={() => setSidebarOpen(!sidebarOpen)}
+                  className="p-2 text-slate-600 hover:bg-slate-100 rounded-lg border border-slate-200"
+                >
+                  {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                </button>
+              </div>
             </div>
+
+            {/* Mobile Nav Drawer */}
+            {sidebarOpen && (
+              <div className="md:hidden border-t border-slate-200 bg-white/95 backdrop-blur-xl px-4 py-4 space-y-1 shadow-lg">
+                <button onClick={() => { handleNavigate('landing'); setSidebarOpen(false); }} className="w-full text-left px-4 py-3 text-sm font-semibold text-slate-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all">🏠 Home</button>
+                <button onClick={() => { handleNavigate('katalog'); setSidebarOpen(false); }} className="w-full text-left px-4 py-3 text-sm font-semibold text-slate-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all">📚 Katalog Buku</button>
+                <button onClick={() => { if (currentView !== 'landing') { handleNavigate('landing'); setTimeout(() => document.getElementById('tentang')?.scrollIntoView({ behavior: 'smooth' }), 150); } else document.getElementById('tentang')?.scrollIntoView({ behavior: 'smooth' }); setSidebarOpen(false); }} className="w-full text-left px-4 py-3 text-sm font-semibold text-slate-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all">ℹ️ Tentang</button>
+                <button onClick={() => { if (currentView !== 'landing') { handleNavigate('landing'); setTimeout(() => document.getElementById('kontak')?.scrollIntoView({ behavior: 'smooth' }), 150); } else document.getElementById('kontak')?.scrollIntoView({ behavior: 'smooth' }); setSidebarOpen(false); }} className="w-full text-left px-4 py-3 text-sm font-semibold text-slate-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all">📬 Kontak</button>
+                <div className="pt-2 border-t border-slate-100">
+                  {!currentUser ? (
+                    <button onClick={() => { handleNavigate('register'); setSidebarOpen(false); }} className="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-bold rounded-xl shadow-lg mt-1">Daftar Gratis Sekarang →</button>
+                  ) : (
+                    <button onClick={() => { handleLogout(); setSidebarOpen(false); }} className="w-full py-3 text-red-600 font-semibold text-sm hover:bg-red-50 rounded-xl transition-all">Keluar Akun</button>
+                  )}
+                </div>
+              </div>
+            )}
           </nav>
         )}
         <div className={showHeader ? "pt-16 w-full min-h-screen" : "min-h-screen"}>
@@ -1567,6 +1529,13 @@ export default function App() {
 
       {/* Toast notifications */}
       <ToastNotification toasts={toasts} onDismiss={handleDismissToast} />
+
+      {/* Interactive AI Librarian Assistant */}
+      <AILibrarianAssistant
+        books={books}
+        onNavigate={handleNavigate}
+        onOpenPinjamModal={handleOpenPinjamModal}
+      />
     </div>
   );
 }

@@ -126,7 +126,7 @@ export default function RegisterPage({ onNavigate, onRegister, addToast }: Regis
             </div>
 
             {/* 3D Showcase Book */}
-            <div className="my-8 flex justify-center py-4">
+            <div className="hidden sm:flex my-4 lg:my-8 justify-center py-2 lg:py-4">
               <Book3D book={showcaseBook} size="md" />
             </div>
           </div>

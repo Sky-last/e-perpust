@@ -50,10 +50,10 @@ export default function BookOpen3DModal({
   const primaryColor = getCoverColor(book.coverColor);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-xl animate-fadeIn">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/85 backdrop-blur-xl animate-fadeIn overflow-y-auto">
       {/* Background glow */}
       <div
-        className="absolute w-[500px] h-[500px] rounded-full blur-[120px] opacity-30 pointer-events-none transition-all duration-700"
+        className="absolute w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] rounded-full blur-[100px] sm:blur-[120px] opacity-30 pointer-events-none transition-all duration-700"
         style={{ backgroundColor: primaryColor }}
       />
 
@@ -63,20 +63,118 @@ export default function BookOpen3DModal({
           soundFX.playClick();
           onClose();
         }}
-        className="absolute top-6 right-6 p-3 bg-white/10 hover:bg-white/20 text-white rounded-full backdrop-blur-md border border-white/20 transition-all z-50 cursor-pointer hover:scale-110"
+        className="fixed top-4 right-4 sm:top-6 sm:right-6 p-2.5 sm:p-3 bg-white/10 hover:bg-white/20 text-white rounded-full backdrop-blur-md border border-white/20 transition-all z-50 cursor-pointer hover:scale-110 shadow-lg"
         title="Tutup (ESC)"
       >
-        <X className="w-6 h-6" />
+        <X className="w-5 h-5 sm:w-6 sm:h-6" />
       </button>
 
-      {/* 3D Container */}
+      {/* MOBILE LAYOUT (Screens < 768px) */}
+      <div className="md:hidden w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-2xl z-10 my-auto space-y-5 text-white max-h-[90vh] overflow-y-auto">
+        <div className="flex gap-4 items-start">
+          <div
+            className="w-24 h-32 rounded-xl flex-shrink-0 shadow-xl flex flex-col justify-between p-2.5 border border-white/20 relative overflow-hidden"
+            style={{
+              backgroundColor: primaryColor,
+              backgroundImage: `linear-gradient(135deg, ${primaryColor} 0%, rgba(0,0,0,0.7) 100%)`,
+            }}
+          >
+            <span className="text-[8px] font-black uppercase bg-black/40 px-1.5 py-0.5 rounded text-white w-fit">
+              {book.category}
+            </span>
+            <h4 className="text-xs font-black leading-tight drop-shadow line-clamp-3">{book.title}</h4>
+            <span className="text-[9px] font-bold opacity-80 truncate">{book.author}</span>
+          </div>
+
+          <div className="flex-1 space-y-1.5">
+            <span className="text-[10px] px-2 py-0.5 bg-blue-500/20 text-blue-400 font-extrabold uppercase tracking-wider rounded border border-blue-500/30">
+              {book.category}
+            </span>
+            <h2 className="text-lg font-black text-white leading-tight">{book.title}</h2>
+            <p className="text-xs text-slate-400 font-medium">{book.author}</p>
+            <div className="flex items-center gap-1 text-amber-400 text-xs font-bold pt-1">
+              <Star className="w-3.5 h-3.5 fill-current" />
+              <span>{book.rating}</span>
+              <span className="text-slate-500 text-[10px] ml-1">({book.year})</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-2 pt-2 border-t border-slate-800">
+          <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-blue-400" /> Sinopsis
+          </h4>
+          <p className="text-xs text-slate-400 leading-relaxed">
+            {book.description || 'Buku karya penulis ternama yang menghadirkan wawasan mendalam serta petualangan literasi yang menginspirasi para pembaca.'}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2 text-xs">
+          <div className="p-2.5 bg-slate-800/60 rounded-xl border border-slate-700/50">
+            <span className="text-[9px] text-slate-400 font-bold uppercase block">Penerbit</span>
+            <span className="text-xs font-extrabold text-white truncate block">{book.publisher}</span>
+          </div>
+          <div className="p-2.5 bg-slate-800/60 rounded-xl border border-slate-700/50">
+            <span className="text-[9px] text-slate-400 font-bold uppercase block">Stok & Rak</span>
+            <span className="text-xs font-extrabold text-blue-400 block">{book.stock} Eks ({book.rackLocation || 'Rak A-01'})</span>
+          </div>
+        </div>
+
+        <div className="space-y-2.5 pt-2">
+          {book.pdfUrl && onReadEbook && (
+            <button
+              onClick={() => {
+                soundFX.playPageFlip();
+                onReadEbook(book);
+              }}
+              className="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold text-xs rounded-xl shadow-lg flex items-center justify-center gap-2"
+            >
+              <BookOpen className="w-4 h-4" />
+              <span>Baca E-Book Sekarang</span>
+            </button>
+          )}
+
+          <div className="flex gap-2">
+            {onPinjam && (
+              <button
+                onClick={() => {
+                  soundFX.playClick();
+                  onPinjam(book);
+                }}
+                className="flex-1 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs rounded-xl shadow-lg flex items-center justify-center gap-2"
+              >
+                <Bookmark className="w-4 h-4" />
+                <span>Pinjam Buku</span>
+              </button>
+            )}
+
+            {onToggleFavorite && (
+              <button
+                onClick={() => {
+                  soundFX.playClick();
+                  onToggleFavorite(book.id);
+                }}
+                className={`p-3 rounded-xl border transition-all ${
+                  isFavorite
+                    ? 'bg-rose-500/20 text-rose-400 border-rose-500/40'
+                    : 'bg-slate-800 text-slate-400 border-slate-700'
+                }`}
+              >
+                <Heart className={`w-5 h-5 ${isFavorite ? 'fill-current' : ''}`} />
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* DESKTOP 3D CONTAINER (Screens >= 768px) */}
       <div
-        className="relative max-w-4xl w-full h-[580px] flex items-center justify-center select-none"
+        className="hidden md:flex relative max-w-4xl w-full h-[580px] items-center justify-center select-none"
         style={{ perspective: '2000px' }}
       >
         {/* 3D BOOK STRUCTURE */}
         <div
-          className="relative w-[340px] md:w-[680px] h-[480px] transition-transform duration-1000 ease-out"
+          className="relative w-[680px] h-[480px] transition-transform duration-1000 ease-out"
           style={{
             transformStyle: 'preserve-3d',
             transform: isOpenAnimation ? 'rotateX(12deg) rotateY(0deg)' : 'rotateX(25deg) rotateY(-40deg) scale(0.85)',

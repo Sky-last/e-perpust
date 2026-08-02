@@ -118,7 +118,7 @@ export default function LoginPage({ onNavigate, onLogin, addToast }: LoginPagePr
             </div>
 
             {/* 3D Book Showcase */}
-            <div className="my-8 flex justify-center py-4">
+            <div className="hidden sm:flex my-4 lg:my-8 justify-center py-2 lg:py-4">
               <Book3D book={showcaseBook} size="md" />
             </div>
           </div>

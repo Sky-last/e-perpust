@@ -120,9 +120,41 @@ export default function VT3DImmersiveExperience({
 
   const handleMouseUp = () => setIsDragging(false);
 
-  const radius = Math.min(380, Math.max(260, window.innerWidth * 0.25));
+  // Responsive radius calculation
+  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
+
+  useEffect(() => {
+    const onResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  const radius = windowWidth < 640 ? 150 : Math.min(380, Math.max(240, windowWidth * 0.25));
   const bookCount = Math.min(12, books.length);
   const displayBooks = books.slice(0, bookCount);
+
+  // Touch handlers for mobile devices
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length > 0) {
+      setIsDragging(true);
+      setStartPos({ x: e.touches[0].clientX, y: e.touches[0].clientY });
+      setAutoRotate(false);
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging || e.touches.length === 0) return;
+    const dx = e.touches[0].clientX - startPos.x;
+    const dy = e.touches[0].clientY - startPos.y;
+
+    setRotation((prev) => ({
+      x: Math.max(-45, Math.min(60, prev.x - dy * 0.4)),
+      y: (prev.y + dx * 0.4) % 360,
+    }));
+    setStartPos({ x: e.touches[0].clientX, y: e.touches[0].clientY });
+  };
+
+  const handleTouchEnd = () => setIsDragging(false);
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-950 text-white overflow-hidden select-none animate-fadeIn font-sans">
@@ -130,34 +162,48 @@ export default function VT3DImmersiveExperience({
       <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none z-0" />
 
       {/* TOP HEADER CONTROLS */}
-      <div className="absolute top-0 left-0 right-0 z-30 flex items-center justify-between px-6 py-4 bg-slate-950/70 border-b border-slate-800/80 backdrop-blur-xl">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl shadow-lg shadow-blue-500/30">
-            <Sparkles className="w-5 h-5 text-white animate-pulse" />
+      <div className="absolute top-0 left-0 right-0 z-30 flex items-center justify-between px-3 sm:px-6 py-3 sm:py-4 bg-slate-950/70 border-b border-slate-800/80 backdrop-blur-xl">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+          <div className="p-1.5 sm:p-2 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl shadow-lg shadow-blue-500/30 flex-shrink-0">
+            <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-white animate-pulse" />
           </div>
-          <div>
-            <h2 className="text-base font-black tracking-tight text-white flex items-center gap-2">
-              VT 3D Immersive Library Experience
+          <div className="min-w-0">
+            <h2 className="text-xs sm:text-base font-black tracking-tight text-white truncate">
+              <span className="hidden sm:inline">VT 3D Immersive Library Experience</span>
+              <span className="sm:hidden">3D Library VT</span>
             </h2>
-            <p className="text-[10px] text-blue-400 font-semibold uppercase tracking-wider">
+            <p className="text-[9px] sm:text-[10px] text-blue-400 font-semibold uppercase tracking-wider hidden sm:block">
               Futuristic 3D Carousel & Interactive Page Flip
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
-          {/* Auto Rotate Toggle */}
+        <div className="flex items-center gap-1.5 sm:gap-3 flex-shrink-0">
+          {/* Auto Rotate Toggle — hidden on smallest screens */}
           <button
             onClick={() => {
               soundFX.playClick();
               setAutoRotate(!autoRotate);
             }}
-            className={`px-3 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+            className={`hidden sm:flex px-3 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer items-center gap-1.5 ${
               autoRotate ? 'bg-blue-500/20 text-blue-400 border-blue-500/40' : 'bg-slate-800 text-slate-400 border-slate-700'
             }`}
           >
             <RotateCcw className={`w-3.5 h-3.5 ${autoRotate ? 'animate-spin' : ''}`} />
             <span>Auto Rotate</span>
+          </button>
+
+          {/* Auto Rotate — icon only on mobile */}
+          <button
+            onClick={() => {
+              soundFX.playClick();
+              setAutoRotate(!autoRotate);
+            }}
+            className={`sm:hidden p-2 rounded-xl border transition-all cursor-pointer ${
+              autoRotate ? 'bg-blue-500/20 text-blue-400 border-blue-500/40' : 'bg-slate-800 text-slate-400 border-slate-700'
+            }`}
+          >
+            <RotateCcw className={`w-3.5 h-3.5 ${autoRotate ? 'animate-spin' : ''}`} />
           </button>
 
           {/* Sound FX Toggle */}
@@ -183,7 +229,7 @@ export default function VT3DImmersiveExperience({
             className="p-2 bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 rounded-xl border border-rose-500/30 transition-all cursor-pointer"
             title="Keluar Mode VT 3D"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
         </div>
       </div>
@@ -195,6 +241,9 @@ export default function VT3DImmersiveExperience({
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
       >
         {!inspectMode ? (
           /* 3D CIRCULAR FLOATING CAROUSEL MODE */
@@ -239,7 +288,7 @@ export default function VT3DImmersiveExperience({
                 >
                   {/* 3D FLOATING BOOK COVER CARD */}
                   <div
-                    className="w-40 h-56 rounded-xl border-2 shadow-2xl flex flex-col justify-between p-4 overflow-hidden relative transition-all duration-300"
+                    className="w-28 sm:w-36 md:w-40 h-40 sm:h-48 md:h-56 rounded-xl border-2 shadow-2xl flex flex-col justify-between p-2.5 sm:p-4 overflow-hidden relative transition-all duration-300"
                     style={{
                       background: b.coverColor ? `linear-gradient(135deg, ${b.coverColor.replace('from-', '').replace('to-', '')})` : 'linear-gradient(135deg, #1e3a8a, #312e81)',
                       borderColor: isSelected ? '#60a5fa' : 'rgba(255,255,255,0.2)',
@@ -277,11 +326,11 @@ export default function VT3DImmersiveExperience({
           </div>
         ) : (
           /* INSPECT & OPEN BOOK MODE (INSPECTION STUDIO) */
-          <div className="relative w-full max-w-4xl h-[560px] flex items-center justify-center z-20 animate-scaleUp">
+          <div className="relative w-full max-w-4xl h-[480px] sm:h-[560px] flex items-center justify-center z-20 animate-scaleUp px-3 sm:px-0">
 
             {/* THE 3D OPENING BOOK */}
             <div
-              className="relative w-[320px] md:w-[640px] h-[460px] transition-all duration-700"
+              className="relative w-full max-w-[320px] sm:max-w-none sm:w-[640px] h-[400px] sm:h-[460px] transition-all duration-700"
               style={{
                 transformStyle: 'preserve-3d',
                 transform: bookOpen ? 'rotateX(10deg) rotateY(0deg)' : 'rotateX(20deg) rotateY(-25deg)',
@@ -403,16 +452,16 @@ export default function VT3DImmersiveExperience({
             </div>
 
             {/* CONTROLS BAR BELOW INSPECTION */}
-            <div className="absolute -bottom-16 flex items-center gap-4">
+            <div className="absolute -bottom-14 sm:-bottom-16 flex flex-wrap items-center justify-center gap-2 sm:gap-4 px-4 w-full">
               <button
                 onClick={() => {
                   soundFX.playClick();
                   setInspectMode(false);
                   setBookOpen(false);
                 }}
-                className="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-xl border border-slate-700 shadow-xl cursor-pointer"
+                className="px-4 sm:px-5 py-2 sm:py-2.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-xl border border-slate-700 shadow-xl cursor-pointer"
               >
-                Kembali ke 3D Carousel
+                ← Carousel
               </button>
 
               <button
@@ -420,10 +469,10 @@ export default function VT3DImmersiveExperience({
                   soundFX.playBookOpen();
                   setBookOpen(!bookOpen);
                 }}
-                className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-extrabold rounded-xl shadow-lg shadow-blue-500/30 cursor-pointer flex items-center gap-2"
+                className="px-4 sm:px-6 py-2 sm:py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-extrabold rounded-xl shadow-lg shadow-blue-500/30 cursor-pointer flex items-center gap-2"
               >
                 <BookOpen className="w-4 h-4" />
-                <span>{bookOpen ? 'Tutup Cover Buku' : 'Buka Sampul Buku (3D Cover Flip)'}</span>
+                <span>{bookOpen ? 'Tutup Cover' : 'Buka Cover 3D'}</span>
               </button>
             </div>
           </div>
@@ -431,9 +480,10 @@ export default function VT3DImmersiveExperience({
       </div>
 
       {/* FOOTER BAR NAVIGATION HINT */}
-      <div className="absolute bottom-4 left-6 right-6 flex items-center justify-between text-xs text-slate-400 font-semibold pointer-events-none">
-        <span>💡 Petunjuk: Klik dan tahan mouse untuk rotasi 3D 360° • Klik buku untuk masuk mode inspeksi</span>
-        <span>Buku {selectedIndex + 1} dari {displayBooks.length}</span>
+      <div className="absolute bottom-3 sm:bottom-4 left-3 sm:left-6 right-3 sm:right-6 flex items-center justify-between text-[10px] sm:text-xs text-slate-400 font-semibold pointer-events-none gap-2">
+        <span className="hidden sm:inline">💡 Petunjuk: Klik/sentuh dan tahan untuk rotasi 3D 360° • Klik buku untuk inspeksi</span>
+        <span className="sm:hidden">👆 Sentuh & geser untuk rotasi</span>
+        <span className="flex-shrink-0">Buku {selectedIndex + 1}/{displayBooks.length}</span>
       </div>
     </div>
   );
