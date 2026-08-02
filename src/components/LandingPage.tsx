@@ -108,10 +108,10 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
     ? popularBooks 
     : [...books].sort((a, b) => b.rating - a.rating).slice(0, 5);
   
-  // Prioritaskan buku "Bulan" (eb-14) di posisi pertama
+  // Prioritaskan buku "Bulan" (eb-14) di posisi pertama, exclude "The History of Java" (gut-5)
   const bulanBook = books.find(b => b.id === 'eb-14');
-  const otherBooks = sortedBooks.filter(b => b.id !== 'eb-14').slice(0, 4);
-  const displayBooks = bulanBook ? [bulanBook, ...otherBooks] : sortedBooks;
+  const otherBooks = sortedBooks.filter(b => b.id !== 'eb-14' && b.id !== 'gut-5').slice(0, 4);
+  const displayBooks = bulanBook ? [bulanBook, ...otherBooks] : sortedBooks.filter(b => b.id !== 'gut-5');
   
   const shelfBooks = books.slice(0, 18);
   const totalUniqueBooks = books.length;

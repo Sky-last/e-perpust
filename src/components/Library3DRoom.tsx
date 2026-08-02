@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Book } from '../types';
 import Book3D from './Book3D';
 import { Sparkles, ArrowRight, Star, BookOpen, Layers } from 'lucide-react';
@@ -14,6 +14,15 @@ export default function Library3DRoom({ books = [], onSelectBook }: Library3DRoo
   const bulanIndex = books.findIndex(b => b.id === 'eb-14');
   const defaultIndex = bulanIndex !== -1 ? bulanIndex : 0;
   const [selectedIndex, setSelectedIndex] = useState(defaultIndex);
+  
+  // Update selectedIndex when books array changes
+  useEffect(() => {
+    const newBulanIndex = books.findIndex(b => b.id === 'eb-14');
+    if (newBulanIndex !== -1) {
+      setSelectedIndex(newBulanIndex);
+    }
+  }, [books]);
+  
   const currentBook = books && books.length > 0 ? (books[selectedIndex] || books[0]) : null;
 
   if (!currentBook) {
