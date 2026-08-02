@@ -493,7 +493,7 @@ export default function StaffDashboard({
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
             whileHover={{ y: -4, transition: { duration: 0.2 } }}
-            className="bg-white rounded-2xl p-5 border border-slate-200/60 shadow-sm relative overflow-hidden flex flex-col justify-between hover:shadow-md hover:shadow-blue-500/5 hover:border-blue-500/40 transition-all duration-300"
+            className="bg-white/50 backdrop-blur-lg rounded-2xl p-5 border border-white/30 shadow-sm relative overflow-hidden flex flex-col justify-between hover:shadow-md hover:shadow-blue-500/5 hover:border-blue-500/40 transition-all duration-300"
           >
             {/* Soft decorative background radial glow */}
             <div className="absolute right-0 bottom-0 w-24 h-24 bg-blue-500/5 rounded-full blur-xl pointer-events-none" />
@@ -519,7 +519,7 @@ export default function StaffDashboard({
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 }}
             whileHover={{ y: -4, transition: { duration: 0.2 } }}
-            className="bg-white rounded-2xl p-5 border border-slate-200/60 shadow-sm relative overflow-hidden flex flex-col justify-between hover:shadow-md hover:shadow-emerald-500/5 hover:border-emerald-500/40 transition-all duration-300"
+            className="bg-white/50 backdrop-blur-lg rounded-2xl p-5 border border-white/30 shadow-sm relative overflow-hidden flex flex-col justify-between hover:shadow-md hover:shadow-emerald-500/5 hover:border-emerald-500/40 transition-all duration-300"
           >
             <div className="absolute right-0 bottom-0 w-24 h-24 bg-emerald-500/5 rounded-full blur-xl pointer-events-none" />
             <div className="flex items-center justify-between mb-4">
@@ -546,7 +546,7 @@ export default function StaffDashboard({
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
             whileHover={{ y: -4, transition: { duration: 0.2 } }}
-            className="bg-white rounded-2xl p-5 border border-slate-200/60 shadow-sm relative overflow-hidden flex flex-col justify-between hover:shadow-md hover:shadow-amber-500/5 hover:border-amber-500/40 transition-all duration-300"
+            className="bg-white/50 backdrop-blur-lg rounded-2xl p-5 border border-white/30 shadow-sm relative overflow-hidden flex flex-col justify-between hover:shadow-md hover:shadow-amber-500/5 hover:border-amber-500/40 transition-all duration-300"
           >
             <div className="absolute right-0 bottom-0 w-24 h-24 bg-amber-500/5 rounded-full blur-xl pointer-events-none" />
             <div className="flex items-center justify-between mb-4">
@@ -573,7 +573,7 @@ export default function StaffDashboard({
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25 }}
             whileHover={{ y: -4, transition: { duration: 0.2 } }}
-            className="bg-white rounded-2xl p-5 border border-slate-200/60 shadow-sm relative overflow-hidden flex flex-col justify-between hover:shadow-md hover:shadow-rose-500/5 hover:border-rose-500/40 transition-all duration-300"
+            className="bg-white/50 backdrop-blur-lg rounded-2xl p-5 border border-white/30 shadow-sm relative overflow-hidden flex flex-col justify-between hover:shadow-md hover:shadow-rose-500/5 hover:border-rose-500/40 transition-all duration-300"
           >
             <div className="absolute right-0 bottom-0 w-24 h-24 bg-rose-500/5 rounded-full blur-xl pointer-events-none" />
             <div className="flex items-center justify-between mb-4">
@@ -596,7 +596,7 @@ export default function StaffDashboard({
         {/* Analytics Chart & Quick Stats Columns */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Elegant Chart Section */}
-          <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-slate-200/60 shadow-sm flex flex-col justify-between">
+          <div className="lg:col-span-2 bg-white/50 backdrop-blur-lg rounded-2xl p-6 border border-white/30 shadow-sm flex flex-col justify-between">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
               <div>
                 <h3 className="text-md font-bold text-slate-950 flex items-center gap-2">
@@ -625,7 +625,7 @@ export default function StaffDashboard({
           {/* Quick Stats Panel */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-5">
             {/* Members Card */}
-            <div className="bg-white rounded-2xl p-5 border border-slate-200/60 shadow-sm flex flex-col justify-between">
+            <div className="bg-white/50 backdrop-blur-lg rounded-2xl p-5 border border-white/30 shadow-sm flex flex-col justify-between">
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Anggota Terdaftar</h4>
@@ -648,7 +648,7 @@ export default function StaffDashboard({
             </div>
 
             {/* Return Rate Card */}
-            <div className="bg-white rounded-2xl p-5 border border-slate-200/60 shadow-sm flex flex-col justify-between">
+            <div className="bg-white/50 backdrop-blur-lg rounded-2xl p-5 border border-white/30 shadow-sm flex flex-col justify-between">
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider">Tingkat Pengembalian</h4>
@@ -677,7 +677,7 @@ export default function StaffDashboard({
         </div>
 
         {/* Recent Activity Table - Beautiful Slate styling */}
-        <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
+        <div className="bg-white/50 backdrop-blur-lg rounded-2xl border border-white/30 shadow-sm overflow-hidden">
           <div className="p-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h3 className="text-md font-bold text-slate-900 flex items-center gap-2">
@@ -690,7 +690,7 @@ export default function StaffDashboard({
               onClick={() => setActiveMenu('transactions')} 
               className="px-4 py-2 text-xs font-bold text-blue-600 hover:text-blue-700 bg-blue-50/60 hover:bg-blue-50 rounded-xl border border-blue-100/60 transition-all cursor-pointer self-start sm:self-auto"
             >
-              Kelola Semua Sirkulasi →
+              Kelola Semua Sirkulasi ?
             </button>
           </div>
 
@@ -797,7 +797,7 @@ export default function StaffDashboard({
       </div>
 
       {/* Search Bar */}
-      <div className="bg-white rounded-2xl p-4 border border-slate-200/60 shadow-sm">
+      <div className="bg-white/50 backdrop-blur-lg rounded-2xl p-4 border border-white/30 shadow-sm">
         <div className="relative">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
           <input
@@ -817,7 +817,7 @@ export default function StaffDashboard({
             key={book.id}
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden flex flex-col justify-between group hover:shadow-md hover:border-slate-350 transition-all duration-300"
+            className="bg-white/50 backdrop-blur-lg rounded-2xl border border-white/30 shadow-sm overflow-hidden flex flex-col justify-between group hover:shadow-md hover:border-slate-350 transition-all duration-300"
           >
             {/* Book Cover */}
             <div className="relative h-48 overflow-hidden bg-slate-50 flex items-center justify-center border-b border-slate-100 p-4">
@@ -873,7 +873,7 @@ export default function StaffDashboard({
       </div>
 
       {filteredBooks.length === 0 && (
-        <div className="bg-white rounded-2xl p-12 border border-slate-200/60 shadow-sm text-center">
+        <div className="bg-white/50 backdrop-blur-lg rounded-2xl p-12 border border-white/30 shadow-sm text-center">
           <BookOpen className="w-14 h-14 text-slate-250 mx-auto mb-4" />
           <h3 className="text-md font-bold text-slate-800 mb-1.5">Buku tidak ditemukan</h3>
           <p className="text-xs text-slate-400 font-medium">
@@ -914,7 +914,7 @@ export default function StaffDashboard({
               key={cat.id}
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white rounded-2xl p-5 border border-slate-200/60 shadow-sm hover:shadow-md transition-all flex flex-col justify-between gap-5 group"
+              className="bg-white/50 backdrop-blur-lg rounded-2xl p-5 border border-white/30 shadow-sm hover:shadow-md transition-all flex flex-col justify-between gap-5 group"
             >
               <div>
                 <div className="flex items-start justify-between mb-4">
@@ -1035,7 +1035,7 @@ export default function StaffDashboard({
         </div>
 
         {/* Transactions Table */}
-        <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
+        <div className="bg-white/50 backdrop-blur-lg rounded-2xl border border-white/30 shadow-sm overflow-hidden">
           <div className="overflow-x-auto w-full">
             <table className="w-full text-sm text-left">
               <thead>
@@ -1080,7 +1080,7 @@ export default function StaffDashboard({
                         {b.fineAmount && b.fineAmount > 0 ? (
                           <div>
                             <p className="font-extrabold text-rose-600 text-sm">Rp {b.fineAmount.toLocaleString()}</p>
-                            {b.finePaid && <p className="text-[9px] font-bold text-emerald-600 mt-0.5">✓ PAID / Lunas</p>}
+                            {b.finePaid && <p className="text-[9px] font-bold text-emerald-600 mt-0.5">? PAID / Lunas</p>}
                           </div>
                         ) : (
                           <span className="text-slate-400 font-medium">-</span>
@@ -1164,7 +1164,7 @@ export default function StaffDashboard({
       </div>
 
       {/* Search */}
-      <div className="bg-white rounded-2xl p-4 border border-slate-200/60 shadow-sm">
+      <div className="bg-white/50 backdrop-blur-lg rounded-2xl p-4 border border-white/30 shadow-sm">
         <div className="relative">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
           <input
@@ -1178,7 +1178,7 @@ export default function StaffDashboard({
       </div>
 
       {/* Users Table */}
-      <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
+      <div className="bg-white/50 backdrop-blur-lg rounded-2xl border border-white/30 shadow-sm overflow-hidden">
         <div className="overflow-x-auto w-full">
           <table className="w-full text-sm text-left">
             <thead>
@@ -1329,7 +1329,7 @@ export default function StaffDashboard({
       {/* Detailed Reports */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Borrowing Stats */}
-        <div className="bg-white rounded-2xl p-5 border border-slate-200/60 shadow-sm">
+        <div className="bg-white/50 backdrop-blur-lg rounded-2xl p-5 border border-white/30 shadow-sm">
           <h3 className="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2">
             <BarChart3 className="w-5 h-5 text-blue-600" />
             Statistik Status Sirkulasi
@@ -1355,7 +1355,7 @@ export default function StaffDashboard({
         </div>
 
         {/* Top Books */}
-        <div className="bg-white rounded-2xl p-5 border border-slate-200/60 shadow-sm">
+        <div className="bg-white/50 backdrop-blur-lg rounded-2xl p-5 border border-white/30 shadow-sm">
           <h3 className="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2">
             <TrendingUp className="w-5 h-5 text-blue-600" />
             Buku Favorit & Paling Diminati
@@ -1380,7 +1380,7 @@ export default function StaffDashboard({
       </div>
 
       {/* Export Section */}
-      <div className="bg-white rounded-2xl p-6 border border-slate-200/60 shadow-sm text-center max-w-xl mx-auto">
+      <div className="bg-white/50 backdrop-blur-lg rounded-2xl p-6 border border-white/30 shadow-sm text-center max-w-xl mx-auto">
         <Download className="w-12 h-12 text-slate-250 mx-auto mb-3" />
         <h3 className="text-md font-bold text-slate-900 mb-1">Cetak Dokumen Sirkulasi</h3>
         <p className="text-xs text-slate-400 font-medium mb-4">Export tabel laporan sirkulasi saat ini ke format berkas digital (.xlsx / .pdf)</p>
@@ -1406,7 +1406,7 @@ export default function StaffDashboard({
 
       {/* Settings Form */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-slate-200/60 shadow-sm space-y-5">
+        <div className="lg:col-span-2 bg-white/50 backdrop-blur-lg rounded-2xl p-6 border border-white/30 shadow-sm space-y-5">
           <h3 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-3">Aturan Main Sirkulasi</h3>
           
           <div className="space-y-4">
@@ -1465,7 +1465,7 @@ export default function StaffDashboard({
         </div>
 
         {/* System Info */}
-        <div className="bg-white rounded-2xl p-6 border border-slate-200/60 shadow-sm self-start space-y-4">
+        <div className="bg-white/50 backdrop-blur-lg rounded-2xl p-6 border border-white/30 shadow-sm self-start space-y-4">
           <h3 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-3">Status Aplikasi</h3>
           <div className="space-y-3 text-xs">
             <div className="flex justify-between py-1 border-b border-slate-50 font-medium">
@@ -1513,10 +1513,59 @@ export default function StaffDashboard({
   };
 
   return (
-    <div className="h-screen bg-slate-50 flex text-slate-900 overflow-hidden font-sans" id="staff-dashboard">
+    <div className="h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-slate-100 flex text-slate-900 overflow-hidden font-sans relative" id="staff-dashboard">
       
-      {/* MODERN DARK SIDEBAR NAVIGATION */}
-      <aside className={`${sidebarCollapsed ? 'w-20' : 'w-72'} bg-slate-900 border-r border-slate-800 shrink-0 hidden lg:flex flex-col shadow-2xl transition-all duration-300 h-screen sticky top-0 overflow-hidden z-20`}>
+      {/* Animated Background Pattern Layer */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* Dot Grid Pattern */}
+        <div 
+          className="absolute inset-0 opacity-[0.08]"
+          style={{
+            backgroundImage: 'radial-gradient(circle, #3B82F6 1px, transparent 1px)',
+            backgroundSize: '32px 32px'
+          }}
+        />
+        
+        {/* Gradient Orbs - Animated */}
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-400/20 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '8s' }} />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-indigo-400/20 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '10s', animationDelay: '2s' }} />
+        <div className="absolute top-1/2 left-1/2 w-80 h-80 bg-purple-400/10 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '12s', animationDelay: '4s' }} />
+        
+        {/* Diagonal Lines Pattern */}
+        <svg className="absolute inset-0 w-full h-full opacity-[0.03]" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="diagonal-lines" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+              <line x1="0" y1="0" x2="40" y2="40" stroke="#3B82F6" strokeWidth="1"/>
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#diagonal-lines)" />
+        </svg>
+        
+        {/* Book Icons Pattern (Very Subtle) */}
+        <div className="absolute inset-0 opacity-[0.015]">
+          {[...Array(15)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute"
+              style={{
+                top: `${(i * 13 + 10) % 90}%`,
+                left: `${(i * 17 + 5) % 90}%`,
+                transform: `rotate(${(i * 23) % 360}deg)`
+              }}
+            >
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-blue-600">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+          ))}
+        </div>
+      </div>
+      
+      {/* MODERN SIDEBAR NAVIGATION - With Backdrop Blur */}
+      <aside className={`${sidebarCollapsed ? 'w-20' : 'w-72'} bg-white/90 backdrop-blur-xl border-r border-white/30 shrink-0 hidden lg:flex flex-col shadow-2xl transition-all duration-300 h-screen sticky top-0 overflow-hidden z-20 relative`}>
+        {/* Subtle gradient overlay for sidebar */}
+        <div className="absolute inset-0 bg-gradient-to-b from-blue-50/30 via-transparent to-indigo-50/20 pointer-events-none" />
         {/* Logo Brand with Animation */}
         <div className="p-5 border-b border-slate-800 flex items-center justify-between shrink-0">
           {!sidebarCollapsed ? (
