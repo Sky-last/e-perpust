@@ -1217,7 +1217,7 @@ export default function App() {
   const isOuterPage = ['landing', 'login', 'register'].includes(currentView) || (!currentUser && ['katalog', 'detail-buku'].includes(currentView));
 
   if (isOuterPage) {
-    const showHeader = ['landing', 'katalog', 'detail-buku'].includes(currentView);
+    const showHeader = currentView === 'detail-buku';
     return (
       <div className="relative min-h-screen bg-slate-50 overflow-x-hidden selection:bg-blue-100 selection:text-blue-900">
         {showHeader && (
@@ -1240,8 +1240,8 @@ export default function App() {
               <div className="hidden md:flex items-center space-x-1">
                 <button onClick={() => handleNavigate('landing')} className={`relative px-4 py-2 text-sm font-semibold transition-all cursor-pointer rounded-xl ${currentView === 'landing' ? 'text-blue-600 bg-blue-50' : 'text-slate-600 hover:text-blue-600 hover:bg-slate-50'}`}>Home</button>
                 <button onClick={() => handleNavigate('katalog')} className={`relative px-4 py-2 text-sm font-semibold transition-all cursor-pointer rounded-xl ${currentView === 'katalog' ? 'text-blue-600 bg-blue-50' : 'text-slate-600 hover:text-blue-600 hover:bg-slate-50'}`}>Katalog</button>
-                <button onClick={() => { if (currentView !== 'landing') { handleNavigate('landing'); setTimeout(() => document.getElementById('tentang')?.scrollIntoView({ behavior: 'smooth' }), 100); } else document.getElementById('tentang')?.scrollIntoView({ behavior: 'smooth' }); }} className="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-blue-600 hover:bg-slate-50 transition-all cursor-pointer rounded-xl">Tentang</button>
-                <button onClick={() => { if (currentView !== 'landing') { handleNavigate('landing'); setTimeout(() => document.getElementById('kontak')?.scrollIntoView({ behavior: 'smooth' }), 100); } else document.getElementById('kontak')?.scrollIntoView({ behavior: 'smooth' }); }} className="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-blue-600 hover:bg-slate-50 transition-all cursor-pointer rounded-xl">Kontak</button>
+                <button onClick={() => { handleNavigate('landing'); setTimeout(() => document.getElementById('tentang')?.scrollIntoView({ behavior: 'smooth' }), 100); }} className="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-blue-600 hover:bg-slate-50 transition-all cursor-pointer rounded-xl">Tentang</button>
+                <button onClick={() => { handleNavigate('landing'); setTimeout(() => document.getElementById('kontak')?.scrollIntoView({ behavior: 'smooth' }), 100); }} className="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-blue-600 hover:bg-slate-50 transition-all cursor-pointer rounded-xl">Kontak</button>
               </div>
 
               {/* Right Actions (desktop) */}
@@ -1286,8 +1286,8 @@ export default function App() {
               <div className="md:hidden border-t border-slate-200 bg-white/95 backdrop-blur-xl px-4 py-4 space-y-1 shadow-lg">
                 <button onClick={() => { handleNavigate('landing'); setSidebarOpen(false); }} className="w-full text-left px-4 py-3 text-sm font-semibold text-slate-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all">🏠 Home</button>
                 <button onClick={() => { handleNavigate('katalog'); setSidebarOpen(false); }} className="w-full text-left px-4 py-3 text-sm font-semibold text-slate-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all">📚 Katalog Buku</button>
-                <button onClick={() => { if (currentView !== 'landing') { handleNavigate('landing'); setTimeout(() => document.getElementById('tentang')?.scrollIntoView({ behavior: 'smooth' }), 150); } else document.getElementById('tentang')?.scrollIntoView({ behavior: 'smooth' }); setSidebarOpen(false); }} className="w-full text-left px-4 py-3 text-sm font-semibold text-slate-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all">ℹ️ Tentang</button>
-                <button onClick={() => { if (currentView !== 'landing') { handleNavigate('landing'); setTimeout(() => document.getElementById('kontak')?.scrollIntoView({ behavior: 'smooth' }), 150); } else document.getElementById('kontak')?.scrollIntoView({ behavior: 'smooth' }); setSidebarOpen(false); }} className="w-full text-left px-4 py-3 text-sm font-semibold text-slate-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all">📬 Kontak</button>
+                <button onClick={() => { handleNavigate('landing'); setTimeout(() => document.getElementById('tentang')?.scrollIntoView({ behavior: 'smooth' }), 150); setSidebarOpen(false); }} className="w-full text-left px-4 py-3 text-sm font-semibold text-slate-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all">ℹ️ Tentang</button>
+                <button onClick={() => { handleNavigate('landing'); setTimeout(() => document.getElementById('kontak')?.scrollIntoView({ behavior: 'smooth' }), 150); setSidebarOpen(false); }} className="w-full text-left px-4 py-3 text-sm font-semibold text-slate-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all">📬 Kontak</button>
                 <div className="pt-2 border-t border-slate-100">
                   {!currentUser ? (
                     <button onClick={() => { handleNavigate('register'); setSidebarOpen(false); }} className="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-bold rounded-xl shadow-lg mt-1">Daftar Gratis Sekarang →</button>
@@ -1299,7 +1299,7 @@ export default function App() {
             )}
           </nav>
         )}
-        <div className={showHeader ? "pt-16 w-full min-h-screen" : "min-h-screen"}>
+        <div className={showHeader ? "pt-16 w-full min-h-screen" : "w-full min-h-screen"}>
           {renderViewContent()}
         </div>
         <ToastNotification toasts={toasts} onDismiss={handleDismissToast} />

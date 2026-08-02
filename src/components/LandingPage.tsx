@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { BookOpen, Star, Heart, ArrowRight, Shield, Award, Users, BookMarked, CheckCircle, Sun, Moon, Sparkles, Mail, Phone, MapPin, Clock, Send, MessageSquare } from 'lucide-react';
+import { BookOpen, Star, Heart, ArrowRight, Shield, Award, Users, BookMarked, CheckCircle, Sun, Moon, Sparkles, Mail, Phone, MapPin, Clock, Send, MessageSquare, Menu, X } from 'lucide-react';
 import { Book, ViewType } from '../types';
 import Book3D from './Book3D';
 import BookShelf3D from './BookShelf3D';
@@ -21,6 +21,7 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
   const [darkMode, setDarkMode] = useState(true);
   const [activeSection, setActiveSection] = useState<'home' | 'katalog' | 'tentang' | 'kontak'>('home');
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Interactive 3D Modals State
   const [selectedBook3D, setSelectedBook3D] = useState<Book | null>(null);
@@ -81,7 +82,7 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
       {/* NAVBAR */}
       <nav className={`fixed top-0 left-0 right-0 z-50 border-b backdrop-blur-xl ${nav}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 cursor-pointer" onClick={() => { soundFX.playClick(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
             <div className="w-9 h-9 bg-gradient-to-tr from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30">
               <BookOpen className="w-5 h-5 text-white" />
             </div>
@@ -90,6 +91,7 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
             </span>
           </div>
 
+          {/* Desktop Links */}
           <div className="hidden md:flex items-center gap-8">
             {(['Home', 'Katalog', 'Tentang', 'Kontak'] as const).map(item => {
               const key = item.toLowerCase() as typeof activeSection;
@@ -111,20 +113,105 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
             })}
           </div>
 
-          <div className="flex items-center gap-3">
+          {/* Right Action buttons */}
+          <div className="flex items-center gap-2 sm:gap-3">
             <button onClick={() => { soundFX.playClick(); setDarkMode(!dk); }}
               className={`p-2 rounded-xl border transition-all ${dk ? 'border-slate-700 text-slate-400 hover:text-white hover:border-slate-600' : 'border-slate-200 text-slate-500 hover:text-slate-900'}`}
+              title={dk ? 'Mode Terang' : 'Mode Gelap'}
             >
-              {dk ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+              {dk ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-700" />}
             </button>
             <button onClick={() => { soundFX.playClick(); onNavigate('login'); }}
               className={`hidden sm:block px-4 py-2 text-sm font-semibold rounded-xl transition-all ${dk ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-blue-600'}`}
             >Masuk</button>
             <button onClick={() => { soundFX.playClick(); onNavigate('register'); }}
-              className="px-5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-bold rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:scale-105 transition-all cursor-pointer"
+              className="hidden sm:block px-5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-bold rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:scale-105 transition-all cursor-pointer"
             >Daftar</button>
+
+            {/* Mobile Hamburger Button */}
+            <button
+              onClick={() => {
+                soundFX.playClick();
+                setMobileMenuOpen(!mobileMenuOpen);
+              }}
+              className={`md:hidden p-2 rounded-xl border transition-all ${dk ? 'border-slate-800 bg-slate-900 text-slate-300' : 'border-slate-200 bg-slate-100 text-slate-700'}`}
+              aria-label="Toggle Mobile Menu"
+            >
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
           </div>
         </div>
+
+        {/* Mobile Dropdown Menu */}
+        {mobileMenuOpen && (
+          <div className={`md:hidden border-t px-4 py-4 space-y-3 shadow-2xl animate-fadeIn ${dk ? 'border-slate-800 bg-slate-950/95 text-white' : 'border-slate-200 bg-white/95 text-slate-900'}`}>
+            <div className="flex flex-col gap-1">
+              <button
+                onClick={() => {
+                  soundFX.playClick();
+                  setMobileMenuOpen(false);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                className={`w-full text-left px-4 py-3 text-sm font-bold rounded-xl transition-all flex items-center justify-between ${activeSection === 'home' ? 'bg-blue-600/20 text-blue-400' : `${sub} hover:bg-slate-800/40`}`}
+              >
+                <span>🏠 Home</span>
+              </button>
+              <button
+                onClick={() => {
+                  soundFX.playClick();
+                  setMobileMenuOpen(false);
+                  onNavigate('katalog');
+                }}
+                className={`w-full text-left px-4 py-3 text-sm font-bold rounded-xl transition-all flex items-center justify-between ${sub} hover:bg-slate-800/40`}
+              >
+                <span>📚 Katalog Buku</span>
+              </button>
+              <button
+                onClick={() => {
+                  soundFX.playClick();
+                  setMobileMenuOpen(false);
+                  document.getElementById('tentang')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className={`w-full text-left px-4 py-3 text-sm font-bold rounded-xl transition-all flex items-center justify-between ${activeSection === 'tentang' ? 'bg-blue-600/20 text-blue-400' : `${sub} hover:bg-slate-800/40`}`}
+              >
+                <span>ℹ️ Tentang</span>
+              </button>
+              <button
+                onClick={() => {
+                  soundFX.playClick();
+                  setMobileMenuOpen(false);
+                  document.getElementById('kontak')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className={`w-full text-left px-4 py-3 text-sm font-bold rounded-xl transition-all flex items-center justify-between ${activeSection === 'kontak' ? 'bg-blue-600/20 text-blue-400' : `${sub} hover:bg-slate-800/40`}`}
+              >
+                <span>📬 Kontak</span>
+              </button>
+            </div>
+
+            <div className="pt-3 border-t border-slate-800/60 flex flex-col gap-2">
+              <button
+                onClick={() => {
+                  soundFX.playClick();
+                  setMobileMenuOpen(false);
+                  onNavigate('login');
+                }}
+                className={`w-full py-3 text-center text-sm font-bold rounded-xl border transition-all ${dk ? 'border-slate-800 bg-slate-900 text-slate-200' : 'border-slate-200 bg-slate-50 text-slate-800'}`}
+              >
+                🔑 Masuk
+              </button>
+              <button
+                onClick={() => {
+                  soundFX.playClick();
+                  setMobileMenuOpen(false);
+                  onNavigate('register');
+                }}
+                className="w-full py-3 text-center text-sm font-extrabold rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/25"
+              >
+                ✨ Daftar Gratis Sekarang
+              </button>
+            </div>
+          </div>
+        )}
       </nav>
 
       {/* HERO SECTION */}

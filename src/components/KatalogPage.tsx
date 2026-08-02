@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Book, User, ViewType } from '../types';
-import { Search, SlidersHorizontal, Heart, Star, BookOpen, RefreshCw, Sun, Moon, Sparkles } from 'lucide-react';
+import { Search, SlidersHorizontal, Heart, Star, BookOpen, RefreshCw, Sun, Moon, Sparkles, Menu, X } from 'lucide-react';
 import Book3D from './Book3D';
 import BookOpen3DModal from './BookOpen3DModal';
 import EBookReader3D from './EBookReader3D';
@@ -31,6 +31,7 @@ export default function KatalogPage({
   const [sortBy, setSortBy] = useState('Terpopuler');
   const [showFilters, setShowFilters] = useState(false);
   const [activeSection, setActiveSection] = useState<'home' | 'katalog' | 'tentang' | 'kontak'>('katalog');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Interactive 3D Modals State
   const [selectedBook3D, setSelectedBook3D] = useState<Book | null>(null);
@@ -108,7 +109,7 @@ export default function KatalogPage({
     <div className={`min-h-screen ${bg} ${text} font-sans antialiased transition-colors duration-300`}>
       {/* Sticky Navigation Bar */}
       <nav className={`fixed top-0 left-0 right-0 border-b backdrop-blur-xl z-50 shadow-sm transition-colors ${nav}`}>
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center space-x-3 cursor-pointer" onClick={() => onNavigate('landing')}>
             <div className="p-2 bg-gradient-to-tr from-blue-500 to-indigo-600 rounded-xl shadow-lg shadow-blue-500/30">
@@ -166,7 +167,7 @@ export default function KatalogPage({
           </div>
 
           {/* CTA & Theme Controls */}
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-2 sm:space-x-3">
             {/* DARK MODE TOGGLE */}
             <button
               onClick={() => {
@@ -187,7 +188,7 @@ export default function KatalogPage({
                   soundFX.playClick();
                   onNavigate('dashboard');
                 }}
-                className="px-5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-sm font-extrabold rounded-xl transition-all shadow-lg shadow-blue-500/25 cursor-pointer"
+                className="hidden sm:block px-5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-sm font-extrabold rounded-xl transition-all shadow-lg shadow-blue-500/25 cursor-pointer"
               >
                 Dashboard
               </button>
@@ -207,14 +208,104 @@ export default function KatalogPage({
                     soundFX.playClick();
                     onNavigate('register');
                   }}
-                  className="px-5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-sm font-extrabold rounded-xl transition-all shadow-lg shadow-blue-500/25 cursor-pointer"
+                  className="hidden sm:block px-5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-sm font-extrabold rounded-xl transition-all shadow-lg shadow-blue-500/25 cursor-pointer"
                 >
                   Daftar
                 </button>
               </>
             )}
+
+            {/* Mobile Hamburger Toggle */}
+            <button
+              onClick={() => {
+                soundFX.playClick();
+                setMobileMenuOpen(!mobileMenuOpen);
+              }}
+              className={`md:hidden p-2 rounded-xl border transition-all ${dk ? 'border-slate-800 bg-slate-900 text-slate-300' : 'border-slate-200 bg-slate-100 text-slate-700'}`}
+              aria-label="Toggle Mobile Menu"
+            >
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
           </div>
         </div>
+
+        {/* Mobile Dropdown Drawer */}
+        {mobileMenuOpen && (
+          <div className={`md:hidden border-t px-4 py-4 space-y-3 shadow-2xl animate-fadeIn ${dk ? 'border-slate-800 bg-slate-950/95 text-white' : 'border-slate-200 bg-white/95 text-slate-900'}`}>
+            <div className="flex flex-col gap-1">
+              <button
+                onClick={() => {
+                  soundFX.playClick();
+                  setMobileMenuOpen(false);
+                  onNavigate('landing');
+                }}
+                className={`w-full text-left px-4 py-3 text-sm font-bold rounded-xl transition-all flex items-center justify-between ${sub} hover:bg-slate-800/40`}
+              >
+                <span>🏠 Home</span>
+              </button>
+              <button
+                onClick={() => {
+                  soundFX.playClick();
+                  setMobileMenuOpen(false);
+                }}
+                className={`w-full text-left px-4 py-3 text-sm font-bold rounded-xl transition-all flex items-center justify-between bg-blue-600/20 text-blue-400`}
+              >
+                <span>📚 Katalog Buku</span>
+              </button>
+              <button
+                onClick={() => {
+                  soundFX.playClick();
+                  setMobileMenuOpen(false);
+                  onNavigate('landing');
+                  setTimeout(() => {
+                    document.getElementById('tentang')?.scrollIntoView({ behavior: 'smooth' });
+                  }, 100);
+                }}
+                className={`w-full text-left px-4 py-3 text-sm font-bold rounded-xl transition-all flex items-center justify-between ${sub} hover:bg-slate-800/40`}
+              >
+                <span>ℹ️ Tentang</span>
+              </button>
+            </div>
+
+            <div className="pt-3 border-t border-slate-800/60 flex flex-col gap-2">
+              {currentUser ? (
+                <button
+                  onClick={() => {
+                    soundFX.playClick();
+                    setMobileMenuOpen(false);
+                    onNavigate('dashboard');
+                  }}
+                  className="w-full py-3 text-center text-sm font-extrabold rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/25"
+                >
+                  📊 Masuk Ke Dashboard
+                </button>
+              ) : (
+                <>
+                  <button
+                    onClick={() => {
+                      soundFX.playClick();
+                      setMobileMenuOpen(false);
+                      onNavigate('login');
+                    }}
+                    className={`w-full py-3 text-center text-sm font-bold rounded-xl border transition-all ${dk ? 'border-slate-800 bg-slate-900 text-slate-200' : 'border-slate-200 bg-slate-50 text-slate-800'}`}
+                  >
+                    🔑 Masuk
+                  </button>
+                  <button
+                    onClick={() => {
+                      soundFX.playClick();
+                      setMobileMenuOpen(false);
+                      onNavigate('register');
+                    }}
+                    className="w-full py-3 text-center text-sm font-extrabold rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/25"
+                  >
+                    ✨ Daftar Gratis Sekarang
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        )}
       </nav>
 
       {/* MAIN CATALOG WORKSPACE */}

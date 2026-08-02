@@ -13,6 +13,7 @@ export default function Book3D({ book, size = 'md', className = '', onClick }: B
   const [rotate, setRotate] = useState({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false);
   const [isMoving, setIsMoving] = useState(false);
+  const [imgError, setImgError] = useState(false);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!containerRef.current) return;
@@ -111,13 +112,17 @@ export default function Book3D({ book, size = 'md', className = '', onClick }: B
             backfaceVisibility: 'hidden',
           }}
         >
-          {book.coverUrl ? (
-            <img
-              src={book.coverUrl}
-              alt={book.title}
-              className="absolute inset-0 w-full h-full object-cover"
-              referrerPolicy="no-referrer"
-            />
+          {book.coverUrl && !imgError ? (
+            <div className="w-full h-full relative">
+              <img
+                src={book.coverUrl}
+                alt={book.title}
+                onError={() => setImgError(true)}
+                className="absolute inset-0 w-full h-full object-cover"
+                referrerPolicy="no-referrer"
+              />
+              <div className="absolute top-0 bottom-0 left-0 w-3 bg-gradient-to-r from-black/60 via-black/20 to-transparent pointer-events-none z-10" />
+            </div>
           ) : (
             <div className={`w-full h-full ${dim.padding} flex flex-col justify-between relative`}>
               {/* Spine shadow overlay */}

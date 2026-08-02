@@ -14,6 +14,7 @@ export const INITIAL_BOOKS: Book[] = [
     status: "Tersedia",
     stock: 5,
     coverColor: "from-amber-600 to-yellow-800",
+    coverUrl: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=800&q=80",
     pdfUrl: "/buku_digital/69490a7377f5b-the-little-duke-or-richard-the-fearless-by-charlotte-mary-yonge.pdf"
   },
   {
@@ -29,6 +30,7 @@ export const INITIAL_BOOKS: Book[] = [
     status: "Tersedia",
     stock: 4,
     coverColor: "from-pink-600 to-rose-900",
+    coverUrl: "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=800&q=80",
     pdfUrl: "/buku_digital/69496235abd9b-mistress-wilding-by-rafael-sabatini.pdf"
   },
   {
@@ -44,6 +46,7 @@ export const INITIAL_BOOKS: Book[] = [
     status: "Tersedia",
     stock: 6,
     coverColor: "from-emerald-700 to-teal-950",
+    coverUrl: "https://images.unsplash.com/photo-1584286595398-a59f21d313f5?auto=format&fit=crop&w=800&q=80",
     pdfUrl: "/buku_digital/Advice_for_the_Muslim.pdf"
   },
   {
@@ -59,6 +62,7 @@ export const INITIAL_BOOKS: Book[] = [
     status: "Tersedia",
     stock: 5,
     coverColor: "from-blue-600 to-cyan-800",
+    coverUrl: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80",
     pdfUrl: "/buku_digital/Berani-jadi-SE-24Jun2015-final.pdf"
   },
   {
@@ -74,6 +78,7 @@ export const INITIAL_BOOKS: Book[] = [
     status: "Tersedia",
     stock: 4,
     coverColor: "from-yellow-600 to-orange-800",
+    coverUrl: "https://covers.openlibrary.org/b/isbn/9781465444820-L.jpg",
     pdfUrl: "/buku_digital/Coding project in scratch.pdf"
   },
   {
@@ -89,6 +94,7 @@ export const INITIAL_BOOKS: Book[] = [
     status: "Tersedia",
     stock: 3,
     coverColor: "from-teal-800 to-slate-900",
+    coverUrl: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=800&q=80",
     pdfUrl: "/buku_digital/Documents_of_the_Right_Word.pdf"
   },
   {
@@ -104,6 +110,7 @@ export const INITIAL_BOOKS: Book[] = [
     status: "Tersedia",
     stock: 5,
     coverColor: "from-indigo-800 to-violet-950",
+    coverUrl: "https://images.unsplash.com/photo-1519682337058-a94d519337bc?auto=format&fit=crop&w=800&q=80",
     pdfUrl: "/buku_digital/Islam_and_Christianity.pdf"
   },
   {
@@ -119,6 +126,7 @@ export const INITIAL_BOOKS: Book[] = [
     status: "Tersedia",
     stock: 4,
     coverColor: "from-violet-650 to-indigo-900",
+    coverUrl: "https://images.unsplash.com/photo-1474939557548-f84244685449?auto=format&fit=crop&w=800&q=80",
     pdfUrl: "/buku_digital/KAJIAN-PUISI.pdf"
   },
   {
@@ -134,6 +142,7 @@ export const INITIAL_BOOKS: Book[] = [
     status: "Tersedia",
     stock: 8,
     coverColor: "from-sky-500 to-blue-800",
+    coverUrl: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
     pdfUrl: "/buku_digital/Konspirasi alam semesta - fiersa besari.pdf"
   },
   {
@@ -149,6 +158,7 @@ export const INITIAL_BOOKS: Book[] = [
     status: "Tersedia",
     stock: 5,
     coverColor: "from-zinc-800 to-zinc-950",
+    coverUrl: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=800&q=80",
     pdfUrl: "/buku_digital/Negeri di ujung tanduk - tere liye.pdf"
   },
   {
@@ -164,6 +174,7 @@ export const INITIAL_BOOKS: Book[] = [
     status: "Tersedia",
     stock: 3,
     coverColor: "from-rose-800 to-slate-900",
+    coverUrl: "https://images.unsplash.com/photo-1457369804613-52c61a468e7d?auto=format&fit=crop&w=800&q=80",
     pdfUrl: "/buku_digital/Prosiding sosiologi- Konflik dan Politik Identitas ( PDFDrive ).pdf"
   },
   {
@@ -179,6 +190,7 @@ export const INITIAL_BOOKS: Book[] = [
     status: "Tersedia",
     stock: 3,
     coverColor: "from-amber-800 to-amber-950",
+    coverUrl: "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=800&q=80",
     pdfUrl: "/buku_digital/Sejarah Geografi Agraria Indonesia ( PDFDrive ).pdf"
   },
   {
@@ -194,6 +206,7 @@ export const INITIAL_BOOKS: Book[] = [
     status: "Tersedia",
     stock: 7,
     coverColor: "from-red-600 to-red-950",
+    coverUrl: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=800&q=80",
     pdfUrl: "/buku_digital/Suara-dari-Kelas-Kecil-Kumpulan-Bahan-Literasi-Antikorupsi.pdf"
   },
   {
@@ -209,6 +222,7 @@ export const INITIAL_BOOKS: Book[] = [
     status: "Tersedia",
     stock: 6,
     coverColor: "from-yellow-500 to-orange-700",
+    coverUrl: "https://images.unsplash.com/photo-1532693322450-2cb5c511067d?auto=format&fit=crop&w=800&q=80",
     pdfUrl: "/buku_digital/Tere Liye - Bulan.pdf"
   },
   {
@@ -224,6 +238,7 @@ export const INITIAL_BOOKS: Book[] = [
     status: "Tersedia",
     stock: 5,
     coverColor: "from-indigo-650 to-purple-900",
+    coverUrl: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80",
     pdfUrl: "/buku_digital/Tere liye - tentang kamu.pdf"
   },
   {
@@ -239,6 +254,7 @@ export const INITIAL_BOOKS: Book[] = [
     status: "Tersedia",
     stock: 6,
     coverColor: "from-orange-600 to-red-900",
+    coverUrl: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=800&q=80",
     pdfUrl: "/buku_digital/Tere_Liye_-_Matahari.pdf.pdf"
   },
   {
@@ -254,6 +270,7 @@ export const INITIAL_BOOKS: Book[] = [
     status: "Tersedia",
     stock: 4,
     coverColor: "from-green-600 to-emerald-900",
+    coverUrl: "https://images.unsplash.com/photo-1495521821757-a1efb6729352?auto=format&fit=crop&w=800&q=80",
     pdfUrl: "/buku_digital/The Deliciously Keto Cookbook.pdf"
   },
   {
@@ -269,6 +286,7 @@ export const INITIAL_BOOKS: Book[] = [
     status: "Tersedia",
     stock: 3,
     coverColor: "from-slate-700 to-neutral-900",
+    coverUrl: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80",
     pdfUrl: "/buku_digital/computer forensics.pdf"
   },
 
@@ -289,6 +307,7 @@ export const INITIAL_BOOKS: Book[] = [
     status: "Tersedia",
     stock: 10,
     coverColor: "from-rose-700 to-pink-950",
+    coverUrl: "https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=800&q=80",
     pdfUrl: "/buku_digital/Letters_of_a_Javanese_Princess.pdf"
   },
   {
@@ -304,6 +323,7 @@ export const INITIAL_BOOKS: Book[] = [
     status: "Tersedia",
     stock: 8,
     coverColor: "from-green-800 to-emerald-950",
+    coverUrl: "https://images.unsplash.com/photo-1509021436468-d5103e3927d7?auto=format&fit=crop&w=800&q=80",
     pdfUrl: "/buku_digital/Max_Havelaar.pdf"
   },
   {
@@ -319,6 +339,7 @@ export const INITIAL_BOOKS: Book[] = [
     status: "Tersedia",
     stock: 5,
     coverColor: "from-amber-700 to-yellow-900",
+    coverUrl: "https://images.unsplash.com/photo-1447069387593-a5de0862481e?auto=format&fit=crop&w=800&q=80",
     pdfUrl: "/buku_digital/The_History_of_Sumatra.pdf"
   },
   {
@@ -334,6 +355,7 @@ export const INITIAL_BOOKS: Book[] = [
     status: "Tersedia",
     stock: 6,
     coverColor: "from-blue-900 to-slate-950",
+    coverUrl: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
     pdfUrl: "/buku_digital/Lord_Jim.pdf"
   },
   {
@@ -349,6 +371,7 @@ export const INITIAL_BOOKS: Book[] = [
     status: "Tersedia",
     stock: 4,
     coverColor: "from-teal-700 to-cyan-950",
+    coverUrl: "https://images.unsplash.com/photo-1461360370896-922624d12aa1?auto=format&fit=crop&w=800&q=80",
     pdfUrl: "/buku_digital/The_History_of_Java.pdf"
   },
   {
@@ -364,6 +387,7 @@ export const INITIAL_BOOKS: Book[] = [
     status: "Tersedia",
     stock: 5,
     coverColor: "from-purple-800 to-violet-950",
+    coverUrl: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80",
     pdfUrl: "/buku_digital/The_Hidden_Force.pdf"
   },
   {
@@ -379,6 +403,7 @@ export const INITIAL_BOOKS: Book[] = [
     status: "Tersedia",
     stock: 4,
     coverColor: "from-orange-700 to-amber-950",
+    coverUrl: "https://images.unsplash.com/photo-1596402184320-417e7178b2cd?auto=format&fit=crop&w=800&q=80",
     pdfUrl: "/buku_digital/Monumental_Java.pdf"
   },
   {
@@ -394,6 +419,7 @@ export const INITIAL_BOOKS: Book[] = [
     status: "Tersedia",
     stock: 6,
     coverColor: "from-red-700 to-orange-950",
+    coverUrl: "https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=800&q=80",
     pdfUrl: "/buku_digital/Blown_to_Bits.pdf"
   },
   {
@@ -409,6 +435,7 @@ export const INITIAL_BOOKS: Book[] = [
     status: "Tersedia",
     stock: 5,
     coverColor: "from-lime-700 to-green-950",
+    coverUrl: "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=800&q=80",
     pdfUrl: "/buku_digital/Java_Facts_and_Fancies.pdf"
   },
   {
@@ -424,6 +451,7 @@ export const INITIAL_BOOKS: Book[] = [
     status: "Tersedia",
     stock: 4,
     coverColor: "from-cyan-700 to-teal-950",
+    coverUrl: "https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?auto=format&fit=crop&w=800&q=80",
     pdfUrl: "/buku_digital/Travels_in_the_East_Indian_Archipelago.pdf"
   }
 ];
