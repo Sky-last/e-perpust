@@ -259,7 +259,7 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
             </h1>
 
             <p className={`text-base sm:text-lg leading-relaxed max-w-lg mx-auto lg:mx-0 ${sub}`}>
-              Akses <span className="font-bold text-blue-400">{totalUniqueBooks}+ judul</span> buku dengan animasi 3D buku terbuka, e-reader page flip, serta ruang showcase 3D interaktif.
+              Akses <span className="font-bold text-blue-400">{totalUniqueBooks}+ judul</span> buku dengan animasi buku terbuka, e-reader page flip, serta ruang showcase interaktif.
             </p>
 
             <div className="flex flex-col xs:flex-row flex-wrap gap-3 sm:gap-4 justify-center lg:justify-start">
@@ -281,7 +281,7 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
             <div className="flex flex-wrap gap-4 sm:gap-6 pt-2 justify-center lg:justify-start">
               {[
                 { val: `${totalUniqueBooks}+`, label: 'Judul Buku', color: 'from-blue-500 to-blue-600' },
-                { val: '24/7', label: 'E-Reader 3D', color: 'from-emerald-500 to-emerald-600' },
+                { val: '24/7', label: 'E-Reader Interaktif', color: 'from-emerald-500 to-emerald-600' },
                 { val: '100%', label: 'Audio SFX', color: 'from-purple-500 to-purple-600' },
               ].map((s, i) => (
                 <div key={i} className="flex items-center gap-2 sm:gap-3">
@@ -292,14 +292,14 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
             </div>
           </div>
 
-          {/* Right: 3D Featured Book — hidden on very small screens */}
+          {/* Right: Featured Book — hidden on very small screens */}
           <div className="hidden sm:flex relative flex-col items-center justify-center gap-6">
             <div className="absolute w-64 sm:w-80 h-64 sm:h-80 bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-full blur-3xl -z-10 animate-pulse" />
             <div className="relative group cursor-pointer" onClick={() => featuredBook && handleOpen3DBook(featuredBook.id)}>
               {featuredBook && <Book3D book={featuredBook} size="xl" />}
               <div className="w-52 h-4 bg-black/20 rounded-full blur-md mx-auto mt-3 group-hover:scale-95 transition-all" />
               <div className={`absolute -right-4 -bottom-4 p-4 rounded-2xl shadow-2xl max-w-[180px] transform rotate-2 translate-y-2 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 pointer-events-none z-20 border ${dk ? 'bg-slate-900/95 border-slate-700' : 'bg-white/95 border-slate-200'}`}>
-                <span className="text-[9px] font-black text-blue-400 uppercase tracking-wider">✨ Klik Buka Buku 3D</span>
+                <span className="text-[9px] font-black text-blue-400 uppercase tracking-wider">✨ Klik Buka Buku</span>
                 {featuredBook && <h4 className={`font-bold text-xs line-clamp-2 mt-1 ${text}`}>{featuredBook.title}</h4>}
                 {featuredBook && <p className={`text-[10px] mt-1 ${sub}`}>{featuredBook.author}</p>}
               </div>

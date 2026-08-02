@@ -25,13 +25,13 @@ export default function RegisterPage({ onNavigate, onRegister, addToast }: Regis
     author: 'Pustaka Digital Team',
     publisher: 'Pustaka Digital',
     category: 'E-Book',
-    description: 'Nikmati akses tak terbatas ke ribuan e-book digital dengan pengalaman membaca 3D yang imersif.',
+    description: 'Nikmati akses tak terbatas ke ribuan e-book digital dengan pengalaman membaca yang imersif.',
     coverColor: 'from-blue-600 to-indigo-900',
     rating: 5.0,
     year: 2026,
     stock: 99,
     status: 'Tersedia',
-    isbn: '978-602-REG-3D',
+    isbn: '978-602-REG-SYS',
   };
 
   const getPasswordStrength = () => {
@@ -133,7 +133,7 @@ export default function RegisterPage({ onNavigate, onRegister, addToast }: Regis
 
           <div className="space-y-2.5 pt-4 border-t border-slate-800/80 text-xs">
             {[
-              'Akses e-reader flipbook 3D interaktif 24/7',
+              'Akses e-reader flipbook interaktif 24/7',
               'Pinjam & simpan buku favorit dalam 1-klik',
               'Rekomendasi bacaan cerdas sesuai minat Anda',
             ].map((text, i) => (

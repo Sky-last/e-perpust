@@ -169,11 +169,11 @@ export default function VT3DImmersiveExperience({
           </div>
           <div className="min-w-0">
             <h2 className="text-xs sm:text-base font-black tracking-tight text-white truncate">
-              <span className="hidden sm:inline">VT 3D Immersive Library Experience</span>
-              <span className="sm:hidden">3D Library VT</span>
+              <span className="hidden sm:inline">Perpustakaan Virtual Imersif</span>
+              <span className="sm:hidden">Pustaka Virtual</span>
             </h2>
             <p className="text-[9px] sm:text-[10px] text-blue-400 font-semibold uppercase tracking-wider hidden sm:block">
-              Futuristic 3D Carousel & Interactive Page Flip
+              Koleksi Karusel & Pratinjau Interaktif
             </p>
           </div>
         </div>
@@ -297,27 +297,36 @@ export default function VT3DImmersiveExperience({
                         : '0 10px 30px rgba(0,0,0,0.6)',
                     }}
                   >
-                    {/* Spine highlight */}
-                    <div className="absolute top-0 bottom-0 left-0 w-2.5 bg-gradient-to-r from-black/40 to-transparent" />
+                    {b.coverUrl ? (
+                      <div className="absolute inset-0 w-full h-full">
+                        <img src={b.coverUrl} alt={b.title} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                        <div className="absolute top-0 bottom-0 left-0 w-3 bg-gradient-to-r from-black/60 via-black/20 to-transparent pointer-events-none z-10" />
+                      </div>
+                    ) : (
+                      <>
+                        {/* Spine highlight */}
+                        <div className="absolute top-0 bottom-0 left-0 w-2.5 bg-gradient-to-r from-black/40 to-transparent pointer-events-none" />
 
-                    <div className="space-y-2 z-10">
-                      <span className="text-[8px] font-black uppercase tracking-widest px-2 py-0.5 bg-black/40 text-amber-300 rounded border border-amber-400/30">
-                        {b.category}
-                      </span>
-                      <h4 className="text-xs font-black text-white leading-tight line-clamp-3 drop-shadow">
-                        {b.title}
-                      </h4>
-                    </div>
+                        <div className="space-y-2 z-10">
+                          <span className="text-[8px] font-black uppercase tracking-widest px-2 py-0.5 bg-black/40 text-amber-300 rounded border border-amber-400/30">
+                            {b.category}
+                          </span>
+                          <h4 className="text-xs font-black text-white leading-tight line-clamp-3 drop-shadow">
+                            {b.title}
+                          </h4>
+                        </div>
 
-                    <div className="pt-2 border-t border-white/20 z-10 flex justify-between items-center text-[10px]">
-                      <span className="text-white/80 truncate font-semibold">{b.author}</span>
-                      <span className="text-amber-300 font-bold">★ {b.rating}</span>
-                    </div>
+                        <div className="pt-2 border-t border-white/20 z-10 flex justify-between items-center text-[10px]">
+                          <span className="text-white/80 truncate font-semibold">{b.author}</span>
+                          <span className="text-amber-300 font-bold">★ {b.rating}</span>
+                        </div>
+                      </>
+                    )}
 
                     {/* Hover Inspect Tag */}
-                    <div className="absolute inset-0 bg-blue-900/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-3 text-center gap-2">
+                    <div className="absolute inset-0 bg-blue-900/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-3 text-center gap-2 z-20">
                       <Eye className="w-6 h-6 text-blue-300 animate-bounce" />
-                      <span className="text-[10px] font-extrabold text-white">Inspeksi Buku 3D</span>
+                      <span className="text-[10px] font-extrabold text-white">Inspeksi Buku</span>
                     </div>
                   </div>
                 </div>
@@ -328,7 +337,7 @@ export default function VT3DImmersiveExperience({
           /* INSPECT & OPEN BOOK MODE (INSPECTION STUDIO) */
           <div className="relative w-full max-w-4xl h-[480px] sm:h-[560px] flex items-center justify-center z-20 animate-scaleUp px-3 sm:px-0">
 
-            {/* THE 3D OPENING BOOK */}
+            {/* THE OPENING BOOK */}
             <div
               className="relative w-full max-w-[320px] sm:max-w-none sm:w-[640px] h-[400px] sm:h-[460px] transition-all duration-700"
               style={{
@@ -356,12 +365,12 @@ export default function VT3DImmersiveExperience({
                   <p className="text-xs text-slate-400 font-semibold">Penulis: {currentBook.author}</p>
                   <div className="h-px bg-slate-800 my-2" />
                   <p className="text-xs text-slate-300 leading-relaxed font-normal">
-                    {currentBook.description || 'Pustaka Digital Indonesia menghadirkan koleksi literasi terbaik dengan teknologi 3D interaktif futuristik.'}
+                    {currentBook.description || 'Pustaka Digital Indonesia menghadirkan koleksi literasi terbaik dengan teknologi interaktif futuristik.'}
                   </p>
                 </div>
 
                 <div className="flex justify-between items-center text-[10px] text-slate-500 border-t border-slate-800 pt-3">
-                  <span>Pustaka 3D VT Studio</span>
+                  <span>Pustaka Virtual Studio</span>
                   <span>Halaman {page}</span>
                 </div>
               </div>
@@ -378,16 +387,19 @@ export default function VT3DImmersiveExperience({
                 <div className="space-y-4">
                   <div className="p-3 bg-slate-800/60 rounded-xl border border-slate-700/50 space-y-1 text-xs">
                     <p className="text-[10px] text-slate-400 font-bold uppercase">Penerbit & Tahun</p>
-                    <p className="font-extrabold text-white">{currentBook.publisher} ({currentBook.year})</p>
+                    <p className="font-bold text-white">{currentBook.publisher} ({currentBook.year})</p>
                   </div>
                   <div className="p-3 bg-slate-800/60 rounded-xl border border-slate-700/50 space-y-1 text-xs">
-                    <p className="text-[10px] text-slate-400 font-bold uppercase">Lokasi Rak & Stok</p>
-                    <p className="font-extrabold text-emerald-400">{currentBook.rackLocation || 'Rak A-01'} • {currentBook.stock} Buku Tersedia</p>
+                    <p className="text-[10px] text-slate-400 font-bold uppercase">ISBN & Status</p>
+                    <p className="font-mono text-slate-300">{currentBook.isbn}</p>
+                    <p className={`font-bold ${currentBook.stock > 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                      {currentBook.stock > 0 ? `Tersedia (${currentBook.stock} stok)` : 'Sedang Dipinjam'}
+                    </p>
                   </div>
                 </div>
 
                 <div className="space-y-3 pt-4 border-t border-slate-800">
-                  <div className="flex gap-2">
+                  <div className="flex items-center gap-2">
                     <button
                       onClick={() => {
                         soundFX.playPageFlip();
@@ -395,7 +407,7 @@ export default function VT3DImmersiveExperience({
                       }}
                       className="flex-1 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-xl transition-all"
                     >
-                      Hal. Sebelumnya
+                      Hal. Seblm
                     </button>
                     <button
                       onClick={() => {
@@ -423,7 +435,7 @@ export default function VT3DImmersiveExperience({
                 </div>
               </div>
 
-              {/* FRONT COVER (FLIPS OPEN 3D) */}
+              {/* FRONT COVER (FLIPS OPEN) */}
               <div
                 className="absolute top-0 left-0 w-1/2 h-full rounded-l-2xl shadow-2xl origin-right transition-transform duration-700 ease-in-out p-8 flex flex-col justify-between text-white overflow-hidden"
                 style={{
@@ -436,18 +448,27 @@ export default function VT3DImmersiveExperience({
                   boxShadow: '0 25px 50px rgba(0,0,0,0.8)',
                 }}
               >
-                <div className="space-y-4">
-                  <span className="text-[9px] font-black uppercase tracking-widest px-3 py-1 bg-black/40 rounded-full border border-white/20">
-                    {currentBook.category}
-                  </span>
-                  <h2 className="text-2xl font-black leading-tight drop-shadow">{currentBook.title}</h2>
-                  <p className="text-xs font-bold opacity-80">{currentBook.author}</p>
-                </div>
+                {currentBook.coverUrl ? (
+                  <div className="absolute inset-0 w-full h-full">
+                    <img src={currentBook.coverUrl} alt={currentBook.title} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                    <div className="absolute top-0 bottom-0 left-0 w-4 bg-gradient-to-r from-black/60 via-black/20 to-transparent pointer-events-none z-10" />
+                  </div>
+                ) : (
+                  <>
+                    <div className="space-y-4">
+                      <span className="text-[9px] font-black uppercase tracking-widest px-3 py-1 bg-black/40 rounded-full border border-white/20">
+                        {currentBook.category}
+                      </span>
+                      <h2 className="text-2xl font-black leading-tight drop-shadow">{currentBook.title}</h2>
+                      <p className="text-xs font-bold opacity-80">{currentBook.author}</p>
+                    </div>
 
-                <div className="pt-4 border-t border-white/20 flex justify-between items-center text-xs font-mono">
-                  <span>Pustaka Digital</span>
-                  <Sparkles className="w-5 h-5 text-amber-300 animate-pulse" />
-                </div>
+                    <div className="pt-4 border-t border-white/20 flex justify-between items-center text-xs font-mono">
+                      <span>Pustaka Digital</span>
+                      <Sparkles className="w-5 h-5 text-amber-300 animate-pulse" />
+                    </div>
+                  </>
+                )}
               </div>
             </div>
 
@@ -472,7 +493,7 @@ export default function VT3DImmersiveExperience({
                 className="px-4 sm:px-6 py-2 sm:py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-extrabold rounded-xl shadow-lg shadow-blue-500/30 cursor-pointer flex items-center gap-2"
               >
                 <BookOpen className="w-4 h-4" />
-                <span>{bookOpen ? 'Tutup Cover' : 'Buka Cover 3D'}</span>
+                <span>{bookOpen ? 'Tutup Cover' : 'Buka Cover Buku'}</span>
               </button>
             </div>
           </div>
@@ -481,7 +502,7 @@ export default function VT3DImmersiveExperience({
 
       {/* FOOTER BAR NAVIGATION HINT */}
       <div className="absolute bottom-3 sm:bottom-4 left-3 sm:left-6 right-3 sm:right-6 flex items-center justify-between text-[10px] sm:text-xs text-slate-400 font-semibold pointer-events-none gap-2">
-        <span className="hidden sm:inline">💡 Petunjuk: Klik/sentuh dan tahan untuk rotasi 3D 360° • Klik buku untuk inspeksi</span>
+        <span className="hidden sm:inline">💡 Petunjuk: Klik/sentuh dan tahan untuk rotasi 360° • Klik buku untuk inspeksi</span>
         <span className="sm:hidden">👆 Sentuh & geser untuk rotasi</span>
         <span className="flex-shrink-0">Buku {selectedIndex + 1}/{displayBooks.length}</span>
       </div>

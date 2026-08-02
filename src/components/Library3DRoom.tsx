@@ -27,13 +27,13 @@ export default function Library3DRoom({ books = [], onSelectBook }: Library3DRoo
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 relative z-10">
         <div>
           <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-500/10 border border-blue-500/20 rounded-full text-blue-400 text-[10px] font-black uppercase tracking-wider">
-            <Sparkles className="w-3 h-3" /> Panggung Visualisasi 3D
+            <Sparkles className="w-3 h-3" /> Panggung Visualisasi Buku
           </div>
           <h3 className="text-2xl md:text-3xl font-black text-white mt-2 tracking-tight">
             Etalase Koleksi Unggulan
           </h3>
           <p className="text-xs text-slate-400 mt-1">
-            Sorotan buku digital interaktif dengan efek rotasi 3D dan detail lengkap.
+            Sorotan buku digital interaktif dengan efek rotasi dan detail lengkap.
           </p>
         </div>
 
@@ -47,12 +47,12 @@ export default function Library3DRoom({ books = [], onSelectBook }: Library3DRoo
       {/* MAIN SHOWCASE STUDIO STAGE */}
       <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 md:p-8 backdrop-blur-xl">
 
-        {/* LEFT / CENTER: THE 3D FEATURED BOOK DISPLAY */}
+        {/* LEFT / CENTER: THE FEATURED BOOK DISPLAY */}
         <div className="lg:col-span-6 flex flex-col items-center justify-center py-6 relative">
           {/* Spotlight aura */}
           <div className="absolute w-72 h-72 bg-gradient-to-tr from-blue-600/30 to-indigo-600/30 rounded-full blur-3xl pointer-events-none" />
 
-          {/* Interactive 3D Book */}
+          {/* Interactive Book */}
           <div
             onClick={() => {
               soundFX.playBookOpen();
@@ -88,7 +88,7 @@ export default function Library3DRoom({ books = [], onSelectBook }: Library3DRoo
             </p>
 
             <p className="text-xs text-slate-300 leading-relaxed line-clamp-4 pt-1 font-sans">
-              {currentBook.description || 'Koleksi e-book literasi digital dengan materi berkualitas dan tampilan 3D interaktif.'}
+              {currentBook.description || 'Koleksi e-book literasi digital dengan materi berkualitas dan tampilan interaktif.'}
             </p>
           </div>
 
@@ -116,7 +116,7 @@ export default function Library3DRoom({ books = [], onSelectBook }: Library3DRoo
               className="flex-1 min-w-[200px] py-3.5 px-5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-extrabold rounded-xl shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2 transition-all cursor-pointer hover:scale-[1.02] active:scale-95"
             >
               <BookOpen className="w-4 h-4 text-blue-200" />
-              <span>Buka Detail & Baca 3D</span>
+              <span>Buka Detail & Baca</span>
             </button>
           </div>
         </div>

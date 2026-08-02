@@ -20,17 +20,17 @@ export default function LoginPage({ onNavigate, onLogin, addToast }: LoginPagePr
   // Showcase Book for Split Screen
   const showcaseBook: Book = {
     id: 'login-demo',
-    title: 'Digital Library 3D Edition',
+    title: 'Digital Library Modern',
     author: 'Pustaka Indonesia',
     publisher: 'Pustaka Digital',
-    category: 'Sistem 3D',
-    description: 'Sistem perpustakaan digital imersif dengan teknologi 3D modern.',
+    category: 'Sistem Digital',
+    description: 'Sistem perpustakaan digital imersif dengan teknologi modern.',
     coverColor: 'from-blue-600 to-slate-900',
     rating: 4.9,
     year: 2026,
     stock: 50,
     status: 'Tersedia',
-    isbn: '978-602-LOGIN-3D',
+    isbn: '978-602-LOGIN-SYS',
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
