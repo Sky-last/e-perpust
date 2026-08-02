@@ -34,6 +34,7 @@ import SiswaDashboard from './components/dashboard/SiswaDashboard';
 import StaffDashboard from './components/dashboard/StaffDashboard';
 
 import { DEFAULT_CATEGORIES, DEFAULT_SETTINGS, DEFAULT_USERS } from './data/seedData';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function App() {
   // Navigation & Core state
@@ -1238,8 +1239,8 @@ export default function App() {
 
               {/* Desktop Nav Links */}
               <div className="hidden md:flex items-center space-x-1">
-                <button onClick={() => handleNavigate('landing')} className={`relative px-4 py-2 text-sm font-semibold transition-all cursor-pointer rounded-xl ${currentView === 'landing' ? 'text-blue-600 bg-blue-50' : 'text-slate-600 hover:text-blue-600 hover:bg-slate-50'}`}>Home</button>
-                <button onClick={() => handleNavigate('katalog')} className={`relative px-4 py-2 text-sm font-semibold transition-all cursor-pointer rounded-xl ${currentView === 'katalog' ? 'text-blue-600 bg-blue-50' : 'text-slate-600 hover:text-blue-600 hover:bg-slate-50'}`}>Katalog</button>
+                <button onClick={() => handleNavigate('landing')} className="relative px-4 py-2 text-sm font-semibold transition-all cursor-pointer rounded-xl text-slate-600 hover:text-blue-600 hover:bg-slate-50">Home</button>
+                <button onClick={() => handleNavigate('katalog')} className="relative px-4 py-2 text-sm font-semibold transition-all cursor-pointer rounded-xl text-slate-600 hover:text-blue-600 hover:bg-slate-50">Katalog</button>
                 <button onClick={() => { handleNavigate('landing'); setTimeout(() => document.getElementById('tentang')?.scrollIntoView({ behavior: 'smooth' }), 100); }} className="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-blue-600 hover:bg-slate-50 transition-all cursor-pointer rounded-xl">Tentang</button>
                 <button onClick={() => { handleNavigate('landing'); setTimeout(() => document.getElementById('kontak')?.scrollIntoView({ behavior: 'smooth' }), 100); }} className="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-blue-600 hover:bg-slate-50 transition-all cursor-pointer rounded-xl">Kontak</button>
               </div>
@@ -1300,7 +1301,17 @@ export default function App() {
           </nav>
         )}
         <div className={showHeader ? "pt-16 w-full min-h-screen" : "w-full min-h-screen"}>
-          {renderViewContent()}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentView + (selectedBookId || '')}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+            >
+              {renderViewContent()}
+            </motion.div>
+          </AnimatePresence>
         </div>
         <ToastNotification toasts={toasts} onDismiss={handleDismissToast} />
       </div>
@@ -1514,7 +1525,17 @@ export default function App() {
 
         {/* CONTAINER CONTENT */}
         <div ref={scrollContainerRef} className="flex-1 overflow-y-auto p-5 md:p-8 max-w-7xl w-full mx-auto">
-          {renderViewContent()}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentView + (selectedBookId || '')}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+            >
+              {renderViewContent()}
+            </motion.div>
+          </AnimatePresence>
         </div>
       </main>
 

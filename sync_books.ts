@@ -56,7 +56,7 @@ async function main() {
     status: b.status,
     stock: b.stock,
     cover_color: b.coverColor,
-    cover_url: b.pdfUrl || b.coverUrl || null,
+    cover_url: b.coverUrl || null,         // Gambar sampul (URL foto)
     is_ai_generated: b.isAiGenerated || false
   }));
 

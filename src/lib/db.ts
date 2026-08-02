@@ -47,7 +47,9 @@ export async function getBooks(): Promise<Book[]> {
       }
 
       return data.map(b => {
-        const isPdf = b.cover_url && b.cover_url.endsWith('.pdf');
+        const isPdf = b.cover_url && (b.cover_url.endsWith('.pdf') || b.cover_url.startsWith('/buku_digital/'));
+        // cover_url that starts with http is an image, otherwise it's a PDF path
+        const isImageUrl = b.cover_url && (b.cover_url.startsWith('http') || b.cover_url.startsWith('data:'));
         return {
           id: b.id,
           title: b.title,
@@ -61,8 +63,8 @@ export async function getBooks(): Promise<Book[]> {
           status: b.status as 'Tersedia' | 'Sedang Dipinjam',
           stock: b.stock,
           coverColor: b.cover_color,
-          coverUrl: isPdf ? undefined : (b.cover_url || undefined),
-          pdfUrl: isPdf ? b.cover_url : undefined,
+          coverUrl: isImageUrl ? b.cover_url : undefined,
+          pdfUrl: isPdf && !isImageUrl ? b.cover_url : undefined,
           isAiGenerated: b.is_ai_generated
         };
       });
