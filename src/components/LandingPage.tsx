@@ -154,7 +154,7 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
                 }}
                 className={`w-full text-left px-4 py-3 text-sm font-bold rounded-xl transition-all flex items-center justify-between ${activeSection === 'home' ? 'bg-blue-600/20 text-blue-400' : `${sub} hover:bg-slate-800/40`}`}
               >
-                <span>🏠 Home</span>
+                <span>Home</span>
               </button>
               <button
                 onClick={() => {
@@ -164,7 +164,7 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
                 }}
                 className={`w-full text-left px-4 py-3 text-sm font-bold rounded-xl transition-all flex items-center justify-between ${sub} hover:bg-slate-800/40`}
               >
-                <span>📚 Katalog Buku</span>
+                <span>Katalog Buku</span>
               </button>
               <button
                 onClick={() => {
@@ -174,7 +174,7 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
                 }}
                 className={`w-full text-left px-4 py-3 text-sm font-bold rounded-xl transition-all flex items-center justify-between ${activeSection === 'tentang' ? 'bg-blue-600/20 text-blue-400' : `${sub} hover:bg-slate-800/40`}`}
               >
-                <span>ℹ️ Tentang</span>
+                <span>Tentang</span>
               </button>
               <button
                 onClick={() => {
@@ -184,7 +184,7 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
                 }}
                 className={`w-full text-left px-4 py-3 text-sm font-bold rounded-xl transition-all flex items-center justify-between ${activeSection === 'kontak' ? 'bg-blue-600/20 text-blue-400' : `${sub} hover:bg-slate-800/40`}`}
               >
-                <span>📬 Kontak</span>
+                <span>Kontak</span>
               </button>
             </div>
 
@@ -197,7 +197,7 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
                 }}
                 className={`w-full py-3 text-center text-sm font-bold rounded-xl border transition-all ${dk ? 'border-slate-800 bg-slate-900 text-slate-200' : 'border-slate-200 bg-slate-50 text-slate-800'}`}
               >
-                🔑 Masuk
+                Masuk
               </button>
               <button
                 onClick={() => {
@@ -207,7 +207,7 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
                 }}
                 className="w-full py-3 text-center text-sm font-extrabold rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/25"
               >
-                ✨ Daftar Gratis Sekarang
+                Daftar Gratis Sekarang
               </button>
             </div>
           </div>
@@ -243,67 +243,47 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
           />
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-center">
-          {/* Left: Text */}
-          <div className="space-y-5 sm:space-y-8 text-center lg:text-left">
-            <div className={`inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs font-bold border ${dk ? 'bg-blue-950/60 border-blue-800/60 text-blue-300' : 'bg-blue-50 border-blue-200 text-blue-700'}`}>
-              <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-              Platform Literasi Futuristik
-            </div>
-
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-[1.05] tracking-tight">
-              Eksplorasi Dunia<br />Lewat{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">
-                Pustaka
-              </span>
-            </h1>
-
-            <p className={`text-base sm:text-lg leading-relaxed max-w-lg mx-auto lg:mx-0 ${sub}`}>
-              Akses <span className="font-bold text-blue-400">{totalUniqueBooks}+ judul</span> buku dengan animasi buku terbuka, e-reader page flip, serta ruang showcase interaktif.
-            </p>
-
-            <div className="flex flex-col xs:flex-row flex-wrap gap-3 sm:gap-4 justify-center lg:justify-start">
-              <button onClick={() => { soundFX.playClick(); onNavigate('katalog'); }}
-                className="group flex items-center justify-center gap-2 px-6 sm:px-8 py-3.5 sm:py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold rounded-2xl shadow-xl shadow-blue-500/25 hover:shadow-blue-500/40 hover:scale-105 transition-all cursor-pointer"
-              >
-                Jelajahi Katalog
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </button>
-              <button onClick={() => { soundFX.playClick(); onNavigate('register'); }}
-                className={`flex items-center justify-center gap-2 px-6 sm:px-8 py-3.5 sm:py-4 font-extrabold rounded-2xl border-2 transition-all hover:scale-105 cursor-pointer ${dk ? 'border-slate-800 bg-slate-900/60 text-slate-200 hover:border-blue-500 hover:text-white' : 'border-slate-200 bg-white text-slate-800 hover:border-blue-500 hover:text-blue-600'}`}
-              >
-                <BookOpen className="w-5 h-5 text-blue-400" />
-                Daftar Gratis
-              </button>
-            </div>
-
-            {/* Stats */}
-            <div className="flex flex-wrap gap-4 sm:gap-6 pt-2 justify-center lg:justify-start">
-              {[
-                { val: `${totalUniqueBooks}+`, label: 'Judul Buku', color: 'from-blue-500 to-blue-600' },
-                { val: '24/7', label: 'E-Reader Interaktif', color: 'from-emerald-500 to-emerald-600' },
-                { val: '100%', label: 'Audio SFX', color: 'from-purple-500 to-purple-600' },
-              ].map((s, i) => (
-                <div key={i} className="flex items-center gap-2 sm:gap-3">
-                  <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br ${s.color} flex items-center justify-center text-white text-[10px] sm:text-xs font-black shadow-lg`}>{s.val}</div>
-                  <span className={`text-xs sm:text-sm font-semibold ${sub}`}>{s.label}</span>
-                </div>
-              ))}
-            </div>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 relative z-10 text-center space-y-6 sm:space-y-8">
+          <div className="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-bold border border-blue-500/30 bg-blue-500/10 text-blue-400 mx-auto">
+            Platform Literasi Digital Modern
           </div>
 
-          {/* Right: Featured Book — hidden on very small screens */}
-          <div className="hidden sm:flex relative flex-col items-center justify-center gap-6">
-            <div className="absolute w-64 sm:w-80 h-64 sm:h-80 bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-full blur-3xl -z-10 animate-pulse" />
-            <div className="relative group cursor-pointer" onClick={() => featuredBook && handleOpen3DBook(featuredBook.id)}>
-              {featuredBook && <Book3D book={featuredBook} size="xl" />}
-              <div className="w-52 h-4 bg-black/20 rounded-full blur-md mx-auto mt-3 group-hover:scale-95 transition-all" />
-              <div className={`absolute -right-4 -bottom-4 p-4 rounded-2xl shadow-2xl max-w-[180px] transform rotate-2 translate-y-2 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 pointer-events-none z-20 border ${dk ? 'bg-slate-900/95 border-slate-700' : 'bg-white/95 border-slate-200'}`}>
-                <span className="text-[9px] font-black text-blue-400 uppercase tracking-wider">✨ Klik Buka Buku</span>
-                {featuredBook && <h4 className={`font-bold text-xs line-clamp-2 mt-1 ${text}`}>{featuredBook.title}</h4>}
-                {featuredBook && <p className={`text-[10px] mt-1 ${sub}`}>{featuredBook.author}</p>}
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-[1.05] tracking-tight">
+            Eksplorasi Dunia Lewat{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">
+              Pustaka Digital
+            </span>
+          </h1>
+
+          <p className={`text-base sm:text-lg leading-relaxed max-w-2xl mx-auto ${sub}`}>
+            Akses <span className="font-bold text-blue-400">{totalUniqueBooks}+ judul</span> buku dengan e-reader page flip interaktif serta ruang etalase koleksi unggulan.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center">
+            <button onClick={() => { soundFX.playClick(); onNavigate('katalog'); }}
+              className="flex items-center justify-center px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold rounded-2xl shadow-xl shadow-blue-500/25 hover:shadow-blue-500/40 hover:scale-105 transition-all cursor-pointer w-full sm:w-auto text-sm"
+            >
+              Jelajahi Katalog
+            </button>
+            <button onClick={() => { soundFX.playClick(); onNavigate('register'); }}
+              className={`flex items-center justify-center px-8 py-4 font-extrabold rounded-2xl border-2 transition-all hover:scale-105 cursor-pointer w-full sm:w-auto text-sm ${dk ? 'border-slate-800 bg-slate-900/60 text-slate-200 hover:border-blue-500 hover:text-white' : 'border-slate-200 bg-white text-slate-800 hover:border-blue-500 hover:text-blue-600'}`}
+            >
+              Daftar Gratis
+            </button>
+          </div>
+
+          {/* Stats */}
+          <div className="flex flex-wrap gap-4 sm:gap-6 pt-2 justify-center">
+            {[
+              { val: `${totalUniqueBooks}+`, label: 'Judul Buku', color: 'from-blue-500 to-blue-600' },
+              { val: '24/7', label: 'E-Reader Interaktif', color: 'from-emerald-500 to-emerald-600' },
+              { val: '100%', label: 'Audio SFX', color: 'from-purple-500 to-purple-600' },
+            ].map((s, i) => (
+              <div key={i} className="flex items-center gap-2 sm:gap-3">
+                <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br ${s.color} flex items-center justify-center text-white text-[10px] sm:text-xs font-black shadow-lg`}>{s.val}</div>
+                <span className={`text-xs sm:text-sm font-semibold ${sub}`}>{s.label}</span>
               </div>
-            </div>
+            ))}
           </div>
         </div>
 
@@ -311,7 +291,7 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
         <div className="relative z-10 mt-16 px-0">
           <div className="max-w-7xl mx-auto px-6 mb-4">
             <p className={`text-xs font-bold uppercase tracking-widest ${sub}`}>
-              🎯 Drag rak buku untuk memilih koleksi
+              Drag rak buku untuk memilih koleksi
             </p>
           </div>
           <div className={`border-t border-b py-6 ${dk ? 'border-slate-800 bg-slate-900/50' : 'border-slate-200 bg-slate-100/50'}`}>

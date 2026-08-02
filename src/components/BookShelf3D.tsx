@@ -6,8 +6,9 @@ interface BookShelf3DProps {
   onBookClick: (id: string) => void;
 }
 
-function ShelfBook({ book, index, onBookClick }: { book: Book; index: number; onBookClick: (id: string) => void }) {
+function ShelfBook({ book, onBookClick }: { book: Book; onBookClick: (id: string) => void }) {
   const [hovered, setHovered] = useState(false);
+  const [imgError, setImgError] = useState(false);
   const [rotate, setRotate] = useState({ x: 0, y: 0 });
   const ref = useRef<HTMLDivElement>(null);
 
@@ -19,119 +20,102 @@ function ShelfBook({ book, index, onBookClick }: { book: Book; index: number; on
     const cx = rect.width / 2;
     const cy = rect.height / 2;
     setRotate({
-      x: -((y - cy) / cy) * 15,
-      y: ((x - cx) / cx) * 15,
+      x: -((y - cy) / cy) * 12,
+      y: ((x - cx) / cx) * 12,
     });
   };
 
-  // Varied widths to simulate different book thicknesses
-  const widths = [32, 28, 36, 24, 30, 38, 26, 34];
-  const w = widths[index % widths.length];
-
-  // Extract a solid color from the gradient for the spine
-  const getSpineColor = (coverColor: string): string => {
-    const parts = coverColor.split(' ');
-    const from = parts.find(p => p.startsWith('from-'));
-    if (!from) return '#1d4ed8';
-    const colorMap: Record<string, string> = {
-      'from-blue-600': '#2563eb', 'from-indigo-600': '#4f46e5', 'from-emerald-700': '#047857',
-      'from-rose-700': '#be123c', 'from-amber-600': '#d97706', 'from-purple-800': '#6b21a8',
-      'from-teal-700': '#0f766e', 'from-cyan-700': '#0e7490', 'from-green-600': '#16a34a',
-      'from-slate-700': '#334155', 'from-zinc-800': '#27272a', 'from-red-600': '#dc2626',
-      'from-orange-600': '#ea580c', 'from-violet-650': '#7c3aed', 'from-pink-600': '#db2777',
-      'from-sky-500': '#0ea5e9', 'from-indigo-800': '#3730a3', 'from-green-800': '#166534',
-      'from-amber-700': '#b45309', 'from-blue-900': '#1e3a8a', 'from-lime-700': '#4d7c0f',
-      'from-orange-700': '#c2410c',
-    };
-    return colorMap[from] || '#2563eb';
-  };
-
-  const spineColor = getSpineColor(book.coverColor || '');
-
-  // Determine text color based on spine color brightness
-  const textColor = '#ffffff';
+  const hasImage = Boolean(book.coverUrl) && !imgError;
 
   return (
     <div
       ref={ref}
-      className="relative flex-shrink-0 cursor-pointer group"
+      className="relative flex-shrink-0 cursor-pointer group px-1"
       style={{
-        width: `${w}px`,
-        height: '160px',
-        perspective: '500px',
-        marginRight: '2px',
+        width: '100px',
+        height: '148px',
+        perspective: '600px',
       }}
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => { setHovered(false); setRotate({ x: 0, y: 0 }); }}
+      onMouseLeave={() => {
+        setHovered(false);
+        setRotate({ x: 0, y: 0 });
+      }}
       onClick={() => onBookClick(book.id)}
     >
-      {/* Book Spine (Main visible part on shelf) */}
+      {/* Realistic Standing Book Cover Card */}
       <div
-        className="w-full h-full relative transition-all"
+        className="w-full h-full relative rounded-lg overflow-hidden shadow-lg transition-all"
         style={{
           transformStyle: 'preserve-3d',
           transform: hovered
-            ? `rotateX(${rotate.x}deg) rotateY(${rotate.y}deg) translateY(-18px) scale(1.05)`
-            : 'rotateX(0deg) rotateY(0deg) translateY(0px)',
+            ? `rotateX(${rotate.x}deg) rotateY(${rotate.y}deg) translateY(-14px) scale(1.08)`
+            : 'rotateX(4deg) rotateY(0deg) translateY(0px)',
           transition: hovered ? 'transform 0.08s ease-out' : 'transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)',
+          boxShadow: hovered
+            ? '0 20px 30px -10px rgba(0,0,0,0.7), 0 0 20px rgba(59,130,246,0.35)'
+            : '0 8px 16px -4px rgba(0,0,0,0.5)',
         }}
       >
-        {/* Front face - book spine */}
-        <div
-          className="absolute inset-0 flex flex-col items-center justify-center overflow-hidden rounded-sm shadow-md"
-          style={{
-            backgroundColor: spineColor,
-            background: `linear-gradient(180deg, ${spineColor}dd 0%, ${spineColor} 50%, ${spineColor}aa 100%)`,
-          }}
-        >
-          {/* Spine lighting overlay */}
-          <div className="absolute inset-0 bg-gradient-to-r from-white/20 via-transparent to-black/20" />
-          
-          {/* Vertical title text */}
+        {hasImage ? (
+          <div className="absolute inset-0 w-full h-full bg-slate-900">
+            <img
+              src={book.coverUrl}
+              alt={book.title}
+              onError={() => setImgError(true)}
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              referrerPolicy="no-referrer"
+            />
+            {/* Book spine lighting & 3D bevel overlay */}
+            <div className="absolute inset-y-0 left-0 w-3.5 bg-gradient-to-r from-black/60 via-black/25 to-transparent pointer-events-none z-10" />
+            <div className="absolute inset-y-0 right-0 w-1.5 bg-gradient-to-l from-black/30 to-transparent pointer-events-none z-10" />
+            <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-b from-white/35 to-transparent pointer-events-none z-10" />
+          </div>
+        ) : (
           <div
-            className="text-[7px] font-bold uppercase tracking-widest select-none px-1 z-10"
+            className="w-full h-full flex flex-col justify-between p-2.5 relative text-white"
             style={{
-              writingMode: 'vertical-rl',
-              textOrientation: 'mixed',
-              transform: 'rotate(180deg)',
-              color: textColor,
-              opacity: 0.95,
-              maxHeight: '140px',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
+              background: book.coverColor
+                ? `linear-gradient(135deg, ${book.coverColor.replace('from-', '').replace('to-', '')})`
+                : 'linear-gradient(135deg, #1e3a8a, #312e81)',
             }}
           >
-            {book.title}
-          </div>
+            {/* Spine lighting overlay */}
+            <div className="absolute inset-y-0 left-0 w-2.5 bg-gradient-to-r from-black/40 to-transparent pointer-events-none" />
 
-          {/* Top edge light */}
-          <div className="absolute top-0 left-0 right-0 h-1 bg-white/30 rounded-t-sm" />
-        </div>
+            <div className="space-y-1 z-10">
+              <span className="text-[7px] font-black uppercase tracking-widest px-1.5 py-0.5 bg-black/40 text-amber-300 rounded border border-amber-400/30 inline-block">
+                {book.category}
+              </span>
+              <h4 className="text-[10px] font-black text-white leading-tight line-clamp-3 drop-shadow">
+                {book.title}
+              </h4>
+            </div>
 
-        {/* Left side - book thickness */}
-        <div
-          className="absolute top-0 bottom-0 left-0 w-2 rounded-l-sm"
-          style={{
-            backgroundColor: `${spineColor}88`,
-            transform: 'translateX(-8px) rotateY(-90deg)',
-            transformOrigin: 'right center',
-          }}
-        />
-
-        {/* Hover tooltip */}
-        {hovered && (
-          <div
-            className="absolute -top-2 left-1/2 -translate-x-1/2 -translate-y-full bg-slate-900/95 text-white text-[9px] font-bold px-2.5 py-1.5 rounded-lg whitespace-nowrap shadow-xl border border-slate-700 z-30 pointer-events-none"
-            style={{ backdropFilter: 'blur(10px)' }}
-          >
-            <div className="max-w-[140px] truncate">{book.title}</div>
-            <div className="text-slate-400 text-[8px] mt-0.5">{book.author}</div>
-            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-slate-900/95 rotate-45 border-b border-r border-slate-700" />
+            <div className="pt-1 border-t border-white/20 z-10 flex justify-between items-center text-[9px]">
+              <span className="text-white/80 truncate font-medium text-[8px]">{book.author}</span>
+              <span className="text-amber-300 font-bold">★ {book.rating}</span>
+            </div>
           </div>
         )}
       </div>
+
+      {/* Hover tooltip */}
+      {hovered && (
+        <div
+          className="absolute -top-3 left-1/2 -translate-x-1/2 -translate-y-full bg-slate-900/95 text-white text-[10px] font-bold px-3 py-2 rounded-xl whitespace-nowrap shadow-2xl border border-slate-700 z-30 pointer-events-none animate-fadeIn"
+          style={{ backdropFilter: 'blur(12px)' }}
+        >
+          <div className="max-w-[160px] truncate text-white">{book.title}</div>
+          <div className="text-slate-400 text-[9px] mt-0.5 font-medium">{book.author}</div>
+          <div className="flex items-center justify-between mt-1 pt-1 border-t border-slate-800 text-[9px]">
+            <span className="text-amber-400 font-bold">★ {book.rating}</span>
+            <span className="text-blue-400 font-extrabold ml-2">Klik untuk Baca →</span>
+          </div>
+          <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2.5 h-2.5 bg-slate-900/95 rotate-45 border-b border-r border-slate-700" />
+        </div>
+      )}
     </div>
   );
 }
@@ -166,32 +150,29 @@ export default function BookShelf3D({ books, onBookClick }: BookShelf3DProps) {
         className="relative"
         style={{
           transformStyle: 'preserve-3d',
-          transform: 'rotateX(8deg)',
+          transform: 'rotateX(4deg)',
         }}
       >
         {/* Books container */}
         <div
           ref={shelfRef}
-          className="flex items-end overflow-x-auto select-none"
+          className="flex items-end overflow-x-auto select-none py-3 px-3"
           style={{
-            paddingBottom: '16px',
-            paddingLeft: '12px',
-            paddingRight: '12px',
+            paddingBottom: '14px',
             scrollbarWidth: 'none',
             msOverflowStyle: 'none',
             cursor: isDragging ? 'grabbing' : 'grab',
-            gap: '2px',
+            gap: '8px',
           }}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
         >
-          {books.map((book, idx) => (
+          {books.map((book) => (
             <ShelfBook
               key={book.id}
               book={book}
-              index={idx}
               onBookClick={onBookClick}
             />
           ))}
@@ -199,23 +180,23 @@ export default function BookShelf3D({ books, onBookClick }: BookShelf3DProps) {
 
         {/* Wooden shelf plank */}
         <div
-          className="relative w-full h-4 rounded-sm shadow-xl"
+          className="relative w-full h-4 rounded-sm shadow-2xl"
           style={{
             background: 'linear-gradient(180deg, #8B4513 0%, #6B3410 40%, #4a2409 100%)',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.15)',
+            boxShadow: '0 8px 20px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.2)',
           }}
         >
           {/* Wood grain texture */}
           <div className="absolute inset-0 opacity-20" style={{
-            backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 30px, rgba(0,0,0,0.1) 30px, rgba(0,0,0,0.1) 31px)',
+            backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 30px, rgba(0,0,0,0.15) 30px, rgba(0,0,0,0.15) 31px)',
           }} />
         </div>
 
         {/* Shelf shadow below */}
         <div
-          className="w-full h-3 rounded-b-sm"
+          className="w-full h-4 rounded-b-sm"
           style={{
-            background: 'linear-gradient(180deg, rgba(0,0,0,0.4) 0%, transparent 100%)',
+            background: 'linear-gradient(180deg, rgba(0,0,0,0.5) 0%, transparent 100%)',
             transform: 'rotateX(-90deg)',
             transformOrigin: 'top center',
           }}
@@ -223,8 +204,8 @@ export default function BookShelf3D({ books, onBookClick }: BookShelf3DProps) {
       </div>
 
       {/* Scroll fade hints */}
-      <div className="absolute top-0 left-0 bottom-4 w-8 bg-gradient-to-r from-slate-950/60 to-transparent pointer-events-none z-10 rounded-l" />
-      <div className="absolute top-0 right-0 bottom-4 w-8 bg-gradient-to-l from-slate-950/60 to-transparent pointer-events-none z-10 rounded-r" />
+      <div className="absolute top-0 left-0 bottom-4 w-10 bg-gradient-to-r from-slate-950/70 to-transparent pointer-events-none z-10 rounded-l" />
+      <div className="absolute top-0 right-0 bottom-4 w-10 bg-gradient-to-l from-slate-950/70 to-transparent pointer-events-none z-10 rounded-r" />
 
       <style>{`
         div::-webkit-scrollbar { display: none; }

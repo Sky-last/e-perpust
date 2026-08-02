@@ -73,17 +73,26 @@ export default function BookOpen3DModal({
       <div className="md:hidden w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-2xl z-10 my-auto space-y-5 text-white max-h-[90vh] overflow-y-auto">
         <div className="flex gap-4 items-start">
           <div
-            className="w-24 h-32 rounded-xl flex-shrink-0 shadow-xl flex flex-col justify-between p-2.5 border border-white/20 relative overflow-hidden"
+            className="w-24 h-32 rounded-xl flex-shrink-0 shadow-xl flex flex-col justify-between p-2.5 border border-white/20 relative overflow-hidden bg-slate-800"
             style={{
               backgroundColor: primaryColor,
               backgroundImage: `linear-gradient(135deg, ${primaryColor} 0%, rgba(0,0,0,0.7) 100%)`,
             }}
           >
-            <span className="text-[8px] font-black uppercase bg-black/40 px-1.5 py-0.5 rounded text-white w-fit">
-              {book.category}
-            </span>
-            <h4 className="text-xs font-black leading-tight drop-shadow line-clamp-3">{book.title}</h4>
-            <span className="text-[9px] font-bold opacity-80 truncate">{book.author}</span>
+            {book.coverUrl ? (
+              <div className="absolute inset-0 w-full h-full">
+                <img src={book.coverUrl} alt={book.title} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                <div className="absolute top-0 bottom-0 left-0 w-2.5 bg-gradient-to-r from-black/50 to-transparent pointer-events-none z-10" />
+              </div>
+            ) : (
+              <>
+                <span className="text-[8px] font-black uppercase bg-black/40 px-1.5 py-0.5 rounded text-white w-fit z-10">
+                  {book.category}
+                </span>
+                <h4 className="text-xs font-black leading-tight drop-shadow line-clamp-3 z-10">{book.title}</h4>
+                <span className="text-[9px] font-bold opacity-80 truncate z-10">{book.author}</span>
+              </>
+            )}
           </div>
 
           <div className="flex-1 space-y-1.5">
@@ -338,22 +347,38 @@ export default function BookOpen3DModal({
               boxShadow: '0 20px 50px rgba(0,0,0,0.8)',
             }}
           >
-            {/* Spine Highlight */}
-            <div className="absolute top-0 bottom-0 right-0 w-4 bg-gradient-to-l from-white/20 to-transparent" />
-            <div className="absolute top-0 bottom-0 right-0 w-1 bg-black/40" />
+            {book.coverUrl ? (
+              <div className="absolute inset-0 w-full h-full">
+                <img src={book.coverUrl} alt={book.title} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                <div className="absolute top-0 bottom-0 left-0 w-4 bg-gradient-to-r from-black/60 via-black/20 to-transparent pointer-events-none z-10" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none z-10" />
+                <div className="absolute bottom-4 left-4 right-4 z-20">
+                  <span className="text-[9px] font-black uppercase tracking-widest px-2.5 py-0.5 bg-black/60 rounded text-amber-300 border border-amber-400/30 backdrop-blur-md">
+                    {book.category}
+                  </span>
+                  <h3 className="text-sm font-black text-white leading-tight mt-1 drop-shadow-lg">{book.title}</h3>
+                </div>
+              </div>
+            ) : (
+              <>
+                {/* Spine Highlight */}
+                <div className="absolute top-0 bottom-0 right-0 w-4 bg-gradient-to-l from-white/20 to-transparent" />
+                <div className="absolute top-0 bottom-0 right-0 w-1 bg-black/40" />
 
-            <div className="space-y-4">
-              <span className="text-[10px] font-black uppercase tracking-widest px-3 py-1 bg-black/30 rounded-full border border-white/20 backdrop-blur-md">
-                {book.category}
-              </span>
-              <h1 className="text-2xl font-black leading-tight drop-shadow-md">{book.title}</h1>
-              <p className="text-xs font-bold opacity-80">{book.author}</p>
-            </div>
+                <div className="space-y-4">
+                  <span className="text-[10px] font-black uppercase tracking-widest px-3 py-1 bg-black/30 rounded-full border border-white/20 backdrop-blur-md">
+                    {book.category}
+                  </span>
+                  <h1 className="text-2xl font-black leading-tight drop-shadow-md">{book.title}</h1>
+                  <p className="text-xs font-bold opacity-80">{book.author}</p>
+                </div>
 
-            <div className="pt-6 border-t border-white/20 flex items-center justify-between">
-              <span className="text-[10px] font-mono tracking-wider opacity-75">{book.publisher}</span>
-              <Sparkles className="w-5 h-5 text-amber-300 animate-pulse" />
-            </div>
+                <div className="pt-6 border-t border-white/20 flex items-center justify-between">
+                  <span className="text-[10px] font-mono tracking-wider opacity-75">{book.publisher}</span>
+                  <Sparkles className="w-5 h-5 text-amber-300 animate-pulse" />
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>

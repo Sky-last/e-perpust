@@ -1285,13 +1285,13 @@ export default function App() {
             {/* Mobile Nav Drawer */}
             {sidebarOpen && (
               <div className="md:hidden border-t border-slate-200 bg-white/95 backdrop-blur-xl px-4 py-4 space-y-1 shadow-lg">
-                <button onClick={() => { handleNavigate('landing'); setSidebarOpen(false); }} className="w-full text-left px-4 py-3 text-sm font-semibold text-slate-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all">🏠 Home</button>
-                <button onClick={() => { handleNavigate('katalog'); setSidebarOpen(false); }} className="w-full text-left px-4 py-3 text-sm font-semibold text-slate-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all">📚 Katalog Buku</button>
-                <button onClick={() => { handleNavigate('landing'); setTimeout(() => document.getElementById('tentang')?.scrollIntoView({ behavior: 'smooth' }), 150); setSidebarOpen(false); }} className="w-full text-left px-4 py-3 text-sm font-semibold text-slate-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all">ℹ️ Tentang</button>
-                <button onClick={() => { handleNavigate('landing'); setTimeout(() => document.getElementById('kontak')?.scrollIntoView({ behavior: 'smooth' }), 150); setSidebarOpen(false); }} className="w-full text-left px-4 py-3 text-sm font-semibold text-slate-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all">📬 Kontak</button>
+                <button onClick={() => { handleNavigate('landing'); setSidebarOpen(false); }} className="w-full text-left px-4 py-3 text-sm font-semibold text-slate-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all">Home</button>
+                <button onClick={() => { handleNavigate('katalog'); setSidebarOpen(false); }} className="w-full text-left px-4 py-3 text-sm font-semibold text-slate-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all">Katalog Buku</button>
+                <button onClick={() => { handleNavigate('landing'); setTimeout(() => document.getElementById('tentang')?.scrollIntoView({ behavior: 'smooth' }), 150); setSidebarOpen(false); }} className="w-full text-left px-4 py-3 text-sm font-semibold text-slate-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all">Tentang</button>
+                <button onClick={() => { handleNavigate('landing'); setTimeout(() => document.getElementById('kontak')?.scrollIntoView({ behavior: 'smooth' }), 150); setSidebarOpen(false); }} className="w-full text-left px-4 py-3 text-sm font-semibold text-slate-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all">Kontak</button>
                 <div className="pt-2 border-t border-slate-100">
                   {!currentUser ? (
-                    <button onClick={() => { handleNavigate('register'); setSidebarOpen(false); }} className="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-bold rounded-xl shadow-lg mt-1">Daftar Gratis Sekarang →</button>
+                    <button onClick={() => { handleNavigate('register'); setSidebarOpen(false); }} className="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-bold rounded-xl shadow-lg mt-1">Daftar Gratis Sekarang</button>
                   ) : (
                     <button onClick={() => { handleLogout(); setSidebarOpen(false); }} className="w-full py-3 text-red-600 font-semibold text-sm hover:bg-red-50 rounded-xl transition-all">Keluar Akun</button>
                   )}

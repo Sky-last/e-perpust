@@ -154,9 +154,10 @@ export default function AILibrarianAssistant({ books, onNavigate, onOpenPinjamMo
         <button
           onClick={toggleAssistant}
           onMouseEnter={() => soundFX.playHover()}
-          className="group relative flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-xl shadow-blue-500/30 hover:scale-110 active:scale-95 transition-all duration-300 border border-white/20"
+          className="group relative flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white shadow-2xl shadow-blue-500/50 hover:scale-110 active:scale-95 transition-all duration-300 border border-white/30 cursor-pointer"
           aria-label="Pustakawan AI"
         >
+          <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 rounded-full blur opacity-70 group-hover:opacity-100 transition duration-300 animate-pulse -z-10" />
           {isOpen ? (
             <X className="w-6 h-6 transform group-hover:rotate-90 transition-transform duration-300" />
           ) : (

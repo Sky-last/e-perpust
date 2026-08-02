@@ -241,7 +241,7 @@ export default function KatalogPage({
                 }}
                 className={`w-full text-left px-4 py-3 text-sm font-bold rounded-xl transition-all flex items-center justify-between ${sub} hover:bg-slate-800/40`}
               >
-                <span>🏠 Home</span>
+                <span>Home</span>
               </button>
               <button
                 onClick={() => {
@@ -250,7 +250,7 @@ export default function KatalogPage({
                 }}
                 className={`w-full text-left px-4 py-3 text-sm font-bold rounded-xl transition-all flex items-center justify-between bg-blue-600/20 text-blue-400`}
               >
-                <span>📚 Katalog Buku</span>
+                <span>Katalog Buku</span>
               </button>
               <button
                 onClick={() => {
@@ -263,7 +263,7 @@ export default function KatalogPage({
                 }}
                 className={`w-full text-left px-4 py-3 text-sm font-bold rounded-xl transition-all flex items-center justify-between ${sub} hover:bg-slate-800/40`}
               >
-                <span>ℹ️ Tentang</span>
+                <span>Tentang</span>
               </button>
             </div>
 
@@ -277,7 +277,7 @@ export default function KatalogPage({
                   }}
                   className="w-full py-3 text-center text-sm font-extrabold rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/25"
                 >
-                  📊 Masuk Ke Dashboard
+                  Masuk Ke Dashboard
                 </button>
               ) : (
                 <>
@@ -289,7 +289,7 @@ export default function KatalogPage({
                     }}
                     className={`w-full py-3 text-center text-sm font-bold rounded-xl border transition-all ${dk ? 'border-slate-800 bg-slate-900 text-slate-200' : 'border-slate-200 bg-slate-50 text-slate-800'}`}
                   >
-                    🔑 Masuk
+                    Masuk
                   </button>
                   <button
                     onClick={() => {
@@ -299,7 +299,7 @@ export default function KatalogPage({
                     }}
                     className="w-full py-3 text-center text-sm font-extrabold rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/25"
                   >
-                    ✨ Daftar Gratis Sekarang
+                    Daftar Gratis Sekarang
                   </button>
                 </>
               )}
@@ -321,8 +321,8 @@ export default function KatalogPage({
                 </span>
                 <span className="text-xs text-slate-400 font-semibold">{sortedBooks.length} Buku Ditemukan</span>
               </div>
-              <h1 className="text-3xl md:text-4xl font-black tracking-tight mt-1">Katalog Buku 3D</h1>
-              <p className={`text-sm mt-1 ${sub}`}>Eksplorasi koleksi literasi digital interaktif dengan visualisasi buku 3D.</p>
+              <h1 className="text-3xl md:text-4xl font-black tracking-tight mt-1">Katalog Buku Digital</h1>
+              <p className={`text-sm mt-1 ${sub}`}>Eksplorasi koleksi literasi digital interaktif dengan visualisasi cover realistis.</p>
             </div>
 
             {/* SEARCH LAYOUT */}

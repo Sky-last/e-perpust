@@ -3,6 +3,7 @@ import { BookOpen, ArrowLeft, Mail, Lock, User as UserIcon, Eye, EyeOff, Sparkle
 import { ViewType, Book } from '../types';
 import Book3D from './Book3D';
 import { soundFX } from '../utils/audio';
+import { InteractiveMascot } from './InteractiveMascot';
 
 interface RegisterPageProps {
   onNavigate: (view: ViewType) => void;
@@ -17,6 +18,9 @@ export default function RegisterPage({ onNavigate, onRegister, addToast }: Regis
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isFocusEmail, setIsFocusEmail] = useState(false);
+  const [isFocusPassword, setIsFocusPassword] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   // Sample book for 3D showcase on split screen
   const showcaseBook: Book = {
@@ -81,6 +85,7 @@ export default function RegisterPage({ onNavigate, onRegister, addToast }: Regis
       const success = await onRegister(name, email, password);
       setIsLoading(false);
       if (success) {
+        setIsSuccess(true);
         soundFX.playBookOpen();
       }
     } catch (err: any) {
@@ -125,9 +130,45 @@ export default function RegisterPage({ onNavigate, onRegister, addToast }: Regis
               </p>
             </div>
 
-            {/* 3D Showcase Book */}
-            <div className="hidden sm:flex my-4 lg:my-8 justify-center py-2 lg:py-4">
-              <Book3D book={showcaseBook} size="md" />
+            {/* Futuristic Holographic Digital Member Pass Animation */}
+            <div className="hidden sm:flex my-6 justify-center py-2 relative group cursor-pointer">
+              {/* Background Glow */}
+              <div className="absolute inset-0 bg-gradient-to-r from-emerald-600/30 via-blue-600/30 to-indigo-600/30 rounded-3xl blur-2xl group-hover:blur-3xl transition-all duration-500 animate-pulse" />
+
+              {/* Futuristic Pass Card */}
+              <div className="relative w-full max-w-[280px] h-[170px] rounded-2xl bg-slate-900/90 border border-emerald-500/40 p-5 shadow-2xl backdrop-blur-xl flex flex-col justify-between overflow-hidden transform group-hover:scale-105 group-hover:rotate-1 transition-all duration-300">
+                {/* Holographic shimmer line */}
+                <div className="absolute -inset-full top-0 block w-1/2 h-full bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 animate-shimmer" />
+
+                {/* Card Header */}
+                <div className="flex justify-between items-start z-10">
+                  <div>
+                    <span className="text-[9px] font-black uppercase tracking-widest text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                      Registrasi Anggota Baru
+                    </span>
+                    <h4 className="text-sm font-black text-white mt-1">Pustaka Digital</h4>
+                  </div>
+                  {/* Microchip graphic */}
+                  <div className="w-8 h-6 rounded bg-gradient-to-tr from-amber-400 to-yellow-200 border border-amber-300/60 shadow flex items-center justify-center">
+                    <div className="w-5 h-3 border-t border-b border-slate-900/60" />
+                  </div>
+                </div>
+
+                {/* Card Body */}
+                <div className="z-10 my-auto">
+                  <p className="text-[10px] text-slate-400 font-mono tracking-wider">NEW MEMBER REGISTRATION</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                    <span className="text-[11px] font-bold text-emerald-400">Gratis & Instan</span>
+                  </div>
+                </div>
+
+                {/* Card Footer */}
+                <div className="flex justify-between items-end z-10 pt-2 border-t border-slate-800">
+                  <span className="text-[9px] text-slate-400">Join Community</span>
+                  <span className="text-[9px] font-mono text-emerald-300 font-bold">PUSTAKA INDONESIA</span>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -146,8 +187,20 @@ export default function RegisterPage({ onNavigate, onRegister, addToast }: Regis
         </div>
 
         {/* RIGHT PANEL: Modern Registration Form */}
-        <div className="lg:col-span-7 p-8 sm:p-10 flex flex-col justify-center">
-          <div className="space-y-2 mb-6">
+        <div className="lg:col-span-7 p-6 sm:p-10 flex flex-col justify-center relative">
+          
+          {/* Interactive Mascot Reacting to Form Inputs (TikTok VT Style) */}
+          <div className="mb-2">
+            <InteractiveMascot
+              isFocusEmail={isFocusEmail}
+              isFocusPassword={isFocusPassword}
+              showPassword={showPassword}
+              emailLength={email.length || name.length}
+              isSuccess={isSuccess}
+            />
+          </div>
+
+          <div className="space-y-1 mb-5 text-center sm:text-left">
             <h3 className="text-2xl font-black text-white">Buat Akun Baru</h3>
             <p className="text-xs text-slate-400 font-medium">
               Sudah memiliki akun?{' '}
@@ -176,6 +229,8 @@ export default function RegisterPage({ onNavigate, onRegister, addToast }: Regis
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
+                  onFocus={() => setIsFocusEmail(true)}
+                  onBlur={() => setIsFocusEmail(false)}
                   placeholder="Masukkan nama lengkap Anda..."
                   className="w-full pl-10 pr-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all font-medium"
                 />
@@ -194,6 +249,8 @@ export default function RegisterPage({ onNavigate, onRegister, addToast }: Regis
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  onFocus={() => setIsFocusEmail(true)}
+                  onBlur={() => setIsFocusEmail(false)}
                   placeholder="nama@email.com"
                   className="w-full pl-10 pr-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all font-medium"
                 />
@@ -212,6 +269,8 @@ export default function RegisterPage({ onNavigate, onRegister, addToast }: Regis
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  onFocus={() => setIsFocusPassword(true)}
+                  onBlur={() => setIsFocusPassword(false)}
                   placeholder="Minimal 5 karakter"
                   className="w-full pl-10 pr-10 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all font-medium"
                 />
