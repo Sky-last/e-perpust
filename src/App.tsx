@@ -51,7 +51,7 @@ export default function App() {
   }, [currentView]);
   
   // Database state
-  const [books, setBooks] = useState<Book[]>([]);
+  const [books, setBooks] = useState<Book[]>(_INITIAL_BOOKS);
   const [users, setUsers] = useState<User[]>([]);
   const [logs, setLogs] = useState<SystemLog[]>([]);
   const [currentUser, setCurrentUser] = useState<User | null>(null);

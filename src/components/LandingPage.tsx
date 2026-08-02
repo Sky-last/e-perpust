@@ -102,7 +102,17 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const popularBooks = books.filter(b => b.rating >= 4.7).slice(0, 6);
+  const popularBooks = books.filter(b => b.rating >= 4.7).slice(0, 5);
+  // Fallback: jika tidak ada buku rating tinggi, ambil buku dengan rating tertinggi
+  const sortedBooks = popularBooks.length > 0 
+    ? popularBooks 
+    : [...books].sort((a, b) => b.rating - a.rating).slice(0, 5);
+  
+  // Prioritaskan buku "Bulan" (eb-14) di posisi pertama, dan exclude "The History of Java" (gut-5)
+  const bulanBook = books.find(b => b.id === 'eb-14');
+  const otherBooks = sortedBooks.filter(b => b.id !== 'eb-14' && b.id !== 'gut-5').slice(0, 4);
+  const displayBooks = bulanBook ? [bulanBook, ...otherBooks] : sortedBooks.filter(b => b.id !== 'gut-5');
+  
   const shelfBooks = books.slice(0, 18);
   const totalUniqueBooks = books.length;
   const featuredBook = books.find(b => b.id === 'eb-4') || books[0];
@@ -414,8 +424,16 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
             >Lihat Semua <ArrowRight className="w-4 h-4" /></button>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-            {popularBooks.map((book, idx) => {
+          {displayBooks.length === 0 ? (
+            <div className="text-center py-16">
+              <div className={`inline-flex items-center gap-3 px-6 py-4 rounded-2xl border ${dk ? 'border-slate-800 bg-slate-900/60' : 'border-slate-200 bg-white'}`}>
+                <div className="animate-spin rounded-full h-5 w-5 border-2 border-blue-400 border-t-transparent"></div>
+                <span className={`text-sm font-semibold ${sub}`}>Memuat koleksi buku terpopuler...</span>
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+              {displayBooks.map((book, idx) => {
               const isFav = favorites.includes(book.id);
               const delays = ['delay-100','delay-200','delay-300','delay-400','delay-500','delay-600'];
               return (
@@ -447,7 +465,8 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
                 </div>
               );
             })}
-          </div>
+            </div>
+          )}
         </div>
       </section>
 

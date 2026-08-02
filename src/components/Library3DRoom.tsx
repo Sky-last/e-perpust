@@ -10,11 +10,10 @@ interface Library3DRoomProps {
 }
 
 export default function Library3DRoom({ books = [], onSelectBook }: Library3DRoomProps) {
-  // Default featured showcase book to "Bulan" by Tere Liye
-  const defaultIndex = books.findIndex(
-    b => b.title.toLowerCase() === 'bulan' && b.author.toLowerCase().includes('tere liye')
-  );
-  const [selectedIndex, setSelectedIndex] = useState(defaultIndex !== -1 ? defaultIndex : 0);
+  // Default featured showcase book to "Bulan" by Tere Liye (eb-14)
+  const bulanIndex = books.findIndex(b => b.id === 'eb-14');
+  const defaultIndex = bulanIndex !== -1 ? bulanIndex : 0;
+  const [selectedIndex, setSelectedIndex] = useState(defaultIndex);
   const currentBook = books && books.length > 0 ? (books[selectedIndex] || books[0]) : null;
 
   if (!currentBook) {

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -442,6 +442,15 @@ export default function StaffDashboard({
   const handleSaveUserSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (editingUser) {
+      console.log('Updating user:', editingUser.id, {
+        name: uName,
+        email: uEmail,
+        role: uRole,
+        nisn: uRole === UserRole.SISWA ? uNisn : undefined,
+        nip: uRole !== UserRole.SISWA ? uNip : undefined,
+        class: uRole === UserRole.SISWA ? uClass : undefined,
+        phone: uPhone
+      });
       onUpdateUser(editingUser.id, {
         name: uName,
         email: uEmail,
@@ -470,6 +479,10 @@ export default function StaffDashboard({
       });
     }
     setIsUserModalOpen(false);
+    // Force a small delay to ensure state updates
+    setTimeout(() => {
+      console.log('User modal closed, state should be updated');
+    }, 100);
   };
 
   const handleSaveSettings = () => {
