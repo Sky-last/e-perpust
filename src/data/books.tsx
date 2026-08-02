@@ -371,7 +371,7 @@ export const INITIAL_BOOKS: Book[] = [
     status: "Tersedia",
     stock: 4,
     coverColor: "from-teal-700 to-cyan-950",
-    coverUrl: "https://images.unsplash.com/photo-1461360370896-922624d12aa1?auto=format&fit=crop&w=800&q=80",
+    coverUrl: "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=800&q=80",
     pdfUrl: "/buku_digital/The_History_of_Java.pdf"
   },
   {
