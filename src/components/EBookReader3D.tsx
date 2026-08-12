@@ -18,6 +18,11 @@ export default function EBookReader3D({ book, onClose }: EBookReader3DProps) {
   // New Enhanced Features
   const [zoomLevel, setZoomLevel] = useState<number>(1);
   const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
+  const [bookmarkedPages, setBookmarkedPages] = useState<number[]>(() => {
+    const saved = localStorage.getItem(`digital_library_bookmark_${book.id}`);
+    return saved ? JSON.parse(saved) : [];
+  });
+
   // Ambient Soundscape state
   const [ambientSound, setAmbientSound] = useState<'off' | 'rain' | 'library' | 'waves'>('off');
   const audioCtxRef = useRef<AudioContext | null>(null);
