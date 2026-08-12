@@ -27,7 +27,12 @@ import {
   Sparkles,
   Zap,
   TrendingUp,
-  Bookmark
+  Bookmark,
+  Trophy,
+  Star,
+  ArrowUpDown,
+  AlarmClock,
+  Target
 } from 'lucide-react';
 import { User, Book, Category, Borrowing, LibrarySettings, Notification } from '../../types';
 import { uploadAvatar } from '../../lib/db';
@@ -65,9 +70,10 @@ export default function SiswaDashboard({
   const [activeTab, setActiveTab] = useState<'home' | 'books' | 'history' | 'profile'>('home');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [sortBy, setSortBy] = useState<'populer' | 'abjad' | 'terbaru' | 'tersedia'>('populer');
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const [readingBook3D, setReadingBook3D] = useState<Book | null>(null);
-  
+
   // Borrow form states
   const [borrowDays, setBorrowDays] = useState<number>(settings.maxBorrowDays);
   const [borrowNotes, setBorrowNotes] = useState('');
@@ -97,7 +103,7 @@ export default function SiswaDashboard({
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Filter books based on search query and category
+  // Filter & Sort books
   const filteredBooks = books.filter((book) => {
     const matchesSearch = 
       book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -110,6 +116,12 @@ export default function SiswaDashboard({
     const matchesCategory = selectedCategory === 'all' || book.categoryId === selectedCategory;
 
     return (matchesSearch || categoryName.includes(searchQuery.toLowerCase())) && matchesCategory;
+  }).sort((a, b) => {
+    if (sortBy === 'populer') return (b.rating || 0) - (a.rating || 0);
+    if (sortBy === 'abjad') return a.title.localeCompare(b.title);
+    if (sortBy === 'terbaru') return (b.year || 0) - (a.year || 0);
+    if (sortBy === 'tersedia') return b.stock - a.stock;
+    return 0;
   });
 
   const getCategoryName = (catId: string | undefined) => {
@@ -120,6 +132,23 @@ export default function SiswaDashboard({
 
   const myBorrowings = borrowings.filter((b) => b.studentId === currentUser.id);
   const myUnreadNotifications = notifications.filter(n => n.userId === currentUser.id && !n.read);
+
+  // Reading Goal & Gamification Badges
+  const completedCount = myBorrowings.filter(b => b.status === 'returned' || b.status === 'Dikembalikan').length;
+  const goalTarget = 5;
+  const progressGoalPercent = Math.min(Math.round((completedCount / goalTarget) * 100), 100);
+
+  // Urgent Borrowings (due within 2 days or overdue)
+  const urgentBorrowings = myBorrowings.filter(b => {
+    if (b.status === 'overdue') return true;
+    if (b.status === 'approved' && b.dueDate) {
+      const due = new Date(b.dueDate).getTime();
+      const now = new Date().getTime();
+      const diffDays = (due - now) / (1000 * 3600 * 24);
+      return diffDays <= 2;
+    }
+    return false;
+  });
 
   const handleBorrowRequestSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -436,6 +465,33 @@ export default function SiswaDashboard({
                   </div>
                 </div>
 
+                {/* ⚠️ URGENT DUE DATE ALERT BANNER */}
+                {urgentBorrowings.length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex items-start gap-3 bg-amber-500/10 border border-amber-500/30 rounded-2xl p-4 shadow-lg shadow-amber-500/5"
+                  >
+                    <div className="p-2 bg-amber-500/20 rounded-xl shrink-0">
+                      <AlarmClock className="w-5 h-5 text-amber-400" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-xs font-black text-amber-300">⚠️ Perhatian! Buku Hampir Jatuh Tempo</h4>
+                      <p className="text-[10px] text-amber-400/80 mt-0.5 font-medium">Kamu memiliki <strong>{urgentBorrowings.length} buku</strong> yang segera harus dikembalikan. Hindari denda keterlambatan!</p>
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {urgentBorrowings.map(b => (
+                          <span key={b.id} className="text-[9px] bg-amber-500/15 text-amber-300 px-2.5 py-1 rounded-lg font-bold border border-amber-500/20">
+                            📚 {b.bookTitle} — {b.status === 'overdue' ? '🔴 Terlambat!' : `Due: ${b.dueDate}`}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <button onClick={() => setActiveTab('history')} className="shrink-0 text-[9px] text-amber-400 hover:text-amber-300 font-black border border-amber-500/30 px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer">
+                      Lihat
+                    </button>
+                  </motion.div>
+                )}
+
                 {/* Quick Stat Bar */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   {[
@@ -443,19 +499,22 @@ export default function SiswaDashboard({
                       label: 'Sedang Dipinjam', 
                       val: `${myBorrowings.filter((b) => b.status === 'approved' || b.status === 'overdue').length} Buku`,
                       border: 'border-blue-500/30',
-                      badge: 'bg-blue-500/10 text-blue-400'
+                      badge: 'bg-blue-500/10 text-blue-400',
+                      Icon: BookOpen
                     },
                     { 
                       label: 'Menunggu Verifikasi', 
                       val: `${myBorrowings.filter((b) => b.status === 'pending').length} Buku`,
                       border: 'border-amber-500/30',
-                      badge: 'bg-amber-500/10 text-amber-400'
+                      badge: 'bg-amber-500/10 text-amber-400',
+                      Icon: Clock
                     },
                     { 
                       label: 'Total Denda Aktif', 
                       val: `Rp ${myBorrowings.reduce((sum, b) => sum + (b.finePaid ? 0 : (b.fineAmount ?? 0)), 0).toLocaleString()}`,
                       border: 'border-rose-500/30',
-                      badge: 'bg-rose-500/10 text-rose-400'
+                      badge: 'bg-rose-500/10 text-rose-400',
+                      Icon: AlertCircle
                     }
                   ].map((stat, i) => (
                     <motion.div 
@@ -468,10 +527,58 @@ export default function SiswaDashboard({
                         <h3 className="text-lg lg:text-xl font-black text-white mt-1">{stat.val}</h3>
                       </div>
                       <span className={`p-2.5 rounded-xl font-bold ${stat.badge}`}>
-                        <Calendar className="w-5 h-5" />
+                        <stat.Icon className="w-5 h-5" />
                       </span>
                     </motion.div>
                   ))}
+                </div>
+
+                {/* 🏆 READING GOAL & GAMIFICATION */}
+                <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-xl">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2.5">
+                      <div className="p-2 bg-gradient-to-tr from-amber-500/20 to-yellow-500/10 rounded-xl">
+                        <Target className="w-4 h-4 text-amber-400" />
+                      </div>
+                      <div>
+                        <h3 className="text-xs font-black text-white">Target Membaca Bulanan</h3>
+                        <p className="text-[9px] text-slate-400 font-semibold mt-0.5">{completedCount} dari {goalTarget} buku selesai dibaca</p>
+                      </div>
+                    </div>
+                    <span className="text-xs font-black text-amber-400">{progressGoalPercent}%</span>
+                  </div>
+                  <div className="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${progressGoalPercent}%` }}
+                      transition={{ duration: 1, ease: 'easeOut' }}
+                      className="h-full rounded-full bg-gradient-to-r from-amber-500 to-yellow-400 shadow-[0_0_10px_rgba(245,158,11,0.5)]"
+                    />
+                  </div>
+                  {/* Achievement Badges */}
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {[
+                      { label: 'Pembaca Pemula', min: 1, icon: '📖', color: 'border-blue-500/30 bg-blue-500/10 text-blue-300' },
+                      { label: 'Kutu Buku', min: 3, icon: '🐛', color: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300' },
+                      { label: 'Penjelajah Genre', min: 5, icon: '🗺️', color: 'border-purple-500/30 bg-purple-500/10 text-purple-300' },
+                      { label: 'Legenda Perpustakaan', min: 10, icon: '🏆', color: 'border-amber-500/30 bg-amber-500/10 text-amber-300' },
+                    ].map(badge => {
+                      const unlocked = completedCount >= badge.min;
+                      return (
+                        <div
+                          key={badge.label}
+                          className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-[9px] font-black border transition-all ${
+                            unlocked ? badge.color : 'border-slate-800 bg-slate-950 text-slate-600'
+                          }`}
+                          title={unlocked ? 'Terbuka!' : `Selesaikan ${badge.min} buku untuk membuka`}
+                        >
+                          <span className={`text-sm ${!unlocked && 'grayscale opacity-40'}`}>{badge.icon}</span>
+                          <span>{badge.label}</span>
+                          {unlocked && <Trophy className="w-2.5 h-2.5 text-amber-400" />}
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
 
                 {/* Real-time Search Panel */}
@@ -542,8 +649,9 @@ export default function SiswaDashboard({
             {activeTab === 'books' && (
               <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
                 
-                {/* Search & Categories */}
+                {/* Search, Sort & Categories */}
                 <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4 shadow-xl">
+                  {/* Search Input */}
                   <div className="relative">
                     <Search className="absolute left-4 top-3.5 w-4.5 h-4.5 text-slate-500" />
                     <input
@@ -555,6 +663,35 @@ export default function SiswaDashboard({
                     />
                   </div>
 
+                  {/* Sort By Controls */}
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5 text-[9px] text-slate-500 font-black uppercase shrink-0">
+                      <ArrowUpDown className="w-3 h-3" />
+                      <span>Urutkan:</span>
+                    </div>
+                    <div className="flex gap-1.5 overflow-x-auto pb-0.5 scrollbar-none">
+                      {[
+                        { key: 'populer', label: '⭐ Terpopuler' },
+                        { key: 'abjad',   label: '🔤 A–Z' },
+                        { key: 'terbaru', label: '📅 Terbaru' },
+                        { key: 'tersedia',label: '✅ Stok Ada' },
+                      ].map(s => (
+                        <button
+                          key={s.key}
+                          onClick={() => setSortBy(s.key as any)}
+                          className={`px-3 py-1.5 rounded-lg text-[9px] font-black transition-all shrink-0 cursor-pointer border ${
+                            sortBy === s.key
+                              ? 'bg-gradient-to-r from-indigo-600 to-cyan-600 text-white border-cyan-400/30 shadow-md'
+                              : 'bg-slate-950 text-slate-500 border-slate-800 hover:text-white'
+                          }`}
+                        >
+                          {s.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Category Filter Chips */}
                   <div className="flex gap-2 overflow-x-auto pb-1.5 scrollbar-thin scrollbar-thumb-slate-800">
                     <button
                       onClick={() => setSelectedCategory('all')}
@@ -584,7 +721,7 @@ export default function SiswaDashboard({
 
                 {/* Books Grid */}
                 <div className="space-y-4">
-                  <p className="text-xs text-slate-400 font-bold">Menampilkan {filteredBooks.length} buku pilihan</p>
+                  <p className="text-xs text-slate-400 font-bold">Menampilkan {filteredBooks.length} buku · Diurutkan: <span className="text-cyan-400">{sortBy === 'populer' ? 'Terpopuler' : sortBy === 'abjad' ? 'A–Z' : sortBy === 'terbaru' ? 'Terbaru' : 'Stok Ada'}</span></p>
                   
                   {filteredBooks.length === 0 ? (
                     <div className="bg-slate-900 border border-slate-800 rounded-2xl py-16 text-center">
@@ -614,11 +751,17 @@ export default function SiswaDashboard({
                             <h4 className="text-xs font-bold text-white mt-2 line-clamp-1 group-hover:text-cyan-400 transition-colors">{book.title}</h4>
                             <p className="text-[10px] text-slate-400 font-medium mt-0.5">{book.author}</p>
                             
-                            <div className="mt-4 pt-2.5 border-t border-slate-800 flex items-center justify-between text-[9px] font-bold">
+                            <div className="mt-3 flex items-center gap-1">
+                              {Array.from({ length: 5 }).map((_, si) => (
+                                <Star key={si} className={`w-2.5 h-2.5 ${ si < Math.round(book.rating || 0) ? 'text-amber-400 fill-amber-400' : 'text-slate-700'}`} />
+                              ))}
+                              <span className="text-[9px] text-slate-500 ml-1 font-bold">{(book.rating || 0).toFixed(1)}</span>
+                            </div>
+                            <div className="mt-2.5 pt-2 border-t border-slate-800 flex items-center justify-between text-[9px] font-bold">
                               <span className={book.stock > 0 ? 'text-emerald-400' : 'text-rose-400'}>
-                                {book.stock > 0 ? `Sisa ${book.stock} Eks` : 'Stok Habis'}
+                                {book.stock > 0 ? `✓ ${book.stock} Eks` : '✗ Habis'}
                               </span>
-                              <span className="text-slate-500">{book.publisher}</span>
+                              <span className="text-slate-600">{book.year}</span>
                             </div>
                           </div>
                         </motion.div>

@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Book } from '../types';
-import { X, ChevronLeft, ChevronRight, Volume2, VolumeX, Maximize2, Minimize2, Bookmark, Sparkles, FileText, Download } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, Volume2, VolumeX, Maximize2, Minimize2, Bookmark, Sparkles, FileText, Download, ZoomIn, ZoomOut, RotateCcw, Mic, Play, Square } from 'lucide-react';
 import { soundFX } from '../utils/audio';
 
 interface EBookReader3DProps {
@@ -14,8 +14,15 @@ export default function EBookReader3D({ book, onClose }: EBookReader3DProps) {
   const [flipDirection, setFlipDirection] = useState<'next' | 'prev'>('next');
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [isFullScreen, setIsFullScreen] = useState(false);
+  
+  // New Enhanced Features
+  const [zoomLevel, setZoomLevel] = useState<number>(1);
+  const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
+  const [bookmarkedPages, setBookmarkedPages] = useState<number[]>(() => {
+    const saved = localStorage.getItem(`digital_library_bookmark_${book.id}`);
+    return saved ? JSON.parse(saved) : [];
+  });
 
-  // Sample chapter pages content generator
   const totalPages = 12;
 
   const samplePages = [
@@ -31,8 +38,20 @@ export default function EBookReader3D({ book, onClose }: EBookReader3DProps) {
     { chapter: 'Bab V: Penutup', title: 'Langkah Selanjutnya', text: 'Panduan aksi nyata setelah menyelesaikan buku ini. Pembaca didorong untuk mempraktikkan langsung pengetahuan yang telah didapat.' },
   ];
 
+  const pageData = samplePages[(currentPage - 1) % samplePages.length];
+
+  // Stop TTS voice on unmount or page change
+  useEffect(() => {
+    return () => {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, [currentPage]);
+
   const handleNextPage = () => {
     if (currentPage >= totalPages || isFlipping) return;
+    stopSpeech();
     setFlipDirection('next');
     setIsFlipping(true);
     soundFX.playPageFlip();
@@ -44,6 +63,7 @@ export default function EBookReader3D({ book, onClose }: EBookReader3DProps) {
 
   const handlePrevPage = () => {
     if (currentPage <= 1 || isFlipping) return;
+    stopSpeech();
     setFlipDirection('prev');
     setIsFlipping(true);
     soundFX.playPageFlip();
@@ -58,28 +78,103 @@ export default function EBookReader3D({ book, onClose }: EBookReader3DProps) {
     setSoundEnabled(newState);
   };
 
-  const pageData = samplePages[(currentPage - 1) % samplePages.length];
+  const toggleBookmark = () => {
+    let updated: number[];
+    if (bookmarkedPages.includes(currentPage)) {
+      updated = bookmarkedPages.filter(p => p !== currentPage);
+    } else {
+      updated = [...bookmarkedPages, currentPage];
+      soundFX.playClick();
+    }
+    setBookmarkedPages(updated);
+    localStorage.setItem(`digital_library_bookmark_${book.id}`, JSON.stringify(updated));
+  };
+
+  const stopSpeech = () => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+    }
+  };
+
+  const toggleTextToSpeech = () => {
+    if (!('speechSynthesis' in window)) return;
+    
+    if (isSpeaking) {
+      stopSpeech();
+    } else {
+      const textToRead = `${pageData.title}. ${pageData.text}`;
+      const utterance = new SpeechSynthesisUtterance(textToRead);
+      utterance.lang = 'id-ID';
+      utterance.rate = 0.95;
+
+      utterance.onend = () => setIsSpeaking(false);
+      utterance.onerror = () => setIsSpeaking(false);
+
+      window.speechSynthesis.speak(utterance);
+      setIsSpeaking(true);
+    }
+  };
+
+  const handleZoomIn = () => setZoomLevel(prev => Math.min(prev + 0.15, 1.4));
+  const handleZoomOut = () => setZoomLevel(prev => Math.max(prev - 0.15, 0.75));
+  const handleResetZoom = () => setZoomLevel(1);
+
+  const isCurrentBookmarked = bookmarkedPages.includes(currentPage);
 
   return (
-    <div className={`fixed inset-0 z-50 flex flex-col bg-slate-950/95 backdrop-blur-2xl text-white font-sans ${isFullScreen ? 'p-0' : 'p-4 md:p-8'}`}>
+    <div className={`fixed inset-0 z-50 flex flex-col bg-slate-950/95 backdrop-blur-2xl text-white font-sans ${isFullScreen ? 'p-0' : 'p-3 md:p-6'}`}>
 
       {/* HEADER CONTROL BAR */}
-      <div className="flex items-center justify-between px-6 py-4 bg-slate-900/80 border-b border-slate-800 rounded-t-2xl">
+      <div className="flex items-center justify-between px-6 py-3.5 bg-slate-900/90 border-b border-slate-800 rounded-t-2xl shrink-0">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl shadow-lg">
             <FileText className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h3 className="font-extrabold text-sm text-white max-w-xs md:max-w-md truncate">{book.title}</h3>
-            <p className="text-[10px] text-slate-400 font-semibold">{book.author} — Interactive 3D E-Reader</p>
+            <h3 className="font-extrabold text-xs md:text-sm text-white max-w-xs md:max-w-md truncate">{book.title}</h3>
+            <p className="text-[10px] text-cyan-400 font-semibold">{book.author} — Interactive 3D E-Reader</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          {/* AI Voice Reader (Text To Speech) */}
+          <button
+            onClick={toggleTextToSpeech}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
+              isSpeaking ? 'bg-amber-500/20 text-amber-400 border-amber-500/40 animate-pulse' : 'bg-slate-800 hover:bg-slate-750 text-slate-300 border-slate-700'
+            }`}
+            title="AI Voice Reader (Membacakan Teks)"
+          >
+            {isSpeaking ? <Square className="w-3.5 h-3.5 text-amber-400 fill-amber-400" /> : <Play className="w-3.5 h-3.5 text-cyan-400" />}
+            <span className="hidden sm:inline">{isSpeaking ? 'Berhentikan Suara' : 'Baca Teks AI'}</span>
+          </button>
+
+          {/* Bookmark Toggle */}
+          <button
+            onClick={toggleBookmark}
+            className={`p-2 rounded-xl border transition-all cursor-pointer ${
+              isCurrentBookmarked ? 'bg-amber-500/20 text-amber-400 border-amber-500/40' : 'bg-slate-800 text-slate-400 border-slate-700'
+            }`}
+            title={isCurrentBookmarked ? 'Hapus Penanda Halaman' : 'Tandai Halaman Ini'}
+          >
+            <Bookmark className={`w-4 h-4 ${isCurrentBookmarked ? 'fill-amber-400' : ''}`} />
+          </button>
+
+          {/* Zoom Controls */}
+          <div className="hidden md:flex items-center gap-1 bg-slate-800/80 p-1 rounded-xl border border-slate-700">
+            <button onClick={handleZoomOut} className="p-1.5 text-slate-300 hover:text-white" title="Zoom Out"><ZoomOut className="w-3.5 h-3.5" /></button>
+            <span className="text-[10px] font-mono px-1 font-bold text-slate-300">{Math.round(zoomLevel * 100)}%</span>
+            <button onClick={handleZoomIn} className="p-1.5 text-slate-300 hover:text-white" title="Zoom In"><ZoomIn className="w-3.5 h-3.5" /></button>
+            {zoomLevel !== 1 && (
+              <button onClick={handleResetZoom} className="p-1.5 text-cyan-400 hover:text-cyan-300" title="Reset Zoom"><RotateCcw className="w-3.5 h-3.5" /></button>
+            )}
+          </div>
+
           {/* Sound Toggle */}
           <button
             onClick={toggleSound}
-            className={`p-2.5 rounded-xl border transition-all cursor-pointer ${
+            className={`p-2 rounded-xl border transition-all cursor-pointer ${
               soundEnabled ? 'bg-blue-500/20 text-blue-400 border-blue-500/30' : 'bg-slate-800 text-slate-400 border-slate-700'
             }`}
             title={soundEnabled ? 'Matikan Suara SFX' : 'Aktifkan Suara SFX'}
@@ -90,7 +185,7 @@ export default function EBookReader3D({ book, onClose }: EBookReader3DProps) {
           {/* Fullscreen Toggle */}
           <button
             onClick={() => setIsFullScreen(!isFullScreen)}
-            className="p-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl border border-slate-700 transition-all cursor-pointer"
+            className="p-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl border border-slate-700 transition-all cursor-pointer"
             title="Layar Penuh"
           >
             {isFullScreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
@@ -102,7 +197,7 @@ export default function EBookReader3D({ book, onClose }: EBookReader3DProps) {
               href={book.pdfUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition-all shadow-md shadow-blue-500/20"
+              className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition-all shadow-md"
             >
               <Download className="w-3.5 h-3.5" />
               <span>Unduh PDF</span>
@@ -112,39 +207,41 @@ export default function EBookReader3D({ book, onClose }: EBookReader3DProps) {
           {/* Close Reader */}
           <button
             onClick={() => {
+              stopSpeech();
               soundFX.playClick();
               onClose();
             }}
-            className="p-2.5 bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 rounded-xl border border-rose-500/30 transition-all cursor-pointer"
+            className="p-2 bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 rounded-xl border border-rose-500/30 transition-all cursor-pointer"
             title="Keluar Pembaca"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
       </div>
 
       {/* 3D BOOK FLIPBOOK WORKSPACE */}
-      <div className="flex-1 flex items-center justify-center p-4 md:p-8 overflow-hidden relative">
-        {/* Background glow */}
+      <div className="flex-1 flex items-center justify-center p-4 md:p-6 overflow-hidden relative">
         <div className="absolute w-96 h-96 bg-blue-600/10 rounded-full blur-[100px] pointer-events-none" />
 
-        {/* FLIPBOOK CONTAINER */}
+        {/* FLIPBOOK CONTAINER WITH ZOOM */}
         <div
-          className="relative w-full max-w-4xl h-[520px] flex justify-center items-center select-none"
-          style={{ perspective: '2200px' }}
+          className="relative w-full max-w-4xl h-[500px] flex justify-center items-center select-none transition-transform duration-200"
+          style={{ 
+            perspective: '2200px',
+            transform: `scale(${zoomLevel})`
+          }}
         >
           {/* THE 3D BOOK BOOKSPREAD */}
           <div className="relative w-full h-full flex bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden">
 
             {/* LEFT SPREAD (EVEN PAGE) */}
             <div className="w-1/2 h-full bg-slate-900 border-r border-slate-800/80 p-8 flex flex-col justify-between relative shadow-inner">
-              {/* Page spine shadow */}
               <div className="absolute top-0 bottom-0 right-0 w-8 bg-gradient-to-l from-black/40 to-transparent pointer-events-none" />
 
               <div className="space-y-4">
-                <div className="flex items-center justify-between text-[10px] text-blue-400 font-extrabold uppercase tracking-widest border-b border-slate-800 pb-3">
+                <div className="flex items-center justify-between text-[10px] text-cyan-400 font-extrabold uppercase tracking-widest border-b border-slate-800 pb-3">
                   <span>{pageData.chapter}</span>
-                  <Bookmark className="w-3.5 h-3.5" />
+                  <Bookmark className={`w-3.5 h-3.5 ${isCurrentBookmarked ? 'text-amber-400 fill-amber-400' : 'text-slate-600'}`} />
                 </div>
                 <h3 className="text-xl font-bold text-white">{pageData.title}</h3>
                 <p className="text-xs text-slate-300 leading-relaxed font-normal">
@@ -163,7 +260,6 @@ export default function EBookReader3D({ book, onClose }: EBookReader3DProps) {
 
             {/* RIGHT SPREAD (ODD PAGE) */}
             <div className="w-1/2 h-full bg-slate-900 p-8 flex flex-col justify-between relative shadow-inner">
-              {/* Page spine shadow */}
               <div className="absolute top-0 bottom-0 left-0 w-8 bg-gradient-to-r from-black/40 to-transparent pointer-events-none" />
 
               <div className="space-y-4">
@@ -180,9 +276,12 @@ export default function EBookReader3D({ book, onClose }: EBookReader3DProps) {
                     <li>Evaluasi mandiri secara berkala</li>
                   </ul>
                 </div>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  Gunakan tombol navigasi di bagian bawah atau tombol panah keyboard untuk berpindah halaman secara interaktif dengan efek 3D flip.
-                </p>
+                {isSpeaking && (
+                  <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-300 text-xs flex items-center gap-2">
+                    <Mic className="w-4 h-4 animate-pulse" />
+                    <span className="font-bold text-[11px]">AI Voice Reader sedang membaca teks...</span>
+                  </div>
+                )}
               </div>
 
               <div className="flex justify-between items-center text-[10px] text-slate-500 font-semibold border-t border-slate-800/80 pt-4">
@@ -204,7 +303,7 @@ export default function EBookReader3D({ book, onClose }: EBookReader3DProps) {
                 }}
               >
                 <div className="text-center space-y-2">
-                  <Sparkles className="w-8 h-8 text-blue-400 animate-spin mx-auto" />
+                  <Sparkles className="w-8 h-8 text-cyan-400 animate-spin mx-auto" />
                   <span className="text-xs font-bold text-slate-300 block">Membalik Halaman...</span>
                 </div>
               </div>
@@ -214,11 +313,11 @@ export default function EBookReader3D({ book, onClose }: EBookReader3DProps) {
       </div>
 
       {/* FOOTER NAVIGATION CONTROL */}
-      <div className="flex items-center justify-between px-6 py-4 bg-slate-900/80 border-t border-slate-800 rounded-b-2xl">
+      <div className="flex items-center justify-between px-6 py-3.5 bg-slate-900/90 border-t border-slate-800 rounded-b-2xl shrink-0">
         <button
           onClick={handlePrevPage}
           disabled={currentPage <= 1 || isFlipping}
-          className="flex items-center gap-2 px-5 py-2.5 bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition-all cursor-pointer"
+          className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition-all cursor-pointer"
         >
           <ChevronLeft className="w-4 h-4" />
           <span>Halaman Sebelumnya</span>
@@ -229,9 +328,9 @@ export default function EBookReader3D({ book, onClose }: EBookReader3DProps) {
           <span className="text-xs font-extrabold text-slate-300">
             Halaman {currentPage} dari {totalPages}
           </span>
-          <div className="w-32 h-2 bg-slate-800 rounded-full overflow-hidden">
+          <div className="w-28 sm:w-36 h-2 bg-slate-800 rounded-full overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 transition-all duration-300"
+              className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 transition-all duration-300"
               style={{ width: `${(currentPage / totalPages) * 100}%` }}
             />
           </div>
@@ -240,7 +339,7 @@ export default function EBookReader3D({ book, onClose }: EBookReader3DProps) {
         <button
           onClick={handleNextPage}
           disabled={currentPage >= totalPages || isFlipping}
-          className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:opacity-40 text-white text-xs font-bold rounded-xl shadow-lg shadow-blue-500/25 transition-all cursor-pointer"
+          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 disabled:opacity-40 text-white text-xs font-bold rounded-xl shadow-lg shadow-blue-500/25 transition-all cursor-pointer"
         >
           <span>Halaman Selanjutnya</span>
           <ChevronRight className="w-4 h-4" />

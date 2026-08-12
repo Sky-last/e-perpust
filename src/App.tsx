@@ -522,11 +522,12 @@ export default function App() {
     setPinjamModalOpen(true);
   };
 
-  const handleConfirmPinjam = async (bookId: string, durationDays: number) => {
-    if (!currentUser || !selectedPinjamBook) return;
+  const handleConfirmPinjam = async (bookId: string, durationDays: number, bookObj?: Book) => {
+    const targetBook = bookObj || selectedPinjamBook || books.find(b => b.id === bookId);
+    if (!currentUser || !targetBook) return;
 
     // Validation: Max borrowing check (Reguler 3, Premium 5)
-    const activeBorrowings = currentUser.borrowings.filter(b => b.status === 'Sedang Dipinjam');
+    const activeBorrowings = (currentUser.borrowings || []).filter(b => b.status === 'Sedang Dipinjam' || b.status === 'approved' || b.status === 'pending');
     const maxAllowed = currentUser.badge === 'Premium' ? 5 : 3;
 
     if (activeBorrowings.length >= maxAllowed) {
@@ -540,9 +541,9 @@ export default function App() {
         const borrowRes = await makeBorrowing(
           currentUser.id, 
           bookId, 
-          selectedPinjamBook.title, 
-          selectedPinjamBook.coverColor, 
-          selectedPinjamBook.coverUrl, 
+          targetBook.title, 
+          targetBook.coverColor, 
+          targetBook.coverUrl, 
           durationDays
         );
 
@@ -551,10 +552,13 @@ export default function App() {
           const booksList = await getBooks();
           setBooks(booksList);
           const profile = await getUserProfile(currentUser.id);
-          if (profile) setCurrentUser(profile);
+          if (profile) {
+            setCurrentUser(profile);
+            localStorage.setItem('digital_library_active_user_data', JSON.stringify(profile));
+          }
 
-          await pushLog(currentUser.email, currentUser.name, 'pinjam', selectedPinjamBook.title);
-          addToast(`Peminjaman buku "${selectedPinjamBook.title}" dikonfirmasi!`, 'success');
+          await pushLog(currentUser.email, currentUser.name, 'pinjam', targetBook.title);
+          addToast(`Peminjaman buku "${targetBook.title}" dikonfirmasi!`, 'success');
         } else {
           addToast('Gagal memproses peminjaman di database.', 'error');
         }
@@ -577,16 +581,16 @@ export default function App() {
     // Update User borrowings
     const newBorrow: Borrowing = {
       id: 'brw_' + Math.random().toString(36).substr(2, 9),
-      bookId: selectedPinjamBook.id,
-      bookTitle: selectedPinjamBook.title,
-      coverColor: selectedPinjamBook.coverColor,
-      coverUrl: selectedPinjamBook.coverUrl,
+      bookId: targetBook.id,
+      bookTitle: targetBook.title,
+      coverColor: targetBook.coverColor,
+      coverUrl: targetBook.coverUrl,
       borrowDate: formattedBorrowDate,
       dueDate: formattedDueDate,
-      status: 'Sedang Dipinjam'
+      status: 'approved'
     };
 
-    const updatedUserBorrowings = [newBorrow, ...currentUser.borrowings];
+    const updatedUserBorrowings = [newBorrow, ...(currentUser.borrowings || [])];
     const updatedCurrentUser = { ...currentUser, borrowings: updatedUserBorrowings };
 
     const updatedUsersList = users.map(u => {
@@ -610,11 +614,12 @@ export default function App() {
     setBooks(updatedBooksList);
 
     localStorage.setItem('digital_library_users', JSON.stringify(updatedUsersList));
+    localStorage.setItem('digital_library_active_user_data', JSON.stringify(updatedCurrentUser));
     localStorage.setItem('digital_library_books', JSON.stringify(updatedBooksList));
 
-    await pushLog(currentUser.email, currentUser.name, 'pinjam', selectedPinjamBook.title);
+    await pushLog(currentUser.email, currentUser.name, 'pinjam', targetBook.title);
 
-    addToast(`Peminjaman buku "${selectedPinjamBook.title}" dikonfirmasi!`, 'success');
+    addToast(`Peminjaman buku "${targetBook.title}" dikonfirmasi!`, 'success');
     setPinjamModalOpen(false);
     setSelectedPinjamBook(null);
   };
@@ -1050,7 +1055,7 @@ export default function App() {
                 const book = books.find(b => b.id === bookId);
                 if (book) {
                   setSelectedPinjamBook(book);
-                  handleConfirmPinjam(bookId, days);
+                  handleConfirmPinjam(bookId, days, book);
                 }
               }}
               onRequestReturn={handleRequestReturn}
