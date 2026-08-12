@@ -567,15 +567,13 @@ export default function App() {
 
           await pushLog(currentUser.email, currentUser.name, 'pinjam', targetBook.title);
           addToast(`Peminjaman buku "${targetBook.title}" dikonfirmasi!`, 'success');
-        } else {
-          addToast('Gagal memproses peminjaman di database.', 'error');
+          setPinjamModalOpen(false);
+          setSelectedPinjamBook(null);
+          return;
         }
       } catch (err: any) {
-        addToast(err.message || 'Terjadi kesalahan peminjaman', 'error');
+        console.warn('Supabase borrowing error, using local fallback:', err);
       }
-      setPinjamModalOpen(false);
-      setSelectedPinjamBook(null);
-      return;
     }
 
     // LocalStorage fallback
@@ -666,13 +664,11 @@ export default function App() {
 
           await pushLog(targetUser.email, targetUser.name, 'kembali', targetBorrow.bookTitle);
           addToast(`Buku "${targetBorrow.bookTitle}" berhasil dikembalikan!`, 'success');
-        } else {
-          addToast('Gagal memproses pengembalian buku.', 'error');
+          return;
         }
       } catch (err: any) {
-        addToast(err.message || 'Terjadi kesalahan pengembalian', 'error');
+        console.warn('Supabase return error, using local fallback:', err);
       }
-      return;
     }
 
     // LocalStorage fallback
@@ -731,13 +727,11 @@ export default function App() {
 
           await pushLog(currentUser.email, currentUser.name, 'perpanjang', targetBorrow.bookTitle);
           addToast(`Tenggat buku "${targetBorrow.bookTitle}" berhasil diperpanjang 7 hari!`, 'success');
-        } else {
-          addToast('Gagal memperpanjang tenggat pinjaman.', 'error');
+          return;
         }
       } catch (err: any) {
-        addToast(err.message || 'Terjadi kesalahan perpanjangan', 'error');
+        console.warn('Supabase extend error, using local fallback:', err);
       }
-      return;
     }
 
     // LocalStorage fallback
