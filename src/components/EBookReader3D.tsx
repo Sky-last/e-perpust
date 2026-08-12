@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Book } from '../types';
-import { X, ChevronLeft, ChevronRight, Volume2, VolumeX, Maximize2, Minimize2, Bookmark, Sparkles, FileText, Download, ZoomIn, ZoomOut, RotateCcw, Mic, Play, Square } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, Volume2, VolumeX, Maximize2, Minimize2, Bookmark, Sparkles, FileText, Download, ZoomIn, ZoomOut, RotateCcw, Mic, Play, Square, Music, CloudRain, Coffee, Waves } from 'lucide-react';
 import { soundFX } from '../utils/audio';
 
 interface EBookReader3DProps {
@@ -18,10 +18,74 @@ export default function EBookReader3D({ book, onClose }: EBookReader3DProps) {
   // New Enhanced Features
   const [zoomLevel, setZoomLevel] = useState<number>(1);
   const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
-  const [bookmarkedPages, setBookmarkedPages] = useState<number[]>(() => {
-    const saved = localStorage.getItem(`digital_library_bookmark_${book.id}`);
-    return saved ? JSON.parse(saved) : [];
-  });
+  // Ambient Soundscape state
+  const [ambientSound, setAmbientSound] = useState<'off' | 'rain' | 'library' | 'waves'>('off');
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const ambientNodeRef = useRef<any>(null);
+
+  const toggleAmbientSoundscape = (type: 'off' | 'rain' | 'library' | 'waves') => {
+    if (ambientSound === type) type = 'off';
+    setAmbientSound(type);
+
+    if (ambientNodeRef.current) {
+      try { ambientNodeRef.current.stop(); } catch (e) {}
+      ambientNodeRef.current = null;
+    }
+
+    if (type === 'off') return;
+
+    try {
+      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+      if (!audioCtxRef.current) audioCtxRef.current = new AudioCtx();
+      const ctx = audioCtxRef.current;
+      if (ctx.state === 'suspended') ctx.resume();
+
+      const bufferSize = ctx.sampleRate * 2;
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const output = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        output[i] = Math.random() * 2 - 1;
+      }
+
+      const whiteNoise = ctx.createBufferSource();
+      whiteNoise.buffer = buffer;
+      whiteNoise.loop = true;
+
+      const filter = ctx.createBiquadFilter();
+      const gainNode = ctx.createGain();
+
+      if (type === 'rain') {
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(800, ctx.currentTime);
+        gainNode.gain.setValueAtTime(0.06, ctx.currentTime);
+      } else if (type === 'library') {
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(350, ctx.currentTime);
+        gainNode.gain.setValueAtTime(0.03, ctx.currentTime);
+      } else if (type === 'waves') {
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(550, ctx.currentTime);
+        gainNode.gain.setValueAtTime(0.05, ctx.currentTime);
+      }
+
+      whiteNoise.connect(filter);
+      filter.connect(gainNode);
+      gainNode.connect(ctx.destination);
+      whiteNoise.start();
+
+      ambientNodeRef.current = whiteNoise;
+    } catch (e) {
+      console.warn('Audio synth failed:', e);
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (ambientNodeRef.current) {
+        try { ambientNodeRef.current.stop(); } catch (e) {}
+      }
+    };
+  }, []);
 
   const totalPages = 12;
 
@@ -191,18 +255,37 @@ export default function EBookReader3D({ book, onClose }: EBookReader3DProps) {
             {isFullScreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
           </button>
 
-          {/* PDF Download Link */}
-          {book.pdfUrl && (
-            <a
-              href={book.pdfUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition-all shadow-md"
+          {/* AMBIENT SOUNDSCAPES BAR */}
+          <div className="flex items-center gap-1 bg-slate-900/90 border border-slate-800 rounded-xl p-1 text-[9px] font-extrabold text-slate-400">
+            <span className="px-1.5 text-[8px] uppercase tracking-wider text-cyan-400 font-black">Ambient:</span>
+            <button
+              onClick={() => toggleAmbientSoundscape('rain')}
+              className={`px-2 py-1 rounded-lg flex items-center gap-1 transition-all cursor-pointer ${
+                ambientSound === 'rain' ? 'bg-blue-600 text-white shadow-md' : 'hover:text-white'
+              }`}
+              title="Suara Hujan & Gemericik Air"
             >
-              <Download className="w-3.5 h-3.5" />
-              <span>Unduh PDF</span>
-            </a>
-          )}
+              <CloudRain className="w-3 h-3 text-cyan-300" /> Hujan
+            </button>
+            <button
+              onClick={() => toggleAmbientSoundscape('library')}
+              className={`px-2 py-1 rounded-lg flex items-center gap-1 transition-all cursor-pointer ${
+                ambientSound === 'library' ? 'bg-indigo-600 text-white shadow-md' : 'hover:text-white'
+              }`}
+              title="Suara Suasana Perpustakaan"
+            >
+              <Coffee className="w-3 h-3 text-amber-300" /> Perpus
+            </button>
+            <button
+              onClick={() => toggleAmbientSoundscape('waves')}
+              className={`px-2 py-1 rounded-lg flex items-center gap-1 transition-all cursor-pointer ${
+                ambientSound === 'waves' ? 'bg-cyan-600 text-white shadow-md' : 'hover:text-white'
+              }`}
+              title="Suara Ombak Laut Relaksasi"
+            >
+              <Waves className="w-3 h-3 text-teal-300" /> Laut
+            </button>
+          </div>
 
           {/* Close Reader */}
           <button

@@ -770,7 +770,41 @@ export default function StaffDashboard({
             {/* ── TRANSACTIONS TAB ── */}
             {activeMenu === 'transactions' && (
               <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
-                <h2 className="text-base font-black text-white">Sirkulasi Transaksi</h2>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div>
+                    <h2 className="text-base font-black text-white">Sirkulasi Transaksi & Laporan Peminjaman</h2>
+                    <p className="text-xs text-slate-400 mt-0.5 font-bold">Kelola dan unduh rekapitulasi transaksi sirkulasi buku sekolah.</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button 
+                      onClick={() => window.print()}
+                      className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl border border-slate-700 flex items-center gap-1.5 transition-all cursor-pointer shadow-md"
+                    >
+                      <Download className="w-4 h-4 text-cyan-400" /> Cetak PDF
+                    </button>
+                    <button 
+                      onClick={() => {
+                        const headers = ['ID,Nama Siswa,Judul Buku,Tanggal Pinjam,Jatuh Tempo,Status'];
+                        const rows = borrowings.map(b => {
+                          const u = users.find(x => x.id === b.studentId);
+                          const bk = books.find(x => x.id === b.bookId);
+                          return `"${b.id}","${u?.name || ''}","${bk?.title || ''}","${b.borrowDate}","${b.dueDate}","${b.status}"`;
+                        });
+                        const csvContent = 'data:text/csv;charset=utf-8,' + [headers, ...rows].join('\n');
+                        const encodedUri = encodeURI(csvContent);
+                        const link = document.createElement('a');
+                        link.setAttribute('href', encodedUri);
+                        link.setAttribute('download', `laporan_pustaka_${new Date().toISOString().slice(0, 10)}.csv`);
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                      }}
+                      className="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold rounded-xl shadow-lg flex items-center gap-1.5 transition-all cursor-pointer"
+                    >
+                      <FileSpreadsheet className="w-4 h-4" /> Export CSV / Excel
+                    </button>
+                  </div>
+                </div>
                 <div className="flex gap-2 overflow-x-auto pb-1">
                   {['all', 'pending', 'approved', 'overdue', 'returned'].map(status => (
                     <button

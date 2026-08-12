@@ -428,15 +428,22 @@ export default function App() {
   };
 
   // PROFILE UPDATES
-  const handleUpdateProfile = async (name: string, email: string) => {
+  const handleUpdateProfile = async (data: { name?: string; email?: string; phone?: string; class?: string; avatarUrl?: string }) => {
     if (!currentUser) return;
 
+    const newName     = data.name     ?? currentUser.name;
+    const newEmail    = data.email    ?? currentUser.email;
+    const newPhone    = data.phone    ?? currentUser.phone;
+    const newClass    = data.class    ?? currentUser.class;
+    const newAvatar   = data.avatarUrl ?? currentUser.avatarUrl;
+
     if (isSupabaseConfigured) {
-      const success = await updateUserProfile(currentUser.id, name, email);
+      const success = await updateUserProfile(currentUser.id, newName, newEmail);
       if (success) {
-        const activeUser = { ...currentUser, name, email };
+        const activeUser = { ...currentUser, name: newName, email: newEmail, phone: newPhone, class: newClass, avatarUrl: newAvatar };
         setCurrentUser(activeUser);
-        await pushLog(email, name, 'update_profile', '');
+        localStorage.setItem('digital_library_active_user_data', JSON.stringify(activeUser));
+        await pushLog(newEmail, newName, 'update_profile', '');
         addToast('Informasi profil berhasil diperbarui!', 'success');
       } else {
         addToast('Gagal memperbarui profil.', 'error');
@@ -444,21 +451,22 @@ export default function App() {
       return;
     }
 
-    // LocalStorage fallback
+    // LocalStorage fallback — update semua field
     const updatedUsers = users.map(u => {
       if (u.id === currentUser.id) {
-        return { ...u, name, email };
+        return { ...u, name: newName, email: newEmail, phone: newPhone, class: newClass, avatarUrl: newAvatar };
       }
       return u;
     });
 
-    const activeUser = { ...currentUser, name, email };
+    const activeUser = { ...currentUser, name: newName, email: newEmail, phone: newPhone, class: newClass, avatarUrl: newAvatar };
     setCurrentUser(activeUser);
     setUsers(updatedUsers);
     localStorage.setItem('digital_library_users', JSON.stringify(updatedUsers));
-    localStorage.setItem('digital_library_active_user', email);
+    localStorage.setItem('digital_library_active_user', newEmail);
+    localStorage.setItem('digital_library_active_user_data', JSON.stringify(activeUser));
 
-    await pushLog(email, name, 'update_profile', '');
+    await pushLog(newEmail, newName, 'update_profile', '');
     addToast('Informasi profil berhasil diperbarui!', 'success');
   };
 
@@ -1059,7 +1067,7 @@ export default function App() {
                 }
               }}
               onRequestReturn={handleRequestReturn}
-              onUpdateProfile={(data) => handleUpdateProfile(data.name || currentUser.name, currentUser.email)}
+              onUpdateProfile={(data) => handleUpdateProfile(data)}
               onMarkNotifRead={(notifId) => console.log('notif read:', notifId)}
             />
           );
@@ -1367,6 +1375,7 @@ export default function App() {
       <div className="relative h-screen overflow-hidden">
         {renderViewContent()}
         <ToastNotification toasts={toasts} onDismiss={handleDismissToast} />
+        <AILibrarianAssistant books={books} onNavigate={handleNavigate} onOpenPinjamModal={handleOpenPinjamModal} />
         <PinjamModal 
           isOpen={pinjamModalOpen} 
           onClose={() => setPinjamModalOpen(false)}

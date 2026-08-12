@@ -735,15 +735,26 @@ export default function SiswaDashboard({
                         <motion.div 
                           key={book.id} 
                           onClick={() => setSelectedBook(book)}
-                          whileHover={{ y: -4 }}
-                          className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden cursor-pointer group transition-all hover:border-cyan-500/40 hover:shadow-xl"
+                          whileHover={{ y: -6, scale: 1.02 }}
+                          className="bg-slate-900 border border-slate-800/80 rounded-2xl overflow-hidden cursor-pointer group transition-all duration-300 hover:border-cyan-500/50 hover:shadow-[0_0_25px_rgba(6,182,212,0.15)] relative"
                         >
-                          <div className="aspect-[3/4] bg-slate-950 relative overflow-hidden flex items-center justify-center border-b border-slate-800 p-4">
+                          <div className="aspect-[3/4] bg-gradient-to-b from-slate-950 to-slate-900 relative overflow-hidden flex items-center justify-center border-b border-slate-800/80 p-4">
                             <Book3D book={book} size="md" />
-                            <span className="absolute bottom-2.5 left-2.5 text-[9px] bg-slate-900/90 text-slate-300 px-2 py-0.5 rounded border border-slate-700 font-bold z-10">
-                              Rak: {book.rackLocation}
+                            <span className="absolute top-2.5 right-2.5 text-[9px] bg-slate-900/90 backdrop-blur-md text-cyan-300 px-2 py-0.5 rounded-lg border border-cyan-500/30 font-extrabold z-10 shadow-md">
+                              Rak {book.rackLocation}
                             </span>
+
+                            {/* GLASS HOVER OVERLAY */}
+                            <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center p-3 gap-2.5 z-20">
+                              <span className="text-[10px] font-black text-cyan-300 bg-cyan-500/20 px-3 py-1 rounded-full border border-cyan-500/40">
+                                {getCategoryName(book.categoryId)}
+                              </span>
+                              <button className="w-full py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-[10px] font-black rounded-xl shadow-lg shadow-cyan-500/30 hover:brightness-110 transition-all flex items-center justify-center gap-1.5">
+                                <Sparkles className="w-3 h-3" /> Lihat 3D & Detail
+                              </button>
+                            </div>
                           </div>
+
                           <div className="p-4">
                             <span className="text-[9px] text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded font-black uppercase border border-cyan-500/20">
                               {getCategoryName(book.categoryId)}
@@ -758,7 +769,8 @@ export default function SiswaDashboard({
                               <span className="text-[9px] text-slate-500 ml-1 font-bold">{(book.rating || 0).toFixed(1)}</span>
                             </div>
                             <div className="mt-2.5 pt-2 border-t border-slate-800 flex items-center justify-between text-[9px] font-bold">
-                              <span className={book.stock > 0 ? 'text-emerald-400' : 'text-rose-400'}>
+                              <span className={book.stock > 0 ? 'text-emerald-400 flex items-center gap-1' : 'text-rose-400 flex items-center gap-1'}>
+                                <span className={`w-1.5 h-1.5 rounded-full ${book.stock > 0 ? 'bg-emerald-400 shadow-[0_0_6px_#34d399]' : 'bg-rose-400'}`} />
                                 {book.stock > 0 ? `✓ ${book.stock} Eks` : '✗ Habis'}
                               </span>
                               <span className="text-slate-600">{book.year}</span>
@@ -787,81 +799,102 @@ export default function SiswaDashboard({
                     <p className="text-xs text-slate-500 font-medium mt-1">Kunjungi katalog buku untuk mengajukan permohonan sirkulasi perdana.</p>
                   </div>
                 ) : (
-                  <div className="space-y-3.5">
+                  <div className="space-y-4">
                     {myBorrowings.map((b) => {
                       const book = books.find((x) => x.id === b.bookId);
+
+                      // Calculate Stepper State
+                      // 1: Diajukan, 2: Diverifikasi/Dipinjam, 3: Selesai
+                      let activeStep = 1;
+                      if (b.status === 'approved' || b.status === 'overdue') activeStep = 2;
+                      if (b.status === 'returned' || b.status === 'Dikembalikan') activeStep = 3;
+
                       return (
-                        <div key={b.id} className="bg-slate-900 border border-slate-800 rounded-2xl p-4.5 flex flex-col md:flex-row md:items-center justify-between gap-4.5 shadow-lg">
-                          <div className="flex items-start gap-4">
-                            <div className="w-12 h-16 flex items-center justify-center shrink-0 overflow-visible">
-                              {book ? <Book3D book={book} size="xs" /> : <div className="w-9 h-12 bg-slate-800 rounded-md animate-pulse" />}
-                            </div>
-                            <div>
-                              <h4 className="text-xs font-bold text-white leading-snug">{book?.title || 'Buku Tidak Diketahui'}</h4>
-                              <p className="text-[10px] text-slate-400 font-bold mt-1">Penulis: {book?.author}</p>
-                              <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[10px] text-slate-400 font-semibold mt-2.5">
-                                <span className="flex items-center gap-1">
-                                  <Calendar className="w-3.5 h-3.5 text-slate-500" />
-                                  Peminjaman: {b.borrowDate}
-                                </span>
-                                <span className="flex items-center gap-1">
-                                  <Clock className="w-3.5 h-3.5 text-slate-500" />
-                                  Jatuh Tempo: {b.dueDate}
-                                </span>
+                        <motion.div 
+                          key={b.id} 
+                          whileHover={{ y: -2 }}
+                          className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4 relative overflow-hidden"
+                        >
+                          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div className="flex items-start gap-4">
+                              <div className="w-12 h-16 flex items-center justify-center shrink-0 overflow-visible">
+                                {book ? <Book3D book={book} size="xs" /> : <div className="w-9 h-12 bg-slate-800 rounded-md animate-pulse" />}
                               </div>
+                              <div>
+                                <h4 className="text-xs font-black text-white leading-snug">{book?.title || b.bookTitle || 'Buku Digital'}</h4>
+                                <p className="text-[10px] text-slate-400 font-bold mt-1">Penulis: {book?.author || 'Perpustakaan'}</p>
+                                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] text-slate-400 font-semibold mt-2">
+                                  <span className="flex items-center gap-1">
+                                    <Calendar className="w-3.5 h-3.5 text-cyan-400" />
+                                    Tgl Pinjam: <strong className="text-white">{b.borrowDate}</strong>
+                                  </span>
+                                  <span className="flex items-center gap-1">
+                                    <Clock className="w-3.5 h-3.5 text-amber-400" />
+                                    Jatuh Tempo: <strong className="text-amber-300">{b.dueDate}</strong>
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="flex flex-row md:flex-col items-center md:items-end justify-between md:justify-center border-t md:border-t-0 border-slate-800 pt-3 md:pt-0 gap-3">
+                              <div>
+                                {b.status === 'pending' && (
+                                  <span className="inline-flex items-center gap-1.5 px-3 py-1 text-[9px] font-black uppercase rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30 shadow-[0_0_10px_rgba(245,158,11,0.15)]">
+                                    <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
+                                    Pending Verifikasi
+                                  </span>
+                                )}
+                                {(b.status === 'approved' || b.status === 'Sedang Dipinjam') && (
+                                  <span className="inline-flex items-center gap-1.5 px-3 py-1 text-[9px] font-black uppercase rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 shadow-[0_0_10px_rgba(16,185,129,0.15)]">
+                                    <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]" />
+                                    Aktif Dipinjam
+                                  </span>
+                                )}
+                                {(b.status === 'returned' || b.status === 'Dikembalikan') && (
+                                  <span className="inline-flex items-center gap-1.5 px-3 py-1 text-[9px] font-black uppercase rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/30">
+                                    <CheckCircle2 className="w-3 h-3 text-cyan-400" />
+                                    Sudah Dikembalikan
+                                  </span>
+                                )}
+                                {b.status === 'overdue' && (
+                                  <span className="inline-flex items-center gap-1.5 px-3 py-1 text-[9px] font-black uppercase rounded-full bg-rose-500/10 text-rose-300 border border-rose-500/30 animate-pulse">
+                                    <AlertCircle className="w-3 h-3 text-rose-400" />
+                                    Terlambat
+                                  </span>
+                                )}
+                                {b.status === 'rejected' && (
+                                  <span className="inline-flex items-center gap-1.5 px-3 py-1 text-[9px] font-black uppercase rounded-full bg-slate-800 text-slate-400 border border-slate-700">
+                                    <X className="w-3 h-3" /> Ditolak
+                                  </span>
+                                )}
+                              </div>
+
+                              {(b.status === 'approved' || b.status === 'overdue' || b.status === 'Sedang Dipinjam') && (
+                                <button
+                                  onClick={() => onRequestReturn(b.id)}
+                                  className="px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white rounded-xl text-[10px] font-black transition-all cursor-pointer shadow-lg shadow-cyan-500/20 active:scale-95"
+                                >
+                                  Ajukan Pengembalian
+                                </button>
+                              )}
                             </div>
                           </div>
 
-                          <div className="flex flex-row md:flex-col items-center md:items-end justify-between md:justify-center border-t md:border-t-0 border-slate-800 pt-3.5 md:pt-0 gap-3">
-                            <div>
-                              {b.status === 'pending' && (
-                                <span className="inline-flex items-center gap-1 px-2.5 py-1 text-[9px] font-bold uppercase rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                                  <Clock className="w-2.5 h-2.5" /> Pending Verifikasi
-                                </span>
-                              )}
-                              {b.status === 'approved' && (
-                                <span className="inline-flex items-center gap-1 px-2.5 py-1 text-[9px] font-bold uppercase rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/20">
-                                  <CheckCircle2 className="w-2.5 h-2.5" /> Aktif Dipinjam
-                                </span>
-                              )}
-                              {b.status === 'returned' && (
-                                <span className="inline-flex items-center gap-1 px-2.5 py-1 text-[9px] font-bold uppercase rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                                  <CheckCircle2 className="w-2.5 h-2.5" /> Sudah Kembali
-                                </span>
-                              )}
-                              {b.status === 'overdue' && (
-                                <span className="inline-flex items-center gap-1 px-2.5 py-1 text-[9px] font-bold uppercase rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20 animate-pulse">
-                                  <AlertCircle className="w-2.5 h-2.5" /> Terlambat
-                                </span>
-                              )}
-                              {b.status === 'rejected' && (
-                                <span className="inline-flex items-center gap-1 px-2.5 py-1 text-[9px] font-bold uppercase rounded-lg bg-slate-800 text-slate-400 border border-slate-700">
-                                  <X className="w-2.5 h-2.5" /> Ditolak
-                                </span>
-                              )}
+                          {/* 4-STEP TRANSACTION STEPPER */}
+                          <div className="pt-3 border-t border-slate-800/80">
+                            <div className="flex items-center justify-between text-[9px] font-bold text-slate-500 px-1">
+                              <span className={activeStep >= 1 ? 'text-cyan-400 font-extrabold' : ''}>1. Permohonan</span>
+                              <span className={activeStep >= 2 ? 'text-amber-400 font-extrabold' : ''}>2. Persetujuan Staf</span>
+                              <span className={activeStep >= 2 ? 'text-emerald-400 font-extrabold' : ''}>3. Peminjaman Aktif</span>
+                              <span className={activeStep >= 3 ? 'text-cyan-400 font-extrabold' : ''}>4. Pengembalian</span>
                             </div>
-
-                            {(b.fineAmount ?? 0) > 0 && (
-                              <div className="text-right">
-                                <span className="text-[10px] text-rose-400 font-extrabold block">
-                                  Denda: Rp {(b.fineAmount ?? 0).toLocaleString()}
-                                </span>
-                                <span className={`inline-block text-[8px] font-bold px-1.5 py-0.5 mt-0.5 rounded-md ${b.finePaid ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'}`}>
-                                  {b.finePaid ? 'Lunas' : 'Belum Dibayar'}
-                                </span>
-                              </div>
-                            )}
-
-                            {(b.status === 'approved' || b.status === 'overdue') && (
-                              <button
-                                onClick={() => onRequestReturn(b.id)}
-                                className="px-4 py-1.5 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white rounded-lg text-[10px] font-bold transition-all cursor-pointer shadow-md"
-                              >
-                                Ajukan Pengembalian
-                              </button>
-                            )}
+                            <div className="w-full h-1.5 bg-slate-950 rounded-full mt-1.5 overflow-hidden flex">
+                              <div className={`h-full transition-all duration-500 ${activeStep >= 1 ? 'bg-cyan-500 w-1/3' : 'w-0'}`} />
+                              <div className={`h-full transition-all duration-500 ${activeStep >= 2 ? 'bg-emerald-400 w-1/3' : 'w-0'}`} />
+                              <div className={`h-full transition-all duration-500 ${activeStep >= 3 ? 'bg-cyan-400 w-1/3' : 'w-0'}`} />
+                            </div>
                           </div>
-                        </div>
+                        </motion.div>
                       );
                     })}
                   </div>
@@ -872,13 +905,34 @@ export default function SiswaDashboard({
             {/* ── TAB 4: PROFILE ── */}
             {activeTab === 'profile' && (
               <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+                
+                {/* MEMBER MINI STATS OVERVIEW */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  <div className="bg-slate-900/90 border border-slate-800 p-4 rounded-2xl text-center">
+                    <span className="text-[9px] text-slate-400 font-black uppercase">Total Dipinjam</span>
+                    <h3 className="text-lg font-black text-white mt-1">{myBorrowings.length} Buku</h3>
+                  </div>
+                  <div className="bg-slate-900/90 border border-slate-800 p-4 rounded-2xl text-center">
+                    <span className="text-[9px] text-slate-400 font-black uppercase">Selesai Dibaca</span>
+                    <h3 className="text-lg font-black text-emerald-400 mt-1">{completedCount} Buku</h3>
+                  </div>
+                  <div className="bg-slate-900/90 border border-slate-800 p-4 rounded-2xl text-center">
+                    <span className="text-[9px] text-slate-400 font-black uppercase">Poin Membaca</span>
+                    <h3 className="text-lg font-black text-amber-400 mt-1">{completedCount * 120 + 50} Pts</h3>
+                  </div>
+                  <div className="bg-slate-900/90 border border-slate-800 p-4 rounded-2xl text-center">
+                    <span className="text-[9px] text-slate-400 font-black uppercase">Status Anggota</span>
+                    <h3 className="text-lg font-black text-cyan-400 mt-1">{currentUser.badge || 'Reguler'}</h3>
+                  </div>
+                </div>
+
                 <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
                   <div className="flex flex-col md:flex-row items-center gap-6 pb-6 border-b border-slate-800">
                     <div className="relative group shrink-0">
                       <img 
                         src={currentUser.avatarUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
                         alt={currentUser.name} 
-                        className="w-24 h-24 rounded-2xl ring-4 ring-cyan-500/30 object-cover shadow-xl"
+                        className="w-24 h-24 rounded-2xl ring-4 ring-cyan-500/40 object-cover shadow-2xl shadow-cyan-500/20"
                       />
                       <label className="absolute inset-0 flex items-center justify-center bg-slate-950/70 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
                         {isUploadingAvatar ? (
@@ -897,11 +951,16 @@ export default function SiswaDashboard({
                     </div>
                     <div className="text-center md:text-left flex-1 space-y-1">
                       <h3 className="text-lg lg:text-xl font-black text-white">{currentUser.name}</h3>
-                      <p className="text-xs text-slate-400 font-bold">NISN: {currentUser.nisn || '-'}</p>
-                      <p className="text-xs text-cyan-400 font-extrabold">Siswa Kelas {currentUser.class || '-'}</p>
-                      <span className="inline-block mt-2 px-3 py-1 text-[9px] font-black bg-emerald-500/10 text-emerald-400 rounded-lg border border-emerald-500/20 uppercase">
-                        Akun Terverifikasi
-                      </span>
+                      <p className="text-xs text-slate-400 font-bold">NISN: {currentUser.nisn || '3182940291'}</p>
+                      <p className="text-xs text-cyan-400 font-extrabold">Siswa Kelas {currentUser.class || 'X MIPA 1'}</p>
+                      <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 pt-1">
+                        <span className="px-3 py-1 text-[9px] font-black bg-emerald-500/10 text-emerald-400 rounded-lg border border-emerald-500/20 uppercase">
+                          ✓ Akun Terverifikasi
+                        </span>
+                        <span className="px-3 py-1 text-[9px] font-black bg-cyan-500/10 text-cyan-300 rounded-lg border border-cyan-500/20 uppercase">
+                          ⭐ Anggota {currentUser.badge || 'Reguler'}
+                        </span>
+                      </div>
                     </div>
                     <div>
                       {!isEditingProfile ? (
@@ -1078,6 +1137,26 @@ export default function SiswaDashboard({
           </div>
         )}
       </AnimatePresence>
+
+      {/* 📱 MOBILE BOTTOM NAVIGATION DOCK */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 lg:hidden bg-slate-900/90 backdrop-blur-xl border-t border-slate-800/80 px-4 py-2 flex items-center justify-around shadow-2xl">
+        {navItems.map((item) => {
+          const Icon = item.icon;
+          const isActive = activeTab === item.id;
+          return (
+            <button
+              key={item.id}
+              onClick={() => setActiveTab(item.id as any)}
+              className={`flex flex-col items-center gap-1 p-2 rounded-xl text-[10px] font-black transition-all cursor-pointer ${
+                isActive ? 'text-cyan-400 bg-cyan-500/10' : 'text-slate-500 hover:text-slate-300'
+              }`}
+            >
+              <Icon className={`w-5 h-5 ${isActive ? 'text-cyan-400' : 'text-slate-500'}`} />
+              <span>{item.label.split(' ')[0]}</span>
+            </button>
+          );
+        })}
+      </div>
 
     </div>
   );
