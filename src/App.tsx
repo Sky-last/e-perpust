@@ -99,30 +99,58 @@ export default function App() {
       }
 
       // 4. Session restoration check
+      let restored = false;
       if (isSupabaseConfigured) {
         try {
           const { data: { session } } = await supabase.auth.getSession();
           if (session && session.user) {
-            const profile = await getUserProfile(session.user.id);
-            if (profile) {
-              setCurrentUser(profile);
-              setFavorites(profile.favorites);
-              setCurrentView('dashboard');
+            let profile = await getUserProfile(session.user.id);
+            if (!profile) {
+              profile = {
+                id: session.user.id,
+                name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'Anggota',
+                email: session.user.email || '',
+                role: (session.user.user_metadata?.role as any) || UserRole.SISWA,
+                badge: 'Reguler',
+                favorites: [],
+                borrowings: []
+              };
             }
+            setCurrentUser(profile);
+            setFavorites(profile.favorites || []);
+            localStorage.setItem('digital_library_active_user', profile.email);
+            localStorage.setItem('digital_library_active_user_data', JSON.stringify(profile));
+            setCurrentView('dashboard');
+            restored = true;
           }
         } catch (e) {
           console.error('Failed to restore session:', e);
         }
-      } else {
+      }
+
+      // LocalStorage session restoration fallback (works for demo logins or if Supabase session is idle)
+      if (!restored) {
+        const activeUserData = localStorage.getItem('digital_library_active_user_data');
         const activeUserEmail = localStorage.getItem('digital_library_active_user');
-        if (activeUserEmail) {
-          const storedUsrs = JSON.parse(localStorage.getItem('digital_library_users') || '[]');
-          const found = storedUsrs.find((u: User) => u.email === activeUserEmail);
+
+        if (activeUserData) {
+          try {
+            const parsedUser = JSON.parse(activeUserData);
+            setCurrentUser(parsedUser);
+            setFavorites(parsedUser.favorites || []);
+            setCurrentView('dashboard');
+            restored = true;
+          } catch (e) {}
+        }
+
+        if (!restored && activeUserEmail) {
+          const storedUsersRaw = localStorage.getItem('digital_library_users');
+          const localUsersList = storedUsersRaw ? JSON.parse(storedUsersRaw) : DEFAULT_USERS;
+          const found = localUsersList.find((u: User) => u.email.toLowerCase() === activeUserEmail.toLowerCase()) || DEFAULT_USERS.find((u: User) => u.email.toLowerCase() === activeUserEmail.toLowerCase());
+          
           if (found) {
             setCurrentUser(found);
             setCurrentView('dashboard');
-            
-            // Load user favorites
             const userFavs = localStorage.getItem(`digital_library_favorites_${activeUserEmail}`);
             if (userFavs) {
               setFavorites(JSON.parse(userFavs));
@@ -256,6 +284,8 @@ export default function App() {
           }
           setCurrentUser(profile);
           setFavorites(profile.favorites || []);
+          localStorage.setItem('digital_library_active_user', profile.email);
+          localStorage.setItem('digital_library_active_user_data', JSON.stringify(profile));
           addToast('Berhasil masuk ke Pustaka Digital!', 'success');
           setCurrentView('dashboard');
           return true;
@@ -272,6 +302,7 @@ export default function App() {
     if (foundUser) {
       setCurrentUser(foundUser);
       localStorage.setItem('digital_library_active_user', foundUser.email);
+      localStorage.setItem('digital_library_active_user_data', JSON.stringify(foundUser));
       
       // Load favorites
       const userFavs = localStorage.getItem(`digital_library_favorites_${foundUser.email}`);
@@ -342,6 +373,8 @@ export default function App() {
           }
           setCurrentUser(profile);
           setFavorites([]);
+          localStorage.setItem('digital_library_active_user', profile.email);
+          localStorage.setItem('digital_library_active_user_data', JSON.stringify(profile));
           addToast('Registrasi berhasil! Selamat datang di Pustaka Digital.', 'success');
           setCurrentView('dashboard');
           await pushLog(email, name, 'register', '');
@@ -375,6 +408,7 @@ export default function App() {
     
     setCurrentUser(newUser);
     localStorage.setItem('digital_library_active_user', newUser.email);
+    localStorage.setItem('digital_library_active_user_data', JSON.stringify(newUser));
     setFavorites([]);
     
     await pushLog(email, name, 'register', '');
@@ -388,6 +422,7 @@ export default function App() {
     setCurrentUser(null);
     setFavorites([]);
     localStorage.removeItem('digital_library_active_user');
+    localStorage.removeItem('digital_library_active_user_data');
     setCurrentView('landing');
     addToast('Anda berhasil keluar dari sesi Pustaka Digital.', 'success');
   };
