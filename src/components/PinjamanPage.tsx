@@ -21,8 +21,11 @@ export default function PinjamanPage({
   
   // Sort borrowings: active first, then newest
   const sortedBorrowings = [...borrowings].sort((a, b) => {
-    if (a.status === 'Sedang Dipinjam' && b.status !== 'Sedang Dipinjam') return -1;
-    if (a.status !== 'Sedang Dipinjam' && b.status === 'Sedang Dipinjam') return 1;
+    const activeStatuses = ['Sedang Dipinjam', 'approved', 'overdue'];
+    const aActive = activeStatuses.includes(a.status);
+    const bActive = activeStatuses.includes(b.status);
+    if (aActive && !bActive) return -1;
+    if (!aActive && bActive) return 1;
     return new Date(b.borrowDate).getTime() - new Date(a.borrowDate).getTime();
   });
 
@@ -49,8 +52,26 @@ export default function PinjamanPage({
               </thead>
               <tbody className="divide-y divide-slate-100 text-xs md:text-sm">
                 {sortedBorrowings.map((item) => {
-                  const isActive = item.status === 'Sedang Dipinjam';
-                  const isLate = item.status === 'Terlambat';
+                  const isActive = ['Sedang Dipinjam', 'approved'].includes(item.status);
+                  const isLate = item.status === 'overdue' || item.status === 'Terlambat';
+                  const isReturned = item.status === 'returned' || item.status === 'Dikembalikan';
+                  const isPending = item.status === 'pending';
+                  const isRejected = item.status === 'rejected';
+                  
+                  // Label display
+                  const statusLabel = 
+                    isActive ? 'Aktif Dipinjam' :
+                    isLate ? 'Terlambat' :
+                    isReturned ? 'Dikembalikan' :
+                    isPending ? 'Menunggu Verifikasi' :
+                    isRejected ? 'Ditolak' : item.status;
+                  
+                  const statusClass =
+                    isActive ? 'bg-amber-50 text-amber-600 border border-amber-100' :
+                    isLate ? 'bg-red-50 text-red-600 border border-red-100' :
+                    isReturned ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' :
+                    isPending ? 'bg-blue-50 text-blue-600 border border-blue-100' :
+                    'bg-slate-100 text-slate-500 border border-slate-200';
                   
                   return (
                     <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
@@ -122,19 +143,15 @@ export default function PinjamanPage({
 
                       {/* Status Stamp */}
                       <td className="p-4.5 whitespace-nowrap">
-                        <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
-                          isActive ? 'bg-amber-50 text-amber-600 border border-amber-100' :
-                          isLate ? 'bg-red-50 text-red-600 border border-red-100' :
-                          'bg-emerald-50 text-emerald-600 border border-emerald-100'
-                        }`}>
-                          {item.status}
+                        <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${statusClass}`}>
+                          {statusLabel}
                         </span>
                       </td>
 
                       {/* Action buttons */}
                       <td className="p-4.5 text-right whitespace-nowrap">
                         <div className="flex items-center justify-end space-x-1.5">
-                          {isActive && (
+                          {(isActive || isLate) && (
                             <>
                               <button 
                                 onClick={() => onNavigate('detail-buku', item.bookId)}

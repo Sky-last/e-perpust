@@ -195,8 +195,8 @@ export default function App() {
   };
 
   // SYSTEM LOG PUSHER
-  const pushLog = async (email: string, name: string, type: 'pinjam' | 'kembali' | 'perpanjang' | 'register' | 'update_profile', bookTitle: string) => {
-    const newLog = await addSystemLog(email, name, type, bookTitle);
+  const pushLog = async (email: string, name: string, type: 'pinjam' | 'kembali' | 'perpanjang' | 'register' | 'update_profile' | 'reject', bookTitle: string) => {
+    const newLog = await addSystemLog(email, name, type as any, bookTitle);
     setLogs(prev => [newLog, ...prev]);
   };
 
@@ -1087,7 +1087,9 @@ export default function App() {
           />
         );
       case 'dashboard':
-        if (!currentUser) return null;
+        if (!currentUser) {
+          return <LoginPage onNavigate={handleNavigate} onLogin={handleLogin} addToast={addToast} />;
+        }
         // Route to role-specific dashboard
         if (['siswa', UserRole.SISWA].includes(currentUser.role as any)) {
           return (
@@ -1250,7 +1252,7 @@ export default function App() {
           />
         );
       case 'pinjaman':
-        if (!currentUser) return null;
+        if (!currentUser) return <LoginPage onNavigate={handleNavigate} onLogin={handleLogin} addToast={addToast} />;
         return (
           <PinjamanPage 
             currentUser={currentUser} 
@@ -1261,7 +1263,7 @@ export default function App() {
           />
         );
       case 'favorit':
-        if (!currentUser) return null;
+        if (!currentUser) return <LoginPage onNavigate={handleNavigate} onLogin={handleLogin} addToast={addToast} />;
         return (
           <FavoritPage 
             currentUser={currentUser} 
@@ -1273,18 +1275,18 @@ export default function App() {
           />
         );
       case 'profil':
-        if (!currentUser) return null;
+        if (!currentUser) return <LoginPage onNavigate={handleNavigate} onLogin={handleLogin} addToast={addToast} />;
         return (
           <ProfilPage 
             currentUser={currentUser} 
-            onUpdateProfile={handleUpdateProfile}
+            onUpdateProfile={(name, email) => handleUpdateProfile({ name, email })}
             onChangePassword={handleChangePassword}
             favoritesCount={favorites.length}
             addToast={addToast}
           />
         );
       case 'admin':
-        if (!currentUser || currentUser.role !== 'admin') return null;
+        if (!currentUser || currentUser.role !== 'admin') return <LoginPage onNavigate={handleNavigate} onLogin={handleLogin} addToast={addToast} />;
         return (
           <AdminPage 
             books={books} 
@@ -1299,7 +1301,7 @@ export default function App() {
           />
         );
       default:
-        return null;
+        return <LandingPage books={books} onNavigate={handleNavigate} favorites={favorites} onToggleFavorite={handleToggleFavorite} />;
     }
   };
 
