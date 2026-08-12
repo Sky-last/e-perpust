@@ -174,7 +174,10 @@ export default function AILibrarianAssistant({ books, onNavigate, onOpenPinjamMo
 
       {/* Interactive Floating Chat Window */}
       {isOpen && (
-        <div className="fixed bottom-20 sm:bottom-24 right-3 left-3 sm:left-auto sm:right-6 w-auto sm:w-[400px] h-[480px] max-h-[calc(100vh-120px)] z-40 flex flex-col bg-slate-900/95 backdrop-blur-xl border border-slate-700/80 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-300">
+        <div
+          className="fixed right-3 left-3 sm:left-auto sm:right-6 w-auto sm:w-[400px] z-40 flex flex-col bg-slate-900/95 backdrop-blur-xl border border-slate-700/80 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-300"
+          style={{ bottom: '84px', maxHeight: 'calc(100vh - 170px)' }}
+        >
           {/* Header */}
           <div className="p-4 bg-gradient-to-r from-blue-900/80 via-slate-900 to-indigo-900/80 border-b border-slate-800 flex items-center justify-between">
             <div className="flex items-center space-x-3">
