@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Book, User, SystemLog } from '../types';
-import { Plus, Trash, Edit, Sparkles, BookOpen, Layers, Users, History, Award, Save, X, RefreshCw } from 'lucide-react';
+import { Plus, Trash, Edit, Sparkles, BookOpen, Layers, Users, History, Award, Save, X, RefreshCw, LogOut } from 'lucide-react';
 
 interface AdminPageProps {
   books: Book[];
@@ -11,6 +11,7 @@ interface AdminPageProps {
   onDeleteBook: (id: string) => void;
   onUpdateUserRole: (email: string, badge: 'Premium' | 'Reguler') => void;
   addToast: (message: string, type: 'success' | 'error' | 'info') => void;
+  onLogout?: () => void;
 }
 
 const COLOR_PRESETS = [
@@ -32,7 +33,8 @@ export default function AdminPage({
   onEditBook,
   onDeleteBook,
   onUpdateUserRole,
-  addToast
+  addToast,
+  onLogout
 }: AdminPageProps) {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'crud' | 'users' | 'history'>('dashboard');
 
@@ -214,28 +216,41 @@ export default function AdminPage({
           <p className="text-slate-400 text-xs md:text-sm">Kelola katalog buku, kustomisasi cover AI, monitoring keanggotaan user, dan log sistem.</p>
         </div>
 
-        {/* Tab navigations */}
-        <div className="flex bg-slate-50 p-1 rounded-2xl border border-slate-100 space-x-1">
-          {[
-            { id: 'dashboard', label: 'Ringkasan', icon: BookOpen },
-            { id: 'crud', label: 'Kelola Buku', icon: Layers },
-            { id: 'users', label: 'Anggota', icon: Users },
-            { id: 'history', label: 'Riwayat Log', icon: History }
-          ].map(tab => {
-            const Icon = tab.icon;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
-                className={`px-3.5 py-2 rounded-xl text-xs font-bold flex items-center space-x-1.5 cursor-pointer transition-all ${
-                  activeTab === tab.id ? 'bg-white text-blue-600 shadow-xs border border-slate-100' : 'text-slate-500 hover:text-slate-700'
-                }`}
-              >
-                <Icon className="w-4 h-4" />
-                <span className="hidden sm:inline">{tab.label}</span>
-              </button>
-            );
-          })}
+        {/* Tab navigations & Logout */}
+        <div className="flex items-center space-x-2">
+          <div className="flex bg-slate-50 p-1 rounded-2xl border border-slate-100 space-x-1">
+            {[
+              { id: 'dashboard', label: 'Ringkasan', icon: BookOpen },
+              { id: 'crud', label: 'Kelola Buku', icon: Layers },
+              { id: 'users', label: 'Anggota', icon: Users },
+              { id: 'history', label: 'Riwayat Log', icon: History }
+            ].map(tab => {
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id as any)}
+                  className={`px-3.5 py-2 rounded-xl text-xs font-bold flex items-center space-x-1.5 cursor-pointer transition-all ${
+                    activeTab === tab.id ? 'bg-white text-blue-600 shadow-xs border border-slate-100' : 'text-slate-500 hover:text-slate-700'
+                  }`}
+                >
+                  <Icon className="w-4 h-4" />
+                  <span className="hidden sm:inline">{tab.label}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {onLogout && (
+            <button
+              onClick={onLogout}
+              className="px-3.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200/60 rounded-2xl text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-all shadow-xs"
+              title="Keluar dari Akun Admin"
+            >
+              <LogOut className="w-4 h-4" />
+              <span className="hidden sm:inline">Keluar</span>
+            </button>
+          )}
         </div>
       </div>
 

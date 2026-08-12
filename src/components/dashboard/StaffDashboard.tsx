@@ -588,6 +588,14 @@ export default function StaffDashboard({
               </h1>
             </div>
           </div>
+          <button
+            onClick={onLogout}
+            className="px-4 py-2 bg-rose-500/15 hover:bg-rose-500/25 text-rose-400 border border-rose-500/30 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer shadow-md"
+            title="Keluar dari Akun"
+          >
+            <LogOut className="w-4 h-4" />
+            <span className="hidden sm:inline">Keluar / Logout</span>
+          </button>
         </header>
 
         <main className="flex-1 overflow-y-auto p-4 lg:p-8 scrollbar-thin scrollbar-thumb-slate-800">
