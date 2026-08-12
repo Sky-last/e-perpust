@@ -633,10 +633,24 @@ export default function App() {
   };
 
   const handleReturnBook = async (borrowingId: string) => {
-    if (!currentUser) return;
+    let targetUser = currentUser;
+    let targetBorrow = currentUser?.borrowings?.find(b => b.id === borrowingId);
+    
+    if (!targetBorrow && users.length > 0) {
+      for (const u of users) {
+        const found = (u.borrowings || []).find(b => b.id === borrowingId);
+        if (found) {
+          targetUser = u;
+          targetBorrow = found;
+          break;
+        }
+      }
+    }
 
-    const targetBorrow = currentUser.borrowings.find(b => b.id === borrowingId);
-    if (!targetBorrow) return;
+    if (!targetBorrow || !targetUser) {
+      addToast('Data peminjaman tidak ditemukan.', 'error');
+      return;
+    }
 
     if (isSupabaseConfigured) {
       try {
@@ -645,10 +659,14 @@ export default function App() {
           // Refresh books and profile
           const booksList = await getBooks();
           setBooks(booksList);
-          const profile = await getUserProfile(currentUser.id);
-          if (profile) setCurrentUser(profile);
+          if (currentUser) {
+            const profile = await getUserProfile(currentUser.id);
+            if (profile) setCurrentUser(profile);
+          }
+          const allUsers = await getAllUsers();
+          setUsers(allUsers);
 
-          await pushLog(currentUser.email, currentUser.name, 'kembali', targetBorrow.bookTitle);
+          await pushLog(targetUser.email, targetUser.name, 'kembali', targetBorrow.bookTitle);
           addToast(`Buku "${targetBorrow.bookTitle}" berhasil dikembalikan!`, 'success');
         } else {
           addToast('Gagal memproses pengembalian buku.', 'error');
@@ -664,20 +682,20 @@ export default function App() {
     const formattedReturnDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
     // Update User borrowing item status
-    const updatedUserBorrowings = currentUser.borrowings.map(b => {
-      if (b.id === borrowingId) {
-        return { ...b, status: 'Dikembalikan' as const, returnDate: formattedReturnDate };
-      }
-      return b;
-    });
-
-    const updatedCurrentUser = { ...currentUser, borrowings: updatedUserBorrowings };
-
     const updatedUsersList = users.map(u => {
-      if (u.id === currentUser.id) {
-        return updatedCurrentUser;
+      const updatedUserBorrowings = (u.borrowings || []).map(b => {
+        if (b.id === borrowingId) {
+          return { ...b, status: 'returned' as const, returnDate: formattedReturnDate };
+        }
+        return b;
+      });
+
+      const updatedUser = { ...u, borrowings: updatedUserBorrowings };
+      if (currentUser && u.id === currentUser.id) {
+        setCurrentUser(updatedUser);
+        localStorage.setItem('digital_library_active_user_data', JSON.stringify(updatedUser));
       }
-      return u;
+      return updatedUser;
     });
 
     // Update Book stock (increment by 1)
@@ -689,15 +707,13 @@ export default function App() {
     });
 
     // Save states
-    setCurrentUser(updatedCurrentUser);
     setUsers(updatedUsersList);
     setBooks(updatedBooksList);
 
     localStorage.setItem('digital_library_users', JSON.stringify(updatedUsersList));
     localStorage.setItem('digital_library_books', JSON.stringify(updatedBooksList));
 
-    await pushLog(currentUser.email, currentUser.name, 'kembali', targetBorrow.bookTitle);
-
+    await pushLog(targetUser.email, targetUser.name, 'kembali', targetBorrow.bookTitle);
     addToast(`Buku "${targetBorrow.bookTitle}" berhasil dikembalikan!`, 'success');
   };
 
@@ -1100,7 +1116,7 @@ export default function App() {
                   handleConfirmPinjam(bookId, days, book);
                 }
               }}
-              onRequestReturn={handleRequestReturn}
+              onRequestReturn={handleReturnBook}
               onUpdateProfile={(data) => handleUpdateProfile(data)}
               onMarkNotifRead={(notifId) => console.log('notif read:', notifId)}
             />
