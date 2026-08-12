@@ -601,12 +601,10 @@ export default function App() {
     const updatedUserBorrowings = [newBorrow, ...(currentUser.borrowings || [])];
     const updatedCurrentUser = { ...currentUser, borrowings: updatedUserBorrowings };
 
-    const updatedUsersList = users.map(u => {
-      if (u.id === currentUser.id) {
-        return updatedCurrentUser;
-      }
-      return u;
-    });
+    const userExists = users.some(u => u.id === currentUser.id || u.email.toLowerCase() === currentUser.email.toLowerCase());
+    const updatedUsersList = userExists
+      ? users.map(u => (u.id === currentUser.id || u.email.toLowerCase() === currentUser.email.toLowerCase()) ? updatedCurrentUser : u)
+      : [...users, updatedCurrentUser];
 
     // Update Book stock (decrement by 1)
     const updatedBooksList = books.map(b => {
@@ -720,7 +718,7 @@ export default function App() {
   const handleExtendBook = async (borrowingId: string) => {
     if (!currentUser) return;
 
-    const targetBorrow = currentUser.borrowings.find(b => b.id === borrowingId);
+    const targetBorrow = (currentUser.borrowings || []).find(b => b.id === borrowingId);
     if (!targetBorrow) return;
 
     if (isSupabaseConfigured) {
@@ -756,12 +754,10 @@ export default function App() {
 
     const updatedCurrentUser = { ...currentUser, borrowings: updatedUserBorrowings };
 
-    const updatedUsersList = users.map(u => {
-      if (u.id === currentUser.id) {
-        return updatedCurrentUser;
-      }
-      return u;
-    });
+    const userExists = users.some(u => u.id === currentUser.id || u.email.toLowerCase() === currentUser.email.toLowerCase());
+    const updatedUsersList = userExists
+      ? users.map(u => (u.id === currentUser.id || u.email.toLowerCase() === currentUser.email.toLowerCase()) ? updatedCurrentUser : u)
+      : [...users, updatedCurrentUser];
 
     setCurrentUser(updatedCurrentUser);
     setUsers(updatedUsersList);
@@ -1129,7 +1125,7 @@ export default function App() {
               onLogout={handleLogout}
               books={books}
               categories={categories}
-              borrowings={users.flatMap(u => u.borrowings.map(b => ({ ...b, studentId: u.id })))}
+              borrowings={users.flatMap(u => (u.borrowings || []).map(b => ({ ...b, studentId: u.id })))}
               users={users}
               settings={settings}
               onAddBook={handleAddBook}
@@ -1181,7 +1177,7 @@ export default function App() {
               onLogout={handleLogout}
               books={books}
               categories={categories}
-              borrowings={users.flatMap(u => u.borrowings.map(b => ({ ...b, studentId: u.id })))}
+              borrowings={users.flatMap(u => (u.borrowings || []).map(b => ({ ...b, studentId: u.id })))}
               users={users}
               settings={settings}
               onAddBook={handleAddBook}
