@@ -137,6 +137,14 @@ export default function PinjamanPage({
                           {isActive && (
                             <>
                               <button 
+                                onClick={() => onNavigate('detail-buku', item.bookId)}
+                                className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold rounded-lg shadow-sm transition-all flex items-center space-x-1 cursor-pointer"
+                                title="Baca E-Book 3D"
+                              >
+                                <BookOpen className="w-3.5 h-3.5" />
+                                <span>Baca E-Book</span>
+                              </button>
+                              <button 
                                 onClick={() => onExtendBook(item.id)}
                                 className="px-3 py-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-100 text-slate-600 hover:text-slate-800 text-[11px] font-bold rounded-lg transition-all flex items-center space-x-1 cursor-pointer"
                                 title="Perpanjang 7 hari lagi"

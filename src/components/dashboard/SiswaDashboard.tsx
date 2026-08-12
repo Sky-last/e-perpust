@@ -870,12 +870,22 @@ export default function SiswaDashboard({
                               </div>
 
                               {(b.status === 'approved' || b.status === 'overdue' || b.status === 'Sedang Dipinjam') && (
-                                <button
-                                  onClick={() => onRequestReturn(b.id)}
-                                  className="px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white rounded-xl text-[10px] font-black transition-all cursor-pointer shadow-lg shadow-cyan-500/20 active:scale-95"
-                                >
-                                  Ajukan Pengembalian
-                                </button>
+                                <div className="flex flex-wrap items-center gap-2">
+                                  {book && (
+                                    <button
+                                      onClick={() => setReadingBook3D(book)}
+                                      className="px-3.5 py-2 bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-400 hover:to-teal-400 text-white rounded-xl text-[10px] font-black transition-all cursor-pointer shadow-lg shadow-cyan-500/20 active:scale-95 flex items-center gap-1.5"
+                                    >
+                                      <BookOpen className="w-3.5 h-3.5" /> Baca E-Book 3D
+                                    </button>
+                                  )}
+                                  <button
+                                    onClick={() => onRequestReturn(b.id)}
+                                    className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl text-[10px] font-black transition-all cursor-pointer active:scale-95"
+                                  >
+                                    Ajukan Pengembalian
+                                  </button>
+                                </div>
                               )}
                             </div>
                           </div>
