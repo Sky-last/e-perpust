@@ -840,19 +840,19 @@ export default function StaffDashboard({
                       {borrowings.filter(b => filterStatus === 'all' || b.status === filterStatus).map(b => (
                         <tr key={b.id} className="hover:bg-slate-800/40">
                           <td className="p-4 font-bold text-white">{getUserName(b.studentId ?? '')}</td>
-                          <td className="p-4">{books.find(bk => bk.id === b.bookId)?.title || 'Buku'}</td>
+                          <td className="p-4">{books.find(bk => bk.id === b.bookId)?.title || b.bookTitle || 'Buku'}</td>
                           <td className="p-4 text-slate-400">{b.borrowDate}</td>
                           <td className="p-4 text-slate-400">{b.dueDate}</td>
-                          <td className="p-4 font-extrabold uppercase">{b.status}</td>
+                          <td className="p-4 font-extrabold uppercase text-cyan-300">{b.status}</td>
                           <td className="p-4 text-right">
-                            {b.status === 'pending' && (
+                            {['pending', 'Sedang Dipinjam', 'Menunggu'].includes(b.status) && (
                               <div className="flex justify-end gap-1">
-                                <button onClick={() => onVerifyBorrow(b.id, true)} className="px-2.5 py-1 bg-emerald-600 text-white rounded font-bold">Setujui</button>
-                                <button onClick={() => onVerifyBorrow(b.id, false)} className="px-2.5 py-1 bg-rose-600 text-white rounded font-bold">Tolak</button>
+                                <button onClick={() => onVerifyBorrow(b.id, true)} className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded font-bold transition-all cursor-pointer">Setujui</button>
+                                <button onClick={() => onVerifyBorrow(b.id, false)} className="px-2.5 py-1 bg-rose-600 hover:bg-rose-500 text-white rounded font-bold transition-all cursor-pointer">Tolak</button>
                               </div>
                             )}
-                            {(b.status === 'approved' || b.status === 'overdue') && (
-                              <button onClick={() => onVerifyReturn(b.id, true)} className="px-3 py-1 bg-blue-600 text-white rounded font-bold">Kembalikan</button>
+                            {['approved', 'overdue', 'Dipinjam'].includes(b.status) && (
+                              <button onClick={() => onVerifyReturn(b.id, true)} className="px-3 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded font-bold transition-all cursor-pointer">Kembalikan</button>
                             )}
                           </td>
                         </tr>

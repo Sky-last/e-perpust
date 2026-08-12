@@ -882,28 +882,23 @@ export default function App() {
   };
 
   // TRANSACTION VERIFICATION & LOGIC HANDLERS
-  const handleVerifyBorrow = (borrowingId: string, approve: boolean) => {
+  const handleVerifyBorrow = async (borrowingId: string, approve: boolean) => {
+    let bookTitle = 'Buku';
+    let borrowerName = 'Siswa';
+    let targetBookId = '';
+
     const updatedUsers = users.map(u => {
-      const targetBorrow = u.borrowings.find(b => b.id === borrowingId);
+      const targetBorrow = (u.borrowings || []).find(b => b.id === borrowingId);
       if (targetBorrow) {
-        const updatedBorrowings = u.borrowings.map(b => {
+        bookTitle = targetBorrow.bookTitle;
+        borrowerName = u.name;
+        targetBookId = targetBorrow.bookId;
+        const updatedBorrowings = (u.borrowings || []).map(b => {
           if (b.id === borrowingId) {
             return { ...b, status: (approve ? 'approved' : 'rejected') as any };
           }
           return b;
         });
-
-        if (approve) {
-          // Decrement book stock
-          const updatedBooks = books.map(bk => {
-            if (bk.id === targetBorrow.bookId) {
-              return { ...bk, stock: Math.max(0, bk.stock - 1) };
-            }
-            return bk;
-          });
-          setBooks(updatedBooks);
-          localStorage.setItem('digital_library_books', JSON.stringify(updatedBooks));
-        }
 
         const updatedUser = { ...u, borrowings: updatedBorrowings };
         if (currentUser && u.id === currentUser.id) {
@@ -914,16 +909,44 @@ export default function App() {
       return u;
     });
 
+    if (approve && targetBookId) {
+      const updatedBooks = books.map(bk => {
+        if (bk.id === targetBookId) {
+          return { ...bk, stock: Math.max(0, bk.stock - 1) };
+        }
+        return bk;
+      });
+      setBooks(updatedBooks);
+      localStorage.setItem('digital_library_books', JSON.stringify(updatedBooks));
+    }
+
     setUsers(updatedUsers);
     localStorage.setItem('digital_library_users', JSON.stringify(updatedUsers));
-    addToast(approve ? 'Peminjaman buku berhasil disetujui!' : 'Peminjaman buku ditolak.', approve ? 'success' : 'info');
+
+    if (isSupabaseConfigured) {
+      try {
+        await supabase.from('borrowings').update({ status: approve ? 'approved' : 'rejected' }).eq('id', borrowingId);
+      } catch (e) {
+        console.warn('Supabase verify update warning:', e);
+      }
+    }
+
+    await pushLog(currentUser?.email || 'admin', currentUser?.name || 'Admin', approve ? 'pinjam' : 'reject', `${bookTitle} (${borrowerName})`);
+    addToast(approve ? `Peminjaman "${bookTitle}" berhasil disetujui!` : `Peminjaman "${bookTitle}" ditolak.`, approve ? 'success' : 'info');
   };
 
-  const handleVerifyReturn = (borrowingId: string) => {
+  const handleVerifyReturn = async (borrowingId: string) => {
+    let bookTitle = 'Buku';
+    let borrowerName = 'Siswa';
+    let targetBookId = '';
+
     const updatedUsers = users.map(u => {
-      const targetBorrow = u.borrowings.find(b => b.id === borrowingId);
+      const targetBorrow = (u.borrowings || []).find(b => b.id === borrowingId);
       if (targetBorrow) {
-        const updatedBorrowings = u.borrowings.map(b => {
+        bookTitle = targetBorrow.bookTitle;
+        borrowerName = u.name;
+        targetBookId = targetBorrow.bookId;
+        const updatedBorrowings = (u.borrowings || []).map(b => {
           if (b.id === borrowingId) {
             return { 
               ...b, 
@@ -934,16 +957,6 @@ export default function App() {
           return b;
         });
 
-        // Increment book stock
-        const updatedBooks = books.map(bk => {
-          if (bk.id === targetBorrow.bookId) {
-            return { ...bk, stock: bk.stock + 1 };
-          }
-          return bk;
-        });
-        setBooks(updatedBooks);
-        localStorage.setItem('digital_library_books', JSON.stringify(updatedBooks));
-
         const updatedUser = { ...u, borrowings: updatedBorrowings };
         if (currentUser && u.id === currentUser.id) {
           setCurrentUser(updatedUser);
@@ -953,9 +966,30 @@ export default function App() {
       return u;
     });
 
+    if (targetBookId) {
+      const updatedBooks = books.map(bk => {
+        if (bk.id === targetBookId) {
+          return { ...bk, stock: bk.stock + 1 };
+        }
+        return bk;
+      });
+      setBooks(updatedBooks);
+      localStorage.setItem('digital_library_books', JSON.stringify(updatedBooks));
+    }
+
     setUsers(updatedUsers);
     localStorage.setItem('digital_library_users', JSON.stringify(updatedUsers));
-    addToast('Pengembalian buku berhasil diverifikasi!', 'success');
+
+    if (isSupabaseConfigured) {
+      try {
+        await supabase.from('borrowings').update({ status: 'returned', return_date: new Date().toISOString() }).eq('id', borrowingId);
+      } catch (e) {
+        console.warn('Supabase verify return warning:', e);
+      }
+    }
+
+    await pushLog(currentUser?.email || 'admin', currentUser?.name || 'Admin', 'kembali', `${bookTitle} (${borrowerName})`);
+    addToast(`Pengembalian buku "${bookTitle}" berhasil diverifikasi!`, 'success');
   };
 
   const handlePayFine = (borrowingId: string) => {
