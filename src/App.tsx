@@ -3,7 +3,7 @@ import { Book, User, SystemLog, ViewType, Borrowing, UserRole, Category, Library
 import { INITIAL_BOOKS as _INITIAL_BOOKS } from './data/books';
 import { supabase, isSupabaseConfigured } from './lib/supabase';
 import { 
-  getBooks, saveBook, removeBook, getUserProfile, updateUserProfile, 
+  getBooks, saveBook, removeBook, getUserProfile, updateUserProfile, updateUserInDb,
   updateUserBadge, makeBorrowing, returnBorrowing, extendBorrowing, 
   saveFavorite, getSystemLogs, addSystemLog, getAllUsers
 } from './lib/db';
@@ -946,18 +946,68 @@ export default function App() {
     let borrowerName = 'Siswa';
     let targetBookId = '';
 
+    let targetUser: User | null = null;
+    let targetBorrow: Borrowing | null = null;
+
+    for (const u of users) {
+      const found = (u.borrowings || []).find(b => b.id === borrowingId);
+      if (found) {
+        targetUser = u;
+        targetBorrow = found;
+        break;
+      }
+    }
+
+    if (!targetBorrow && currentUser?.borrowings) {
+      const found = currentUser.borrowings.find(b => b.id === borrowingId);
+      if (found) {
+        targetUser = currentUser;
+        targetBorrow = found;
+      }
+    }
+
+    if (!targetBorrow || !targetUser) {
+      addToast('Data peminjaman tidak ditemukan.', 'error');
+      return;
+    }
+
+    bookTitle = targetBorrow.bookTitle;
+    borrowerName = targetUser.name;
+    targetBookId = targetBorrow.bookId;
+
+    if (isSupabaseConfigured) {
+      try {
+        const returnDate = await returnBorrowing(borrowingId, targetBookId);
+        if (returnDate) {
+          const booksList = await getBooks();
+          setBooks(booksList);
+          const allUsers = await getAllUsers();
+          setUsers(allUsers);
+          if (currentUser) {
+            const profile = await getUserProfile(currentUser.id);
+            if (profile) setCurrentUser(profile);
+          }
+
+          await pushLog(currentUser?.email || 'admin', currentUser?.name || 'Admin', 'kembali', `${bookTitle} (${borrowerName})`);
+          addToast(`Pengembalian buku "${bookTitle}" berhasil diverifikasi!`, 'success');
+          return;
+        }
+      } catch (err: any) {
+        console.warn('Supabase return error, using local fallback:', err);
+      }
+    }
+
+    const now = new Date();
+    const formattedReturnDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
     const updatedUsers = users.map(u => {
-      const targetBorrow = (u.borrowings || []).find(b => b.id === borrowingId);
-      if (targetBorrow) {
-        bookTitle = targetBorrow.bookTitle;
-        borrowerName = u.name;
-        targetBookId = targetBorrow.bookId;
+      if (u.id === targetUser!.id || u.email === targetUser!.email) {
         const updatedBorrowings = (u.borrowings || []).map(b => {
           if (b.id === borrowingId) {
             return { 
               ...b, 
               status: 'returned' as any, 
-              returnDate: new Date().toISOString().split('T')[0] 
+              returnDate: formattedReturnDate 
             };
           }
           return b;
@@ -986,17 +1036,38 @@ export default function App() {
     setUsers(updatedUsers);
     localStorage.setItem('digital_library_users', JSON.stringify(updatedUsers));
 
-    if (isSupabaseConfigured) {
-      try {
-        await supabase.from('borrowings').update({ status: 'returned', return_date: new Date().toISOString() }).eq('id', borrowingId);
-      } catch (e) {
-        console.warn('Supabase verify return warning:', e);
-      }
-    }
-
     await pushLog(currentUser?.email || 'admin', currentUser?.name || 'Admin', 'kembali', `${bookTitle} (${borrowerName})`);
     addToast(`Pengembalian buku "${bookTitle}" berhasil diverifikasi!`, 'success');
   };
+
+  const handleUpdateUser = async (userId: string, updatedData: Partial<User>) => {
+    if (isSupabaseConfigured) {
+      await updateUserInDb(userId, updatedData);
+    }
+
+    const updatedUsers = users.map(u => {
+      if (u.id === userId) {
+        const updated = { ...u, ...updatedData };
+        if (currentUser && u.id === currentUser.id) {
+          setCurrentUser(updated);
+          localStorage.setItem('digital_library_active_user_data', JSON.stringify(updated));
+        }
+        return updated;
+      }
+      return u;
+    });
+
+    setUsers(updatedUsers);
+    localStorage.setItem('digital_library_users', JSON.stringify(updatedUsers));
+
+    if (isSupabaseConfigured) {
+      const allUsers = await getAllUsers();
+      setUsers(allUsers);
+    }
+
+    addToast('Data pengguna berhasil diperbarui!', 'success');
+  };
+
 
   const handlePayFine = (borrowingId: string) => {
     const updatedUsers = users.map(u => {
@@ -1149,12 +1220,7 @@ export default function App() {
               onVerifyReturn={(borrowingId, approve) => {
                 if (approve) handleVerifyReturn(borrowingId);
               }}
-              onUpdateUser={(userId, data) => {
-                const updatedUsers = users.map(u => u.id === userId ? { ...u, ...data } : u);
-                setUsers(updatedUsers);
-                localStorage.setItem('digital_library_users', JSON.stringify(updatedUsers));
-                addToast('Data pengguna diperbarui!', 'success');
-              }}
+              onUpdateUser={handleUpdateUser}
               onAddUser={handleAddUser}
               onDeleteUser={handleDeleteUser}
               onUpdateSettings={(s) => {
@@ -1201,12 +1267,7 @@ export default function App() {
               onVerifyReturn={(borrowingId, approve) => {
                 if (approve) handleVerifyReturn(borrowingId);
               }}
-              onUpdateUser={(userId, data) => {
-                const updatedUsers = users.map(u => u.id === userId ? { ...u, ...data } : u);
-                setUsers(updatedUsers);
-                localStorage.setItem('digital_library_users', JSON.stringify(updatedUsers));
-                addToast('Data pengguna diperbarui!', 'success');
-              }}
+              onUpdateUser={handleUpdateUser}
               onAddUser={handleAddUser}
               onDeleteUser={handleDeleteUser}
               onUpdateSettings={(s) => {

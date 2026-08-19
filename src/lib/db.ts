@@ -257,6 +257,35 @@ export async function updateUserProfile(userId: string, name: string, email: str
   return false;
 }
 
+export async function updateUserInDb(userId: string, updatedData: Partial<User>): Promise<boolean> {
+  if (isSupabaseConfigured) {
+    try {
+      const payload: Record<string, any> = {};
+      if (updatedData.name !== undefined) payload.name = updatedData.name;
+      if (updatedData.email !== undefined) payload.email = updatedData.email;
+      if (updatedData.role !== undefined) payload.role = updatedData.role;
+      if (updatedData.badge !== undefined) payload.badge = updatedData.badge;
+      if (updatedData.avatarUrl !== undefined || updatedData.avatar !== undefined) payload.avatar = updatedData.avatarUrl || updatedData.avatar;
+      
+      const { error } = await supabase
+        .from('profiles')
+        .update(payload)
+        .eq('id', userId);
+        
+      if (error) {
+        console.error('Supabase error updating user profile:', error);
+        return false;
+      }
+      return true;
+    } catch (e) {
+      console.error('Supabase error updating user profile:', e);
+      return false;
+    }
+  }
+  return true;
+}
+
+
 export async function getAllUsers(): Promise<User[]> {
   if (isSupabaseConfigured) {
     try {

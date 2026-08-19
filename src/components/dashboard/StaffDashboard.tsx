@@ -82,7 +82,7 @@ export default function StaffDashboard({
   onDeleteUser,
   onUpdateSettings
 }: StaffDashboardProps) {
-  const isAdmin = currentUser.role === UserRole.ADMIN;
+  const isAdmin = currentUser.role === UserRole.ADMIN || currentUser.role === 'admin' || currentUser.role === UserRole.PETUGAS || currentUser.role === 'staf';
   const [activeMenu, setActiveMenu] = useState<'dashboard' | 'books' | 'categories' | 'transactions' | 'users' | 'reports' | 'settings'>('dashboard');
   const [searchQuery, setSearchQuery] = useState('');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -117,6 +117,7 @@ export default function StaffDashboard({
   const [uName, setUName] = useState('');
   const [uEmail, setUEmail] = useState('');
   const [uRole, setURole] = useState<UserRole>(UserRole.SISWA);
+  const [uBadge, setUBadge] = useState<'Premium' | 'Reguler'>('Reguler');
   const [uNisn, setUNisn] = useState('');
   const [uNip, setUNip] = useState('');
   const [uClass, setUClass] = useState('X MIPA 1');
@@ -131,13 +132,13 @@ export default function StaffDashboard({
   // Stats
   const totalBooks = books.reduce((sum, b) => sum + (b.totalStock ?? b.stock), 0);
   const availableBooks = books.reduce((sum, b) => sum + b.stock, 0);
-  const activeLoans = borrowings.filter(b => b.status === 'approved' || b.status === 'overdue').length;
-  const pendingApprovals = borrowings.filter(b => b.status === 'pending').length;
-  const overdueLoansCount = borrowings.filter(b => b.status === 'overdue').length;
+  const activeLoans = borrowings.filter(b => ['approved', 'overdue', 'Sedang Dipinjam', 'Dipinjam', 'Terlambat'].includes(b.status)).length;
+  const pendingApprovals = borrowings.filter(b => ['pending', 'Menunggu'].includes(b.status)).length;
+  const overdueLoansCount = borrowings.filter(b => ['overdue', 'Terlambat'].includes(b.status)).length;
   const totalCollectedFines = borrowings.filter(b => b.finePaid).reduce((sum, b) => sum + (b.fineAmount ?? 0), 0);
-  const totalMembers = users.filter(u => u.role === UserRole.SISWA).length;
-  const returnedBooks = borrowings.filter(b => b.status === 'returned').length;
-  const rejectedRequests = borrowings.filter(b => b.status === 'rejected').length;
+  const totalMembers = users.filter(u => u.role === UserRole.SISWA || u.role === 'siswa').length;
+  const returnedBooks = borrowings.filter(b => ['returned', 'Dikembalikan'].includes(b.status)).length;
+  const rejectedRequests = borrowings.filter(b => ['rejected', 'Ditolak'].includes(b.status)).length;
 
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
@@ -397,7 +398,8 @@ export default function StaffDashboard({
       setEditingUser(user);
       setUName(user.name);
       setUEmail(user.email);
-      setURole(user.role as UserRole);
+      setURole((user.role || UserRole.SISWA) as UserRole);
+      setUBadge(user.badge || 'Reguler');
       setUNisn(user.nisn || '');
       setUNip(user.nip || '');
       setUClass(user.class || 'X MIPA 1');
@@ -407,6 +409,7 @@ export default function StaffDashboard({
       setUName('');
       setUEmail('');
       setURole(UserRole.SISWA);
+      setUBadge('Reguler');
       setUNisn('');
       setUNip('');
       setUClass('X MIPA 1');
@@ -417,14 +420,16 @@ export default function StaffDashboard({
 
   const handleSaveUserSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const isSiswa = uRole === UserRole.SISWA || uRole === 'siswa';
     if (editingUser) {
       onUpdateUser(editingUser.id, {
         name: uName,
         email: uEmail,
         role: uRole,
-        nisn: uRole === UserRole.SISWA ? uNisn : undefined,
-        nip: uRole !== UserRole.SISWA ? uNip : undefined,
-        class: uRole === UserRole.SISWA ? uClass : undefined,
+        badge: uBadge,
+        nisn: isSiswa ? uNisn : undefined,
+        nip: !isSiswa ? uNip : undefined,
+        class: isSiswa ? uClass : undefined,
         phone: uPhone
       });
     } else {
@@ -433,12 +438,13 @@ export default function StaffDashboard({
         email: uEmail,
         name: uName,
         role: uRole,
-        nisn: uRole === UserRole.SISWA ? uNisn : undefined,
-        nip: uRole !== UserRole.SISWA ? uNip : undefined,
-        class: uRole === UserRole.SISWA ? uClass : undefined,
+        badge: uBadge,
+        nisn: isSiswa ? uNisn : undefined,
+        nip: !isSiswa ? uNip : undefined,
+        class: isSiswa ? uClass : undefined,
         phone: uPhone,
         status: 'active',
-        avatarUrl: uRole === UserRole.SISWA 
+        avatarUrl: isSiswa 
           ? 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
           : 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
         favorites: [],
@@ -661,18 +667,18 @@ export default function StaffDashboard({
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-800 text-slate-300">
-                        {borrowings.filter(b => b.status === 'approved' || b.status === 'overdue').slice(0, 5).map(b => {
+                        {borrowings.filter(b => ['approved', 'overdue', 'Sedang Dipinjam', 'Dipinjam', 'Terlambat'].includes(b.status)).slice(0, 5).map(b => {
                           const studentName = getUserName(b.studentId ?? '');
                           const bookObj = books.find(x => x.id === b.bookId);
                           return (
                             <tr key={b.id} className="hover:bg-slate-800/50">
                               <td className="py-3.5 px-5 font-bold text-white">{studentName}</td>
-                              <td className="py-3.5 px-5 font-medium">{bookObj?.title || 'Buku'}</td>
+                              <td className="py-3.5 px-5 font-medium">{bookObj?.title || b.bookTitle || 'Buku'}</td>
                               <td className="py-3.5 px-5 text-slate-400">{b.borrowDate}</td>
                               <td className="py-3.5 px-5 text-slate-400">{b.dueDate}</td>
                               <td className="py-3.5 px-5">
-                                <span className={`px-2 py-0.5 rounded font-extrabold text-[9px] uppercase ${b.status === 'overdue' ? 'bg-rose-500/20 text-rose-400' : 'bg-emerald-500/20 text-emerald-400'}`}>
-                                  {b.status === 'overdue' ? 'Terlambat' : 'Aktif'}
+                                <span className={`px-2 py-0.5 rounded font-extrabold text-[9px] uppercase ${['overdue', 'Terlambat'].includes(b.status) ? 'bg-rose-500/20 text-rose-400' : 'bg-emerald-500/20 text-emerald-400'}`}>
+                                  {['overdue', 'Terlambat'].includes(b.status) ? 'Terlambat' : 'Aktif'}
                                 </span>
                               </td>
                               <td className="py-3.5 px-5 text-right">
@@ -837,21 +843,33 @@ export default function StaffDashboard({
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-800 text-slate-300">
-                      {borrowings.filter(b => filterStatus === 'all' || b.status === filterStatus).map(b => (
+                      {borrowings.filter(b => {
+                        if (filterStatus === 'all') return true;
+                        if (filterStatus === 'pending') return ['pending', 'Menunggu'].includes(b.status);
+                        if (filterStatus === 'approved') return ['approved', 'Sedang Dipinjam', 'Dipinjam'].includes(b.status);
+                        if (filterStatus === 'overdue') return ['overdue', 'Terlambat'].includes(b.status);
+                        if (filterStatus === 'returned') return ['returned', 'Dikembalikan'].includes(b.status);
+                        return b.status === filterStatus;
+                      }).map(b => (
                         <tr key={b.id} className="hover:bg-slate-800/40">
                           <td className="p-4 font-bold text-white">{getUserName(b.studentId ?? '')}</td>
                           <td className="p-4">{books.find(bk => bk.id === b.bookId)?.title || b.bookTitle || 'Buku'}</td>
                           <td className="p-4 text-slate-400">{b.borrowDate}</td>
                           <td className="p-4 text-slate-400">{b.dueDate}</td>
-                          <td className="p-4 font-extrabold uppercase text-cyan-300">{b.status}</td>
+                          <td className="p-4 font-extrabold uppercase text-cyan-300">
+                            {b.status === 'returned' || b.status === 'Dikembalikan' ? 'Dikembalikan' :
+                             b.status === 'approved' || b.status === 'Sedang Dipinjam' || b.status === 'Dipinjam' ? 'Sedang Dipinjam' :
+                             b.status === 'pending' || b.status === 'Menunggu' ? 'Menunggu' :
+                             b.status === 'overdue' || b.status === 'Terlambat' ? 'Terlambat' : b.status}
+                          </td>
                           <td className="p-4 text-right">
-                            {['pending', 'Sedang Dipinjam', 'Menunggu'].includes(b.status) && (
+                            {['pending', 'Menunggu'].includes(b.status) && (
                               <div className="flex justify-end gap-1">
                                 <button onClick={() => onVerifyBorrow(b.id, true)} className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded font-bold transition-all cursor-pointer">Setujui</button>
                                 <button onClick={() => onVerifyBorrow(b.id, false)} className="px-2.5 py-1 bg-rose-600 hover:bg-rose-500 text-white rounded font-bold transition-all cursor-pointer">Tolak</button>
                               </div>
                             )}
-                            {['approved', 'overdue', 'Dipinjam'].includes(b.status) && (
+                            {['approved', 'overdue', 'Dipinjam', 'Sedang Dipinjam', 'Terlambat'].includes(b.status) && (
                               <button onClick={() => onVerifyReturn(b.id, true)} className="px-3 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded font-bold transition-all cursor-pointer">Kembalikan</button>
                             )}
                           </td>
@@ -987,21 +1005,59 @@ export default function StaffDashboard({
       <AnimatePresence>
         {isUserModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 text-white space-y-4 relative">
-              <button onClick={() => setIsUserModalOpen(false)} className="absolute top-4 right-4 text-slate-400"><X className="w-5 h-5" /></button>
-              <h3 className="text-base font-black">{editingUser ? 'Edit User' : 'Tambah User'}</h3>
+            <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 text-white space-y-4 relative shadow-2xl">
+              <button onClick={() => setIsUserModalOpen(false)} className="absolute top-4 right-4 text-slate-400 hover:text-white"><X className="w-5 h-5" /></button>
+              <h3 className="text-base font-black text-white">{editingUser ? 'Edit Data Pengguna' : 'Tambah Pengguna Baru'}</h3>
               <form onSubmit={handleSaveUserSubmit} className="space-y-3 text-xs">
-                <input type="text" placeholder="Nama Lengkap" value={uName} onChange={e => setUName(e.target.value)} required className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white" />
-                <input type="email" placeholder="Email" value={uEmail} onChange={e => setUEmail(e.target.value)} required className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white" />
-                <select value={uRole} onChange={e => setURole(e.target.value as UserRole)} className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-bold">
-                  <option value={UserRole.SISWA}>Siswa</option>
-                  <option value={UserRole.PETUGAS}>Petugas</option>
-                  <option value={UserRole.ADMIN}>Admin</option>
-                </select>
-                <input type="text" placeholder="NISN / NIP" value={uNisn || uNip} onChange={e => { setUNisn(e.target.value); setUNip(e.target.value); }} className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white" />
-                <div className="flex justify-end gap-2 pt-2">
-                  <button type="button" onClick={() => setIsUserModalOpen(false)} className="px-4 py-2 bg-slate-800 rounded-xl">Batal</button>
-                  <button type="submit" className="px-5 py-2 bg-blue-600 text-white font-bold rounded-xl">Simpan</button>
+                <div>
+                  <label className="block text-[10px] font-extrabold uppercase text-slate-400 mb-1">Nama Lengkap</label>
+                  <input type="text" placeholder="Nama Lengkap" value={uName} onChange={e => setUName(e.target.value)} required className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-semibold focus:outline-none focus:border-cyan-500" />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-extrabold uppercase text-slate-400 mb-1">Email</label>
+                  <input type="email" placeholder="Email" value={uEmail} onChange={e => setUEmail(e.target.value)} required className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-semibold focus:outline-none focus:border-cyan-500" />
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="block text-[10px] font-extrabold uppercase text-slate-400 mb-1">Role / Peran</label>
+                    <select value={uRole} onChange={e => setURole(e.target.value as UserRole)} className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-bold focus:outline-none focus:border-cyan-500">
+                      <option value={UserRole.SISWA}>Siswa</option>
+                      <option value={UserRole.PETUGAS}>Petugas / Staf</option>
+                      <option value={UserRole.ADMIN}>Admin</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-extrabold uppercase text-slate-400 mb-1">Keanggotaan</label>
+                    <select value={uBadge} onChange={e => setUBadge(e.target.value as any)} className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-bold focus:outline-none focus:border-cyan-500">
+                      <option value="Reguler">Reguler</option>
+                      <option value="Premium">Premium</option>
+                    </select>
+                  </div>
+                </div>
+                {(uRole === UserRole.SISWA || uRole === 'siswa') ? (
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="block text-[10px] font-extrabold uppercase text-slate-400 mb-1">NISN</label>
+                      <input type="text" placeholder="NISN Siswa" value={uNisn} onChange={e => setUNisn(e.target.value)} className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-semibold focus:outline-none focus:border-cyan-500" />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-extrabold uppercase text-slate-400 mb-1">Kelas</label>
+                      <input type="text" placeholder="Contoh: XII IPA 1" value={uClass} onChange={e => setUClass(e.target.value)} className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-semibold focus:outline-none focus:border-cyan-500" />
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    <label className="block text-[10px] font-extrabold uppercase text-slate-400 mb-1">NIP Petugas/Admin</label>
+                    <input type="text" placeholder="NIP" value={uNip} onChange={e => setUNip(e.target.value)} className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-semibold focus:outline-none focus:border-cyan-500" />
+                  </div>
+                )}
+                <div>
+                  <label className="block text-[10px] font-extrabold uppercase text-slate-400 mb-1">No. Telepon / WhatsApp</label>
+                  <input type="text" placeholder="08xxxxxxxxxx" value={uPhone} onChange={e => setUPhone(e.target.value)} className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-semibold focus:outline-none focus:border-cyan-500" />
+                </div>
+                <div className="flex justify-end gap-2 pt-3 border-t border-slate-800">
+                  <button type="button" onClick={() => setIsUserModalOpen(false)} className="px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-xl text-xs font-bold transition-all cursor-pointer">Batal</button>
+                  <button type="submit" className="px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-xs transition-all cursor-pointer shadow-lg">Simpan</button>
                 </div>
               </form>
             </div>
