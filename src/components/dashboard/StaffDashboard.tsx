@@ -82,7 +82,7 @@ export default function StaffDashboard({
   onDeleteUser,
   onUpdateSettings
 }: StaffDashboardProps) {
-  const isAdmin = currentUser.role === UserRole.ADMIN || currentUser.role === 'admin' || currentUser.role === UserRole.PETUGAS || currentUser.role === 'staf';
+  const isAdmin = [UserRole.ADMIN, 'admin', UserRole.PETUGAS, 'staf'].includes(currentUser.role as any);
   const [activeMenu, setActiveMenu] = useState<'dashboard' | 'books' | 'categories' | 'transactions' | 'users' | 'reports' | 'settings'>('dashboard');
   const [searchQuery, setSearchQuery] = useState('');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -116,7 +116,7 @@ export default function StaffDashboard({
 
   const [uName, setUName] = useState('');
   const [uEmail, setUEmail] = useState('');
-  const [uRole, setURole] = useState<UserRole>(UserRole.SISWA);
+  const [uRole, setURole] = useState<UserRole | string>(UserRole.SISWA);
   const [uBadge, setUBadge] = useState<'Premium' | 'Reguler'>('Reguler');
   const [uNisn, setUNisn] = useState('');
   const [uNip, setUNip] = useState('');
@@ -132,13 +132,13 @@ export default function StaffDashboard({
   // Stats
   const totalBooks = books.reduce((sum, b) => sum + (b.totalStock ?? b.stock), 0);
   const availableBooks = books.reduce((sum, b) => sum + b.stock, 0);
-  const activeLoans = borrowings.filter(b => ['approved', 'overdue', 'Sedang Dipinjam', 'Dipinjam', 'Terlambat'].includes(b.status)).length;
-  const pendingApprovals = borrowings.filter(b => ['pending', 'Menunggu'].includes(b.status)).length;
-  const overdueLoansCount = borrowings.filter(b => ['overdue', 'Terlambat'].includes(b.status)).length;
+  const activeLoans = borrowings.filter(b => ['approved', 'overdue', 'Sedang Dipinjam', 'Dipinjam', 'Terlambat'].includes(b.status as string)).length;
+  const pendingApprovals = borrowings.filter(b => ['pending', 'Menunggu'].includes(b.status as string)).length;
+  const overdueLoansCount = borrowings.filter(b => ['overdue', 'Terlambat'].includes(b.status as string)).length;
   const totalCollectedFines = borrowings.filter(b => b.finePaid).reduce((sum, b) => sum + (b.fineAmount ?? 0), 0);
-  const totalMembers = users.filter(u => u.role === UserRole.SISWA || u.role === 'siswa').length;
-  const returnedBooks = borrowings.filter(b => ['returned', 'Dikembalikan'].includes(b.status)).length;
-  const rejectedRequests = borrowings.filter(b => ['rejected', 'Ditolak'].includes(b.status)).length;
+  const totalMembers = users.filter(u => [UserRole.SISWA, 'siswa'].includes(u.role as any)).length;
+  const returnedBooks = borrowings.filter(b => ['returned', 'Dikembalikan'].includes(b.status as string)).length;
+  const rejectedRequests = borrowings.filter(b => ['rejected', 'Ditolak'].includes(b.status as string)).length;
 
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
@@ -420,12 +420,12 @@ export default function StaffDashboard({
 
   const handleSaveUserSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const isSiswa = uRole === UserRole.SISWA || uRole === 'siswa';
+    const isSiswa = String(uRole) === UserRole.SISWA || String(uRole) === 'siswa';
     if (editingUser) {
       onUpdateUser(editingUser.id, {
         name: uName,
         email: uEmail,
-        role: uRole,
+        role: uRole as UserRole,
         badge: uBadge,
         nisn: isSiswa ? uNisn : undefined,
         nip: !isSiswa ? uNip : undefined,
@@ -437,7 +437,7 @@ export default function StaffDashboard({
         id: `user-${Date.now()}`,
         email: uEmail,
         name: uName,
-        role: uRole,
+        role: uRole as UserRole,
         badge: uBadge,
         nisn: isSiswa ? uNisn : undefined,
         nip: !isSiswa ? uNip : undefined,
@@ -844,37 +844,41 @@ export default function StaffDashboard({
                     </thead>
                     <tbody className="divide-y divide-slate-800 text-slate-300">
                       {borrowings.filter(b => {
+                        const statusStr = b.status as string;
                         if (filterStatus === 'all') return true;
-                        if (filterStatus === 'pending') return ['pending', 'Menunggu'].includes(b.status);
-                        if (filterStatus === 'approved') return ['approved', 'Sedang Dipinjam', 'Dipinjam'].includes(b.status);
-                        if (filterStatus === 'overdue') return ['overdue', 'Terlambat'].includes(b.status);
-                        if (filterStatus === 'returned') return ['returned', 'Dikembalikan'].includes(b.status);
-                        return b.status === filterStatus;
-                      }).map(b => (
-                        <tr key={b.id} className="hover:bg-slate-800/40">
-                          <td className="p-4 font-bold text-white">{getUserName(b.studentId ?? '')}</td>
-                          <td className="p-4">{books.find(bk => bk.id === b.bookId)?.title || b.bookTitle || 'Buku'}</td>
-                          <td className="p-4 text-slate-400">{b.borrowDate}</td>
-                          <td className="p-4 text-slate-400">{b.dueDate}</td>
-                          <td className="p-4 font-extrabold uppercase text-cyan-300">
-                            {b.status === 'returned' || b.status === 'Dikembalikan' ? 'Dikembalikan' :
-                             b.status === 'approved' || b.status === 'Sedang Dipinjam' || b.status === 'Dipinjam' ? 'Sedang Dipinjam' :
-                             b.status === 'pending' || b.status === 'Menunggu' ? 'Menunggu' :
-                             b.status === 'overdue' || b.status === 'Terlambat' ? 'Terlambat' : b.status}
-                          </td>
-                          <td className="p-4 text-right">
-                            {['pending', 'Menunggu'].includes(b.status) && (
-                              <div className="flex justify-end gap-1">
-                                <button onClick={() => onVerifyBorrow(b.id, true)} className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded font-bold transition-all cursor-pointer">Setujui</button>
-                                <button onClick={() => onVerifyBorrow(b.id, false)} className="px-2.5 py-1 bg-rose-600 hover:bg-rose-500 text-white rounded font-bold transition-all cursor-pointer">Tolak</button>
-                              </div>
-                            )}
-                            {['approved', 'overdue', 'Dipinjam', 'Sedang Dipinjam', 'Terlambat'].includes(b.status) && (
-                              <button onClick={() => onVerifyReturn(b.id, true)} className="px-3 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded font-bold transition-all cursor-pointer">Kembalikan</button>
-                            )}
-                          </td>
-                        </tr>
-                      ))}
+                        if (filterStatus === 'pending') return ['pending', 'Menunggu'].includes(statusStr);
+                        if (filterStatus === 'approved') return ['approved', 'Sedang Dipinjam', 'Dipinjam'].includes(statusStr);
+                        if (filterStatus === 'overdue') return ['overdue', 'Terlambat'].includes(statusStr);
+                        if (filterStatus === 'returned') return ['returned', 'Dikembalikan'].includes(statusStr);
+                        return statusStr === filterStatus;
+                      }).map(b => {
+                        const statusStr = b.status as string;
+                        return (
+                          <tr key={b.id} className="hover:bg-slate-800/40">
+                            <td className="p-4 font-bold text-white">{getUserName(b.studentId ?? '')}</td>
+                            <td className="p-4">{books.find(bk => bk.id === b.bookId)?.title || b.bookTitle || 'Buku'}</td>
+                            <td className="p-4 text-slate-400">{b.borrowDate}</td>
+                            <td className="p-4 text-slate-400">{b.dueDate}</td>
+                            <td className="p-4 font-extrabold uppercase text-cyan-300">
+                              {statusStr === 'returned' || statusStr === 'Dikembalikan' ? 'Dikembalikan' :
+                               statusStr === 'approved' || statusStr === 'Sedang Dipinjam' || statusStr === 'Dipinjam' ? 'Sedang Dipinjam' :
+                               statusStr === 'pending' || statusStr === 'Menunggu' ? 'Menunggu' :
+                               statusStr === 'overdue' || statusStr === 'Terlambat' ? 'Terlambat' : statusStr}
+                            </td>
+                            <td className="p-4 text-right">
+                              {['pending', 'Menunggu'].includes(statusStr) && (
+                                <div className="flex justify-end gap-1">
+                                  <button onClick={() => onVerifyBorrow(b.id, true)} className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded font-bold transition-all cursor-pointer">Setujui</button>
+                                  <button onClick={() => onVerifyBorrow(b.id, false)} className="px-2.5 py-1 bg-rose-600 hover:bg-rose-500 text-white rounded font-bold transition-all cursor-pointer">Tolak</button>
+                                </div>
+                              )}
+                              {['approved', 'overdue', 'Dipinjam', 'Sedang Dipinjam', 'Terlambat'].includes(statusStr) && (
+                                <button onClick={() => onVerifyReturn(b.id, true)} className="px-3 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded font-bold transition-all cursor-pointer">Kembalikan</button>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
@@ -1034,7 +1038,7 @@ export default function StaffDashboard({
                     </select>
                   </div>
                 </div>
-                {(uRole === UserRole.SISWA || uRole === 'siswa') ? (
+                {(String(uRole) === UserRole.SISWA || String(uRole) === 'siswa') ? (
                   <div className="grid grid-cols-2 gap-2">
                     <div>
                       <label className="block text-[10px] font-extrabold uppercase text-slate-400 mb-1">NISN</label>
