@@ -47,7 +47,7 @@ interface UserDashboardProps {
   categories: Category[];
   borrowings: Borrowing[];
   notifications: Notification[];
-  settings: LibrarySettings;
+  settings?: LibrarySettings;
   onRequestBorrow: (bookId: string, durationDays: number, notes?: string) => void;
   onRequestReturn: (borrowingId: string) => void;
   onUpdateProfile: (updatedData: Partial<User>) => void;
@@ -74,8 +74,12 @@ export default function UserDashboard({
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const [readingBook3D, setReadingBook3D] = useState<Book | null>(null);
 
+  // Safe fallback settings
+  const maxBorrowDays = settings?.maxBorrowDays ?? 7;
+  const maxBorrowBooks = settings?.maxBorrowBooks ?? 5;
+
   // Borrow form states
-  const [borrowDays, setBorrowDays] = useState<number>(settings.maxBorrowDays);
+  const [borrowDays, setBorrowDays] = useState<number>(maxBorrowDays);
   const [borrowNotes, setBorrowNotes] = useState('');
   const [isBorrowingModalOpen, setIsBorrowingModalOpen] = useState(false);
   const [borrowSuccess, setBorrowSuccess] = useState(false);
@@ -487,7 +491,7 @@ export default function UserDashboard({
                   </p>
                   <div className="mt-6 flex flex-wrap gap-3 text-[10px] font-bold">
                     <div className="bg-slate-900/60 backdrop-blur-md px-3.5 py-2 rounded-xl border border-slate-700/60 text-slate-300">
-                      Maks Peminjaman: <strong className="text-cyan-400">{settings.maxBorrowBooks} Buku</strong>
+                      Maks Peminjaman: <strong className="text-cyan-400">{maxBorrowBooks} Buku</strong>
                     </div>
                     <div className="bg-slate-900/60 backdrop-blur-md px-3.5 py-2 rounded-xl border border-slate-700/60 text-slate-300">
                       Layanan Publik: <strong className="text-emerald-400">Gratis & Tanpa Denda</strong>
@@ -980,7 +984,12 @@ export default function UserDashboard({
                           {getInitials(currentUser.name)}
                         </div>
                       )}
-                      <label className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/75 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer text-cyan-300">
+                      
+                      {/* Interactive Hover / Click Overlay */}
+                      <label 
+                        className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/75 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer text-cyan-300 z-10"
+                        title="Klik untuk memilih foto profil baru"
+                      >
                         {isUploadingAvatar ? (
                           <span className="text-white text-[10px] font-bold animate-pulse">Uploading...</span>
                         ) : (
@@ -991,7 +1000,22 @@ export default function UserDashboard({
                         )}
                         <input 
                           type="file" 
-                          accept="image/*" 
+                          accept="image/png, image/jpeg, image/jpg, image/webp, image/gif, image/*" 
+                          className="hidden" 
+                          onChange={handleAvatarChange}
+                          disabled={isUploadingAvatar}
+                        />
+                      </label>
+
+                      {/* Always Visible Camera Badge Button (Mobile Friendly) */}
+                      <label 
+                        className="absolute -bottom-1 -right-1 p-2 bg-cyan-500 hover:bg-cyan-400 text-white rounded-xl shadow-lg shadow-cyan-500/30 border border-slate-900 cursor-pointer transition-transform hover:scale-110 active:scale-95 z-20 flex items-center justify-center"
+                        title="Unggah Foto Profil"
+                      >
+                        <Camera className="w-3.5 h-3.5" />
+                        <input 
+                          type="file" 
+                          accept="image/png, image/jpeg, image/jpg, image/webp, image/gif, image/*" 
                           className="hidden" 
                           onChange={handleAvatarChange}
                           disabled={isUploadingAvatar}
@@ -1146,13 +1170,13 @@ export default function UserDashboard({
                 ) : (
                   <form onSubmit={handleBorrowRequestSubmit} className="space-y-4">
                     <div>
-                      <label className="block text-slate-400 font-bold mb-1.5 uppercase">Durasi Peminjaman (Maks {settings.maxBorrowDays} Hari)</label>
+                      <label className="block text-slate-400 font-bold mb-1.5 uppercase">Durasi Peminjaman (Maks {maxBorrowDays} Hari)</label>
                       <select
                         value={borrowDays}
                         onChange={(e) => setBorrowDays(Number(e.target.value))}
                         className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500 font-bold"
                       >
-                        {Array.from({ length: settings.maxBorrowDays }, (_, i) => i + 1).map((day) => (
+                        {Array.from({ length: maxBorrowDays }, (_, i) => i + 1).map((day) => (
                           <option key={day} value={day}>{day} Hari</option>
                         ))}
                       </select>

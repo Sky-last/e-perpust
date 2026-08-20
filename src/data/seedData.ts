@@ -15,6 +15,7 @@ export const DEFAULT_CATEGORIES: Category[] = [
 // Default library settings (Bebas durasi & Tanpa Denda)
 export const DEFAULT_SETTINGS: LibrarySettings = {
   maxBorrowBooks: 5,
+  maxBorrowDays: 7
 };
 
 // Default seed users (Admin & User demo accounts)

@@ -585,48 +585,57 @@ export async function addSystemLog(
 // ==========================================
 
 export async function uploadAvatar(userId: string, file: File): Promise<string | null> {
+  const getBase64 = (f: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = (err) => reject(err);
+      reader.readAsDataURL(f);
+    });
+  };
+
   if (isSupabaseConfigured) {
     try {
-      const ext = file.name.split('.').pop();
-      const filePath = `${userId}/avatar.${ext}`;
+      const ext = file.name.split('.').pop() || 'jpg';
+      const filePath = `${userId}/avatar_${Date.now()}.${ext}`;
 
       // Upload ke bucket 'avatars' di Supabase Storage
       const { error: uploadError } = await supabase.storage
         .from('avatars')
         .upload(filePath, file, { upsert: true });
 
-      if (uploadError) throw uploadError;
+      if (!uploadError) {
+        // Ambil public URL dari file yang diupload
+        const { data } = supabase.storage
+          .from('avatars')
+          .getPublicUrl(filePath);
 
-      // Ambil public URL dari file yang diupload
-      const { data } = supabase.storage
-        .from('avatars')
-        .getPublicUrl(filePath);
+        const publicUrl = data.publicUrl;
 
-      const publicUrl = data.publicUrl;
+        // Simpan URL ke tabel profiles
+        await supabase
+          .from('profiles')
+          .update({ avatar: publicUrl })
+          .eq('id', userId);
 
-      // Simpan URL ke tabel profiles
-      await supabase
-        .from('profiles')
-        .update({ avatar: publicUrl })
-        .eq('id', userId);
-
-      return publicUrl;
+        return publicUrl;
+      } else {
+        console.warn('Supabase storage upload error, using base64 fallback:', uploadError);
+      }
     } catch (e) {
-      console.error('Error uploading avatar:', e);
-      return null;
+      console.warn('Error uploading avatar to Supabase storage, using base64 fallback:', e);
     }
   }
 
-  // LocalStorage fallback: simpan sebagai base64
-  return new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const base64 = reader.result as string;
-      localStorage.setItem(`digital_library_avatar_${userId}`, base64);
-      resolve(base64);
-    };
-    reader.readAsDataURL(file);
-  });
+  // LocalStorage / Base64 fallback
+  try {
+    const base64 = await getBase64(file);
+    localStorage.setItem(`digital_library_avatar_${userId}`, base64);
+    return base64;
+  } catch (err) {
+    console.error('FileReader error:', err);
+    return null;
+  }
 }
 
 export async function uploadEbook(bookId: string, file: File): Promise<string | null> {
