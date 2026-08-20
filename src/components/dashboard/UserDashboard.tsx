@@ -84,15 +84,29 @@ export default function UserDashboard({
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
 
+  const getInitials = (name?: string) => {
+    if (!name) return 'U';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return name.slice(0, 2).toUpperCase();
+  };
+
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setIsUploadingAvatar(true);
-    const url = await uploadAvatar(currentUser.id, file);
-    if (url) {
-      onUpdateProfile({ avatarUrl: url });
+    try {
+      const url = await uploadAvatar(currentUser.id, file);
+      if (url) {
+        onUpdateProfile({ avatarUrl: url, avatar: url });
+      }
+    } catch (err) {
+      console.error('Failed to upload avatar:', err);
+    } finally {
+      setIsUploadingAvatar(false);
     }
-    setIsUploadingAvatar(false);
   };
   const [editName, setEditName] = useState(currentUser.name);
   const [editPhone, setEditPhone] = useState(currentUser.phone || '');
@@ -261,22 +275,34 @@ export default function UserDashboard({
         <div className="p-4 border-t border-slate-800/80 space-y-3 shrink-0 bg-slate-900/40">
           {!sidebarCollapsed ? (
             <div className="flex items-center gap-3 p-2.5 bg-slate-800/50 rounded-xl border border-slate-750/50">
-              <img 
-                src={currentUser.avatarUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
-                alt={currentUser.name} 
-                className="w-9 h-9 rounded-lg object-cover ring-2 ring-blue-500/30 shrink-0"
-              />
+              {currentUser.avatarUrl || currentUser.avatar ? (
+                <img 
+                  src={currentUser.avatarUrl || currentUser.avatar} 
+                  alt={currentUser.name} 
+                  className="w-9 h-9 rounded-lg object-cover ring-2 ring-cyan-500/30 shrink-0"
+                />
+              ) : (
+                <div className="w-9 h-9 rounded-lg bg-gradient-to-tr from-cyan-600 via-blue-600 to-indigo-600 text-white font-black text-xs flex items-center justify-center ring-2 ring-cyan-500/30 shrink-0 shadow-md">
+                  {getInitials(currentUser.name)}
+                </div>
+              )}
               <div className="min-w-0 flex-1">
                 <h4 className="text-[11px] font-bold text-white truncate">{currentUser.name}</h4>
-                <p className="text-[9px] text-cyan-400 font-semibold truncate mt-0.5">{currentUser.class || 'Siswa'}</p>
+                <p className="text-[9px] text-cyan-400 font-semibold truncate mt-0.5">{currentUser.memberCategory || 'Pemustaka'}</p>
               </div>
             </div>
           ) : (
-            <img 
-              src={currentUser.avatarUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
-              alt={currentUser.name} 
-              className="w-9 h-9 rounded-lg object-cover ring-2 ring-blue-500/30 mx-auto"
-            />
+            currentUser.avatarUrl || currentUser.avatar ? (
+              <img 
+                src={currentUser.avatarUrl || currentUser.avatar} 
+                alt={currentUser.name} 
+                className="w-9 h-9 rounded-lg object-cover ring-2 ring-cyan-500/30 mx-auto"
+              />
+            ) : (
+              <div className="w-9 h-9 rounded-lg bg-gradient-to-tr from-cyan-600 via-blue-600 to-indigo-600 text-white font-black text-xs flex items-center justify-center ring-2 ring-cyan-500/30 mx-auto shadow-md">
+                {getInitials(currentUser.name)}
+              </div>
+            )
           )}
           <button
             onClick={onLogout}
@@ -943,16 +969,25 @@ export default function UserDashboard({
                 <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
                   <div className="flex flex-col md:flex-row items-center gap-6 pb-6 border-b border-slate-800">
                     <div className="relative group shrink-0">
-                      <img 
-                        src={currentUser.avatarUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
-                        alt={currentUser.name} 
-                        className="w-24 h-24 rounded-2xl ring-4 ring-cyan-500/40 object-cover shadow-2xl shadow-cyan-500/20"
-                      />
-                      <label className="absolute inset-0 flex items-center justify-center bg-slate-950/70 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                      {currentUser.avatarUrl || currentUser.avatar ? (
+                        <img 
+                          src={currentUser.avatarUrl || currentUser.avatar} 
+                          alt={currentUser.name} 
+                          className="w-24 h-24 rounded-2xl ring-4 ring-cyan-500/40 object-cover shadow-2xl shadow-cyan-500/20"
+                        />
+                      ) : (
+                        <div className="w-24 h-24 rounded-2xl ring-4 ring-cyan-500/40 bg-gradient-to-tr from-cyan-600 via-blue-600 to-indigo-600 text-white font-black text-2xl flex items-center justify-center shadow-2xl shadow-cyan-500/20 uppercase tracking-wider">
+                          {getInitials(currentUser.name)}
+                        </div>
+                      )}
+                      <label className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/75 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer text-cyan-300">
                         {isUploadingAvatar ? (
-                          <span className="text-white text-[10px] font-bold">Uploading...</span>
+                          <span className="text-white text-[10px] font-bold animate-pulse">Uploading...</span>
                         ) : (
-                          <Camera className="w-6 h-6 text-cyan-400" />
+                          <>
+                            <Camera className="w-6 h-6 text-cyan-400 mb-1" />
+                            <span className="text-[10px] font-extrabold text-white">Ubah Foto</span>
+                          </>
                         )}
                         <input 
                           type="file" 

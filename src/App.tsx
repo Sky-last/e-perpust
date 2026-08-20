@@ -452,7 +452,7 @@ export default function App() {
     const updatedUser = { ...currentUser, ...data };
 
     if (isSupabaseConfigured) {
-      const success = await updateUserProfile(currentUser.id, updatedUser.name, updatedUser.email);
+      const success = await updateUserInDb(currentUser.id, data);
       if (success) {
         setCurrentUser(updatedUser);
         localStorage.setItem('digital_library_active_user_data', JSON.stringify(updatedUser));
