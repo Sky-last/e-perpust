@@ -58,7 +58,6 @@ interface StaffDashboardProps {
   onAddUser: (newUser: User) => void;
   onDeleteUser: (userId: string) => void;
   onUpdateSettings: (newSettings: LibrarySettings) => void;
-  onPayFine: (borrowingId: string) => void;
 }
 
 export default function StaffDashboard({
@@ -813,13 +812,18 @@ export default function StaffDashboard({
                   </div>
                 </div>
                 <div className="flex gap-2 overflow-x-auto pb-1">
-                  {['all', 'pending', 'approved', 'overdue', 'returned'].map(status => (
+                  {[
+                    { key: 'all', label: 'Semua' },
+                    { key: 'pending', label: 'Menunggu' },
+                    { key: 'approved', label: 'Dipinjam' },
+                    { key: 'returned', label: 'Dikembalikan' },
+                  ].map(({ key, label }) => (
                     <button
-                      key={status}
-                      onClick={() => setFilterStatus(status as any)}
-                      className={`px-4 py-2 rounded-xl text-xs font-bold uppercase ${filterStatus === status ? 'bg-blue-600 text-white' : 'bg-slate-900 text-slate-400'}`}
+                      key={key}
+                      onClick={() => setFilterStatus(key as any)}
+                      className={`px-4 py-2 rounded-xl text-xs font-bold uppercase ${filterStatus === key ? 'bg-blue-600 text-white' : 'bg-slate-900 text-slate-400'}`}
                     >
-                      {status}
+                      {label}
                     </button>
                   ))}
                 </div>
@@ -841,7 +845,6 @@ export default function StaffDashboard({
                         if (filterStatus === 'all') return true;
                         if (filterStatus === 'pending') return ['pending', 'Menunggu'].includes(statusStr);
                         if (filterStatus === 'approved') return ['approved', 'Sedang Dipinjam', 'Dipinjam'].includes(statusStr);
-                        if (filterStatus === 'overdue') return ['overdue', 'Terlambat'].includes(statusStr);
                         if (filterStatus === 'returned') return ['returned', 'Dikembalikan'].includes(statusStr);
                         return statusStr === filterStatus;
                       }).map(b => {

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BookOpen, ArrowLeft, Mail, Lock, User as UserIcon, Eye, EyeOff, Sparkles, CheckCircle2, ShieldCheck, Star, Phone, CreditCard, Users } from 'lucide-react';
+import { BookOpen, ArrowLeft, Mail, Lock, User as UserIcon, Eye, EyeOff, Sparkles, CheckCircle2, ShieldCheck, Star, Phone } from 'lucide-react';
 import { ViewType, Book } from '../types';
 import Book3D from './Book3D';
 import { soundFX } from '../utils/audio';
@@ -7,7 +7,7 @@ import { InteractiveMascot } from './InteractiveMascot';
 
 interface RegisterPageProps {
   onNavigate: (view: ViewType) => void;
-  onRegister: (name: string, email: string, pass: string, extraData?: { phone?: string; memberCategory?: string; identityNumber?: string }) => boolean | Promise<boolean>;
+  onRegister: (name: string, email: string, pass: string, extraData?: { phone?: string }) => boolean | Promise<boolean>;
   addToast: (message: string, type: 'success' | 'error' | 'info') => void;
 }
 
@@ -15,8 +15,6 @@ export default function RegisterPage({ onNavigate, onRegister, addToast }: Regis
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  const [memberCategory, setMemberCategory] = useState('Masyarakat Umum');
-  const [identityNumber, setIdentityNumber] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -86,9 +84,7 @@ export default function RegisterPage({ onNavigate, onRegister, addToast }: Regis
 
     try {
       const success = await onRegister(name, email, password, {
-        phone,
-        memberCategory,
-        identityNumber
+        phone
       });
       setIsLoading(false);
       if (success) {
@@ -284,45 +280,6 @@ export default function RegisterPage({ onNavigate, onRegister, addToast }: Regis
               </div>
             </div>
 
-            {/* Grid 2 kolom: Kategori & NIK */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Kategori Anggota */}
-              <div className="space-y-1.5">
-                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider">
-                  Kategori Anggota
-                </label>
-                <div className="relative">
-                  <Users className="w-4.5 h-4.5 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                  <select
-                    value={memberCategory}
-                    onChange={(e) => setMemberCategory(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all font-bold"
-                  >
-                    <option value="Masyarakat Umum">Masyarakat Umum</option>
-                    <option value="Pelajar / Mahasiswa">Pelajar / Mahasiswa</option>
-                    <option value="Profesional / Pekerja">Profesional / Pekerja</option>
-                    <option value="Lainnya">Lainnya</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* NIK / Identitas */}
-              <div className="space-y-1.5">
-                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider">
-                  NIK / No. Identitas (Opsional)
-                </label>
-                <div className="relative">
-                  <CreditCard className="w-4.5 h-4.5 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="text"
-                    value={identityNumber}
-                    onChange={(e) => setIdentityNumber(e.target.value)}
-                    placeholder="Nomor KTP / Kartu Pelajar..."
-                    className="w-full pl-10 pr-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all font-medium"
-                  />
-                </div>
-              </div>
-            </div>
 
             {/* Password */}
             <div className="space-y-1.5">

@@ -350,7 +350,7 @@ export default function App() {
               id: data.user.id,
               name,
               email,
-              role: 'umum',
+              role: UserRole.USER,
               badge: 'Reguler',
               phone,
               member_category: memberCategory,
@@ -377,7 +377,7 @@ export default function App() {
               id: data.user.id,
               name,
               email,
-              role: UserRole.UMUM,
+              role: UserRole.USER,
               badge: 'Reguler',
               phone,
               memberCategory,
@@ -411,7 +411,7 @@ export default function App() {
       name,
       email,
       password: pass,
-      role: UserRole.UMUM,
+      role: UserRole.USER,
       badge: 'Reguler',
       phone,
       memberCategory,
@@ -1240,7 +1240,6 @@ export default function App() {
                 localStorage.setItem('digital_library_settings', JSON.stringify(s));
                 addToast('Pengaturan diperbarui', 'success');
               }}
-              onPayFine={handlePayFine}
             />
           );
         }
@@ -1287,7 +1286,6 @@ export default function App() {
                 localStorage.setItem('digital_library_settings', JSON.stringify(s));
                 addToast('Pengaturan diperbarui', 'success');
               }}
-              onPayFine={handlePayFine}
             />
           );
         }
