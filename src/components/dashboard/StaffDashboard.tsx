@@ -393,7 +393,9 @@ export default function StaffDashboard({
       setEditingUser(user);
       setUName(user.name);
       setUEmail(user.email);
-      setURole((user.role || UserRole.USER) as UserRole);
+      const normRole = ['staf', 'petugas', UserRole.PETUGAS].includes(user.role as any) ? 'staf' :
+                       ['admin', UserRole.ADMIN].includes(user.role as any) ? 'admin' : 'user';
+      setURole(normRole);
       setUBadge(user.badge || 'Reguler');
       setUNisn(user.identityNumber || user.nisn || '');
       setUNip(user.nip || '');
@@ -403,7 +405,7 @@ export default function StaffDashboard({
       setEditingUser(null);
       setUName('');
       setUEmail('');
-      setURole(UserRole.USER);
+      setURole('user');
       setUBadge('Reguler');
       setUNisn('');
       setUNip('');
@@ -415,7 +417,7 @@ export default function StaffDashboard({
 
   const handleSaveUserSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const isUserRole = String(uRole) === UserRole.USER || String(uRole) === 'user';
+    const isUserRole = ['user', 'siswa', UserRole.USER].includes(String(uRole).toLowerCase());
     if (editingUser) {
       onUpdateUser(editingUser.id, {
         name: uName,
@@ -423,8 +425,10 @@ export default function StaffDashboard({
         role: uRole as UserRole,
         badge: uBadge,
         identityNumber: isUserRole ? uNisn : undefined,
+        nisn: isUserRole ? uNisn : undefined,
         nip: !isUserRole ? uNip : undefined,
         memberCategory: isUserRole ? uClass : undefined,
+        class: isUserRole ? uClass : undefined,
         phone: uPhone
       });
     } else {
@@ -435,8 +439,10 @@ export default function StaffDashboard({
         role: uRole as UserRole,
         badge: uBadge,
         identityNumber: isUserRole ? uNisn : undefined,
+        nisn: isUserRole ? uNisn : undefined,
         nip: !isUserRole ? uNip : undefined,
         memberCategory: isUserRole ? uClass : undefined,
+        class: isUserRole ? uClass : undefined,
         phone: uPhone,
         status: 'active',
         avatarUrl: isUserRole 
@@ -884,42 +890,116 @@ export default function StaffDashboard({
             {/* ── USERS TAB ── */}
             {activeMenu === 'users' && (
               <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <h2 className="text-base font-black text-white">Kelola Anggota & Staff</h2>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div>
+                    <h2 className="text-base font-black text-white">Kelola Anggota & Staff</h2>
+                    <p className="text-xs text-slate-400 font-medium">Atur hak akses role (Pemustaka, Petugas, Admin) dan status keanggotaan.</p>
+                  </div>
                   {isAdmin && (
-                    <button onClick={() => handleOpenUserModal(null)} className="px-4 py-2 bg-blue-600 text-white font-bold text-xs rounded-xl flex items-center gap-2">
-                      <Plus className="w-4 h-4" /> User Baru
+                    <button onClick={() => handleOpenUserModal(null)} className="px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs rounded-xl shadow-lg flex items-center gap-2 cursor-pointer transition-all">
+                      <Plus className="w-4 h-4" /> User / Anggota Baru
                     </button>
                   )}
                 </div>
+
+                <div className="relative">
+                  <Search className="absolute left-4 top-3.5 w-4.5 h-4.5 text-slate-500" />
+                  <input
+                    type="text"
+                    placeholder="Cari berdasarkan nama, email, role, atau NISN/NIP..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-11 pr-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500"
+                  />
+                </div>
+
                 <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
-                  <table className="w-full text-xs text-left">
-                    <thead className="bg-slate-950 text-slate-400 uppercase font-extrabold border-b border-slate-800">
-                      <tr>
-                        <th className="p-4">Nama</th>
-                        <th className="p-4">Role</th>
-                        <th className="p-4">NISN / NIP</th>
-                        <th className="p-4 text-right">Aksi</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-800 text-slate-300">
-                      {users.map(u => (
-                        <tr key={u.id} className="hover:bg-slate-800/40">
-                          <td className="p-4 font-bold text-white">{u.name} <span className="block text-[10px] text-slate-500 font-normal">{u.email}</span></td>
-                          <td className="p-4 font-extrabold uppercase text-cyan-400">{u.role}</td>
-                          <td className="p-4 text-slate-400">{u.nisn || u.nip || '-'}</td>
-                          <td className="p-4 text-right">
-                            {isAdmin && (
-                              <div className="flex justify-end gap-1">
-                                <button onClick={() => handleOpenUserModal(u)} className="px-2.5 py-1 bg-slate-800 text-cyan-400 rounded font-bold">Edit</button>
-                                <button onClick={() => onDeleteUser(u.id)} className="px-2.5 py-1 bg-rose-500/20 text-rose-400 rounded font-bold">Hapus</button>
-                              </div>
-                            )}
-                          </td>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-xs text-left">
+                      <thead className="bg-slate-950 text-slate-400 uppercase font-extrabold border-b border-slate-800">
+                        <tr>
+                          <th className="p-4">Nama & Email</th>
+                          <th className="p-4">Role / Peran</th>
+                          <th className="p-4">Keanggotaan</th>
+                          <th className="p-4">NISN / NIP / NIK</th>
+                          <th className="p-4 text-right">Aksi</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody className="divide-y divide-slate-800 text-slate-300">
+                        {filteredUsers.map(u => {
+                          const normalizedRole = ['staf', 'petugas', UserRole.PETUGAS].includes(u.role as any) ? 'staf' :
+                                                 ['admin', UserRole.ADMIN].includes(u.role as any) ? 'admin' : 'user';
+                          return (
+                            <tr key={u.id} className="hover:bg-slate-800/40 transition-colors">
+                              <td className="p-4 font-bold text-white">
+                                <div className="flex items-center gap-3">
+                                  <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-cyan-600 to-blue-600 flex items-center justify-center font-black text-xs text-white uppercase shrink-0">
+                                    {u.name ? u.name.substring(0, 2) : 'US'}
+                                  </div>
+                                  <div>
+                                    <div className="font-extrabold text-white text-xs">{u.name}</div>
+                                    <span className="text-[10px] text-slate-400 font-normal">{u.email}</span>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="p-4">
+                                {isAdmin ? (
+                                  <select
+                                    value={normalizedRole}
+                                    onChange={(e) => {
+                                      const newRole = e.target.value;
+                                      onUpdateUser(u.id, { role: newRole as any });
+                                    }}
+                                    className="bg-slate-950 border border-slate-800 text-cyan-300 text-[11px] font-extrabold rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-cyan-500 cursor-pointer"
+                                  >
+                                    <option value="user">User / Pemustaka</option>
+                                    <option value="staf">Petugas / Staf</option>
+                                    <option value="admin">Administrator</option>
+                                  </select>
+                                ) : (
+                                  <span className={`px-2.5 py-1 rounded-md text-[10px] font-extrabold uppercase border ${
+                                    normalizedRole === 'admin' ? 'bg-purple-500/20 text-purple-300 border-purple-500/30' :
+                                    normalizedRole === 'staf' ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30' :
+                                    'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
+                                  }`}>
+                                    {normalizedRole === 'admin' ? 'Admin' : normalizedRole === 'staf' ? 'Petugas' : 'Pemustaka'}
+                                  </span>
+                                )}
+                              </td>
+                              <td className="p-4">
+                                {isAdmin ? (
+                                  <select
+                                    value={u.badge || 'Reguler'}
+                                    onChange={(e) => {
+                                      const newBadge = e.target.value as 'Premium' | 'Reguler';
+                                      onUpdateUser(u.id, { badge: newBadge });
+                                    }}
+                                    className="bg-slate-950 border border-slate-800 text-amber-300 text-[11px] font-bold rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-amber-500 cursor-pointer"
+                                  >
+                                    <option value="Reguler">Reguler</option>
+                                    <option value="Premium">Premium ⭐</option>
+                                  </select>
+                                ) : (
+                                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${u.badge === 'Premium' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' : 'bg-slate-800 text-slate-400'}`}>
+                                    {u.badge || 'Reguler'}
+                                  </span>
+                                )}
+                              </td>
+                              <td className="p-4 text-slate-400 font-mono">{u.identityNumber || u.nisn || u.nip || '-'}</td>
+                              <td className="p-4 text-right">
+                                {isAdmin && (
+                                  <div className="flex justify-end gap-1.5">
+                                    <button onClick={() => handleOpenUserModal(u)} className="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-cyan-400 rounded-lg font-bold transition-all cursor-pointer">Edit</button>
+                                    <button onClick={() => { if (window.confirm(`Hapus user ${u.name}?`)) onDeleteUser(u.id); }} className="px-3 py-1 bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 rounded-lg font-bold transition-all cursor-pointer">Hapus</button>
+                                  </div>
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </motion.div>
             )}
@@ -1012,21 +1092,21 @@ export default function StaffDashboard({
                 <div className="grid grid-cols-2 gap-2">
                   <div>
                     <label className="block text-[10px] font-extrabold uppercase text-slate-400 mb-1">Role / Peran</label>
-                    <select value={uRole} onChange={e => setURole(e.target.value as UserRole)} className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-bold focus:outline-none focus:border-cyan-500">
-                      <option value={UserRole.USER}>User / Pemustaka</option>
-                      <option value={UserRole.PETUGAS}>Petugas / Staf</option>
-                      <option value={UserRole.ADMIN}>Admin</option>
+                    <select value={uRole} onChange={e => setURole(e.target.value as UserRole)} className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-bold focus:outline-none focus:border-cyan-500 cursor-pointer">
+                      <option value="user">User / Pemustaka</option>
+                      <option value="staf">Petugas / Staf</option>
+                      <option value="admin">Administrator</option>
                     </select>
                   </div>
                   <div>
                     <label className="block text-[10px] font-extrabold uppercase text-slate-400 mb-1">Keanggotaan</label>
-                    <select value={uBadge} onChange={e => setUBadge(e.target.value as any)} className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-bold focus:outline-none focus:border-cyan-500">
+                    <select value={uBadge} onChange={e => setUBadge(e.target.value as any)} className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-bold focus:outline-none focus:border-cyan-500 cursor-pointer">
                       <option value="Reguler">Reguler</option>
-                      <option value="Premium">Premium</option>
+                      <option value="Premium">Premium ⭐</option>
                     </select>
                   </div>
                 </div>
-                {(String(uRole) === UserRole.USER || String(uRole) === 'user') ? (
+                {(['user', 'siswa', UserRole.USER].includes(String(uRole).toLowerCase())) ? (
                   <div className="grid grid-cols-2 gap-2">
                     <div>
                       <label className="block text-[10px] font-extrabold uppercase text-slate-400 mb-1">NIK / No. Identitas</label>
