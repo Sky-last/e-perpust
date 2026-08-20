@@ -176,7 +176,7 @@ export async function getUserProfile(userId: string): Promise<User | null> {
           const { data: { user } } = await supabase.auth.getUser();
           if (user && user.id === userId) {
             const userName = user.user_metadata?.name || user.email?.split('@')[0] || 'Anggota';
-            const userRole = user.user_metadata?.role || 'siswa';
+            const userRole = user.user_metadata?.role || 'user';
             
             const newProfile = {
               id: userId,
@@ -227,7 +227,7 @@ export async function getUserProfile(userId: string): Promise<User | null> {
         id: profile.id,
         name: profile.name,
         email: profile.email,
-        role: (profile.role || 'siswa') as 'admin' | 'staf' | 'siswa',
+        role: (profile.role || 'user') as 'admin' | 'staf' | 'user',
         badge: (profile.badge || 'Reguler') as 'Premium' | 'Reguler',
         avatar: profile.avatar || undefined,
         favorites,

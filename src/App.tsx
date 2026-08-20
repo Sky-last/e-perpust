@@ -30,7 +30,7 @@ import {
 } from 'lucide-react';
 
 // Role-specific Dashboards
-import SiswaDashboard from './components/dashboard/SiswaDashboard';
+import UserDashboard from './components/dashboard/UserDashboard';
 import StaffDashboard from './components/dashboard/StaffDashboard';
 
 import { DEFAULT_CATEGORIES, DEFAULT_SETTINGS, DEFAULT_USERS } from './data/seedData';
@@ -110,7 +110,7 @@ export default function App() {
                 id: session.user.id,
                 name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'Anggota',
                 email: session.user.email || '',
-                role: (session.user.user_metadata?.role as any) || UserRole.SISWA,
+                role: (session.user.user_metadata?.role as any) || UserRole.USER,
                 badge: 'Reguler',
                 favorites: [],
                 borrowings: []
@@ -276,7 +276,7 @@ export default function App() {
               id: data.user.id,
               name: data.user.user_metadata?.name || email.split('@')[0],
               email: data.user.email || email,
-              role: UserRole.SISWA,
+              role: UserRole.USER,
               badge: 'Reguler',
               favorites: [],
               borrowings: []
@@ -318,14 +318,23 @@ export default function App() {
     return false;
   };
 
-  const handleRegister = async (name: string, email: string, pass: string): Promise<boolean> => {
+  const handleRegister = async (
+    name: string, 
+    email: string, 
+    pass: string, 
+    extraData?: { phone?: string; memberCategory?: string; identityNumber?: string; class?: string }
+  ): Promise<boolean> => {
+    const memberCategory = extraData?.memberCategory || 'Masyarakat Umum';
+    const identityNumber = extraData?.identityNumber || '';
+    const phone = extraData?.phone || '';
+
     if (isSupabaseConfigured) {
       try {
         const { data, error } = await supabase.auth.signUp({
           email,
           password: pass,
           options: {
-            data: { name }
+            data: { name, phone, memberCategory, identityNumber }
           }
         });
 
@@ -341,8 +350,11 @@ export default function App() {
               id: data.user.id,
               name,
               email,
-              role: 'siswa',
-              badge: 'Reguler'
+              role: 'umum',
+              badge: 'Reguler',
+              phone,
+              member_category: memberCategory,
+              identity_number: identityNumber
             });
           } catch (e) {
             console.error('Failed to insert profile row:', e);
@@ -365,8 +377,11 @@ export default function App() {
               id: data.user.id,
               name,
               email,
-              role: UserRole.SISWA,
+              role: UserRole.UMUM,
               badge: 'Reguler',
+              phone,
+              memberCategory,
+              identityNumber,
               favorites: [],
               borrowings: []
             };
@@ -375,7 +390,7 @@ export default function App() {
           setFavorites([]);
           localStorage.setItem('digital_library_active_user', profile.email);
           localStorage.setItem('digital_library_active_user_data', JSON.stringify(profile));
-          addToast('Registrasi berhasil! Selamat datang di Pustaka Digital.', 'success');
+          addToast('Registrasi berhasil! Selamat datang di Pustaka Digital Publik.', 'success');
           setCurrentView('dashboard');
           await pushLog(email, name, 'register', '');
           return true;
@@ -396,8 +411,11 @@ export default function App() {
       name,
       email,
       password: pass,
-      role: UserRole.SISWA,
+      role: UserRole.UMUM,
       badge: 'Reguler',
+      phone,
+      memberCategory,
+      identityNumber,
       favorites: [],
       borrowings: []
     };
@@ -428,22 +446,17 @@ export default function App() {
   };
 
   // PROFILE UPDATES
-  const handleUpdateProfile = async (data: { name?: string; email?: string; phone?: string; class?: string; avatarUrl?: string }) => {
+  const handleUpdateProfile = async (data: Partial<User>) => {
     if (!currentUser) return;
 
-    const newName     = data.name     ?? currentUser.name;
-    const newEmail    = data.email    ?? currentUser.email;
-    const newPhone    = data.phone    ?? currentUser.phone;
-    const newClass    = data.class    ?? currentUser.class;
-    const newAvatar   = data.avatarUrl ?? currentUser.avatarUrl;
+    const updatedUser = { ...currentUser, ...data };
 
     if (isSupabaseConfigured) {
-      const success = await updateUserProfile(currentUser.id, newName, newEmail);
+      const success = await updateUserProfile(currentUser.id, updatedUser.name, updatedUser.email);
       if (success) {
-        const activeUser = { ...currentUser, name: newName, email: newEmail, phone: newPhone, class: newClass, avatarUrl: newAvatar };
-        setCurrentUser(activeUser);
-        localStorage.setItem('digital_library_active_user_data', JSON.stringify(activeUser));
-        await pushLog(newEmail, newName, 'update_profile', '');
+        setCurrentUser(updatedUser);
+        localStorage.setItem('digital_library_active_user_data', JSON.stringify(updatedUser));
+        await pushLog(updatedUser.email, updatedUser.name, 'update_profile', '');
         addToast('Informasi profil berhasil diperbarui!', 'success');
       } else {
         addToast('Gagal memperbarui profil.', 'error');
@@ -454,19 +467,18 @@ export default function App() {
     // LocalStorage fallback — update semua field
     const updatedUsers = users.map(u => {
       if (u.id === currentUser.id) {
-        return { ...u, name: newName, email: newEmail, phone: newPhone, class: newClass, avatarUrl: newAvatar };
+        return updatedUser;
       }
       return u;
     });
 
-    const activeUser = { ...currentUser, name: newName, email: newEmail, phone: newPhone, class: newClass, avatarUrl: newAvatar };
-    setCurrentUser(activeUser);
+    setCurrentUser(updatedUser);
     setUsers(updatedUsers);
     localStorage.setItem('digital_library_users', JSON.stringify(updatedUsers));
-    localStorage.setItem('digital_library_active_user', newEmail);
-    localStorage.setItem('digital_library_active_user_data', JSON.stringify(activeUser));
+    localStorage.setItem('digital_library_active_user', updatedUser.email);
+    localStorage.setItem('digital_library_active_user_data', JSON.stringify(updatedUser));
 
-    await pushLog(newEmail, newName, 'update_profile', '');
+    await pushLog(updatedUser.email, updatedUser.name, 'update_profile', '');
     addToast('Informasi profil berhasil diperbarui!', 'success');
   };
 
@@ -890,7 +902,7 @@ export default function App() {
   // TRANSACTION VERIFICATION & LOGIC HANDLERS
   const handleVerifyBorrow = async (borrowingId: string, approve: boolean) => {
     let bookTitle = 'Buku';
-    let borrowerName = 'Siswa';
+    let borrowerName = 'Pemustaka';
     let targetBookId = '';
 
     const updatedUsers = users.map(u => {
@@ -943,7 +955,7 @@ export default function App() {
 
   const handleVerifyReturn = async (borrowingId: string) => {
     let bookTitle = 'Buku';
-    let borrowerName = 'Siswa';
+    let borrowerName = 'Pemustaka';
     let targetBookId = '';
 
     let targetUser: User | null = null;
@@ -1162,9 +1174,9 @@ export default function App() {
           return <LoginPage onNavigate={handleNavigate} onLogin={handleLogin} addToast={addToast} />;
         }
         // Route to role-specific dashboard
-        if (['siswa', UserRole.SISWA].includes(currentUser.role as any)) {
+        if (!['admin', UserRole.ADMIN, 'staf', UserRole.PETUGAS].includes(currentUser.role as any)) {
           return (
-            <SiswaDashboard
+            <UserDashboard
               currentUser={currentUser}
               onLogout={handleLogout}
               books={books}

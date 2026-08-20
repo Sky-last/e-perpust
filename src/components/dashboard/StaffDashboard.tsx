@@ -116,27 +116,23 @@ export default function StaffDashboard({
 
   const [uName, setUName] = useState('');
   const [uEmail, setUEmail] = useState('');
-  const [uRole, setURole] = useState<UserRole | string>(UserRole.SISWA);
+  const [uRole, setURole] = useState<UserRole | string>(UserRole.USER);
   const [uBadge, setUBadge] = useState<'Premium' | 'Reguler'>('Reguler');
   const [uNisn, setUNisn] = useState('');
   const [uNip, setUNip] = useState('');
-  const [uClass, setUClass] = useState('X MIPA 1');
+  const [uClass, setUClass] = useState('Umum');
   const [uPhone, setUPhone] = useState('');
 
-  const [localMaxDays, setLocalMaxDays] = useState(settings.maxBorrowDays);
   const [localMaxBooks, setLocalMaxBooks] = useState(settings.maxBorrowBooks);
-  const [localFinePerDay, setLocalFinePerDay] = useState(settings.finePerDay);
 
-  const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'approved' | 'overdue' | 'returned'>('all');
+  const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'approved' | 'returned'>('all');
 
   // Stats
   const totalBooks = books.reduce((sum, b) => sum + (b.totalStock ?? b.stock), 0);
   const availableBooks = books.reduce((sum, b) => sum + b.stock, 0);
-  const activeLoans = borrowings.filter(b => ['approved', 'overdue', 'Sedang Dipinjam', 'Dipinjam', 'Terlambat'].includes(b.status as string)).length;
+  const activeLoans = borrowings.filter(b => ['approved', 'Sedang Dipinjam', 'Dipinjam'].includes(b.status as string)).length;
   const pendingApprovals = borrowings.filter(b => ['pending', 'Menunggu'].includes(b.status as string)).length;
-  const overdueLoansCount = borrowings.filter(b => ['overdue', 'Terlambat'].includes(b.status as string)).length;
-  const totalCollectedFines = borrowings.filter(b => b.finePaid).reduce((sum, b) => sum + (b.fineAmount ?? 0), 0);
-  const totalMembers = users.filter(u => [UserRole.SISWA, 'siswa'].includes(u.role as any)).length;
+  const totalMembers = users.filter(u => [UserRole.USER, 'user'].includes(u.role as any)).length;
   const returnedBooks = borrowings.filter(b => ['returned', 'Dikembalikan'].includes(b.status as string)).length;
   const rejectedRequests = borrowings.filter(b => ['rejected', 'Ditolak'].includes(b.status as string)).length;
 
@@ -289,7 +285,7 @@ export default function StaffDashboard({
   };
 
   const getUserName = (uid: string) => {
-    return users.find(u => u.id === uid)?.name || 'Siswa';
+    return users.find(u => u.id === uid)?.name || 'Pemustaka';
   };
 
   const handleOpenBookModal = (book: Book | null = null) => {
@@ -398,21 +394,21 @@ export default function StaffDashboard({
       setEditingUser(user);
       setUName(user.name);
       setUEmail(user.email);
-      setURole((user.role || UserRole.SISWA) as UserRole);
+      setURole((user.role || UserRole.USER) as UserRole);
       setUBadge(user.badge || 'Reguler');
-      setUNisn(user.nisn || '');
+      setUNisn(user.identityNumber || user.nisn || '');
       setUNip(user.nip || '');
-      setUClass(user.class || 'X MIPA 1');
+      setUClass(user.memberCategory || user.class || 'Masyarakat Umum');
       setUPhone(user.phone || '');
     } else {
       setEditingUser(null);
       setUName('');
       setUEmail('');
-      setURole(UserRole.SISWA);
+      setURole(UserRole.USER);
       setUBadge('Reguler');
       setUNisn('');
       setUNip('');
-      setUClass('X MIPA 1');
+      setUClass('Masyarakat Umum');
       setUPhone('');
     }
     setIsUserModalOpen(true);
@@ -420,16 +416,16 @@ export default function StaffDashboard({
 
   const handleSaveUserSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const isSiswa = String(uRole) === UserRole.SISWA || String(uRole) === 'siswa';
+    const isUserRole = String(uRole) === UserRole.USER || String(uRole) === 'user';
     if (editingUser) {
       onUpdateUser(editingUser.id, {
         name: uName,
         email: uEmail,
         role: uRole as UserRole,
         badge: uBadge,
-        nisn: isSiswa ? uNisn : undefined,
-        nip: !isSiswa ? uNip : undefined,
-        class: isSiswa ? uClass : undefined,
+        identityNumber: isUserRole ? uNisn : undefined,
+        nip: !isUserRole ? uNip : undefined,
+        memberCategory: isUserRole ? uClass : undefined,
         phone: uPhone
       });
     } else {
@@ -439,12 +435,12 @@ export default function StaffDashboard({
         name: uName,
         role: uRole as UserRole,
         badge: uBadge,
-        nisn: isSiswa ? uNisn : undefined,
-        nip: !isSiswa ? uNip : undefined,
-        class: isSiswa ? uClass : undefined,
+        identityNumber: isUserRole ? uNisn : undefined,
+        nip: !isUserRole ? uNip : undefined,
+        memberCategory: isUserRole ? uClass : undefined,
         phone: uPhone,
         status: 'active',
-        avatarUrl: isSiswa 
+        avatarUrl: isUserRole 
           ? 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
           : 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
         favorites: [],
@@ -456,9 +452,7 @@ export default function StaffDashboard({
 
   const handleSaveSettings = () => {
     onUpdateSettings({
-      maxBorrowDays: localMaxDays,
-      maxBorrowBooks: localMaxBooks,
-      finePerDay: localFinePerDay
+      maxBorrowBooks: localMaxBooks
     });
     alert('Pengaturan perpustakaan diperbarui!');
   };
@@ -615,9 +609,9 @@ export default function StaffDashboard({
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                   {[
                     { label: 'Total Buku', val: totalBooks, sub: `${availableBooks} Tersedia`, icon: Package, border: 'border-blue-500/30', color: 'text-blue-400 bg-blue-500/10' },
-                    { label: 'Pinjaman Aktif', val: activeLoans, sub: `${overdueLoansCount} Terlambat`, icon: ArrowLeftRight, border: 'border-cyan-500/30', color: 'text-cyan-400 bg-cyan-500/10' },
+                    { label: 'Pinjaman Aktif', val: activeLoans, sub: 'Buku Sedang Dipinjam', icon: ArrowLeftRight, border: 'border-cyan-500/30', color: 'text-cyan-400 bg-cyan-500/10' },
                     { label: 'Menunggu Approval', val: pendingApprovals, sub: pendingApprovals > 0 ? 'Perlu Respon' : 'Selesai', icon: Clock, border: 'border-amber-500/30', color: 'text-amber-400 bg-amber-500/10' },
-                    { label: 'Kas Denda', val: `Rp ${totalCollectedFines.toLocaleString()}`, sub: 'Akumulasi Denda', icon: Coins, border: 'border-rose-500/30', color: 'text-rose-400 bg-rose-500/10' }
+                    { label: 'Total Pemustaka', val: totalMembers, sub: 'Anggota Terdaftar', icon: Users, border: 'border-indigo-500/30', color: 'text-indigo-400 bg-indigo-500/10' }
                   ].map((c, i) => {
                     const Icon = c.icon;
                     return (
@@ -658,10 +652,9 @@ export default function StaffDashboard({
                     <table className="w-full text-xs text-left">
                       <thead className="bg-slate-950 text-slate-400 border-b border-slate-800 uppercase font-extrabold">
                         <tr>
-                          <th className="py-3 px-5">Siswa</th>
+                          <th className="py-3 px-5">Pemustaka</th>
                           <th className="py-3 px-5">Buku</th>
-                          <th className="py-3 px-5">Pinjam</th>
-                          <th className="py-3 px-5">Jatuh Tempo</th>
+                          <th className="py-3 px-5">Tgl Pinjam</th>
                           <th className="py-3 px-5">Status</th>
                           <th className="py-3 px-5 text-right">Aksi</th>
                         </tr>
@@ -798,11 +791,11 @@ export default function StaffDashboard({
                     </button>
                     <button 
                       onClick={() => {
-                        const headers = ['ID,Nama Siswa,Judul Buku,Tanggal Pinjam,Jatuh Tempo,Status'];
+                        const headers = ['ID,Nama Pemustaka,Judul Buku,Tanggal Pinjam,Status'];
                         const rows = borrowings.map(b => {
                           const u = users.find(x => x.id === b.studentId);
                           const bk = books.find(x => x.id === b.bookId);
-                          return `"${b.id}","${u?.name || ''}","${bk?.title || ''}","${b.borrowDate}","${b.dueDate}","${b.status}"`;
+                          return `"${b.id}","${u?.name || ''}","${bk?.title || ''}","${b.borrowDate}","${b.status}"`;
                         });
                         const csvContent = 'data:text/csv;charset=utf-8,' + [headers, ...rows].join('\n');
                         const encodedUri = encodeURI(csvContent);
@@ -934,16 +927,8 @@ export default function StaffDashboard({
                 <h2 className="text-base font-black text-white">Aturan System Perpustakaan</h2>
                 <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4 max-w-xl">
                   <div>
-                    <label className="block text-xs font-bold text-slate-400 mb-1">Maks Tenggat Hari Pinjam</label>
-                    <input type="number" value={localMaxDays} onChange={e => setLocalMaxDays(Number(e.target.value))} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-white font-bold" />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-slate-400 mb-1">Maks Kuota Pinjam Buku Per Siswa</label>
+                    <label className="block text-xs font-bold text-slate-400 mb-1">Maks Kuota Pinjam Buku Per Pemustaka</label>
                     <input type="number" value={localMaxBooks} onChange={e => setLocalMaxBooks(Number(e.target.value))} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-white font-bold" />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-slate-400 mb-1">Denda Per Hari (Rp)</label>
-                    <input type="number" value={localFinePerDay} onChange={e => setLocalFinePerDay(Number(e.target.value))} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-white font-bold" />
                   </div>
                   <button onClick={handleSaveSettings} className="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-xs cursor-pointer shadow-lg">
                     Simpan Pengaturan
@@ -1025,7 +1010,7 @@ export default function StaffDashboard({
                   <div>
                     <label className="block text-[10px] font-extrabold uppercase text-slate-400 mb-1">Role / Peran</label>
                     <select value={uRole} onChange={e => setURole(e.target.value as UserRole)} className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-bold focus:outline-none focus:border-cyan-500">
-                      <option value={UserRole.SISWA}>Siswa</option>
+                      <option value={UserRole.USER}>User / Pemustaka</option>
                       <option value={UserRole.PETUGAS}>Petugas / Staf</option>
                       <option value={UserRole.ADMIN}>Admin</option>
                     </select>
@@ -1038,15 +1023,15 @@ export default function StaffDashboard({
                     </select>
                   </div>
                 </div>
-                {(String(uRole) === UserRole.SISWA || String(uRole) === 'siswa') ? (
+                {(String(uRole) === UserRole.USER || String(uRole) === 'user') ? (
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className="block text-[10px] font-extrabold uppercase text-slate-400 mb-1">NISN</label>
-                      <input type="text" placeholder="NISN Siswa" value={uNisn} onChange={e => setUNisn(e.target.value)} className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-semibold focus:outline-none focus:border-cyan-500" />
+                      <label className="block text-[10px] font-extrabold uppercase text-slate-400 mb-1">NIK / No. Identitas</label>
+                      <input type="text" placeholder="35150xxxxxxxxxxx" value={uNisn} onChange={e => setUNisn(e.target.value)} className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-semibold focus:outline-none focus:border-cyan-500" />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-extrabold uppercase text-slate-400 mb-1">Kelas</label>
-                      <input type="text" placeholder="Contoh: XII IPA 1" value={uClass} onChange={e => setUClass(e.target.value)} className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-semibold focus:outline-none focus:border-cyan-500" />
+                      <label className="block text-[10px] font-extrabold uppercase text-slate-400 mb-1">Kategori Pemustaka</label>
+                      <input type="text" placeholder="Masyarakat Umum / Pelajar" value={uClass} onChange={e => setUClass(e.target.value)} className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-semibold focus:outline-none focus:border-cyan-500" />
                     </div>
                   </div>
                 ) : (

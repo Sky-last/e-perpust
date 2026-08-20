@@ -1,7 +1,7 @@
 export enum UserRole {
   ADMIN = 'admin',
   PETUGAS = 'staf',
-  SISWA = 'siswa'
+  USER = 'user'
 }
 
 export interface Book {
@@ -36,12 +36,10 @@ export interface Borrowing {
   coverColor: string;
   coverUrl?: string;
   borrowDate: string;
-  dueDate: string;
+  dueDate?: string;
   returnDate?: string;
-  status: 'Sedang Dipinjam' | 'Dikembalikan' | 'Terlambat' | 'pending' | 'approved' | 'rejected' | 'overdue' | 'returned';
+  status: 'Sedang Dipinjam' | 'Dikembalikan' | 'pending' | 'approved' | 'rejected' | 'returned' | 'overdue';
   notes?: string;
-  fineAmount?: number;
-  finePaid?: boolean;
 }
 
 export interface Category {
@@ -51,9 +49,9 @@ export interface Category {
 }
 
 export interface LibrarySettings {
-  maxBorrowDays: number;
   maxBorrowBooks: number;
-  finePerDay: number;
+  maxBorrowDays?: number;
+  finePerDay?: number;
 }
 
 export interface Notification {
@@ -70,7 +68,7 @@ export interface User {
   name: string;
   email: string;
   password?: string;
-  role: UserRole | 'admin' | 'staf' | 'siswa';
+  role: UserRole | 'admin' | 'staf' | 'user';
   badge?: 'Premium' | 'Reguler';
   avatar?: string;
   avatarUrl?: string;
@@ -80,6 +78,10 @@ export interface User {
   class?: string;
   nisn?: string;
   nip?: string;
+  memberCategory?: string;  // e.g. 'Masyarakat Umum', 'Pelajar/Mahasiswa', 'Profesional'
+  identityNumber?: string;  // NIK / KTP / No Identitas
+  occupation?: string;      // Pekerjaan
+  address?: string;         // Alamat
   status?: string;
 }
 

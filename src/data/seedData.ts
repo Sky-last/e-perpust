@@ -12,14 +12,12 @@ export const DEFAULT_CATEGORIES: Category[] = [
   { id: 'cat-8', name: 'Sains', description: 'Ilmu pengetahuan alam' },
 ];
 
-// Default library settings
+// Default library settings (Bebas durasi & Tanpa Denda)
 export const DEFAULT_SETTINGS: LibrarySettings = {
-  maxBorrowDays: 14,
-  maxBorrowBooks: 3,
-  finePerDay: 1000,
+  maxBorrowBooks: 5,
 };
 
-// Default seed users (Admin & Siswa demo accounts)
+// Default seed users (Admin & User demo accounts)
 export const DEFAULT_USERS: User[] = [
   {
     id: 'u1',
@@ -36,13 +34,13 @@ export const DEFAULT_USERS: User[] = [
   {
     id: 'u3',
     name: 'Hana Alvira',
-    email: 'siswa@pustaka.com',
-    password: 'siswa',
-    role: UserRole.SISWA,
+    email: 'user@pustaka.com',
+    password: 'user',
+    role: UserRole.USER,
     badge: 'Reguler',
     favorites: [],
-    class: 'XII IPA 1',
-    nisn: '0072345678',
+    memberCategory: 'Masyarakat Umum',
+    identityNumber: '3201928301920001',
     phone: '081298765432',
     borrowings: [
       {
@@ -51,7 +49,6 @@ export const DEFAULT_USERS: User[] = [
         bookTitle: 'Arsitektur Microservices Modern',
         coverColor: 'from-blue-600 to-indigo-900',
         borrowDate: '2026-06-25',
-        dueDate: '2026-07-09',
         status: 'approved'
       },
       {
@@ -60,10 +57,10 @@ export const DEFAULT_USERS: User[] = [
         bookTitle: 'Web Development dengan React dan Next.js',
         coverColor: 'from-cyan-600 to-blue-800',
         borrowDate: '2026-06-10',
-        dueDate: '2026-06-24',
         returnDate: '2026-06-23',
         status: 'Dikembalikan'
       }
     ]
   }
 ];
+

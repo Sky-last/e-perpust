@@ -40,7 +40,7 @@ import Book3D from '../Book3D';
 import BookOpen3DModal from '../BookOpen3DModal';
 import EBookReader3D from '../EBookReader3D';
 
-interface SiswaDashboardProps {
+interface UserDashboardProps {
   currentUser: User;
   onLogout: () => void;
   books: Book[];
@@ -54,7 +54,7 @@ interface SiswaDashboardProps {
   onMarkNotifRead: (notifId: string) => void;
 }
 
-export default function SiswaDashboard({
+export default function UserDashboard({
   currentUser,
   onLogout,
   books,
@@ -66,7 +66,7 @@ export default function SiswaDashboard({
   onRequestReturn,
   onUpdateProfile,
   onMarkNotifRead
-}: SiswaDashboardProps) {
+}: UserDashboardProps) {
   const [activeTab, setActiveTab] = useState<'home' | 'books' | 'history' | 'profile'>('home');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -95,8 +95,10 @@ export default function SiswaDashboard({
     setIsUploadingAvatar(false);
   };
   const [editName, setEditName] = useState(currentUser.name);
-  const [editPhone, setEditPhone] = useState(currentUser.phone);
+  const [editPhone, setEditPhone] = useState(currentUser.phone || '');
   const [editClass, setEditClass] = useState(currentUser.class || '');
+  const [editMemberCategory, setEditMemberCategory] = useState(currentUser.memberCategory || 'Masyarakat Umum');
+  const [editIdentityNumber, setEditIdentityNumber] = useState(currentUser.identityNumber || currentUser.nisn || '');
 
   // UI States
   const [showNotifications, setShowNotifications] = useState(false);
@@ -169,7 +171,9 @@ export default function SiswaDashboard({
     onUpdateProfile({
       name: editName,
       phone: editPhone,
-      class: editClass
+      class: editClass,
+      memberCategory: editMemberCategory,
+      identityNumber: editIdentityNumber
     });
     setIsEditingProfile(false);
   };
@@ -200,9 +204,9 @@ export default function SiswaDashboard({
               </div>
               <div className="min-w-0">
                 <h2 className="text-xs font-black text-white tracking-wider uppercase truncate flex items-center gap-1.5">
-                  Siswa Panel <Sparkles className="w-3 h-3 text-cyan-400" />
+                  Dashboard Pemustaka <Sparkles className="w-3 h-3 text-cyan-400" />
                 </h2>
-                <span className="text-[9px] text-cyan-400 font-extrabold uppercase tracking-widest block">Pustaka Digital</span>
+                <span className="text-[9px] text-cyan-400 font-extrabold uppercase tracking-widest block">Pustaka Digital Publik</span>
               </div>
             </motion.div>
           ) : (
@@ -367,7 +371,7 @@ export default function SiswaDashboard({
 
             <div>
               <span className="text-[9px] bg-cyan-500/10 text-cyan-400 font-extrabold px-2.5 py-0.5 rounded-full uppercase border border-cyan-500/20 tracking-wider">
-                Siswa • {currentUser.class}
+                Anggota • {currentUser.memberCategory || currentUser.class || 'Masyarakat Umum'}
               </span>
               <h1 className="text-sm lg:text-base font-black text-white mt-1 flex items-center gap-2">
                 {currentUser.name}
@@ -447,7 +451,7 @@ export default function SiswaDashboard({
                 <div className="relative bg-gradient-to-r from-blue-900/60 via-indigo-900/60 to-purple-900/60 rounded-2xl p-6 lg:p-8 text-white shadow-2xl overflow-hidden border border-blue-500/20 backdrop-blur-xl">
                   <div className="absolute right-[-10%] bottom-[-20%] w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
                   <span className="inline-flex items-center gap-1.5 text-[9px] uppercase font-black tracking-widest bg-cyan-500/15 text-cyan-300 px-3 py-1 rounded-full border border-cyan-500/30">
-                    <Zap className="w-3 h-3 text-cyan-400" /> Perpustakaan Digital SMA
+                    <Zap className="w-3 h-3 text-cyan-400" /> Perpustakaan Digital Publik
                   </span>
                   <h2 className="text-xl lg:text-3xl font-black mt-4 leading-tight max-w-xl text-white">
                     Jelajahi Dunia Lewat Buku & E-Reader 3D
@@ -460,7 +464,7 @@ export default function SiswaDashboard({
                       Maks Peminjaman: <strong className="text-cyan-400">{settings.maxBorrowBooks} Buku</strong>
                     </div>
                     <div className="bg-slate-900/60 backdrop-blur-md px-3.5 py-2 rounded-xl border border-slate-700/60 text-slate-300">
-                      Denda Terlambat: <strong className="text-rose-400">Rp {settings.finePerDay.toLocaleString()}/hari</strong>
+                      Layanan Publik: <strong className="text-emerald-400">Gratis & Tanpa Denda</strong>
                     </div>
                   </div>
                 </div>
@@ -510,11 +514,11 @@ export default function SiswaDashboard({
                       Icon: Clock
                     },
                     { 
-                      label: 'Total Denda Aktif', 
-                      val: `Rp ${myBorrowings.reduce((sum, b) => sum + (b.finePaid ? 0 : (b.fineAmount ?? 0)), 0).toLocaleString()}`,
-                      border: 'border-rose-500/30',
-                      badge: 'bg-rose-500/10 text-rose-400',
-                      Icon: AlertCircle
+                      label: 'Total Dikembalikan', 
+                      val: `${completedCount} Buku`,
+                      border: 'border-emerald-500/30',
+                      badge: 'bg-emerald-500/10 text-emerald-400',
+                      Icon: CheckCircle2
                     }
                   ].map((stat, i) => (
                     <motion.div 
@@ -961,8 +965,8 @@ export default function SiswaDashboard({
                     </div>
                     <div className="text-center md:text-left flex-1 space-y-1">
                       <h3 className="text-lg lg:text-xl font-black text-white">{currentUser.name}</h3>
-                      <p className="text-xs text-slate-400 font-bold">NISN: {currentUser.nisn || '3182940291'}</p>
-                      <p className="text-xs text-cyan-400 font-extrabold">Siswa Kelas {currentUser.class || 'X MIPA 1'}</p>
+                      <p className="text-xs text-slate-400 font-bold">No. Identitas / NIK: {currentUser.identityNumber || currentUser.nisn || '-'}</p>
+                      <p className="text-xs text-cyan-400 font-extrabold">Kategori: {currentUser.memberCategory || currentUser.class || 'Masyarakat Umum'}</p>
                       <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 pt-1">
                         <span className="px-3 py-1 text-[9px] font-black bg-emerald-500/10 text-emerald-400 rounded-lg border border-emerald-500/20 uppercase">
                           ✓ Akun Terverifikasi
@@ -1005,7 +1009,7 @@ export default function SiswaDashboard({
                       </div>
 
                       <div>
-                        <label className="block text-slate-400 font-bold mb-1.5 uppercase">Email Sekolah</label>
+                        <label className="block text-slate-400 font-bold mb-1.5 uppercase">Email Terdaftar</label>
                         <input
                           type="email"
                           disabled
@@ -1017,32 +1021,43 @@ export default function SiswaDashboard({
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-slate-400 font-bold mb-1.5 uppercase">Nomor Handphone</label>
+                        <label className="block text-slate-400 font-bold mb-1.5 uppercase">Nomor Handphone / WA</label>
                         <input
                           type="text"
                           disabled={!isEditingProfile}
                           value={editPhone}
                           onChange={(e) => setEditPhone(e.target.value)}
+                          placeholder="08123456789..."
                           className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white disabled:opacity-50 focus:outline-none focus:border-cyan-500 font-semibold"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-slate-400 font-bold mb-1.5 uppercase">Kelas Belajar</label>
+                        <label className="block text-slate-400 font-bold mb-1.5 uppercase">Kategori Keanggotaan</label>
                         <select
                           disabled={!isEditingProfile}
-                          value={editClass}
-                          onChange={(e) => setEditClass(e.target.value)}
+                          value={editMemberCategory}
+                          onChange={(e) => setEditMemberCategory(e.target.value)}
                           className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white disabled:opacity-50 focus:outline-none focus:border-cyan-500 font-bold"
                         >
-                          <option value="X MIPA 1">X MIPA 1</option>
-                          <option value="X IPS 1">X IPS 1</option>
-                          <option value="XI MIPA 2">XI MIPA 2</option>
-                          <option value="XI IPS 1">XI IPS 1</option>
-                          <option value="XII MIPA 3">XII MIPA 3</option>
-                          <option value="XII IPS 2">XII IPS 2</option>
+                          <option value="Masyarakat Umum">Masyarakat Umum</option>
+                          <option value="Pelajar / Mahasiswa">Pelajar / Mahasiswa</option>
+                          <option value="Profesional / Pekerja">Profesional / Pekerja</option>
+                          <option value="Lainnya">Lainnya</option>
                         </select>
                       </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-slate-400 font-bold mb-1.5 uppercase">NIK / No. Identitas</label>
+                      <input
+                        type="text"
+                        disabled={!isEditingProfile}
+                        value={editIdentityNumber}
+                        onChange={(e) => setEditIdentityNumber(e.target.value)}
+                        placeholder="Nomor KTP / Identitas..."
+                        className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white disabled:opacity-50 focus:outline-none focus:border-cyan-500 font-semibold"
+                      />
                     </div>
                   </div>
                 </div>
@@ -1119,10 +1134,10 @@ export default function SiswaDashboard({
                       />
                     </div>
 
-                    <div className="bg-amber-500/10 p-4 rounded-xl border border-amber-500/20 text-[11px] text-amber-300 space-y-1 font-bold">
-                      <p className="text-amber-400 font-black flex items-center gap-1"><Info className="w-3.5 h-3.5" /> Ketentuan Peminjaman:</p>
-                      <p>1. Buku wajib dikembalikan sebelum tanggal jatuh tempo.</p>
-                      <p>2. Keterlambatan dikenakan denda sebesar <strong>Rp {settings.finePerDay.toLocaleString()}/hari</strong>.</p>
+                    <div className="bg-cyan-500/10 p-4 rounded-xl border border-cyan-500/20 text-[11px] text-cyan-300 space-y-1 font-bold">
+                      <p className="text-cyan-400 font-black flex items-center gap-1"><Info className="w-3.5 h-3.5" /> Ketentuan Peminjaman:</p>
+                      <p>1. Nikmati kemudahan membaca buku fisik dan e-book digital secara gratis.</p>
+                      <p>2. Kembalikan buku fisik jika telah selesai dibaca agar anggota lain dapat meminjam.</p>
                     </div>
 
                     <div className="flex justify-end gap-2.5 pt-4 border-t border-slate-800">

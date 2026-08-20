@@ -76,7 +76,7 @@ export default function LoginPage({ onNavigate, onLogin, addToast }: LoginPagePr
     soundFX.playClick();
     setIsLoading(true);
     try {
-      const success = await onLogin('siswa@pustaka.com', 'siswa');
+      const success = await onLogin('user@pustaka.com', 'user');
       setIsLoading(false);
       if (success) {
         soundFX.playBookOpen();
@@ -224,7 +224,7 @@ export default function LoginPage({ onNavigate, onLogin, addToast }: LoginPagePr
                 </label>
                 <button
                   type="button"
-                  onClick={() => addToast('Demo pass: siswa / admin / staf', 'info')}
+                  onClick={() => addToast('Demo pass: user / admin / staf', 'info')}
                   className="text-[11px] font-bold text-blue-400 hover:text-blue-300 cursor-pointer"
                 >
                   Lupa password?
@@ -300,7 +300,7 @@ export default function LoginPage({ onNavigate, onLogin, addToast }: LoginPagePr
                 <path fill="#FBBC05" d="M5.17 14.74c-.25-.72-.39-1.49-.39-2.29s.14-1.57.39-2.29V6.6H1.18C.43 8.1.01 9.8.01 11.6c0 1.8.42 3.5 1.17 5l3.99-3.86z" />
                 <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.43-3.43C17.96 1.19 15.24 0 12 0 7.31 0 3.19 2.7 1.18 6.7l3.99 3.86c.96-2.91 3.65-5.06 6.83-5.06z" />
               </svg>
-              <span>Masuk Dengan Google (Demo Siswa)</span>
+              <span>Masuk Dengan Google (Demo User)</span>
             </button>
           </div>
         </div>

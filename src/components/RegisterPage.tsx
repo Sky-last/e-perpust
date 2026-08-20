@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BookOpen, ArrowLeft, Mail, Lock, User as UserIcon, Eye, EyeOff, Sparkles, CheckCircle2, ShieldCheck, Star } from 'lucide-react';
+import { BookOpen, ArrowLeft, Mail, Lock, User as UserIcon, Eye, EyeOff, Sparkles, CheckCircle2, ShieldCheck, Star, Phone, CreditCard, Users } from 'lucide-react';
 import { ViewType, Book } from '../types';
 import Book3D from './Book3D';
 import { soundFX } from '../utils/audio';
@@ -7,13 +7,16 @@ import { InteractiveMascot } from './InteractiveMascot';
 
 interface RegisterPageProps {
   onNavigate: (view: ViewType) => void;
-  onRegister: (name: string, email: string, pass: string) => boolean | Promise<boolean>;
+  onRegister: (name: string, email: string, pass: string, extraData?: { phone?: string; memberCategory?: string; identityNumber?: string }) => boolean | Promise<boolean>;
   addToast: (message: string, type: 'success' | 'error' | 'info') => void;
 }
 
 export default function RegisterPage({ onNavigate, onRegister, addToast }: RegisterPageProps) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [memberCategory, setMemberCategory] = useState('Masyarakat Umum');
+  const [identityNumber, setIdentityNumber] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -59,7 +62,7 @@ export default function RegisterPage({ onNavigate, onRegister, addToast }: Regis
     soundFX.playClick();
 
     if (!name || !email || !password || !confirmPassword) {
-      addToast('Semua kolom formulir harus diisi!', 'error');
+      addToast('Semua kolom utama harus diisi!', 'error');
       return;
     }
 
@@ -82,7 +85,11 @@ export default function RegisterPage({ onNavigate, onRegister, addToast }: Regis
     setIsLoading(true);
 
     try {
-      const success = await onRegister(name, email, password);
+      const success = await onRegister(name, email, password, {
+        phone,
+        memberCategory,
+        identityNumber
+      });
       setIsLoading(false);
       if (success) {
         setIsSuccess(true);
@@ -101,7 +108,7 @@ export default function RegisterPage({ onNavigate, onRegister, addToast }: Regis
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl pointer-events-none" />
 
       {/* Main Split Screen Container */}
-      <div className="w-full max-w-5xl bg-slate-900/80 border border-slate-800 rounded-3xl shadow-2xl backdrop-blur-xl grid grid-cols-1 lg:grid-cols-12 overflow-hidden z-10">
+      <div className="w-full max-w-5xl bg-slate-900/80 border border-slate-800 rounded-3xl shadow-2xl backdrop-blur-xl grid grid-cols-1 lg:grid-cols-12 overflow-hidden z-10 my-6">
 
         {/* LEFT PANEL: 3D Showcase & Benefits */}
         <div className="lg:col-span-5 bg-gradient-to-br from-slate-900 via-blue-950 to-slate-950 p-8 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-slate-800/80 relative">
@@ -119,32 +126,32 @@ export default function RegisterPage({ onNavigate, onRegister, addToast }: Regis
             </button>
 
             <div className="space-y-4">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-500/20 border border-blue-500/30 rounded-full text-blue-400 text-[10px] font-black uppercase tracking-wider">
-                <Sparkles className="w-3 h-3" /> Registrasi Anggota
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-cyan-500/20 border border-cyan-500/30 rounded-full text-cyan-400 text-[10px] font-black uppercase tracking-wider">
+                <Sparkles className="w-3 h-3" /> Keanggotaan Umum
               </div>
               <h2 className="text-2xl lg:text-3xl font-black text-white leading-tight">
-                Gabung Ke Komunitas Pustaka
+                Pustaka Digital Untuk Masyarakat Umum
               </h2>
               <p className="text-xs text-slate-400 leading-relaxed font-medium">
-                Nikmati akses tak terbatas ke ribuan e-book digital dengan pengalaman membaca yang imersif.
+                Nikmati akses gratis ke ribuan e-book, flipbook 3D, dan koleksi literasi untuk seluruh lapisan masyarakat.
               </p>
             </div>
 
             {/* Futuristic Holographic Digital Member Pass Animation */}
             <div className="hidden sm:flex my-6 justify-center py-2 relative group cursor-pointer">
               {/* Background Glow */}
-              <div className="absolute inset-0 bg-gradient-to-r from-emerald-600/30 via-blue-600/30 to-indigo-600/30 rounded-3xl blur-2xl group-hover:blur-3xl transition-all duration-500 animate-pulse" />
+              <div className="absolute inset-0 bg-gradient-to-r from-cyan-600/30 via-blue-600/30 to-indigo-600/30 rounded-3xl blur-2xl group-hover:blur-3xl transition-all duration-500 animate-pulse" />
 
               {/* Futuristic Pass Card */}
-              <div className="relative w-full max-w-[280px] h-[170px] rounded-2xl bg-slate-900/90 border border-emerald-500/40 p-5 shadow-2xl backdrop-blur-xl flex flex-col justify-between overflow-hidden transform group-hover:scale-105 group-hover:rotate-1 transition-all duration-300">
+              <div className="relative w-full max-w-[280px] h-[170px] rounded-2xl bg-slate-900/90 border border-cyan-500/40 p-5 shadow-2xl backdrop-blur-xl flex flex-col justify-between overflow-hidden transform group-hover:scale-105 group-hover:rotate-1 transition-all duration-300">
                 {/* Holographic shimmer line */}
                 <div className="absolute -inset-full top-0 block w-1/2 h-full bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 animate-shimmer" />
 
                 {/* Card Header */}
                 <div className="flex justify-between items-start z-10">
                   <div>
-                    <span className="text-[9px] font-black uppercase tracking-widest text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-                      Registrasi Anggota Baru
+                    <span className="text-[9px] font-black uppercase tracking-widest text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20">
+                      KARTU ANGGOTA PUBLIK
                     </span>
                     <h4 className="text-sm font-black text-white mt-1">Pustaka Digital</h4>
                   </div>
@@ -156,17 +163,17 @@ export default function RegisterPage({ onNavigate, onRegister, addToast }: Regis
 
                 {/* Card Body */}
                 <div className="z-10 my-auto">
-                  <p className="text-[10px] text-slate-400 font-mono tracking-wider">NEW MEMBER REGISTRATION</p>
+                  <p className="text-[10px] text-slate-400 font-mono tracking-wider">PUBLIC MEMBER PASS</p>
                   <div className="flex items-center gap-2 mt-1">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-                    <span className="text-[11px] font-bold text-emerald-400">Gratis & Instan</span>
+                    <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+                    <span className="text-[11px] font-bold text-cyan-300">Masyarakat Umum & Pelajar</span>
                   </div>
                 </div>
 
                 {/* Card Footer */}
                 <div className="flex justify-between items-end z-10 pt-2 border-t border-slate-800">
-                  <span className="text-[9px] text-slate-400">Join Community</span>
-                  <span className="text-[9px] font-mono text-emerald-300 font-bold">PUSTAKA INDONESIA</span>
+                  <span className="text-[9px] text-slate-400">Akses Publik 24/7</span>
+                  <span className="text-[9px] font-mono text-cyan-300 font-bold">LITERASI BANGSA</span>
                 </div>
               </div>
             </div>
@@ -174,12 +181,12 @@ export default function RegisterPage({ onNavigate, onRegister, addToast }: Regis
 
           <div className="space-y-2.5 pt-4 border-t border-slate-800/80 text-xs">
             {[
-              'Akses e-reader flipbook interaktif 24/7',
-              'Pinjam & simpan buku favorit dalam 1-klik',
-              'Rekomendasi bacaan cerdas sesuai minat Anda',
+              'Bebas baca e-book 3D interaktif kapan saja',
+              'Tanpa biaya pendaftaran — 100% Gratis!',
+              'Terbuka untuk Umum, Pelajar, & Profesional',
             ].map((text, i) => (
               <div key={i} className="flex items-center gap-2.5 text-slate-300">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                <CheckCircle2 className="w-4 h-4 text-cyan-400 flex-shrink-0" />
                 <span className="font-semibold text-[11px]">{text}</span>
               </div>
             ))}
@@ -187,9 +194,9 @@ export default function RegisterPage({ onNavigate, onRegister, addToast }: Regis
         </div>
 
         {/* RIGHT PANEL: Modern Registration Form */}
-        <div className="lg:col-span-7 p-6 sm:p-10 flex flex-col justify-center relative">
+        <div className="lg:col-span-7 p-6 sm:p-10 flex flex-col justify-center relative max-h-[85vh] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-800">
           
-          {/* Interactive Mascot Reacting to Form Inputs (TikTok VT Style) */}
+          {/* Interactive Mascot Reacting to Form Inputs */}
           <div className="mb-2">
             <InteractiveMascot
               isFocusEmail={isFocusEmail}
@@ -201,7 +208,7 @@ export default function RegisterPage({ onNavigate, onRegister, addToast }: Regis
           </div>
 
           <div className="space-y-1 mb-5 text-center sm:text-left">
-            <h3 className="text-2xl font-black text-white">Buat Akun Baru</h3>
+            <h3 className="text-2xl font-black text-white">Pendaftaran Anggota Umum</h3>
             <p className="text-xs text-slate-400 font-medium">
               Sudah memiliki akun?{' '}
               <button
@@ -209,7 +216,7 @@ export default function RegisterPage({ onNavigate, onRegister, addToast }: Regis
                   soundFX.playClick();
                   onNavigate('login');
                 }}
-                className="font-bold text-blue-400 hover:text-blue-300 underline cursor-pointer"
+                className="font-bold text-cyan-400 hover:text-cyan-300 underline cursor-pointer"
               >
                 Masuk di sini
               </button>
@@ -232,28 +239,88 @@ export default function RegisterPage({ onNavigate, onRegister, addToast }: Regis
                   onFocus={() => setIsFocusEmail(true)}
                   onBlur={() => setIsFocusEmail(false)}
                   placeholder="Masukkan nama lengkap Anda..."
-                  className="w-full pl-10 pr-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all font-medium"
+                  className="w-full pl-10 pr-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all font-medium"
                 />
               </div>
             </div>
 
-            {/* Email */}
-            <div className="space-y-1.5">
-              <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider">
-                Alamat Email
-              </label>
-              <div className="relative">
-                <Mail className="w-4.5 h-4.5 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  onFocus={() => setIsFocusEmail(true)}
-                  onBlur={() => setIsFocusEmail(false)}
-                  placeholder="nama@email.com"
-                  className="w-full pl-10 pr-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all font-medium"
-                />
+            {/* Grid 2 kolom: Email & Phone */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Email */}
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider">
+                  Alamat Email
+                </label>
+                <div className="relative">
+                  <Mail className="w-4.5 h-4.5 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    onFocus={() => setIsFocusEmail(true)}
+                    onBlur={() => setIsFocusEmail(false)}
+                    placeholder="nama@email.com"
+                    className="w-full pl-10 pr-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all font-medium"
+                  />
+                </div>
+              </div>
+
+              {/* Phone */}
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider">
+                  No. Telepon / WA
+                </label>
+                <div className="relative">
+                  <Phone className="w-4.5 h-4.5 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="08123456789..."
+                    className="w-full pl-10 pr-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all font-medium"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Grid 2 kolom: Kategori & NIK */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Kategori Anggota */}
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider">
+                  Kategori Anggota
+                </label>
+                <div className="relative">
+                  <Users className="w-4.5 h-4.5 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <select
+                    value={memberCategory}
+                    onChange={(e) => setMemberCategory(e.target.value)}
+                    className="w-full pl-10 pr-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all font-bold"
+                  >
+                    <option value="Masyarakat Umum">Masyarakat Umum</option>
+                    <option value="Pelajar / Mahasiswa">Pelajar / Mahasiswa</option>
+                    <option value="Profesional / Pekerja">Profesional / Pekerja</option>
+                    <option value="Lainnya">Lainnya</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* NIK / Identitas */}
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider">
+                  NIK / No. Identitas (Opsional)
+                </label>
+                <div className="relative">
+                  <CreditCard className="w-4.5 h-4.5 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    value={identityNumber}
+                    onChange={(e) => setIdentityNumber(e.target.value)}
+                    placeholder="Nomor KTP / Kartu Pelajar..."
+                    className="w-full pl-10 pr-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all font-medium"
+                  />
+                </div>
               </div>
             </div>
 
@@ -272,7 +339,7 @@ export default function RegisterPage({ onNavigate, onRegister, addToast }: Regis
                   onFocus={() => setIsFocusPassword(true)}
                   onBlur={() => setIsFocusPassword(false)}
                   placeholder="Minimal 5 karakter"
-                  className="w-full pl-10 pr-10 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all font-medium"
+                  className="w-full pl-10 pr-10 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all font-medium"
                 />
                 <button
                   type="button"
@@ -313,7 +380,7 @@ export default function RegisterPage({ onNavigate, onRegister, addToast }: Regis
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Ulangi password Anda"
-                  className="w-full pl-10 pr-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all font-medium"
+                  className="w-full pl-10 pr-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all font-medium"
                 />
               </div>
             </div>
@@ -323,22 +390,23 @@ export default function RegisterPage({ onNavigate, onRegister, addToast }: Regis
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transition-all disabled:opacity-50 cursor-pointer flex items-center justify-center space-x-2 hover:scale-[1.01]"
+                className="w-full py-3.5 bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white font-extrabold rounded-xl shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transition-all disabled:opacity-50 cursor-pointer flex items-center justify-center space-x-2 hover:scale-[1.01]"
               >
                 {isLoading ? (
                   <span className="inline-block animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
                 ) : (
-                  <span>Registrasi Sekarang</span>
+                  <span>Daftar Anggota Umum</span>
                 )}
               </button>
             </div>
           </form>
 
           <div className="mt-6 pt-4 border-t border-slate-800/80 text-center text-[10px] text-slate-500">
-            Dengan mendaftar, Anda menyetujui Ketentuan Layanan & Kebijakan Privasi Pustaka Digital.
+            Dengan mendaftar, Anda menyetujui Ketentuan Layanan & Kebijakan Privasi Pustaka Digital Publik.
           </div>
         </div>
       </div>
     </div>
   );
 }
+
