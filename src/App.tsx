@@ -3,7 +3,7 @@ import { Book, User, SystemLog, ViewType, Borrowing, UserRole, Category, Library
 import { INITIAL_BOOKS as _INITIAL_BOOKS } from './data/books';
 import { supabase, isSupabaseConfigured } from './lib/supabase';
 import { 
-  getBooks, saveBook, removeBook, getUserProfile, updateUserProfile, updateUserInDb,
+  getBooks, saveBook, removeBook, getUserProfile, updateUserInDb,
   updateUserBadge, makeBorrowing, returnBorrowing, extendBorrowing, 
   saveFavorite, getSystemLogs, addSystemLog, getAllUsers
 } from './lib/db';
@@ -12,7 +12,6 @@ import {
 import LandingPage from './components/LandingPage';
 import LoginPage from './components/LoginPage';
 import RegisterPage from './components/RegisterPage';
-import DashboardPage from './components/DashboardPage';
 import KatalogPage from './components/KatalogPage';
 import DetailPage from './components/DetailPage';
 import PinjamanPage from './components/PinjamanPage';
@@ -222,7 +221,7 @@ export default function App() {
           addToast(`Gagal mendaftarkan ${user.name} ke Supabase: ${error.message}`, 'error');
         } else {
           // Update role in profiles table if not default 'siswa'
-          if (data?.user && user.role !== 'siswa') {
+          if (data?.user && (user.role as string) !== 'siswa') {
             await supabase
               .from('profiles')
               .update({ role: user.role, name: user.name })
@@ -731,7 +730,7 @@ export default function App() {
 
     if (isSupabaseConfigured) {
       try {
-        const newDueDate = await extendBorrowing(borrowingId, targetBorrow.dueDate);
+        const newDueDate = await extendBorrowing(borrowingId, targetBorrow.dueDate || '');
         if (newDueDate) {
           // Refresh profile
           const profile = await getUserProfile(currentUser.id);
@@ -747,7 +746,7 @@ export default function App() {
     }
 
     // LocalStorage fallback
-    const currentDue = new Date(targetBorrow.dueDate);
+    const currentDue = new Date(targetBorrow.dueDate || Date.now());
     currentDue.setDate(currentDue.getDate() + 7);
     const formattedNewDueDate = `${currentDue.getFullYear()}-${String(currentDue.getMonth() + 1).padStart(2, '0')}-${String(currentDue.getDate()).padStart(2, '0')}`;
 
@@ -1081,66 +1080,6 @@ export default function App() {
   };
 
 
-  const handlePayFine = (borrowingId: string) => {
-    const updatedUsers = users.map(u => {
-      const targetBorrow = u.borrowings.find(b => b.id === borrowingId);
-      if (targetBorrow) {
-        const updatedBorrowings = u.borrowings.map(b => {
-          if (b.id === borrowingId) {
-            return { ...b, finePaid: true };
-          }
-          return b;
-        });
-        const updatedUser = { ...u, borrowings: updatedBorrowings };
-        if (currentUser && u.id === currentUser.id) {
-          setCurrentUser(updatedUser);
-        }
-        return updatedUser;
-      }
-      return u;
-    });
-
-    setUsers(updatedUsers);
-    localStorage.setItem('digital_library_users', JSON.stringify(updatedUsers));
-    addToast('Pembayaran denda berhasil diverifikasi!', 'success');
-  };
-
-  const handleRequestReturn = (borrowingId: string) => {
-    if (!currentUser) return;
-    
-    const targetBorrow = currentUser.borrowings.find(b => b.id === borrowingId);
-    if (!targetBorrow) return;
-
-    const updatedBorrowings = currentUser.borrowings.map(b => {
-      if (b.id === borrowingId) {
-        return { 
-          ...b, 
-          status: 'returned' as any, 
-          returnDate: new Date().toISOString().split('T')[0] 
-        };
-      }
-      return b;
-    });
-
-    const updatedCurrentUser = { ...currentUser, borrowings: updatedBorrowings };
-    const updatedUsers = users.map(u => u.id === currentUser.id ? updatedCurrentUser : u);
-
-    // Increment book stock
-    const updatedBooks = books.map(bk => {
-      if (bk.id === targetBorrow.bookId) {
-        return { ...bk, stock: bk.stock + 1 };
-      }
-      return bk;
-    });
-    setBooks(updatedBooks);
-    localStorage.setItem('digital_library_books', JSON.stringify(updatedBooks));
-
-    setCurrentUser(updatedCurrentUser);
-    setUsers(updatedUsers);
-    localStorage.setItem('digital_library_users', JSON.stringify(updatedUsers));
-    addToast('Buku berhasil dikembalikan!', 'success');
-  };
-
   // RENDERING ENGINE
   const renderViewContent = () => {
     switch (currentView) {
@@ -1289,16 +1228,8 @@ export default function App() {
             />
           );
         }
-        // Fallback to generic dashboard
-        return (
-          <DashboardPage 
-            currentUser={currentUser} 
-            books={books} 
-            logs={logs}
-            onNavigate={handleNavigate}
-            favorites={favorites}
-          />
-        );
+        // Fallback: redirect to login
+        return <LoginPage onNavigate={handleNavigate} onLogin={handleLogin} addToast={addToast} />;
       case 'katalog':
         return (
           <KatalogPage 
