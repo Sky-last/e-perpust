@@ -1112,31 +1112,8 @@ export default function App() {
         if (!currentUser) {
           return <LoginPage onNavigate={handleNavigate} onLogin={handleLogin} addToast={addToast} />;
         }
-        // Route to role-specific dashboard
-        if (!['admin', UserRole.ADMIN, 'staf', UserRole.PETUGAS].includes(currentUser.role as any)) {
-          return (
-            <UserDashboard
-              currentUser={currentUser}
-              onLogout={handleLogout}
-              books={books}
-              categories={categories}
-              borrowings={(currentUser.borrowings || []).map(b => ({ ...b, studentId: currentUser.id }))}
-              notifications={notifications}
-              settings={settings}
-              onRequestBorrow={(bookId, days, _notes) => {
-                const book = books.find(b => b.id === bookId);
-                if (book) {
-                  setSelectedPinjamBook(book);
-                  handleConfirmPinjam(bookId, days, book);
-                }
-              }}
-              onRequestReturn={handleReturnBook}
-              onUpdateProfile={(data) => handleUpdateProfile(data)}
-              onMarkNotifRead={(notifId) => console.log('notif read:', notifId)}
-            />
-          );
-        }
-        if (['staf', UserRole.PETUGAS].includes(currentUser.role as any)) {
+        // Route to role-specific dashboard — order matters: check privileged roles first
+        if (['admin', UserRole.ADMIN, 'staf', UserRole.PETUGAS].includes(currentUser.role as any)) {
           return (
             <StaffDashboard
               currentUser={currentUser}
@@ -1182,54 +1159,28 @@ export default function App() {
             />
           );
         }
-        if (['admin', UserRole.ADMIN].includes(currentUser.role as any)) {
-          return (
-            <StaffDashboard
-              currentUser={currentUser}
-              onLogout={handleLogout}
-              books={books}
-              categories={categories}
-              borrowings={users.flatMap(u => (u.borrowings || []).map(b => ({ ...b, studentId: u.id })))}
-              users={users}
-              settings={settings}
-              onAddBook={handleAddBook}
-              onUpdateBook={handleEditBook}
-              onDeleteBook={handleDeleteBook}
-              onAddCategory={(cat) => {
-                const updated = [...categories, cat];
-                setCategories(updated);
-                localStorage.setItem('digital_library_categories', JSON.stringify(updated));
-                addToast(`Kategori ${cat.name} ditambahkan`, 'success');
-              }}
-              onUpdateCategory={(cat) => {
-                const updated = categories.map(c => c.id === cat.id ? cat : c);
-                setCategories(updated);
-                localStorage.setItem('digital_library_categories', JSON.stringify(updated));
-                addToast(`Kategori ${cat.name} diperbarui`, 'success');
-              }}
-              onDeleteCategory={(id) => {
-                const updated = categories.filter(c => c.id !== id);
-                setCategories(updated);
-                localStorage.setItem('digital_library_categories', JSON.stringify(updated));
-                addToast('Kategori dihapus', 'success');
-              }}
-              onVerifyBorrow={handleVerifyBorrow}
-              onVerifyReturn={(borrowingId, approve) => {
-                if (approve) handleVerifyReturn(borrowingId);
-              }}
-              onUpdateUser={handleUpdateUser}
-              onAddUser={handleAddUser}
-              onDeleteUser={handleDeleteUser}
-              onUpdateSettings={(s) => {
-                setSettings(s);
-                localStorage.setItem('digital_library_settings', JSON.stringify(s));
-                addToast('Pengaturan diperbarui', 'success');
-              }}
-            />
-          );
-        }
-        // Fallback: redirect to login
-        return <LoginPage onNavigate={handleNavigate} onLogin={handleLogin} addToast={addToast} />;
+        // Default: User/Umum dashboard
+        return (
+          <UserDashboard
+            currentUser={currentUser}
+            onLogout={handleLogout}
+            books={books}
+            categories={categories}
+            borrowings={(currentUser.borrowings || []).map(b => ({ ...b, studentId: currentUser.id }))}
+            notifications={notifications}
+            settings={settings}
+            onRequestBorrow={(bookId, days, _notes) => {
+              const book = books.find(b => b.id === bookId);
+              if (book) {
+                setSelectedPinjamBook(book);
+                handleConfirmPinjam(bookId, days, book);
+              }
+            }}
+            onRequestReturn={handleReturnBook}
+            onUpdateProfile={(data) => handleUpdateProfile(data)}
+            onMarkNotifRead={(notifId) => console.log('notif read:', notifId)}
+          />
+        );
       case 'katalog':
         return (
           <KatalogPage 
@@ -1613,7 +1564,7 @@ export default function App() {
           </div>
 
           <div className="text-xs text-slate-400 font-mono font-bold">
-            Waktu Server: <span className="text-slate-600">UTC-7 (PDT)</span>
+            Waktu Server: <span className="text-slate-600">{new Date().toLocaleTimeString('id-ID', { timeZone: 'Asia/Jakarta', hour: '2-digit', minute: '2-digit' })} WIB</span>
           </div>
         </header>
 

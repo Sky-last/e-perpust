@@ -53,7 +53,7 @@ export default function PinjamanPage({
               <tbody className="divide-y divide-slate-100 text-xs md:text-sm">
                 {sortedBorrowings.map((item) => {
                   const isActive = ['Sedang Dipinjam', 'approved'].includes(item.status);
-                  const isLate = item.status === 'overdue' || item.status === 'Terlambat';
+                  const isLate = item.status === 'overdue';
                   const isReturned = item.status === 'returned' || item.status === 'Dikembalikan';
                   const isPending = item.status === 'pending';
                   const isRejected = item.status === 'rejected';
