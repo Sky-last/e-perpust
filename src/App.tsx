@@ -1080,11 +1080,11 @@ export default function App() {
     addToast(`Pengembalian buku "${bookTitle}" berhasil diverifikasi!`, 'success');
   };
 
-  const handleUpdateUser = async (userId: string, updatedData: Partial<User>) => {
-    if (isSupabaseConfigured) {
-      await updateUserInDb(userId, updatedData);
-    }
+  // Debounced update untuk menghindari terlalu banyak toast
+  const updateUserDebounced = useRef<NodeJS.Timeout | null>(null);
 
+  const handleUpdateUser = async (userId: string, updatedData: Partial<User>) => {
+    // Optimistic update dulu (langsung update UI)
     const updatedUsers = users.map(u => {
       if (u.id === userId) {
         const updated = { ...u, ...updatedData };
@@ -1100,12 +1100,22 @@ export default function App() {
     setUsers(updatedUsers);
     localStorage.setItem('digital_library_users', JSON.stringify(updatedUsers));
 
-    if (isSupabaseConfigured) {
-      const allUsers = await getAllUsers();
-      setUsers(allUsers);
+    // Debounce toast notification
+    if (updateUserDebounced.current) {
+      clearTimeout(updateUserDebounced.current);
     }
+    updateUserDebounced.current = setTimeout(() => {
+      addToast('Data pengguna berhasil diperbarui!', 'success');
+    }, 500);
 
-    addToast('Data pengguna berhasil diperbarui!', 'success');
+    // Background sync dengan Supabase (tanpa re-render)
+    if (isSupabaseConfigured) {
+      try {
+        await updateUserInDb(userId, updatedData);
+      } catch (error) {
+        console.error('Failed to sync with Supabase:', error);
+      }
+    }
   };
 
 

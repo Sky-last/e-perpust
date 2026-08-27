@@ -1145,9 +1145,11 @@ export default function StaffDashboard({
                                   <select
                                     value={normalizedRole}
                                     onChange={(e) => {
+                                      e.stopPropagation();
                                       const newRole = e.target.value;
                                       onUpdateUser(u.id, { role: newRole as any });
                                     }}
+                                    onClick={(e) => e.stopPropagation()}
                                     className="bg-slate-950 border border-slate-800 text-cyan-300 text-[11px] font-extrabold rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-cyan-500 cursor-pointer"
                                   >
                                     <option value="user">User / Pemustaka</option>
@@ -1169,9 +1171,11 @@ export default function StaffDashboard({
                                   <select
                                     value={u.badge || 'Reguler'}
                                     onChange={(e) => {
+                                      e.stopPropagation();
                                       const newBadge = e.target.value as 'Premium' | 'Reguler';
                                       onUpdateUser(u.id, { badge: newBadge });
                                     }}
+                                    onClick={(e) => e.stopPropagation()}
                                     className="bg-slate-950 border border-slate-800 text-amber-300 text-[11px] font-bold rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-amber-500 cursor-pointer"
                                   >
                                     <option value="Reguler">Reguler</option>
