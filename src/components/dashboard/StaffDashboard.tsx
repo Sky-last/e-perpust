@@ -436,6 +436,7 @@ export default function StaffDashboard({
         id: `user-${Date.now()}`,
         email: uEmail,
         name: uName,
+        password: 'password123', // Default password
         role: uRole as UserRole,
         badge: uBadge,
         identityNumber: isUserRole ? uNisn : undefined,
@@ -1089,6 +1090,13 @@ export default function StaffDashboard({
                   <label className="block text-[10px] font-extrabold uppercase text-slate-400 mb-1">Email</label>
                   <input type="email" placeholder="Email" value={uEmail} onChange={e => setUEmail(e.target.value)} required className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-semibold focus:outline-none focus:border-cyan-500" />
                 </div>
+                {!editingUser && (
+                  <div>
+                    <label className="block text-[10px] font-extrabold uppercase text-slate-400 mb-1">Password (Default: password123)</label>
+                    <input type="text" placeholder="Biarkan kosong untuk password default" className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-semibold focus:outline-none focus:border-cyan-500 bg-slate-900/50" disabled />
+                    <p className="text-[9px] text-slate-500 mt-1">User bisa mengubah password setelah login pertama kali</p>
+                  </div>
+                )}
                 <div className="grid grid-cols-2 gap-2">
                   <div>
                     <label className="block text-[10px] font-extrabold uppercase text-slate-400 mb-1">Role / Peran</label>
