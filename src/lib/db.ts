@@ -75,7 +75,14 @@ export async function getBooks(): Promise<Book[]> {
 
   // LocalStorage fallback
   const stored = localStorage.getItem('digital_library_books');
-  if (stored) return JSON.parse(stored);
+  if (stored) {
+    try {
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed) && parsed.length >= INITIAL_BOOKS.length) {
+        return parsed;
+      }
+    } catch (e) {}
+  }
   localStorage.setItem('digital_library_books', JSON.stringify(INITIAL_BOOKS));
   return INITIAL_BOOKS;
 }

@@ -45,6 +45,7 @@ import { uploadAvatar } from '../../lib/db';
 import Book3D from '../Book3D';
 import BookOpen3DModal from '../BookOpen3DModal';
 import EBookReader3D from '../EBookReader3D';
+import { resolveBookPdfUrl } from '../../utils/pdfResolver';
 
 interface UserDashboardProps {
   currentUser: User;
@@ -674,9 +675,35 @@ export default function UserDashboard({
                       <button
                         onClick={() => {
                           const activeBorrow = myBorrowings.find(b => b.status === 'approved' || b.status === 'Sedang Dipinjam');
-                          const bObj = books.find(x => x.id === activeBorrow?.bookId);
-                          if (bObj) setReadingBook3D(bObj);
-                          else setActiveTab('history');
+                          if (activeBorrow) {
+                            const bObj = books.find(x => x.id === activeBorrow.bookId || x.title === activeBorrow.bookTitle);
+                            if (bObj) {
+                              setReadingBook3D({
+                                ...bObj,
+                                pdfUrl: resolveBookPdfUrl(bObj)
+                              });
+                            } else {
+                              const tempBook: Partial<Book> = { id: activeBorrow.bookId, title: activeBorrow.bookTitle, coverUrl: activeBorrow.coverUrl };
+                              setReadingBook3D({
+                                id: activeBorrow.bookId,
+                                title: activeBorrow.bookTitle,
+                                coverColor: activeBorrow.coverColor || 'from-blue-600 to-indigo-900',
+                                coverUrl: activeBorrow.coverUrl,
+                                pdfUrl: resolveBookPdfUrl(tempBook),
+                                category: 'Koleksi Pinjaman',
+                                author: 'Pustaka Digital',
+                                publisher: 'Pustaka Digital',
+                                isbn: '000-000-000',
+                                description: `E-book digital "${activeBorrow.bookTitle}" koleksi Pustaka Digital.`,
+                                year: 2026,
+                                rating: 5,
+                                status: 'Tersedia',
+                                stock: 1
+                              });
+                            }
+                          } else {
+                            setActiveTab('history');
+                          }
                         }}
                         className="px-4 py-2 bg-[#20301F] hover:bg-[#2A3F27] text-[#F6F1E7] rounded-lg text-xs font-bold cursor-pointer shrink-0 transition-colors flex items-center gap-1.5"
                       >

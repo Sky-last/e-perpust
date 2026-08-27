@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { Book, User } from '../types';
-import { X, ChevronLeft, ChevronRight, Volume2, VolumeX, Maximize2, Minimize2, Bookmark, Sparkles, FileText, Download, ZoomIn, ZoomOut, RotateCcw, Mic, Play, Square, Music, CloudRain, Coffee, Waves, Lock, Crown } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, Volume2, VolumeX, Maximize2, Minimize2, Bookmark, Sparkles, FileText, Download, ZoomIn, ZoomOut, RotateCcw, Mic, Play, Square, CloudRain, Coffee, Waves, Lock, Crown } from 'lucide-react';
 import { soundFX } from '../utils/audio';
+import { resolveBookPdfUrl } from '../utils/pdfResolver';
 
 interface EBookReader3DProps {
   book: Book;
@@ -17,7 +18,7 @@ export default function EBookReader3D({ book, onClose, currentUser }: EBookReade
   const [isFullScreen, setIsFullScreen] = useState(false);
   
   // Reader Mode: 'pdf' (Real PDF Document) vs '3d' (Interactive Flipbook)
-  const pdfUrl = book.pdfUrl || (book.coverUrl && (book.coverUrl.endsWith('.pdf') || book.coverUrl.startsWith('/buku_digital/')) ? book.coverUrl : '/buku_digital/Advice_for_the_Muslim.pdf');
+  const pdfUrl = resolveBookPdfUrl(book);
   const [readerMode, setReaderMode] = useState<'pdf' | '3d'>('pdf');
   
   // New Enhanced Features
@@ -97,19 +98,44 @@ export default function EBookReader3D({ book, onClose, currentUser }: EBookReade
     };
   }, []);
 
-  const totalPages = 12;
+  const totalPages = 7;
 
   const samplePages = [
-    { chapter: 'Bab I: Pendahuluan', title: 'Awal Mula Petualangan', text: `${book.title} diawali dengan kisah menarik yang memberikan pemahaman mendasar mengenai topik yang diangkat. Dalam bab ini, penulis ${book.author} memaparkan landasan berpikir dan visi besar dari karya ini.` },
-    { chapter: 'Bab I: Pendahuluan', title: 'Konsep Dasar & Teori', text: 'Konsep-konsep penting diperkenalkan satu demi satu secara sistematis. Pembaca diajak untuk memahami prinsip dasar yang akan menjadi pijakan pada bab-bab selanjutnya.' },
-    { chapter: 'Bab II: Pemikiran Utama', title: 'Studi Kasus & Implementasi', text: 'Di bab kedua ini, teori yang telah dibahas mulai diterapkan dalam studi kasus nyata. Analisis mendalam diberikan untuk memperlihatkan bagaimana prinsip tersebut bekerja di dunia nyata.' },
-    { chapter: 'Bab II: Pemikiran Utama', title: 'Tantangan & Solusi', text: 'Setiap proses tentu menghadapi berbagai rintangan. Penulis menyajikan berbagai strategi dan metode efisien untuk mengatasi masalah umum yang sering dijumpai.' },
-    { chapter: 'Bab III: Pendalaman', title: 'Teknik Lanjutan', text: 'Menyelami aspek-aspek lanjutan secara lebih detail. Bab ini cocok bagi pembaca yang ingin memperdalam keahlian dan menguasai teknik secara komprehensif.' },
-    { chapter: 'Bab III: Pendalaman', title: 'Kiat & Best Practices', text: 'Kumpulan pengalaman berharga dan praktis yang dikumpulkan oleh penulis. Berbagai tips bermanfaat ini memberikan efisiensi tinggi dalam penerapan sehari-hari.' },
-    { chapter: 'Bab IV: Analisis Dampak', title: 'Evaluasi & Hasil', text: 'Menganalisis hasil penerapan dari berbagai pendekatan. Data dan contoh konkrit disajikan untuk memberikan kesimpulan yang terukur.' },
-    { chapter: 'Bab IV: Analisis Dampak', title: 'Perspektif Masa Depan', text: 'Melihat tren perkembangan ke depan. Bagaimana teknologi dan metode ini akan berkembang dalam kurun waktu beberapa tahun mendatang.' },
-    { chapter: 'Bab V: Penutup', title: 'Rangkuman & Kesimpulan', text: 'Merangkum poin-poin penting yang telah dibahas dari bab pertama hingga bab terakhir. Mengisi lembar gagasan utama bagi pembaca.' },
-    { chapter: 'Bab V: Penutup', title: 'Langkah Selanjutnya', text: 'Panduan aksi nyata setelah menyelesaikan buku ini. Pembaca didorong untuk mempraktikkan langsung pengetahuan yang telah didapat.' },
+    { 
+      chapter: 'Bab I: Pendahuluan & Sinopsis', 
+      title: book.title, 
+      text: book.description ? `${book.title} karya ${book.author}. ${book.description}` : `Buku "${book.title}" karya ${book.author} terbitan ${book.publisher} (${book.year}) dikelompokkan dalam kategori ${book.category}.` 
+    },
+    { 
+      chapter: 'Bab I: Informasi Katalog', 
+      title: 'Detail & Spesifikasi E-Book', 
+      text: `Buku ini ditulis oleh ${book.author} dan diterbitkan oleh ${book.publisher} pada tahun ${book.year}. Kode identifikasi standar ISBN buku ini adalah ${book.isbn}. Memiliki rating pembaca sebesar ${book.rating}/5.0.` 
+    },
+    { 
+      chapter: 'Bab II: Pemikiran Utama', 
+      title: `Gagasan Pokok ${book.category}`, 
+      text: `Dalam kategori ${book.category}, buku karya ${book.author} ini menyajikan analisis mendalam yang relevan dengan perkembangan sains dan literasi digital modern.` 
+    },
+    { 
+      chapter: 'Bab II: Pemikiran Utama', 
+      title: 'Studi Kasus & Pembahasan', 
+      text: `Penulis ${book.author} menyusun argumentasi secara terstruktur agar pembaca dapat dengan mudah mengaplikasikan inspirasi dari "${book.title}" dalam kehidupan sehari-hari.` 
+    },
+    { 
+      chapter: 'Bab III: Pendalaman', 
+      title: 'Metode & Pendekatan', 
+      text: `Mengkaji aspek-aspek esensial dari "${book.title}". Setiap bab memberikan wawasan berharga yang dirancang khusus oleh ${book.author}.` 
+    },
+    { 
+      chapter: 'Bab III: Pendalaman', 
+      title: 'Rekomendasi Pembaca', 
+      text: `Dengan skor rating ${book.rating}/5.0 di Pustaka Digital, karya ${book.publisher} ini sangat direkomendasikan untuk pelajar, mahasiswa, dan profesional.` 
+    },
+    { 
+      chapter: 'Bab IV: Penutup', 
+      title: 'Kesimpulan & Refleksi', 
+      text: `Demikian ringkasan utama dari buku "${book.title}". Silakan manfaatkan fitur PDF atau AI Voice Reader untuk pengalaman membaca yang lebih imersif.` 
+    },
   ];
 
   const pageData = samplePages[(currentPage - 1) % samplePages.length];

@@ -3,6 +3,7 @@ import { User, ViewType, Book } from '../types';
 import { Calendar, RefreshCw, CheckCircle, Clock, ChevronRight, BookOpen } from 'lucide-react';
 import Book3D from './Book3D';
 import EBookReader3D from './EBookReader3D';
+import { resolveBookPdfUrl } from '../utils/pdfResolver';
 
 interface PinjamanPageProps {
   currentUser: User;
@@ -35,20 +36,25 @@ export default function PinjamanPage({
   });
 
   const handleOpenReader = (bookId: string, bookTitle: string, coverColor: string, coverUrl?: string) => {
-    const foundBook = books.find(b => b.id === bookId);
+    const foundBook = books.find(b => b.id === bookId || b.title === bookTitle);
     if (foundBook) {
-      setReadingBook3D(foundBook);
+      setReadingBook3D({
+        ...foundBook,
+        pdfUrl: resolveBookPdfUrl(foundBook)
+      });
     } else {
+      const tempBook: Partial<Book> = { id: bookId, title: bookTitle, coverUrl };
       setReadingBook3D({
         id: bookId,
         title: bookTitle,
         coverColor: coverColor || 'from-blue-600 to-indigo-900',
         coverUrl,
+        pdfUrl: resolveBookPdfUrl(tempBook),
         category: 'Koleksi Pinjaman',
-        author: 'Penulis Pustaka',
+        author: 'Pustaka Digital',
         publisher: 'Pustaka Digital',
         isbn: '000-000-000',
-        description: 'Buku digital koleksi Pustaka Digital.',
+        description: `E-book digital "${bookTitle}" koleksi Pustaka Digital.`,
         year: 2026,
         rating: 5,
         status: 'Tersedia',
