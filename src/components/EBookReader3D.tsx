@@ -1,14 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
-import { Book } from '../types';
-import { X, ChevronLeft, ChevronRight, Volume2, VolumeX, Maximize2, Minimize2, Bookmark, Sparkles, FileText, Download, ZoomIn, ZoomOut, RotateCcw, Mic, Play, Square, Music, CloudRain, Coffee, Waves } from 'lucide-react';
+import { Book, User } from '../types';
+import { X, ChevronLeft, ChevronRight, Volume2, VolumeX, Maximize2, Minimize2, Bookmark, Sparkles, FileText, Download, ZoomIn, ZoomOut, RotateCcw, Mic, Play, Square, Music, CloudRain, Coffee, Waves, Lock, Crown } from 'lucide-react';
 import { soundFX } from '../utils/audio';
 
 interface EBookReader3DProps {
   book: Book;
   onClose: () => void;
+  currentUser?: User | null;
 }
 
-export default function EBookReader3D({ book, onClose }: EBookReader3DProps) {
+export default function EBookReader3D({ book, onClose, currentUser }: EBookReader3DProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [isFlipping, setIsFlipping] = useState(false);
   const [flipDirection, setFlipDirection] = useState<'next' | 'prev'>('next');
@@ -249,18 +250,37 @@ export default function EBookReader3D({ book, onClose }: EBookReader3DProps) {
             </button>
           </div>
 
-          {/* Direct Download Button */}
-          <a
-            href={pdfUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            download
-            className="flex items-center gap-1 px-2.5 py-1 sm:px-3 sm:py-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 rounded-xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer shrink-0"
-            title="Unduh Berkas PDF Asli"
-          >
-            <Download className="w-3.5 h-3.5" />
-            <span className="hidden xs:inline">Unduh</span>
-          </a>
+          {/* Download Button — Premium Only */}
+          {currentUser?.badge === 'Premium' ? (
+            <a
+              href={pdfUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              download
+              className="flex items-center gap-1 px-2.5 py-1 sm:px-3 sm:py-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 rounded-xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer shrink-0"
+              title="Unduh PDF — Khusus Member Premium"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span className="hidden xs:inline">Unduh</span>
+            </a>
+          ) : (
+            <div className="relative group shrink-0">
+              <button
+                disabled
+                className="flex items-center gap-1 px-2.5 py-1 sm:px-3 sm:py-1.5 bg-slate-800/60 text-slate-500 border border-slate-700/50 rounded-xl text-[11px] sm:text-xs font-bold cursor-not-allowed opacity-70"
+                title="Upgrade ke Premium untuk mengunduh PDF"
+              >
+                <Lock className="w-3.5 h-3.5" />
+                <span className="hidden xs:inline">Unduh</span>
+              </button>
+              {/* Tooltip Premium */}
+              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-44 bg-amber-950/95 border border-amber-500/30 rounded-xl p-2.5 text-center hidden group-hover:block z-50 shadow-xl">
+                <Crown className="w-4 h-4 text-amber-400 mx-auto mb-1" />
+                <p className="text-[10px] text-amber-200 font-bold leading-tight">Fitur Unduh PDF</p>
+                <p className="text-[9px] text-amber-400/80 mt-0.5">Hanya untuk Member Premium</p>
+              </div>
+            </div>
+          )}
 
           {readerMode === '3d' && (
             <>

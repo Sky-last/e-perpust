@@ -1428,7 +1428,7 @@ export default function UserDashboard({
       )}
 
       {readingBook3D && (
-        <EBookReader3D book={readingBook3D} onClose={() => setReadingBook3D(null)} />
+        <EBookReader3D book={readingBook3D} onClose={() => setReadingBook3D(null)} currentUser={currentUser} />
       )}
 
       <AnimatePresence>

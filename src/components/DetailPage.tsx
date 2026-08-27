@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import { Book, User, ViewType } from '../types';
-import { Star, Heart, ArrowLeft, Shield } from 'lucide-react';
+import { Star, Heart, ArrowLeft, Shield, BookOpen } from 'lucide-react';
 import Book3D from './Book3D';
+import EBookReader3D from './EBookReader3D';
 
 interface DetailPageProps {
   book: Book | null;
@@ -19,6 +21,8 @@ export default function DetailPage({
   onOpenPinjamModal,
   currentUser
 }: DetailPageProps) {
+  const [show3DReader, setShow3DReader] = useState(false);
+
   if (!book) {
     return (
       <div className="bg-white border border-slate-100 rounded-[24px] p-12 text-center max-w-lg mx-auto space-y-4 shadow-xs">
@@ -148,16 +152,14 @@ export default function DetailPage({
 
           {/* CTA actions */}
           <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center gap-3">
-            {book.pdfUrl && (
-              <a 
-                href={book.pdfUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full sm:w-auto px-8 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition-all shadow-md hover:shadow-lg hover:shadow-emerald-250/50 cursor-pointer text-center"
-              >
-                Baca E-Book
-              </a>
-            )}
+            <button 
+              onClick={() => setShow3DReader(true)}
+              className="w-full sm:w-auto px-6 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition-all shadow-md hover:shadow-lg hover:shadow-emerald-250/50 cursor-pointer flex items-center justify-center space-x-2"
+            >
+              <BookOpen className="w-4 h-4" />
+              <span>Baca E-Book 3D</span>
+            </button>
+
             <button 
               onClick={() => {
                 if (!currentUser) {
@@ -190,6 +192,16 @@ export default function DetailPage({
         </div>
       </div>
       </div>
+
+      {/* 3D E-Book Reader Modal */}
+      {show3DReader && (
+        <EBookReader3D 
+          book={book}
+          onClose={() => setShow3DReader(false)}
+          currentUser={currentUser}
+        />
+      )}
     </div>
   );
 }
+

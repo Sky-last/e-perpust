@@ -1,22 +1,27 @@
+import { useState } from 'react';
 import { User, ViewType, Book } from '../types';
 import { Calendar, RefreshCw, CheckCircle, Clock, ChevronRight, BookOpen } from 'lucide-react';
 import Book3D from './Book3D';
+import EBookReader3D from './EBookReader3D';
 
 interface PinjamanPageProps {
   currentUser: User;
+  books?: Book[];
   onNavigate: (view: ViewType, selectedId?: string) => void;
   onReturnBook: (borrowingId: string) => void;
   onExtendBook: (borrowingId: string) => void;
-  addToast: (message: string, type: 'success' | 'error' | 'info') => void;
+  addToast?: (message: string, type: 'success' | 'error' | 'info') => void;
 }
 
 export default function PinjamanPage({
   currentUser,
+  books = [],
   onNavigate,
   onReturnBook,
   onExtendBook,
   addToast: _addToast
 }: PinjamanPageProps) {
+  const [readingBook3D, setReadingBook3D] = useState<Book | null>(null);
   const borrowings = currentUser.borrowings || [];
   
   // Sort borrowings: active first, then newest
@@ -29,11 +34,34 @@ export default function PinjamanPage({
     return new Date(b.borrowDate).getTime() - new Date(a.borrowDate).getTime();
   });
 
+  const handleOpenReader = (bookId: string, bookTitle: string, coverColor: string, coverUrl?: string) => {
+    const foundBook = books.find(b => b.id === bookId);
+    if (foundBook) {
+      setReadingBook3D(foundBook);
+    } else {
+      setReadingBook3D({
+        id: bookId,
+        title: bookTitle,
+        coverColor: coverColor || 'from-blue-600 to-indigo-900',
+        coverUrl,
+        category: 'Koleksi Pinjaman',
+        author: 'Penulis Pustaka',
+        publisher: 'Pustaka Digital',
+        isbn: '000-000-000',
+        description: 'Buku digital koleksi Pustaka Digital.',
+        year: 2026,
+        rating: 5,
+        status: 'Tersedia',
+        stock: 1
+      });
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">Daftar Pinjaman Buku</h1>
-        <p className="text-slate-400 text-xs md:text-sm">Pantau status, lakukan perpanjangan durasi, atau kembalikan buku pinjaman Anda di sini.</p>
+        <p className="text-slate-400 text-xs md:text-sm">Pantau status, lakukan perpanjangan durasi, atau baca e-book 3D dan kembalikan pinjaman Anda di sini.</p>
       </div>
 
       {sortedBorrowings.length > 0 ? (
@@ -154,7 +182,7 @@ export default function PinjamanPage({
                           {(isActive || isLate) && (
                             <>
                               <button 
-                                onClick={() => onNavigate('detail-buku', item.bookId)}
+                                onClick={() => handleOpenReader(item.bookId, item.bookTitle, item.coverColor, item.coverUrl)}
                                 className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold rounded-lg shadow-sm transition-all flex items-center space-x-1 cursor-pointer"
                                 title="Baca E-Book 3D"
                               >
@@ -213,6 +241,16 @@ export default function PinjamanPage({
           </button>
         </div>
       )}
+
+      {/* 3D E-Book Reader Modal */}
+      {readingBook3D && (
+        <EBookReader3D 
+          book={readingBook3D}
+          onClose={() => setReadingBook3D(null)}
+          currentUser={currentUser}
+        />
+      )}
     </div>
   );
 }
+

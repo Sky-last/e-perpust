@@ -1209,6 +1209,7 @@ export default function App() {
         return (
           <PinjamanPage 
             currentUser={currentUser} 
+            books={books}
             onNavigate={handleNavigate} 
             onReturnBook={handleReturnBook}
             onExtendBook={handleExtendBook}

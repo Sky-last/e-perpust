@@ -583,11 +583,11 @@ export default function KatalogPage({
         />
       )}
 
-      {/* 3D E-READER MODAL */}
       {readingBook3D && (
         <EBookReader3D
           book={readingBook3D}
           onClose={() => setReadingBook3D(null)}
+          currentUser={currentUser}
         />
       )}
     </div>
