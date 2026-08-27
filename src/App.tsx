@@ -67,7 +67,15 @@ export default function App() {
     const stored = localStorage.getItem('digital_library_notifications');
     return stored ? JSON.parse(stored) : [];
   });
-  void setNotifications; // prevent unused warning
+  
+  // Mark notification as read handler
+  const handleMarkNotifRead = (notifId: string) => {
+    const updatedNotifs = notifications.map(n => 
+      n.id === notifId ? { ...n, read: true } : n
+    );
+    setNotifications(updatedNotifs);
+    localStorage.setItem('digital_library_notifications', JSON.stringify(updatedNotifs));
+  };
   
   // Interaction state
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -545,6 +553,13 @@ export default function App() {
     const targetBook = bookObj || selectedPinjamBook || books.find(b => b.id === bookId);
     if (!currentUser || !targetBook) return;
 
+    // Validation: Check stock availability
+    if (targetBook.stock <= 0) {
+      addToast(`Gagal! Stok buku "${targetBook.title}" sedang habis. Silakan tunggu buku dikembalikan.`, 'error');
+      setPinjamModalOpen(false);
+      return;
+    }
+
     // Validation: Max borrowing check (Reguler 3, Premium 5)
     const activeBorrowings = (currentUser.borrowings || []).filter(b => b.status === 'Sedang Dipinjam' || b.status === 'approved' || b.status === 'pending');
     const maxAllowed = currentUser.badge === 'Premium' ? 5 : 3;
@@ -728,6 +743,20 @@ export default function App() {
     const targetBorrow = (currentUser.borrowings || []).find(b => b.id === borrowingId);
     if (!targetBorrow) return;
 
+    // Validation: Check if already extended (max 1 extension)
+    if (targetBorrow.extended) {
+      addToast(`Gagal! Buku "${targetBorrow.bookTitle}" sudah pernah diperpanjang. Maksimal 1x perpanjangan.`, 'error');
+      return;
+    }
+
+    // Validation: Check if book is overdue
+    const today = new Date();
+    const dueDate = new Date(targetBorrow.dueDate || '');
+    if (today > dueDate) {
+      addToast(`Gagal! Buku "${targetBorrow.bookTitle}" sudah melewati tenggat. Tidak bisa diperpanjang.`, 'error');
+      return;
+    }
+
     if (isSupabaseConfigured) {
       try {
         const newDueDate = await extendBorrowing(borrowingId, targetBorrow.dueDate || '');
@@ -752,7 +781,7 @@ export default function App() {
 
     const updatedUserBorrowings = currentUser.borrowings.map(b => {
       if (b.id === borrowingId) {
-        return { ...b, dueDate: formattedNewDueDate };
+        return { ...b, dueDate: formattedNewDueDate, extended: true };
       }
       return b;
     });
@@ -1178,7 +1207,7 @@ export default function App() {
             }}
             onRequestReturn={handleReturnBook}
             onUpdateProfile={(data) => handleUpdateProfile(data)}
-            onMarkNotifRead={(notifId) => console.log('notif read:', notifId)}
+            onMarkNotifRead={handleMarkNotifRead}
           />
         );
       case 'katalog':

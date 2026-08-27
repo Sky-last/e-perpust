@@ -40,6 +40,7 @@ export interface Borrowing {
   returnDate?: string;
   status: 'Sedang Dipinjam' | 'Dikembalikan' | 'pending' | 'approved' | 'rejected' | 'returned' | 'overdue';
   notes?: string;
+  extended?: boolean; // Flag to track if book has been extended (max 1x)
 }
 
 export interface Category {

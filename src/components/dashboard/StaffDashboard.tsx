@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -15,24 +15,15 @@ import {
   Settings, 
   LogOut, 
   Plus, 
-  Trash2, 
-  Edit, 
   Search, 
   Shield,
-  Coins,
   FileSpreadsheet,
   X,
-  CheckCircle2,
-  XCircle,
   Clock,
-  AlertCircle,
   Download,
   BarChart3,
-  Activity,
   Package,
-  Bell,
   Sparkles,
-  Zap,
   Menu
 } from 'lucide-react';
 import { User, Book, Category, Borrowing, LibrarySettings, UserRole } from '../../types';
@@ -496,6 +487,13 @@ export default function StaffDashboard({
               <Shield className="w-5 h-5 text-white" />
             </div>
           )}
+          <button 
+            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+            className="p-1.5 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-colors"
+            title={sidebarCollapsed ? "Perluas Sidebar" : "Ciutkan Sidebar"}
+          >
+            <Menu className="w-4 h-4" />
+          </button>
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 space-y-1.5 scrollbar-thin scrollbar-thumb-slate-800">
@@ -884,6 +882,204 @@ export default function StaffDashboard({
                       })}
                     </tbody>
                   </table>
+                </div>
+              </motion.div>
+            )}
+
+            {/* ── REPORTS TAB ── */}
+            {activeMenu === 'reports' && (
+              <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+                <div>
+                  <h2 className="text-base font-black text-white flex items-center gap-2">
+                    <FileSpreadsheet className="w-5 h-5 text-cyan-400" /> Laporan & Rekap Statistik
+                  </h2>
+                  <p className="text-xs text-slate-400 mt-1 font-medium">Unduh dan analisis data perpustakaan dengan detail statistik lengkap.</p>
+                </div>
+
+                {/* Stats Overview */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="bg-slate-900 border border-blue-500/30 rounded-2xl p-5 space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-[10px] text-slate-400 font-extrabold uppercase">Total Koleksi Buku</span>
+                      <Package className="w-5 h-5 text-blue-400" />
+                    </div>
+                    <h3 className="text-3xl font-black text-white">{books.length}</h3>
+                    <p className="text-[10px] text-slate-500">Total stok: {totalBooks} eksemplar</p>
+                  </div>
+                  
+                  <div className="bg-slate-900 border border-cyan-500/30 rounded-2xl p-5 space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-[10px] text-slate-400 font-extrabold uppercase">Total Peminjaman</span>
+                      <ArrowLeftRight className="w-5 h-5 text-cyan-400" />
+                    </div>
+                    <h3 className="text-3xl font-black text-white">{borrowings.length}</h3>
+                    <p className="text-[10px] text-slate-500">Aktif: {activeLoans} pinjaman</p>
+                  </div>
+                  
+                  <div className="bg-slate-900 border border-emerald-500/30 rounded-2xl p-5 space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-[10px] text-slate-400 font-extrabold uppercase">Total Anggota</span>
+                      <Users className="w-5 h-5 text-emerald-400" />
+                    </div>
+                    <h3 className="text-3xl font-black text-white">{users.length}</h3>
+                    <p className="text-[10px] text-slate-500">Pemustaka: {totalMembers} orang</p>
+                  </div>
+                </div>
+
+                {/* Detailed Statistics */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Borrowing Statistics */}
+                  <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+                    <h3 className="text-sm font-black text-white">Status Peminjaman</h3>
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center p-3 bg-slate-950 rounded-xl">
+                        <div className="flex items-center gap-3">
+                          <div className="w-2 h-2 rounded-full bg-cyan-400"></div>
+                          <span className="text-xs font-bold text-slate-300">Sedang Dipinjam</span>
+                        </div>
+                        <span className="text-sm font-black text-cyan-400">{activeLoans}</span>
+                      </div>
+                      <div className="flex justify-between items-center p-3 bg-slate-950 rounded-xl">
+                        <div className="flex items-center gap-3">
+                          <div className="w-2 h-2 rounded-full bg-amber-400"></div>
+                          <span className="text-xs font-bold text-slate-300">Menunggu Approval</span>
+                        </div>
+                        <span className="text-sm font-black text-amber-400">{pendingApprovals}</span>
+                      </div>
+                      <div className="flex justify-between items-center p-3 bg-slate-950 rounded-xl">
+                        <div className="flex items-center gap-3">
+                          <div className="w-2 h-2 rounded-full bg-emerald-400"></div>
+                          <span className="text-xs font-bold text-slate-300">Sudah Dikembalikan</span>
+                        </div>
+                        <span className="text-sm font-black text-emerald-400">{returnedBooks}</span>
+                      </div>
+                      <div className="flex justify-between items-center p-3 bg-slate-950 rounded-xl">
+                        <div className="flex items-center gap-3">
+                          <div className="w-2 h-2 rounded-full bg-rose-400"></div>
+                          <span className="text-xs font-bold text-slate-300">Ditolak</span>
+                        </div>
+                        <span className="text-sm font-black text-rose-400">{rejectedRequests}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Category Distribution */}
+                  <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+                    <h3 className="text-sm font-black text-white">Distribusi Kategori Buku</h3>
+                    <div className="space-y-3">
+                      {categories.map((cat, idx) => {
+                        const count = books.filter(b => b.categoryId === cat.id).length;
+                        const percentage = books.length > 0 ? ((count / books.length) * 100).toFixed(1) : '0';
+                        const colors = ['bg-blue-500', 'bg-cyan-500', 'bg-emerald-500', 'bg-amber-500', 'bg-purple-500', 'bg-pink-500'];
+                        const color = colors[idx % colors.length];
+                        return (
+                          <div key={cat.id} className="space-y-2">
+                            <div className="flex justify-between items-center">
+                              <span className="text-xs font-bold text-slate-300">{cat.name}</span>
+                              <span className="text-xs font-black text-white">{count} ({percentage}%)</span>
+                            </div>
+                            <div className="w-full bg-slate-950 rounded-full h-2 overflow-hidden">
+                              <div className={`h-full ${color} transition-all duration-500`} style={{ width: `${percentage}%` }}></div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Top Borrowed Books */}
+                <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+                  <div className="p-5 border-b border-slate-800 flex justify-between items-center">
+                    <h3 className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-2">
+                      <TrendingUp className="w-4 h-4 text-cyan-400" /> Buku Paling Populer
+                    </h3>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-xs text-left">
+                      <thead className="bg-slate-950 text-slate-400 border-b border-slate-800 uppercase font-extrabold">
+                        <tr>
+                          <th className="py-3 px-5">Ranking</th>
+                          <th className="py-3 px-5">Judul Buku</th>
+                          <th className="py-3 px-5">Penulis</th>
+                          <th className="py-3 px-5">Kategori</th>
+                          <th className="py-3 px-5 text-right">Jumlah Peminjaman</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-800 text-slate-300">
+                        {(() => {
+                          const bookBorrowCount = books.map(book => ({
+                            ...book,
+                            borrowCount: borrowings.filter(b => b.bookId === book.id).length
+                          })).sort((a, b) => b.borrowCount - a.borrowCount).slice(0, 10);
+                          
+                          return bookBorrowCount.map((book, idx) => (
+                            <tr key={book.id} className="hover:bg-slate-800/50">
+                              <td className="py-3.5 px-5">
+                                <span className={`inline-flex items-center justify-center w-7 h-7 rounded-full font-black text-[10px] ${
+                                  idx === 0 ? 'bg-amber-500/20 text-amber-300 border-2 border-amber-500/50' :
+                                  idx === 1 ? 'bg-slate-400/20 text-slate-300 border-2 border-slate-400/50' :
+                                  idx === 2 ? 'bg-orange-600/20 text-orange-300 border-2 border-orange-600/50' :
+                                  'bg-slate-800 text-slate-400'
+                                }`}>
+                                  #{idx + 1}
+                                </span>
+                              </td>
+                              <td className="py-3.5 px-5 font-bold text-white">{book.title}</td>
+                              <td className="py-3.5 px-5 text-slate-400">{book.author}</td>
+                              <td className="py-3.5 px-5">
+                                <span className="px-2 py-0.5 bg-cyan-500/20 text-cyan-300 rounded text-[10px] font-bold">
+                                  {getCategoryName(book.categoryId)}
+                                </span>
+                              </td>
+                              <td className="py-3.5 px-5 text-right font-black text-cyan-400">{book.borrowCount}x</td>
+                            </tr>
+                          ));
+                        })()}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* Export Actions */}
+                <div className="bg-gradient-to-r from-blue-600/10 via-cyan-600/10 to-emerald-600/10 border border-cyan-500/30 rounded-2xl p-6">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                      <h3 className="text-sm font-black text-white flex items-center gap-2">
+                        <Download className="w-4 h-4 text-cyan-400" /> Export Data Laporan
+                      </h3>
+                      <p className="text-xs text-slate-400 mt-1">Unduh laporan lengkap dalam berbagai format untuk analisis lanjutan.</p>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <button 
+                        onClick={() => {
+                          const headers = ['ID,Nama Pemustaka,Judul Buku,Tanggal Pinjam,Jatuh Tempo,Status'];
+                          const rows = borrowings.map(b => {
+                            const u = users.find(x => x.id === b.studentId);
+                            const bk = books.find(x => x.id === b.bookId);
+                            return `"${b.id}","${u?.name || ''}","${bk?.title || ''}","${b.borrowDate}","${b.dueDate}","${b.status}"`;
+                          });
+                          const csvContent = 'data:text/csv;charset=utf-8,\uFEFF' + [headers, ...rows].join('\n');
+                          const encodedUri = encodeURI(csvContent);
+                          const link = document.createElement('a');
+                          link.setAttribute('href', encodedUri);
+                          link.setAttribute('download', `laporan_pustaka_${new Date().toISOString().slice(0, 10)}.csv`);
+                          document.body.appendChild(link);
+                          link.click();
+                          document.body.removeChild(link);
+                        }}
+                        className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-lg flex items-center gap-2 transition-all cursor-pointer"
+                      >
+                        <FileSpreadsheet className="w-4 h-4" /> Export CSV
+                      </button>
+                      <button 
+                        onClick={() => window.print()}
+                        className="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl shadow-lg flex items-center gap-2 transition-all cursor-pointer"
+                      >
+                        <Download className="w-4 h-4" /> Cetak PDF
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </motion.div>
             )}
