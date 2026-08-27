@@ -17,7 +17,7 @@ export const INITIAL_BOOKS: Book[] = [
     status: "Tersedia",
     stock: 5,
     coverColor: "from-amber-600 to-yellow-800",
-    coverUrl: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=800&q=80",
+    coverUrl: "https://covers.openlibrary.org/b/isbn/9781404334900-L.jpg",
     pdfUrl: "/buku_digital/69490a7377f5b-the-little-duke-or-richard-the-fearless-by-charlotte-mary-yonge.pdf"
   },
   {
@@ -49,7 +49,7 @@ export const INITIAL_BOOKS: Book[] = [
     status: "Tersedia",
     stock: 8,
     coverColor: "from-sky-500 to-blue-800",
-    coverUrl: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
+    coverUrl: "https://cdn.gramedia.com/uploads/items/9786021046043.jpg",
     pdfUrl: "/buku_digital/Konspirasi alam semesta - fiersa besari.pdf"
   },
   {
@@ -81,7 +81,7 @@ export const INITIAL_BOOKS: Book[] = [
     status: "Tersedia",
     stock: 6,
     coverColor: "from-yellow-500 to-orange-700",
-    coverUrl: "https://images.unsplash.com/photo-1532693322450-2cb5c511067d?auto=format&fit=crop&w=800&q=80",
+    coverUrl: "https://ebooks.gramedia.com/ebook-covers/31352/big_covers/ID_MIZ2016MTH03BMTH_B.jpg",
     pdfUrl: "/buku_digital/Tere Liye - Bulan.pdf"
   },
   {
@@ -97,7 +97,9 @@ export const INITIAL_BOOKS: Book[] = [
     status: "Tersedia",
     stock: 5,
     coverColor: "from-indigo-650 to-purple-900",
-    coverUrl: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80",
+    coverUrl: "https://cdn.gramedia.com/uploads/items/9786028997751_tentang-kamu.jpg",
+    pdfUrl: "/buku_digital/Tere liye - tentang kamu.pdf"
+  },
     pdfUrl: "/buku_digital/Tere liye - tentang kamu.pdf"
   },
   {
