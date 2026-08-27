@@ -190,8 +190,8 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 10,
     "coverColor": "from-blue-500 to-cyan-700",
-    "coverUrl": "https://cdn.gramedia.com/uploads/items/9789793062792_Laskar-Pelangi.jpg",
-    "pdfUrl": "/buku_digital/69490a7377f5b-the-little-duke-or-richard-the-fearless-by-charlotte-mary-yonge.pdf"
+    "coverUrl": "https://books.google.com/books/content?id=tz7r6ocrqIAC&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+    "pdfUrl": "/buku_digital/eb-19_Laskar_Pelangi.pdf"
   },
   {
     "id": "eb-20",
@@ -206,8 +206,8 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 7,
     "coverColor": "from-amber-800 to-red-950",
-    "coverUrl": "https://cdn.gramedia.com/uploads/images/1/27956/image_highres/ID_BMHH2016MTH10BMH.jpg",
-    "pdfUrl": "/buku_digital/Letters_of_a_Javanese_Princess.pdf"
+    "coverUrl": "https://covers.openlibrary.org/b/isbn/9789799731234-L.jpg",
+    "pdfUrl": "/buku_digital/eb-20_Bumi_Manusia.pdf"
   },
   {
     "id": "eb-21",
@@ -286,8 +286,8 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 6,
     "coverColor": "from-purple-700 to-pink-950",
-    "coverUrl": "https://cdn.gramedia.com/uploads/items/9786020312583_Cantik_Itu_Luka_Eka_Kurniawan.jpg",
-    "pdfUrl": "/buku_digital/69496235abd9b-mistress-wilding-by-rafael-sabatini.pdf"
+    "coverUrl": "https://books.google.com/books/content?id=cantik-itu-luka&printsec=frontcover&img=1&zoom=1",
+    "pdfUrl": "/buku_digital/eb-25_Cantik_Itu_Luka.pdf"
   },
   {
     "id": "eb-26",
@@ -351,7 +351,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 5,
     "coverColor": "from-blue-900 to-slate-900",
     "coverUrl": "https://cdn.gramedia.com/uploads/items/9789799105158_Pulang.jpg",
-    "pdfUrl": "/buku_digital/Prosiding sosiologi- Konflik dan Politik Identitas ( PDFDrive ).pdf"
+    "pdfUrl": "/buku_digital/eb-29_Pulang.pdf"
   },
   {
     "id": "eb-30",

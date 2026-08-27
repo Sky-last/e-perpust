@@ -185,18 +185,19 @@ const defaultPdfs = [
 
 /**
  * Resolves the accurate PDF URL for any book object or parameters across all 160+ books.
+ * Priority: BOOK_PDF_MAP by ID > book.pdfUrl > INITIAL_BOOKS lookup > fuzzy match > hash fallback
  */
 export function resolveBookPdfUrl(book?: Partial<Book> | null): string {
   if (!book) return defaultPdfs[0];
 
-  // 1. Explicit pdfUrl property on book object
-  if (book.pdfUrl && (book.pdfUrl.startsWith('/buku_digital/') || book.pdfUrl.endsWith('.pdf') || book.pdfUrl.startsWith('http') || book.pdfUrl.startsWith('data:'))) {
-    return book.pdfUrl;
-  }
-
-  // 2. Direct ID lookup in map
+  // 1. Direct ID lookup in BOOK_PDF_MAP — highest priority (most accurate)
   if (book.id && BOOK_PDF_MAP[book.id]) {
     return BOOK_PDF_MAP[book.id];
+  }
+
+  // 2. Explicit pdfUrl property on book object (only if it looks like a real path)
+  if (book.pdfUrl && (book.pdfUrl.startsWith('/buku_digital/eb-') || book.pdfUrl.startsWith('/buku_digital/gut-') || book.pdfUrl.startsWith('http') || book.pdfUrl.startsWith('data:'))) {
+    return book.pdfUrl;
   }
 
   // 3. Search in INITIAL_BOOKS by ID or title match

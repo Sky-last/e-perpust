@@ -1084,37 +1084,50 @@ export default function App() {
   const updateUserDebounced = useRef<NodeJS.Timeout | null>(null);
 
   const handleUpdateUser = async (userId: string, updatedData: Partial<User>) => {
-    // Optimistic update dulu (langsung update UI)
-    const updatedUsers = users.map(u => {
-      if (u.id === userId) {
-        const updated = { ...u, ...updatedData };
-        if (currentUser && u.id === currentUser.id) {
-          setCurrentUser(updated);
-          localStorage.setItem('digital_library_active_user_data', JSON.stringify(updated));
+    try {
+      console.log('handleUpdateUser called:', { userId, updatedData });
+
+      // Optimistic update dulu (langsung update UI)
+      const updatedUsers = users.map(u => {
+        if (u.id === userId) {
+          const updated = { ...u, ...updatedData };
+          console.log('Updating user:', { old: u, new: updated });
+          
+          // Update currentUser jika user yang diupdate adalah currentUser
+          if (currentUser && u.id === currentUser.id) {
+            setCurrentUser(updated);
+            localStorage.setItem('digital_library_active_user_data', JSON.stringify(updated));
+          }
+          return updated;
         }
-        return updated;
+        return u;
+      });
+
+      console.log('Setting updated users:', updatedUsers.length);
+      setUsers(updatedUsers);
+      localStorage.setItem('digital_library_users', JSON.stringify(updatedUsers));
+
+      // Debounce toast notification
+      if (updateUserDebounced.current) {
+        clearTimeout(updateUserDebounced.current);
       }
-      return u;
-    });
+      updateUserDebounced.current = setTimeout(() => {
+        addToast('Data pengguna berhasil diperbarui!', 'success');
+      }, 500);
 
-    setUsers(updatedUsers);
-    localStorage.setItem('digital_library_users', JSON.stringify(updatedUsers));
-
-    // Debounce toast notification
-    if (updateUserDebounced.current) {
-      clearTimeout(updateUserDebounced.current);
-    }
-    updateUserDebounced.current = setTimeout(() => {
-      addToast('Data pengguna berhasil diperbarui!', 'success');
-    }, 500);
-
-    // Background sync dengan Supabase (tanpa re-render)
-    if (isSupabaseConfigured) {
-      try {
-        await updateUserInDb(userId, updatedData);
-      } catch (error) {
-        console.error('Failed to sync with Supabase:', error);
+      // Background sync dengan Supabase (tanpa re-render)
+      if (isSupabaseConfigured) {
+        try {
+          await updateUserInDb(userId, updatedData);
+          console.log('Supabase sync successful');
+        } catch (error) {
+          console.error('Failed to sync with Supabase:', error);
+          // Jangan throw error, biarkan local update tetap berjalan
+        }
       }
+    } catch (error) {
+      console.error('Error in handleUpdateUser:', error);
+      addToast('Gagal memperbarui data pengguna. Silakan coba lagi.', 'error');
     }
   };
 

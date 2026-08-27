@@ -72,7 +72,14 @@ export default function StaffDashboard({
   onDeleteUser,
   onUpdateSettings
 }: StaffDashboardProps) {
-  const isAdmin = [UserRole.ADMIN, 'admin', UserRole.PETUGAS, 'staf'].includes(currentUser.role as any);
+  // Check admin dengan normalisasi role yang lebih robust
+  const isAdmin = React.useMemo(() => {
+    const role = currentUser.role;
+    const normalizedRole = String(role).toLowerCase();
+    return ['admin', 'staf', 'petugas'].includes(normalizedRole) || 
+           [UserRole.ADMIN, UserRole.PETUGAS].includes(role as any);
+  }, [currentUser.role]);
+
   const [activeMenu, setActiveMenu] = useState<'dashboard' | 'books' | 'categories' | 'transactions' | 'users' | 'reports' | 'settings'>('dashboard');
   const [searchQuery, setSearchQuery] = useState('');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -1125,8 +1132,13 @@ export default function StaffDashboard({
                       </thead>
                       <tbody className="divide-y divide-slate-800 text-slate-300">
                         {filteredUsers.map(u => {
-                          const normalizedRole = ['staf', 'petugas', UserRole.PETUGAS].includes(u.role as any) ? 'staf' :
-                                                 ['admin', UserRole.ADMIN].includes(u.role as any) ? 'admin' : 'user';
+                          // Normalisasi role dengan defensive checking
+                          const userRole = String(u.role || 'user').toLowerCase();
+                          const normalizedRole = 
+                            ['staf', 'petugas', 'staff', UserRole.PETUGAS].includes(userRole as any) ? 'staf' :
+                            ['admin', 'administrator', UserRole.ADMIN].includes(userRole as any) ? 'admin' : 
+                            'user';
+                          
                           return (
                             <tr key={u.id} className="hover:bg-slate-800/40 transition-colors">
                               <td className="p-4 font-bold text-white">
@@ -1146,8 +1158,14 @@ export default function StaffDashboard({
                                     value={normalizedRole}
                                     onChange={(e) => {
                                       e.stopPropagation();
+                                      e.preventDefault();
                                       const newRole = e.target.value;
-                                      onUpdateUser(u.id, { role: newRole as any });
+                                      console.log('Updating user role:', { userId: u.id, userName: u.name, oldRole: u.role, newRole });
+                                      try {
+                                        onUpdateUser(u.id, { role: newRole as any });
+                                      } catch (error) {
+                                        console.error('Error updating user role:', error);
+                                      }
                                     }}
                                     onClick={(e) => e.stopPropagation()}
                                     className="bg-slate-950 border border-slate-800 text-cyan-300 text-[11px] font-extrabold rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-cyan-500 cursor-pointer"
@@ -1172,8 +1190,14 @@ export default function StaffDashboard({
                                     value={u.badge || 'Reguler'}
                                     onChange={(e) => {
                                       e.stopPropagation();
+                                      e.preventDefault();
                                       const newBadge = e.target.value as 'Premium' | 'Reguler';
-                                      onUpdateUser(u.id, { badge: newBadge });
+                                      console.log('Updating user badge:', { userId: u.id, userName: u.name, newBadge });
+                                      try {
+                                        onUpdateUser(u.id, { badge: newBadge });
+                                      } catch (error) {
+                                        console.error('Error updating user badge:', error);
+                                      }
                                     }}
                                     onClick={(e) => e.stopPropagation()}
                                     className="bg-slate-950 border border-slate-800 text-amber-300 text-[11px] font-bold rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-amber-500 cursor-pointer"

@@ -1,5 +1,6 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Book } from '../types';
+import { resolveBookCover, getCachedCover, resolveBookCoverFallback } from '../utils/coverResolver';
 
 interface Book3DProps {
   book: Book;
@@ -13,7 +14,43 @@ export default function Book3D({ book, size = 'md', className = '', onClick }: B
   const [rotate, setRotate] = useState({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false);
   const [isMoving, setIsMoving] = useState(false);
-  const [imgError, setImgError] = useState(false);
+
+  // Cover URL state — starts with cached or existing cover, then resolves dynamically
+  const cached = getCachedCover(book.isbn || '', book.title);
+  const [resolvedCover, setResolvedCover] = useState<string | null>(
+    cached !== undefined ? cached : (book.coverUrl || null)
+  );
+  const [coverLoadFailed, setCoverLoadFailed] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    // If we already have a resolved cover from cache, use it
+    if (cached !== undefined) {
+      setResolvedCover(cached);
+      setCoverLoadFailed(false);
+      return;
+    }
+    resolveBookCover(book.isbn || '', book.title, book.author, book.coverUrl).then(url => {
+      if (!cancelled) {
+        setResolvedCover(url);
+        setCoverLoadFailed(false);
+      }
+    });
+    return () => { cancelled = true; };
+  }, [book.id, book.isbn, book.title, book.author, book.coverUrl]);
+
+  // When the img fails to load, try fetching from Google Books API without the existing URL
+  const handleCoverError = () => {
+    resolveBookCoverFallback(book.isbn || '', book.title, book.author).then(url => {
+      if (url && url !== resolvedCover) {
+        setResolvedCover(url);
+        setCoverLoadFailed(false);
+      } else {
+        setCoverLoadFailed(true);
+      }
+    });
+  };
+
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!containerRef.current) return;
@@ -112,12 +149,12 @@ export default function Book3D({ book, size = 'md', className = '', onClick }: B
             backfaceVisibility: 'hidden',
           }}
         >
-          {book.coverUrl && !imgError ? (
+          {resolvedCover && !coverLoadFailed ? (
             <div className="w-full h-full relative">
               <img
-                src={book.coverUrl}
+                src={resolvedCover}
                 alt={book.title}
-                onError={() => setImgError(true)}
+                onError={handleCoverError}
                 className="absolute inset-0 w-full h-full object-cover"
                 referrerPolicy="no-referrer"
               />
