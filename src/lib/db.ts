@@ -1,6 +1,7 @@
 import { supabase, isSupabaseConfigured } from './supabase';
 import { Book, User, SystemLog, Borrowing } from '../types';
 import { INITIAL_BOOKS } from '../data/books';
+import { BOOK_PDF_MAP } from '../utils/pdfResolver';
 
 // Helper to format date
 const getFormattedDate = () => {
@@ -47,9 +48,10 @@ export async function getBooks(): Promise<Book[]> {
       }
 
       return data.map(b => {
-        const isPdf = b.cover_url && (b.cover_url.endsWith('.pdf') || b.cover_url.startsWith('/buku_digital/'));
-        // cover_url that starts with http is an image, otherwise it's a PDF path
         const isImageUrl = b.cover_url && (b.cover_url.startsWith('http') || b.cover_url.startsWith('data:'));
+        const isPdfUrl = b.cover_url && (b.cover_url.endsWith('.pdf') || b.cover_url.startsWith('/buku_digital/')) && !isImageUrl;
+        // Resolve pdfUrl: prefer stored pdf path, fallback to BOOK_PDF_MAP by ID
+        const resolvedPdfUrl = isPdfUrl ? b.cover_url : (BOOK_PDF_MAP[b.id] || undefined);
         return {
           id: b.id,
           title: b.title,
@@ -64,7 +66,7 @@ export async function getBooks(): Promise<Book[]> {
           stock: b.stock,
           coverColor: b.cover_color,
           coverUrl: isImageUrl ? b.cover_url : undefined,
-          pdfUrl: isPdf && !isImageUrl ? b.cover_url : undefined,
+          pdfUrl: resolvedPdfUrl,
           isAiGenerated: b.is_ai_generated
         };
       });
