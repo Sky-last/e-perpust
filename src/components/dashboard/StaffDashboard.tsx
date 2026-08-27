@@ -659,6 +659,7 @@ export default function StaffDashboard({
                           <th className="py-3 px-5">Pemustaka</th>
                           <th className="py-3 px-5">Buku</th>
                           <th className="py-3 px-5">Tgl Pinjam</th>
+                          <th className="py-3 px-5">Jatuh Tempo</th>
                           <th className="py-3 px-5">Status</th>
                           <th className="py-3 px-5 text-right">Aksi</th>
                         </tr>
