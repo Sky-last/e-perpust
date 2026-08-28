@@ -188,72 +188,72 @@ const defaultPdfs = [
  * Priority: BOOK_PDF_MAP by ID > book.pdfUrl > INITIAL_BOOKS lookup > fuzzy match > hash fallback
  */
 export function resolveBookPdfUrl(book?: Partial<Book> | null): string {
-  if (!book) return defaultPdfs[0];
+  let rawUrl = defaultPdfs[0];
 
-  // 1. Direct ID lookup in BOOK_PDF_MAP — highest priority (most accurate)
-  if (book.id && BOOK_PDF_MAP[book.id]) {
-    return BOOK_PDF_MAP[book.id];
-  }
-
-  // 2. Explicit pdfUrl property on book object (only if it looks like a real path)
-  if (book.pdfUrl && (book.pdfUrl.startsWith('/buku_digital/eb-') || book.pdfUrl.startsWith('/buku_digital/gut-') || book.pdfUrl.startsWith('http') || book.pdfUrl.startsWith('data:'))) {
-    return book.pdfUrl;
-  }
-
-  // 3. Search in INITIAL_BOOKS by ID or title match
-  if (book.id || book.title) {
+  if (!book) {
+    rawUrl = defaultPdfs[0];
+  } else if (book.id && BOOK_PDF_MAP[book.id]) {
+    // 1. Direct ID lookup in BOOK_PDF_MAP — highest priority (most accurate)
+    rawUrl = BOOK_PDF_MAP[book.id];
+  } else if (book.pdfUrl && (book.pdfUrl.startsWith('/buku_digital/') || book.pdfUrl.startsWith('http') || book.pdfUrl.startsWith('data:'))) {
+    // 2. Explicit pdfUrl property on book object
+    rawUrl = book.pdfUrl;
+  } else if (book.id || book.title) {
+    // 3. Search in INITIAL_BOOKS by ID or title match
     const foundByInitial = INITIAL_BOOKS.find(b => 
       (book.id && b.id === book.id) || 
       (book.title && b.title.toLowerCase().trim() === book.title.toLowerCase().trim())
     );
     if (foundByInitial?.pdfUrl) {
-      return foundByInitial.pdfUrl;
+      rawUrl = foundByInitial.pdfUrl;
+    } else if (book.title) {
+      // 4. Fuzzy title matching
+      const titleLower = book.title.toLowerCase();
+      if (titleLower.includes('little duke') || titleLower.includes('richard')) rawUrl = BOOK_PDF_MAP['eb-1'];
+      else if (titleLower.includes('mistress wilding')) rawUrl = BOOK_PDF_MAP['eb-2'];
+      else if (titleLower.includes('advice for the muslim')) rawUrl = BOOK_PDF_MAP['eb-3'];
+      else if (titleLower.includes('software engineer') || titleLower.includes('berani jadi')) rawUrl = BOOK_PDF_MAP['eb-4'];
+      else if (titleLower.includes('scratch') || titleLower.includes('coding project')) rawUrl = BOOK_PDF_MAP['eb-5'];
+      else if (titleLower.includes('documents of the right word')) rawUrl = BOOK_PDF_MAP['eb-6'];
+      else if (titleLower.includes('islam and christianity')) rawUrl = BOOK_PDF_MAP['eb-7'];
+      else if (titleLower.includes('puisi')) rawUrl = BOOK_PDF_MAP['eb-8'];
+      else if (titleLower.includes('konspirasi alam semesta')) rawUrl = BOOK_PDF_MAP['eb-9'];
+      else if (titleLower.includes('negeri di ujung tanduk')) rawUrl = BOOK_PDF_MAP['eb-10'];
+      else if (titleLower.includes('sosiologi') || titleLower.includes('politik identitas')) rawUrl = BOOK_PDF_MAP['eb-11'];
+      else if (titleLower.includes('agraria') || titleLower.includes('geografi')) rawUrl = BOOK_PDF_MAP['eb-12'];
+      else if (titleLower.includes('kelas kecil') || titleLower.includes('antikorupsi')) rawUrl = BOOK_PDF_MAP['eb-13'];
+      else if (titleLower.includes('bulan')) rawUrl = BOOK_PDF_MAP['eb-14'];
+      else if (titleLower.includes('tentang kamu')) rawUrl = BOOK_PDF_MAP['eb-15'];
+      else if (titleLower.includes('matahari')) rawUrl = BOOK_PDF_MAP['eb-16'];
+      else if (titleLower.includes('keto')) rawUrl = BOOK_PDF_MAP['eb-17'];
+      else if (titleLower.includes('forensics') || titleLower.includes('cyber')) rawUrl = BOOK_PDF_MAP['eb-18'];
+      else if (titleLower.includes('kartini') || titleLower.includes('javanese princess')) rawUrl = BOOK_PDF_MAP['gut-1'];
+      else if (titleLower.includes('max havelaar')) rawUrl = BOOK_PDF_MAP['gut-2'];
+      else if (titleLower.includes('history of sumatra')) rawUrl = BOOK_PDF_MAP['gut-3'];
+      else if (titleLower.includes('lord jim')) rawUrl = BOOK_PDF_MAP['gut-4'];
+      else if (titleLower.includes('history of java')) rawUrl = BOOK_PDF_MAP['gut-5'];
+      else if (titleLower.includes('hidden force')) rawUrl = BOOK_PDF_MAP['gut-6'];
+      else if (titleLower.includes('monumental java')) rawUrl = BOOK_PDF_MAP['gut-7'];
+      else if (titleLower.includes('blown to bits') || titleLower.includes('rakata')) rawUrl = BOOK_PDF_MAP['gut-8'];
+      else if (titleLower.includes('facts and fancies')) rawUrl = BOOK_PDF_MAP['gut-9'];
+      else if (titleLower.includes('archipelago') || titleLower.includes('bickmore')) rawUrl = BOOK_PDF_MAP['gut-10'];
+      else {
+        // 5. Hash code deterministic pick from default PDFs for new custom books
+        let hash = 0;
+        for (let i = 0; i < book.title.length; i++) {
+          hash = (hash << 5) - hash + book.title.charCodeAt(i);
+          hash |= 0;
+        }
+        const idx = Math.abs(hash) % defaultPdfs.length;
+        rawUrl = defaultPdfs[idx];
+      }
     }
   }
 
-  // 4. Fuzzy title matching
-  if (book.title) {
-    const titleLower = book.title.toLowerCase();
-    if (titleLower.includes('little duke') || titleLower.includes('richard')) return BOOK_PDF_MAP['eb-1'];
-    if (titleLower.includes('mistress wilding')) return BOOK_PDF_MAP['eb-2'];
-    if (titleLower.includes('advice for the muslim')) return BOOK_PDF_MAP['eb-3'];
-    if (titleLower.includes('software engineer') || titleLower.includes('berani jadi')) return BOOK_PDF_MAP['eb-4'];
-    if (titleLower.includes('scratch') || titleLower.includes('coding project')) return BOOK_PDF_MAP['eb-5'];
-    if (titleLower.includes('documents of the right word')) return BOOK_PDF_MAP['eb-6'];
-    if (titleLower.includes('islam and christianity')) return BOOK_PDF_MAP['eb-7'];
-    if (titleLower.includes('puisi')) return BOOK_PDF_MAP['eb-8'];
-    if (titleLower.includes('konspirasi alam semesta')) return BOOK_PDF_MAP['eb-9'];
-    if (titleLower.includes('negeri di ujung tanduk')) return BOOK_PDF_MAP['eb-10'];
-    if (titleLower.includes('sosiologi') || titleLower.includes('politik identitas')) return BOOK_PDF_MAP['eb-11'];
-    if (titleLower.includes('agraria') || titleLower.includes('geografi')) return BOOK_PDF_MAP['eb-12'];
-    if (titleLower.includes('kelas kecil') || titleLower.includes('antikorupsi')) return BOOK_PDF_MAP['eb-13'];
-    if (titleLower.includes('bulan')) return BOOK_PDF_MAP['eb-14'];
-    if (titleLower.includes('tentang kamu')) return BOOK_PDF_MAP['eb-15'];
-    if (titleLower.includes('matahari')) return BOOK_PDF_MAP['eb-16'];
-    if (titleLower.includes('keto')) return BOOK_PDF_MAP['eb-17'];
-    if (titleLower.includes('forensics') || titleLower.includes('cyber')) return BOOK_PDF_MAP['eb-18'];
-    if (titleLower.includes('kartini') || titleLower.includes('javanese princess')) return BOOK_PDF_MAP['gut-1'];
-    if (titleLower.includes('max havelaar')) return BOOK_PDF_MAP['gut-2'];
-    if (titleLower.includes('history of sumatra')) return BOOK_PDF_MAP['gut-3'];
-    if (titleLower.includes('lord jim')) return BOOK_PDF_MAP['gut-4'];
-    if (titleLower.includes('history of java')) return BOOK_PDF_MAP['gut-5'];
-    if (titleLower.includes('hidden force')) return BOOK_PDF_MAP['gut-6'];
-    if (titleLower.includes('monumental java')) return BOOK_PDF_MAP['gut-7'];
-    if (titleLower.includes('blown to bits') || titleLower.includes('rakata')) return BOOK_PDF_MAP['gut-8'];
-    if (titleLower.includes('facts and fancies')) return BOOK_PDF_MAP['gut-9'];
-    if (titleLower.includes('archipelago') || titleLower.includes('bickmore')) return BOOK_PDF_MAP['gut-10'];
+  // Ensure URI component encoding for spaces or special characters
+  if (rawUrl.startsWith('/buku_digital/')) {
+    const fileName = rawUrl.replace('/buku_digital/', '');
+    return `/buku_digital/${encodeURIComponent(fileName)}`;
   }
-
-  // 5. Hash code deterministic pick from default PDFs for new custom books
-  if (book.title) {
-    let hash = 0;
-    for (let i = 0; i < book.title.length; i++) {
-      hash = (hash << 5) - hash + book.title.charCodeAt(i);
-      hash |= 0;
-    }
-    const idx = Math.abs(hash) % defaultPdfs.length;
-    return defaultPdfs[idx];
-  }
-
-  return defaultPdfs[0];
+  return rawUrl;
 }

@@ -15,7 +15,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 5,
     "coverColor": "from-amber-600 to-yellow-800",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/9781404334900-L.jpg",
-    "pdfUrl": "/buku_digital/69490a7377f5b-the-little-duke-or-richard-the-fearless-by-charlotte-mary-yonge.pdf"
+    "pdfUrl": "/buku_digital/eb-1_The_Little_Duke_or_Richard_the_Fearless.pdf"
   },
   {
     "id": "eb-2",
@@ -31,7 +31,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 4,
     "coverColor": "from-pink-600 to-rose-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/0755116232-L.jpg",
-    "pdfUrl": "/buku_digital/69496235abd9b-mistress-wilding-by-rafael-sabatini.pdf"
+    "pdfUrl": "/buku_digital/eb-2_Mistress_Wilding.pdf"
   },
   {
     "id": "eb-9",
@@ -47,7 +47,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 8,
     "coverColor": "from-sky-500 to-blue-800",
     "coverUrl": "https://cdn.gramedia.com/uploads/items/9786021046043.jpg",
-    "pdfUrl": "/buku_digital/Konspirasi alam semesta - fiersa besari.pdf"
+    "pdfUrl": "/buku_digital/eb-9_Konspirasi_Alam_Semesta.pdf"
   },
   {
     "id": "eb-10",
@@ -63,7 +63,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 5,
     "coverColor": "from-zinc-800 to-zinc-950",
     "coverUrl": "https://cdn.gramedia.com/uploads/items/9789792288056.jpg",
-    "pdfUrl": "/buku_digital/Negeri di ujung tanduk - tere liye.pdf"
+    "pdfUrl": "/buku_digital/eb-10_Negeri_di_Ujung_Tanduk.pdf"
   },
   {
     "id": "eb-14",
@@ -79,7 +79,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 6,
     "coverColor": "from-yellow-500 to-orange-700",
     "coverUrl": "https://ebooks.gramedia.com/ebook-covers/31352/big_covers/ID_MIZ2016MTH03BMTH_B.jpg",
-    "pdfUrl": "/buku_digital/Tere Liye - Bulan.pdf"
+    "pdfUrl": "/buku_digital/eb-14_Bulan.pdf"
   },
   {
     "id": "eb-15",
@@ -95,7 +95,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 5,
     "coverColor": "from-indigo-650 to-purple-900",
     "coverUrl": "https://cdn.gramedia.com/uploads/items/9786028997751_tentang-kamu.jpg",
-    "pdfUrl": "/buku_digital/Tere liye - tentang kamu.pdf"
+    "pdfUrl": "/buku_digital/eb-15_Tentang_Kamu.pdf"
   },
   {
     "id": "eb-16",
@@ -111,7 +111,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 6,
     "coverColor": "from-orange-600 to-red-900",
     "coverUrl": "https://cdn.gramedia.com/uploads/items/9786020328706_Matahari.jpg",
-    "pdfUrl": "/buku_digital/Tere_Liye_-_Matahari.pdf.pdf"
+    "pdfUrl": "/buku_digital/eb-16_Matahari.pdf"
   },
   {
     "id": "gut-2",
@@ -127,7 +127,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 8,
     "coverColor": "from-green-800 to-emerald-950",
     "coverUrl": "https://covers.openlibrary.org/b/id/10482829-L.jpg",
-    "pdfUrl": "/buku_digital/Max_Havelaar.pdf"
+    "pdfUrl": "/buku_digital/gut-2_Max_Havelaar.pdf"
   },
   {
     "id": "gut-4",
@@ -143,7 +143,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 6,
     "coverColor": "from-blue-900 to-slate-950",
     "coverUrl": "https://covers.openlibrary.org/b/id/8235657-L.jpg",
-    "pdfUrl": "/buku_digital/Lord_Jim.pdf"
+    "pdfUrl": "/buku_digital/gut-4_Lord_Jim.pdf"
   },
   {
     "id": "gut-6",
@@ -159,7 +159,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 5,
     "coverColor": "from-purple-800 to-violet-950",
     "coverUrl": "https://covers.openlibrary.org/b/id/8235631-L.jpg",
-    "pdfUrl": "/buku_digital/The_Hidden_Force.pdf"
+    "pdfUrl": "/buku_digital/gut-6_The_Hidden_Force_A_Story_of_Modern_Java.pdf"
   },
   {
     "id": "gut-8",
@@ -175,7 +175,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 6,
     "coverColor": "from-red-700 to-orange-950",
     "coverUrl": "https://covers.openlibrary.org/b/id/8235716-L.jpg",
-    "pdfUrl": "/buku_digital/Blown_to_Bits.pdf"
+    "pdfUrl": "/buku_digital/gut-8_Blown_to_Bits_or_The_Lonely_Man_of_Rakata.pdf"
   },
   {
     "id": "eb-19",
@@ -223,7 +223,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 5,
     "coverColor": "from-yellow-800 to-amber-950",
     "coverUrl": "https://cdn.gramedia.com/uploads/images/1/28054/image_highres/ID_ASD2016MTH10ASD.jpg",
-    "pdfUrl": "/buku_digital/Letters_of_a_Javanese_Princess.pdf"
+    "pdfUrl": "/buku_digital/eb-21_Anak_Semua_Bangsa.pdf"
   },
   {
     "id": "eb-22",
@@ -239,7 +239,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 6,
     "coverColor": "from-rose-800 to-stone-900",
     "coverUrl": "https://cdn.gramedia.com/uploads/images/1/28056/image_highres/ID_JL2016MTH10JL.jpg",
-    "pdfUrl": "/buku_digital/Max_Havelaar.pdf"
+    "pdfUrl": "/buku_digital/eb-22_Jejak_Langkah.pdf"
   },
   {
     "id": "eb-23",
@@ -255,7 +255,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 4,
     "coverColor": "from-slate-800 to-black",
     "coverUrl": "https://cdn.gramedia.com/uploads/images/1/28059/image_highres/ID_RK2016MTH11RK.jpg",
-    "pdfUrl": "/buku_digital/Max_Havelaar.pdf"
+    "pdfUrl": "/buku_digital/eb-23_Rumah_Kaca.pdf"
   },
   {
     "id": "eb-24",
@@ -271,7 +271,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 5,
     "coverColor": "from-emerald-700 to-stone-900",
     "coverUrl": "https://cdn.gramedia.com/uploads/items/9789792268317.jpg",
-    "pdfUrl": "/buku_digital/KAJIAN-PUISI.pdf"
+    "pdfUrl": "/buku_digital/eb-24_Ronggeng_Dukuh_Paruk.pdf"
   },
   {
     "id": "eb-25",
@@ -303,7 +303,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 4,
     "coverColor": "from-orange-700 to-amber-900",
     "coverUrl": "https://cdn.gramedia.com/uploads/items/9789792209419.jpg",
-    "pdfUrl": "/buku_digital/Lord_Jim.pdf"
+    "pdfUrl": "/buku_digital/eb-26_Lelaki_Harimau.pdf"
   },
   {
     "id": "eb-27",
@@ -319,7 +319,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 7,
     "coverColor": "from-cyan-600 to-blue-800",
     "coverUrl": "https://cdn.gramedia.com/uploads/items/9789791227780.jpg",
-    "pdfUrl": "/buku_digital/Konspirasi alam semesta - fiersa besari.pdf"
+    "pdfUrl": "/buku_digital/eb-27_Perahu_Kertas.pdf"
   },
   {
     "id": "eb-28",
@@ -335,7 +335,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 5,
     "coverColor": "from-indigo-800 to-violet-950",
     "coverUrl": "https://cdn.gramedia.com/uploads/items/9789799625700.jpg",
-    "pdfUrl": "/buku_digital/Konspirasi alam semesta - fiersa besari.pdf"
+    "pdfUrl": "/buku_digital/eb-28_Supernova_Ksatria_Puteri_dan_Bintang_Jatuh.pdf"
   },
   {
     "id": "eb-29",
@@ -367,7 +367,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 9,
     "coverColor": "from-teal-800 to-cyan-950",
     "coverUrl": "https://cdn.gramedia.com/uploads/items/9786024246945_Laut_Bercerita.jpg",
-    "pdfUrl": "/buku_digital/Prosiding sosiologi- Konflik dan Politik Identitas ( PDFDrive ).pdf"
+    "pdfUrl": "/buku_digital/eb-30_Laut_Bercerita.pdf"
   },
   {
     "id": "eb-31",
@@ -383,7 +383,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 6,
     "coverColor": "from-sky-700 to-indigo-900",
     "coverUrl": "https://cdn.gramedia.com/uploads/items/9786020324708_Hujan.jpg",
-    "pdfUrl": "/buku_digital/Tere Liye - Bulan.pdf"
+    "pdfUrl": "/buku_digital/eb-31_Hujan.pdf"
   },
   {
     "id": "eb-32",
@@ -399,7 +399,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 8,
     "coverColor": "from-emerald-700 to-green-900",
     "coverUrl": "https://cdn.gramedia.com/uploads/items/9786020301129.jpg",
-    "pdfUrl": "/buku_digital/Tere Liye - Bulan.pdf"
+    "pdfUrl": "/buku_digital/eb-32_Bumi.pdf"
   },
   {
     "id": "eb-33",
@@ -415,7 +415,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 5,
     "coverColor": "from-purple-800 to-indigo-950",
     "coverUrl": "https://cdn.gramedia.com/uploads/items/9786020351117.jpg",
-    "pdfUrl": "/buku_digital/Tere_Liye_-_Matahari.pdf.pdf"
+    "pdfUrl": "/buku_digital/eb-33_Bintang.pdf"
   },
   {
     "id": "eb-34",
@@ -431,7 +431,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 4,
     "coverColor": "from-stone-800 to-zinc-950",
     "coverUrl": "https://cdn.gramedia.com/uploads/items/9786020385914.jpg",
-    "pdfUrl": "/buku_digital/Tere_Liye_-_Matahari.pdf.pdf"
+    "pdfUrl": "/buku_digital/eb-34_Ceros_dan_Batozar.pdf"
   },
   {
     "id": "eb-35",
@@ -447,7 +447,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 5,
     "coverColor": "from-blue-700 to-teal-900",
     "coverUrl": "https://cdn.gramedia.com/uploads/items/9786020385921.jpg",
-    "pdfUrl": "/buku_digital/Tere Liye - Bulan.pdf"
+    "pdfUrl": "/buku_digital/eb-35_Komet.pdf"
   },
   {
     "id": "eb-4",
@@ -463,7 +463,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 5,
     "coverColor": "from-blue-600 to-cyan-800",
     "coverUrl": "https://images-na.ssl-images-amazon.com/images/I/51iN5L8ZpKL._SX384_BO1,204,203,200_.jpg",
-    "pdfUrl": "/buku_digital/Berani-jadi-SE-24Jun2015-final.pdf"
+    "pdfUrl": "/buku_digital/eb-4_Berani_Jadi_Software_Engineer.pdf"
   },
   {
     "id": "eb-5",
@@ -479,7 +479,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 4,
     "coverColor": "from-yellow-600 to-orange-800",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/9781465444820-L.jpg",
-    "pdfUrl": "/buku_digital/Coding project in scratch.pdf"
+    "pdfUrl": "/buku_digital/eb-5_Coding_Projects_in_Scratch.pdf"
   },
   {
     "id": "eb-18",
@@ -495,7 +495,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 3,
     "coverColor": "from-slate-700 to-neutral-900",
     "coverUrl": "https://images-na.ssl-images-amazon.com/images/I/51B7xqYZdkL._SX384_BO1,204,203,200_.jpg",
-    "pdfUrl": "/buku_digital/computer forensics.pdf"
+    "pdfUrl": "/buku_digital/eb-18_Computer_Forensics_and_Cyber_Investigation.pdf"
   },
   {
     "id": "eb-36",
@@ -511,7 +511,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 8,
     "coverColor": "from-cyan-700 to-blue-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/9780132350884-L.jpg",
-    "pdfUrl": "/buku_digital/Berani-jadi-SE-24Jun2015-final.pdf"
+    "pdfUrl": "/buku_digital/eb-36_Clean_Code_A_Handbook_of_Agile_Software_Craftsmanship.pdf"
   },
   {
     "id": "eb-37",
@@ -527,7 +527,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 6,
     "coverColor": "from-purple-700 to-indigo-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/9780201616224-L.jpg",
-    "pdfUrl": "/buku_digital/Berani-jadi-SE-24Jun2015-final.pdf"
+    "pdfUrl": "/buku_digital/eb-37_The_Pragmatic_Programmer.pdf"
   },
   {
     "id": "eb-38",
@@ -543,7 +543,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 5,
     "coverColor": "from-blue-800 to-slate-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/9780201633610-L.jpg",
-    "pdfUrl": "/buku_digital/Berani-jadi-SE-24Jun2015-final.pdf"
+    "pdfUrl": "/buku_digital/eb-38_Design_Patterns_Elements_of_Reusable_Object-Oriented_Software.pdf"
   },
   {
     "id": "eb-39",
@@ -559,7 +559,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 7,
     "coverColor": "from-emerald-700 to-teal-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/9780134610993-L.jpg",
-    "pdfUrl": "/buku_digital/computer forensics.pdf"
+    "pdfUrl": "/buku_digital/eb-39_Artificial_Intelligence_A_Modern_Approach.pdf"
   },
   {
     "id": "eb-40",
@@ -575,7 +575,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 4,
     "coverColor": "from-rose-800 to-slate-950",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/9780262033848-L.jpg",
-    "pdfUrl": "/buku_digital/Coding project in scratch.pdf"
+    "pdfUrl": "/buku_digital/eb-40_Introduction_to_Algorithms_CLRS.pdf"
   },
   {
     "id": "eb-41",
@@ -591,7 +591,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 6,
     "coverColor": "from-yellow-600 to-amber-800",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/9781491904244-L.jpg",
-    "pdfUrl": "/buku_digital/Berani-jadi-SE-24Jun2015-final.pdf"
+    "pdfUrl": "/buku_digital/eb-41_You_Dont_Know_JS_Yet.pdf"
   },
   {
     "id": "eb-42",
@@ -607,7 +607,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 8,
     "coverColor": "from-blue-600 to-amber-700",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/9781593279288-L.jpg",
-    "pdfUrl": "/buku_digital/Coding project in scratch.pdf"
+    "pdfUrl": "/buku_digital/eb-42_Python_Crash_Course.pdf"
   },
   {
     "id": "eb-43",
@@ -623,7 +623,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 5,
     "coverColor": "from-red-800 to-stone-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/9781449373320-L.jpg",
-    "pdfUrl": "/buku_digital/Berani-jadi-SE-24Jun2015-final.pdf"
+    "pdfUrl": "/buku_digital/eb-43_Designing_Data-Intensive_Applications.pdf"
   },
   {
     "id": "eb-3",
@@ -639,7 +639,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 6,
     "coverColor": "from-emerald-700 to-teal-950",
     "coverUrl": "https://images-na.ssl-images-amazon.com/images/I/51JqXb7HQJL._SX331_BO1,204,203,200_.jpg",
-    "pdfUrl": "/buku_digital/Advice_for_the_Muslim.pdf"
+    "pdfUrl": "/buku_digital/eb-3_Advice_for_the_Muslim.pdf"
   },
   {
     "id": "eb-6",
@@ -655,7 +655,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 3,
     "coverColor": "from-teal-800 to-slate-900",
     "coverUrl": "https://images-na.ssl-images-amazon.com/images/I/41VpDqh0JxL._SX331_BO1,204,203,200_.jpg",
-    "pdfUrl": "/buku_digital/Documents_of_the_Right_Word.pdf"
+    "pdfUrl": "/buku_digital/eb-6_Documents_of_the_Right_Word.pdf"
   },
   {
     "id": "eb-7",
@@ -671,7 +671,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 5,
     "coverColor": "from-indigo-800 to-violet-950",
     "coverUrl": "https://images-na.ssl-images-amazon.com/images/I/51wKZLJ3GvL._SX331_BO1,204,203,200_.jpg",
-    "pdfUrl": "/buku_digital/Islam_and_Christianity.pdf"
+    "pdfUrl": "/buku_digital/eb-7_Islam_and_Christianity.pdf"
   },
   {
     "id": "eb-44",
@@ -687,7 +687,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 8,
     "coverColor": "from-emerald-800 to-teal-950",
     "coverUrl": "https://cdn.gramedia.com/uploads/items/ihya-ulumuddin-jilid-1-pustaka-azzam.jpg",
-    "pdfUrl": "/buku_digital/Advice_for_the_Muslim.pdf"
+    "pdfUrl": "/buku_digital/eb-44_Ihya_Ulumuddin_Kebangkitan_Ilmu_Agama.pdf"
   },
   {
     "id": "eb-45",
@@ -703,7 +703,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 10,
     "coverColor": "from-amber-700 to-yellow-950",
     "coverUrl": "https://cdn.gramedia.com/uploads/items/Sirah_Nabawiyah.jpg",
-    "pdfUrl": "/buku_digital/Documents_of_the_Right_Word.pdf"
+    "pdfUrl": "/buku_digital/eb-45_Sirah_Nabawiyah_Sejarah_Hidup_Nabi_Muhammad_SAW.pdf"
   },
   {
     "id": "eb-8",
@@ -719,7 +719,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 4,
     "coverColor": "from-violet-650 to-indigo-900",
     "coverUrl": "https://cdn.gramedia.com/uploads/items/9786024246945_Laut_Bercerita.jpg",
-    "pdfUrl": "/buku_digital/KAJIAN-PUISI.pdf"
+    "pdfUrl": "/buku_digital/eb-8_Kajian_Puisi_Indonesia_Modern.pdf"
   },
   {
     "id": "eb-11",
@@ -735,7 +735,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 3,
     "coverColor": "from-rose-800 to-slate-900",
     "coverUrl": "https://images-na.ssl-images-amazon.com/images/I/51p7Z8QLAUL._SX384_BO1,204,203,200_.jpg",
-    "pdfUrl": "/buku_digital/Prosiding sosiologi- Konflik dan Politik Identitas ( PDFDrive ).pdf"
+    "pdfUrl": "/buku_digital/eb-11_Prosiding_Sosiologi_Konflik_dan_Politik_Identitas.pdf"
   },
   {
     "id": "eb-13",
@@ -751,7 +751,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 7,
     "coverColor": "from-red-600 to-red-950",
     "coverUrl": "https://acch.kpk.go.id/documents/20124/0/Suara+dari+Kelas+Kecil.jpg",
-    "pdfUrl": "/buku_digital/Suara-dari-Kelas-Kecil-Kumpulan-Bahan-Literasi-Antikorupsi.pdf"
+    "pdfUrl": "/buku_digital/eb-13_Suara_dari_Kelas_Kecil_Kumpulan_Bahan_Literasi_Antikorupsi.pdf"
   },
   {
     "id": "eb-46",
@@ -767,7 +767,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 12,
     "coverColor": "from-blue-700 to-slate-900",
     "coverUrl": "https://badanbahasa.kemdikbud.go.id/lamanbahasa/sites/default/files/PUEBI.jpg",
-    "pdfUrl": "/buku_digital/KAJIAN-PUISI.pdf"
+    "pdfUrl": "/buku_digital/eb-46_Pedoman_Umum_Ejaan_Bahasa_Indonesia_PUEBI.pdf"
   },
   {
     "id": "eb-12",
@@ -783,7 +783,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 3,
     "coverColor": "from-amber-800 to-amber-950",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/9786021234579-L.jpg",
-    "pdfUrl": "/buku_digital/Sejarah Geografi Agraria Indonesia ( PDFDrive ).pdf"
+    "pdfUrl": "/buku_digital/eb-12_Sejarah_Geografi_Agraria_Indonesia.pdf"
   },
   {
     "id": "gut-1",
@@ -799,7 +799,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 10,
     "coverColor": "from-rose-700 to-pink-950",
     "coverUrl": "https://covers.openlibrary.org/b/id/8235657-L.jpg",
-    "pdfUrl": "/buku_digital/Letters_of_a_Javanese_Princess.pdf"
+    "pdfUrl": "/buku_digital/gut-1_Letters_of_a_Javanese_Princess.pdf"
   },
   {
     "id": "gut-3",
@@ -815,7 +815,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 5,
     "coverColor": "from-amber-700 to-yellow-900",
     "coverUrl": "https://covers.openlibrary.org/b/id/8491016-L.jpg",
-    "pdfUrl": "/buku_digital/The_History_of_Sumatra.pdf"
+    "pdfUrl": "/buku_digital/gut-3_The_History_of_Sumatra.pdf"
   },
   {
     "id": "gut-5",
@@ -831,7 +831,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 4,
     "coverColor": "from-teal-700 to-cyan-950",
     "coverUrl": "https://covers.openlibrary.org/b/id/8235706-L.jpg",
-    "pdfUrl": "/buku_digital/The_History_of_Java.pdf"
+    "pdfUrl": "/buku_digital/gut-5_The_History_of_Java_Vol_1_2.pdf"
   },
   {
     "id": "eb-17",
@@ -847,7 +847,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 4,
     "coverColor": "from-green-600 to-emerald-900",
     "coverUrl": "https://images-na.ssl-images-amazon.com/images/I/518aXt5xThL._SX331_BO1,204,203,200_.jpg",
-    "pdfUrl": "/buku_digital/The Deliciously Keto Cookbook.pdf"
+    "pdfUrl": "/buku_digital/eb-17_The_Deliciously_Keto_Cookbook.pdf"
   },
   {
     "id": "gut-7",
@@ -863,7 +863,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 4,
     "coverColor": "from-orange-700 to-amber-950",
     "coverUrl": "https://covers.openlibrary.org/b/id/8235671-L.jpg",
-    "pdfUrl": "/buku_digital/Monumental_Java.pdf"
+    "pdfUrl": "/buku_digital/gut-7_Monumental_Java.pdf"
   },
   {
     "id": "gut-9",
@@ -879,7 +879,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 5,
     "coverColor": "from-lime-700 to-green-950",
     "coverUrl": "https://covers.openlibrary.org/b/id/8235661-L.jpg",
-    "pdfUrl": "/buku_digital/Java_Facts_and_Fancies.pdf"
+    "pdfUrl": "/buku_digital/gut-9_Java_Facts_and_Fancies.pdf"
   },
   {
     "id": "gut-10",
@@ -895,7 +895,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 4,
     "coverColor": "from-cyan-700 to-teal-950",
     "coverUrl": "https://covers.openlibrary.org/b/id/8235666-L.jpg",
-    "pdfUrl": "/buku_digital/Travels_in_the_East_Indian_Archipelago.pdf"
+    "pdfUrl": "/buku_digital/gut-10_Travels_in_the_East_Indian_Archipelago.pdf"
   },
   {
     "id": "eb-47",
@@ -911,7 +911,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 3,
     "coverColor": "from-teal-600 to-slate-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210563-L.jpg",
-    "pdfUrl": "/buku_digital/69490a7377f5b-the-little-duke-or-richard-the-fearless-by-charlotte-mary-yonge.pdf"
+    "pdfUrl": "/buku_digital/eb-47_Keamanan_Jaringan_Ethical_Hacking.pdf"
   },
   {
     "id": "eb-48",
@@ -927,7 +927,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 4,
     "coverColor": "from-red-600 to-amber-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210574-L.jpg",
-    "pdfUrl": "/buku_digital/69496235abd9b-mistress-wilding-by-rafael-sabatini.pdf"
+    "pdfUrl": "/buku_digital/eb-48_Pengantar_Machine_Learning.pdf"
   },
   {
     "id": "eb-49",
@@ -943,7 +943,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 5,
     "coverColor": "from-violet-600 to-purple-950",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210585-L.jpg",
-    "pdfUrl": "/buku_digital/Advice_for_the_Muslim.pdf"
+    "pdfUrl": "/buku_digital/eb-49_Arsitektur_Microservices_Modern.pdf"
   },
   {
     "id": "eb-50",
@@ -959,7 +959,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 6,
     "coverColor": "from-slate-700 to-zinc-950",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210596-L.jpg",
-    "pdfUrl": "/buku_digital/Berani-jadi-SE-24Jun2015-final.pdf"
+    "pdfUrl": "/buku_digital/eb-50_Manajemen_Basis_Data_SQL_NoSQL.pdf"
   },
   {
     "id": "eb-51",
@@ -975,7 +975,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 7,
     "coverColor": "from-blue-600 to-indigo-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210607-L.jpg",
-    "pdfUrl": "/buku_digital/Blown_to_Bits.pdf"
+    "pdfUrl": "/buku_digital/eb-51_Rekayasa_Perangkat_Lunak_Agile.pdf"
   },
   {
     "id": "eb-52",
@@ -991,7 +991,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 8,
     "coverColor": "from-emerald-600 to-teal-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210618-L.jpg",
-    "pdfUrl": "/buku_digital/Coding project in scratch.pdf"
+    "pdfUrl": "/buku_digital/eb-52_Pengembangan_Aplikasi_Mobile_React_Native.pdf"
   },
   {
     "id": "eb-53",
@@ -1007,7 +1007,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 9,
     "coverColor": "from-purple-600 to-indigo-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210629-L.jpg",
-    "pdfUrl": "/buku_digital/Documents_of_the_Right_Word.pdf"
+    "pdfUrl": "/buku_digital/eb-53_Cloud_Computing_DevOps_Guide.pdf"
   },
   {
     "id": "eb-54",
@@ -1023,7 +1023,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 3,
     "coverColor": "from-amber-600 to-yellow-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210631-L.jpg",
-    "pdfUrl": "/buku_digital/Islam_and_Christianity.pdf"
+    "pdfUrl": "/buku_digital/eb-54_Tafsir_Al-Mishbah_Vol_1.pdf"
   },
   {
     "id": "eb-55",
@@ -1039,7 +1039,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 4,
     "coverColor": "from-rose-600 to-pink-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210642-L.jpg",
-    "pdfUrl": "/buku_digital/Java_Facts_and_Fancies.pdf"
+    "pdfUrl": "/buku_digital/eb-55_Fiqih_Sunnah_Wanita.pdf"
   },
   {
     "id": "eb-56",
@@ -1055,7 +1055,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 5,
     "coverColor": "from-cyan-600 to-blue-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210653-L.jpg",
-    "pdfUrl": "/buku_digital/KAJIAN-PUISI.pdf"
+    "pdfUrl": "/buku_digital/eb-56_Biografi_Empat_Mazhab.pdf"
   },
   {
     "id": "eb-57",
@@ -1071,7 +1071,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 6,
     "coverColor": "from-teal-600 to-slate-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210664-L.jpg",
-    "pdfUrl": "/buku_digital/Konspirasi alam semesta - fiersa besari.pdf"
+    "pdfUrl": "/buku_digital/eb-57_Ensiklopedia_Hadits_Shahih.pdf"
   },
   {
     "id": "eb-58",
@@ -1087,7 +1087,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 7,
     "coverColor": "from-red-600 to-amber-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210675-L.jpg",
-    "pdfUrl": "/buku_digital/Letters_of_a_Javanese_Princess.pdf"
+    "pdfUrl": "/buku_digital/eb-58_Metodologi_Penelitian_Pendidikan.pdf"
   },
   {
     "id": "eb-59",
@@ -1103,7 +1103,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 8,
     "coverColor": "from-violet-600 to-purple-950",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210686-L.jpg",
-    "pdfUrl": "/buku_digital/Lord_Jim.pdf"
+    "pdfUrl": "/buku_digital/eb-59_Psikologi_Perkembangan_Anak.pdf"
   },
   {
     "id": "eb-60",
@@ -1119,7 +1119,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 9,
     "coverColor": "from-slate-700 to-zinc-950",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210697-L.jpg",
-    "pdfUrl": "/buku_digital/Max_Havelaar.pdf"
+    "pdfUrl": "/buku_digital/eb-60_Teori_Belajar_Pembelajaran.pdf"
   },
   {
     "id": "eb-61",
@@ -1135,7 +1135,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 3,
     "coverColor": "from-blue-600 to-indigo-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210708-L.jpg",
-    "pdfUrl": "/buku_digital/Monumental_Java.pdf"
+    "pdfUrl": "/buku_digital/eb-61_Sejarah_Peradaban_Islam.pdf"
   },
   {
     "id": "eb-62",
@@ -1151,7 +1151,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 4,
     "coverColor": "from-emerald-600 to-teal-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210719-L.jpg",
-    "pdfUrl": "/buku_digital/Negeri di ujung tanduk - tere liye.pdf"
+    "pdfUrl": "/buku_digital/eb-62_Nusantara_Sejarah_Indonesia.pdf"
   },
   {
     "id": "eb-63",
@@ -1167,7 +1167,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 5,
     "coverColor": "from-purple-600 to-indigo-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210721-L.jpg",
-    "pdfUrl": "/buku_digital/Prosiding sosiologi- Konflik dan Politik Identitas ( PDFDrive ).pdf"
+    "pdfUrl": "/buku_digital/eb-63_Sejarah_Kebudayaan_Jawa.pdf"
   },
   {
     "id": "eb-64",
@@ -1183,7 +1183,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 6,
     "coverColor": "from-amber-600 to-yellow-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210732-L.jpg",
-    "pdfUrl": "/buku_digital/Sejarah Geografi Agraria Indonesia ( PDFDrive ).pdf"
+    "pdfUrl": "/buku_digital/eb-64_Fisika_Dasar_untuk_Universitas.pdf"
   },
   {
     "id": "eb-65",
@@ -1199,7 +1199,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 7,
     "coverColor": "from-rose-600 to-pink-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210743-L.jpg",
-    "pdfUrl": "/buku_digital/Suara-dari-Kelas-Kecil-Kumpulan-Bahan-Literasi-Antikorupsi.pdf"
+    "pdfUrl": "/buku_digital/eb-65_Kimia_Organik_Modern.pdf"
   },
   {
     "id": "eb-66",
@@ -1215,7 +1215,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 8,
     "coverColor": "from-cyan-600 to-blue-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210754-L.jpg",
-    "pdfUrl": "/buku_digital/Tere Liye - Bulan.pdf"
+    "pdfUrl": "/buku_digital/eb-66_Biologi_Molekuler_Genetik.pdf"
   },
   {
     "id": "eb-67",
@@ -1231,7 +1231,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 9,
     "coverColor": "from-teal-600 to-slate-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210765-L.jpg",
-    "pdfUrl": "/buku_digital/Tere liye - tentang kamu.pdf"
+    "pdfUrl": "/buku_digital/eb-67_Matematika_Diskrit_Komputasi.pdf"
   },
   {
     "id": "eb-68",
@@ -1247,7 +1247,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 3,
     "coverColor": "from-red-600 to-amber-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210776-L.jpg",
-    "pdfUrl": "/buku_digital/Tere_Liye_-_Matahari.pdf.pdf"
+    "pdfUrl": "/buku_digital/eb-68_Manajemen_Keuangan_Perusahaan.pdf"
   },
   {
     "id": "eb-69",
@@ -1263,7 +1263,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 4,
     "coverColor": "from-violet-600 to-purple-950",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210787-L.jpg",
-    "pdfUrl": "/buku_digital/The Deliciously Keto Cookbook.pdf"
+    "pdfUrl": "/buku_digital/eb-69_Pemasaran_Digital_Branding.pdf"
   },
   {
     "id": "eb-70",
@@ -1279,7 +1279,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 5,
     "coverColor": "from-slate-700 to-zinc-950",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210798-L.jpg",
-    "pdfUrl": "/buku_digital/The_Hidden_Force.pdf"
+    "pdfUrl": "/buku_digital/eb-70_Kewirausahaan_Inovasi_Startup.pdf"
   },
   {
     "id": "eb-71",
@@ -1295,7 +1295,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 6,
     "coverColor": "from-blue-600 to-indigo-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210809-L.jpg",
-    "pdfUrl": "/buku_digital/The_History_of_Java.pdf"
+    "pdfUrl": "/buku_digital/eb-71_Sejarah_Seni_Rupa_Indonesia.pdf"
   },
   {
     "id": "eb-72",
@@ -1311,7 +1311,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 7,
     "coverColor": "from-emerald-600 to-teal-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210811-L.jpg",
-    "pdfUrl": "/buku_digital/The_History_of_Sumatra.pdf"
+    "pdfUrl": "/buku_digital/eb-72_Arsitektur_Nusantara_Rumah_Adat.pdf"
   },
   {
     "id": "eb-73",
@@ -1327,7 +1327,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 8,
     "coverColor": "from-purple-600 to-indigo-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210822-L.jpg",
-    "pdfUrl": "/buku_digital/Travels_in_the_East_Indian_Archipelago.pdf"
+    "pdfUrl": "/buku_digital/eb-73_Nutrisi_Gaya_Hidup_Sehat.pdf"
   },
   {
     "id": "eb-74",
@@ -1343,7 +1343,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 9,
     "coverColor": "from-amber-600 to-yellow-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210833-L.jpg",
-    "pdfUrl": "/buku_digital/computer forensics.pdf"
+    "pdfUrl": "/buku_digital/eb-74_Panduan_Pertolongan_Pertama_P3K.pdf"
   },
   {
     "id": "eb-75",
@@ -1359,7 +1359,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 3,
     "coverColor": "from-rose-600 to-pink-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210844-L.jpg",
-    "pdfUrl": "/buku_digital/69490a7377f5b-the-little-duke-or-richard-the-fearless-by-charlotte-mary-yonge.pdf"
+    "pdfUrl": "/buku_digital/eb-75_Petualangan_di_Taman_Nasional_Komodo.pdf"
   },
   {
     "id": "eb-76",
@@ -1375,7 +1375,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 4,
     "coverColor": "from-cyan-600 to-blue-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210855-L.jpg",
-    "pdfUrl": "/buku_digital/69496235abd9b-mistress-wilding-by-rafael-sabatini.pdf"
+    "pdfUrl": "/buku_digital/eb-76_Pesona_Raja_Ampat_Papua.pdf"
   },
   {
     "id": "eb-77",
@@ -1391,7 +1391,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 5,
     "coverColor": "from-teal-600 to-slate-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210866-L.jpg",
-    "pdfUrl": "/buku_digital/Advice_for_the_Muslim.pdf"
+    "pdfUrl": "/buku_digital/eb-77_Filosofi_Teras.pdf"
   },
   {
     "id": "eb-78",
@@ -1407,7 +1407,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 6,
     "coverColor": "from-red-600 to-amber-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210877-L.jpg",
-    "pdfUrl": "/buku_digital/Berani-jadi-SE-24Jun2015-final.pdf"
+    "pdfUrl": "/buku_digital/eb-78_Atom_Habits.pdf"
   },
   {
     "id": "eb-79",
@@ -1423,7 +1423,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 7,
     "coverColor": "from-violet-600 to-purple-950",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210888-L.jpg",
-    "pdfUrl": "/buku_digital/Blown_to_Bits.pdf"
+    "pdfUrl": "/buku_digital/eb-79_Psychology_of_Money.pdf"
   },
   {
     "id": "eb-80",
@@ -1439,7 +1439,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 8,
     "coverColor": "from-slate-700 to-zinc-950",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210899-L.jpg",
-    "pdfUrl": "/buku_digital/Coding project in scratch.pdf"
+    "pdfUrl": "/buku_digital/eb-80_Sapiens_Riwayat_Singkat_Umat_Manusia.pdf"
   },
   {
     "id": "eb-81",
@@ -1455,7 +1455,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 9,
     "coverColor": "from-blue-600 to-indigo-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210901-L.jpg",
-    "pdfUrl": "/buku_digital/Documents_of_the_Right_Word.pdf"
+    "pdfUrl": "/buku_digital/eb-81_Homo_Deus_Masa_Depan_Umat_Manusia.pdf"
   },
   {
     "id": "eb-82",
@@ -1471,7 +1471,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 3,
     "coverColor": "from-emerald-600 to-teal-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210912-L.jpg",
-    "pdfUrl": "/buku_digital/Islam_and_Christianity.pdf"
+    "pdfUrl": "/buku_digital/eb-82_21_Pelajaran_untuk_Abad_ke-21.pdf"
   },
   {
     "id": "eb-83",
@@ -1487,7 +1487,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 4,
     "coverColor": "from-purple-600 to-indigo-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210923-L.jpg",
-    "pdfUrl": "/buku_digital/Java_Facts_and_Fancies.pdf"
+    "pdfUrl": "/buku_digital/eb-83_Rich_Dad_Poor_Dad.pdf"
   },
   {
     "id": "eb-84",
@@ -1503,7 +1503,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 5,
     "coverColor": "from-amber-600 to-yellow-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210934-L.jpg",
-    "pdfUrl": "/buku_digital/KAJIAN-PUISI.pdf"
+    "pdfUrl": "/buku_digital/eb-84_Sebuah_Seni_untuk_Bersikap_Bodo_Amat.pdf"
   },
   {
     "id": "eb-85",
@@ -1519,7 +1519,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 6,
     "coverColor": "from-rose-600 to-pink-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210945-L.jpg",
-    "pdfUrl": "/buku_digital/Konspirasi alam semesta - fiersa besari.pdf"
+    "pdfUrl": "/buku_digital/eb-85_Gadis_Kretek.pdf"
   },
   {
     "id": "eb-86",
@@ -1535,7 +1535,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 7,
     "coverColor": "from-cyan-600 to-blue-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210956-L.jpg",
-    "pdfUrl": "/buku_digital/Letters_of_a_Javanese_Princess.pdf"
+    "pdfUrl": "/buku_digital/eb-86_Bumi_Manusia_Jilid_II.pdf"
   },
   {
     "id": "eb-87",
@@ -1551,7 +1551,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 8,
     "coverColor": "from-teal-600 to-slate-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210967-L.jpg",
-    "pdfUrl": "/buku_digital/Lord_Jim.pdf"
+    "pdfUrl": "/buku_digital/eb-87_Orang-Orang_Biasa.pdf"
   },
   {
     "id": "eb-88",
@@ -1567,7 +1567,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 9,
     "coverColor": "from-red-600 to-amber-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210978-L.jpg",
-    "pdfUrl": "/buku_digital/Max_Havelaar.pdf"
+    "pdfUrl": "/buku_digital/eb-88_Dua_Garis_Biru.pdf"
   },
   {
     "id": "eb-89",
@@ -1583,7 +1583,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 3,
     "coverColor": "from-violet-600 to-purple-950",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210989-L.jpg",
-    "pdfUrl": "/buku_digital/Monumental_Java.pdf"
+    "pdfUrl": "/buku_digital/eb-89_Nanti_Kita_Ceritakan_Tentang_Hari_Ini.pdf"
   },
   {
     "id": "eb-90",
@@ -1599,7 +1599,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 4,
     "coverColor": "from-slate-700 to-zinc-950",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210991-L.jpg",
-    "pdfUrl": "/buku_digital/Negeri di ujung tanduk - tere liye.pdf"
+    "pdfUrl": "/buku_digital/eb-90_Dilan_1990.pdf"
   },
   {
     "id": "eb-91",
@@ -1615,7 +1615,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 5,
     "coverColor": "from-blue-600 to-indigo-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211002-L.jpg",
-    "pdfUrl": "/buku_digital/Prosiding sosiologi- Konflik dan Politik Identitas ( PDFDrive ).pdf"
+    "pdfUrl": "/buku_digital/eb-91_Milea_Suara_dari_Dilan_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-92",
@@ -1631,7 +1631,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 6,
     "coverColor": "from-emerald-600 to-teal-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211013-L.jpg",
-    "pdfUrl": "/buku_digital/Sejarah Geografi Agraria Indonesia ( PDFDrive ).pdf"
+    "pdfUrl": "/buku_digital/eb-92_Ancika_Dia_yang_Bersamaku_Tahun_1995_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-93",
@@ -1647,7 +1647,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 7,
     "coverColor": "from-purple-600 to-indigo-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211024-L.jpg",
-    "pdfUrl": "/buku_digital/Suara-dari-Kelas-Kecil-Kumpulan-Bahan-Literasi-Antikorupsi.pdf"
+    "pdfUrl": "/buku_digital/eb-93_Pulang_-_Pergi_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-94",
@@ -1663,7 +1663,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 8,
     "coverColor": "from-amber-600 to-yellow-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211035-L.jpg",
-    "pdfUrl": "/buku_digital/Tere Liye - Bulan.pdf"
+    "pdfUrl": "/buku_digital/eb-94_Selamat_Tinggal_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-95",
@@ -1679,7 +1679,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 9,
     "coverColor": "from-rose-600 to-pink-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211046-L.jpg",
-    "pdfUrl": "/buku_digital/Tere liye - tentang kamu.pdf"
+    "pdfUrl": "/buku_digital/eb-95_Janji_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-96",
@@ -1695,7 +1695,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 3,
     "coverColor": "from-cyan-600 to-blue-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211057-L.jpg",
-    "pdfUrl": "/buku_digital/Tere_Liye_-_Matahari.pdf.pdf"
+    "pdfUrl": "/buku_digital/eb-96_Rasa_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-97",
@@ -1711,7 +1711,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 4,
     "coverColor": "from-teal-600 to-slate-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211068-L.jpg",
-    "pdfUrl": "/buku_digital/The Deliciously Keto Cookbook.pdf"
+    "pdfUrl": "/buku_digital/eb-97_Si_Anak_Kuat_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-98",
@@ -1727,7 +1727,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 5,
     "coverColor": "from-red-600 to-amber-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211079-L.jpg",
-    "pdfUrl": "/buku_digital/The_Hidden_Force.pdf"
+    "pdfUrl": "/buku_digital/eb-98_Si_Anak_Spesial_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-99",
@@ -1743,7 +1743,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 6,
     "coverColor": "from-violet-600 to-purple-950",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211081-L.jpg",
-    "pdfUrl": "/buku_digital/The_History_of_Java.pdf"
+    "pdfUrl": "/buku_digital/eb-99_Si_Anak_Pintar_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-100",
@@ -1759,7 +1759,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 7,
     "coverColor": "from-slate-700 to-zinc-950",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211092-L.jpg",
-    "pdfUrl": "/buku_digital/The_History_of_Sumatra.pdf"
+    "pdfUrl": "/buku_digital/eb-100_Si_Anak_Pemberani_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-101",
@@ -1775,7 +1775,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 8,
     "coverColor": "from-blue-600 to-indigo-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211103-L.jpg",
-    "pdfUrl": "/buku_digital/Travels_in_the_East_Indian_Archipelago.pdf"
+    "pdfUrl": "/buku_digital/eb-101_Si_Anak_Savana_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-102",
@@ -1791,7 +1791,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 9,
     "coverColor": "from-emerald-600 to-teal-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211114-L.jpg",
-    "pdfUrl": "/buku_digital/computer forensics.pdf"
+    "pdfUrl": "/buku_digital/eb-102_Dasar-Dasar_Pemrograman_Web_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-103",
@@ -1807,7 +1807,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 3,
     "coverColor": "from-purple-600 to-indigo-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211125-L.jpg",
-    "pdfUrl": "/buku_digital/69490a7377f5b-the-little-duke-or-richard-the-fearless-by-charlotte-mary-yonge.pdf"
+    "pdfUrl": "/buku_digital/eb-103_Pemrograman_Berorientasi_Objek_Java_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-104",
@@ -1823,7 +1823,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 4,
     "coverColor": "from-amber-600 to-yellow-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211136-L.jpg",
-    "pdfUrl": "/buku_digital/69496235abd9b-mistress-wilding-by-rafael-sabatini.pdf"
+    "pdfUrl": "/buku_digital/eb-104_Struktur_Data_Algoritma_Python_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-105",
@@ -1839,7 +1839,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 5,
     "coverColor": "from-rose-600 to-pink-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211147-L.jpg",
-    "pdfUrl": "/buku_digital/Advice_for_the_Muslim.pdf"
+    "pdfUrl": "/buku_digital/eb-105_Keamanan_Jaringan_Ethical_Hacking_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-106",
@@ -1855,7 +1855,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 6,
     "coverColor": "from-cyan-600 to-blue-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211158-L.jpg",
-    "pdfUrl": "/buku_digital/Berani-jadi-SE-24Jun2015-final.pdf"
+    "pdfUrl": "/buku_digital/eb-106_Pengantar_Machine_Learning_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-107",
@@ -1871,7 +1871,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 7,
     "coverColor": "from-teal-600 to-slate-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211169-L.jpg",
-    "pdfUrl": "/buku_digital/Blown_to_Bits.pdf"
+    "pdfUrl": "/buku_digital/eb-107_Arsitektur_Microservices_Modern_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-108",
@@ -1887,7 +1887,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 8,
     "coverColor": "from-red-600 to-amber-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211171-L.jpg",
-    "pdfUrl": "/buku_digital/Coding project in scratch.pdf"
+    "pdfUrl": "/buku_digital/eb-108_Manajemen_Basis_Data_SQL_NoSQL_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-109",
@@ -1903,7 +1903,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 9,
     "coverColor": "from-violet-600 to-purple-950",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211182-L.jpg",
-    "pdfUrl": "/buku_digital/Documents_of_the_Right_Word.pdf"
+    "pdfUrl": "/buku_digital/eb-109_Rekayasa_Perangkat_Lunak_Agile_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-110",
@@ -1919,7 +1919,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 3,
     "coverColor": "from-slate-700 to-zinc-950",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211193-L.jpg",
-    "pdfUrl": "/buku_digital/Islam_and_Christianity.pdf"
+    "pdfUrl": "/buku_digital/eb-110_Pengembangan_Aplikasi_Mobile_React_Native_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-111",
@@ -1935,7 +1935,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 4,
     "coverColor": "from-blue-600 to-indigo-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211204-L.jpg",
-    "pdfUrl": "/buku_digital/Java_Facts_and_Fancies.pdf"
+    "pdfUrl": "/buku_digital/eb-111_Cloud_Computing_DevOps_Guide_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-112",
@@ -1951,7 +1951,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 5,
     "coverColor": "from-emerald-600 to-teal-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211215-L.jpg",
-    "pdfUrl": "/buku_digital/KAJIAN-PUISI.pdf"
+    "pdfUrl": "/buku_digital/eb-112_Tafsir_Al-Mishbah_Vol_1_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-113",
@@ -1967,7 +1967,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 6,
     "coverColor": "from-purple-600 to-indigo-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211226-L.jpg",
-    "pdfUrl": "/buku_digital/Konspirasi alam semesta - fiersa besari.pdf"
+    "pdfUrl": "/buku_digital/eb-113_Fiqih_Sunnah_Wanita_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-114",
@@ -1983,7 +1983,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 7,
     "coverColor": "from-amber-600 to-yellow-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211237-L.jpg",
-    "pdfUrl": "/buku_digital/Letters_of_a_Javanese_Princess.pdf"
+    "pdfUrl": "/buku_digital/eb-114_Biografi_Empat_Mazhab_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-115",
@@ -1999,7 +1999,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 8,
     "coverColor": "from-rose-600 to-pink-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211248-L.jpg",
-    "pdfUrl": "/buku_digital/Lord_Jim.pdf"
+    "pdfUrl": "/buku_digital/eb-115_Ensiklopedia_Hadits_Shahih_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-116",
@@ -2015,7 +2015,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 9,
     "coverColor": "from-cyan-600 to-blue-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211259-L.jpg",
-    "pdfUrl": "/buku_digital/Max_Havelaar.pdf"
+    "pdfUrl": "/buku_digital/eb-116_Metodologi_Penelitian_Pendidikan_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-117",
@@ -2031,7 +2031,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 3,
     "coverColor": "from-teal-600 to-slate-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211261-L.jpg",
-    "pdfUrl": "/buku_digital/Monumental_Java.pdf"
+    "pdfUrl": "/buku_digital/eb-117_Psikologi_Perkembangan_Anak_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-118",
@@ -2047,7 +2047,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 4,
     "coverColor": "from-red-600 to-amber-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211272-L.jpg",
-    "pdfUrl": "/buku_digital/Negeri di ujung tanduk - tere liye.pdf"
+    "pdfUrl": "/buku_digital/eb-118_Teori_Belajar_Pembelajaran_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-119",
@@ -2063,7 +2063,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 5,
     "coverColor": "from-violet-600 to-purple-950",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211283-L.jpg",
-    "pdfUrl": "/buku_digital/Prosiding sosiologi- Konflik dan Politik Identitas ( PDFDrive ).pdf"
+    "pdfUrl": "/buku_digital/eb-119_Sejarah_Peradaban_Islam_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-120",
@@ -2079,7 +2079,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 6,
     "coverColor": "from-slate-700 to-zinc-950",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211294-L.jpg",
-    "pdfUrl": "/buku_digital/Sejarah Geografi Agraria Indonesia ( PDFDrive ).pdf"
+    "pdfUrl": "/buku_digital/eb-120_Nusantara_Sejarah_Indonesia_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-121",
@@ -2095,7 +2095,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 7,
     "coverColor": "from-blue-600 to-indigo-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211305-L.jpg",
-    "pdfUrl": "/buku_digital/Suara-dari-Kelas-Kecil-Kumpulan-Bahan-Literasi-Antikorupsi.pdf"
+    "pdfUrl": "/buku_digital/eb-121_Sejarah_Kebudayaan_Jawa_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-122",
@@ -2111,7 +2111,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 8,
     "coverColor": "from-emerald-600 to-teal-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211316-L.jpg",
-    "pdfUrl": "/buku_digital/Tere Liye - Bulan.pdf"
+    "pdfUrl": "/buku_digital/eb-122_Fisika_Dasar_untuk_Universitas_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-123",
@@ -2127,7 +2127,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 9,
     "coverColor": "from-purple-600 to-indigo-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211327-L.jpg",
-    "pdfUrl": "/buku_digital/Tere liye - tentang kamu.pdf"
+    "pdfUrl": "/buku_digital/eb-123_Kimia_Organik_Modern_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-124",
@@ -2143,7 +2143,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 3,
     "coverColor": "from-amber-600 to-yellow-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211338-L.jpg",
-    "pdfUrl": "/buku_digital/Tere_Liye_-_Matahari.pdf.pdf"
+    "pdfUrl": "/buku_digital/eb-124_Biologi_Molekuler_Genetik_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-125",
@@ -2159,7 +2159,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 4,
     "coverColor": "from-rose-600 to-pink-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211349-L.jpg",
-    "pdfUrl": "/buku_digital/The Deliciously Keto Cookbook.pdf"
+    "pdfUrl": "/buku_digital/eb-125_Matematika_Diskrit_Komputasi_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-126",
@@ -2175,7 +2175,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 5,
     "coverColor": "from-cyan-600 to-blue-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211351-L.jpg",
-    "pdfUrl": "/buku_digital/The_Hidden_Force.pdf"
+    "pdfUrl": "/buku_digital/eb-126_Manajemen_Keuangan_Perusahaan_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-127",
@@ -2191,7 +2191,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 6,
     "coverColor": "from-teal-600 to-slate-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211362-L.jpg",
-    "pdfUrl": "/buku_digital/The_History_of_Java.pdf"
+    "pdfUrl": "/buku_digital/eb-127_Pemasaran_Digital_Branding_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-128",
@@ -2207,7 +2207,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 7,
     "coverColor": "from-red-600 to-amber-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211373-L.jpg",
-    "pdfUrl": "/buku_digital/The_History_of_Sumatra.pdf"
+    "pdfUrl": "/buku_digital/eb-128_Kewirausahaan_Inovasi_Startup_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-129",
@@ -2223,7 +2223,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 8,
     "coverColor": "from-violet-600 to-purple-950",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211384-L.jpg",
-    "pdfUrl": "/buku_digital/Travels_in_the_East_Indian_Archipelago.pdf"
+    "pdfUrl": "/buku_digital/eb-129_Sejarah_Seni_Rupa_Indonesia_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-130",
@@ -2239,7 +2239,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 9,
     "coverColor": "from-slate-700 to-zinc-950",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211395-L.jpg",
-    "pdfUrl": "/buku_digital/computer forensics.pdf"
+    "pdfUrl": "/buku_digital/eb-130_Arsitektur_Nusantara_Rumah_Adat_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-131",
@@ -2255,7 +2255,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 3,
     "coverColor": "from-blue-600 to-indigo-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211406-L.jpg",
-    "pdfUrl": "/buku_digital/69490a7377f5b-the-little-duke-or-richard-the-fearless-by-charlotte-mary-yonge.pdf"
+    "pdfUrl": "/buku_digital/eb-131_Nutrisi_Gaya_Hidup_Sehat_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-132",
@@ -2271,7 +2271,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 4,
     "coverColor": "from-emerald-600 to-teal-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211417-L.jpg",
-    "pdfUrl": "/buku_digital/69496235abd9b-mistress-wilding-by-rafael-sabatini.pdf"
+    "pdfUrl": "/buku_digital/eb-132_Panduan_Pertolongan_Pertama_P3K_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-133",
@@ -2287,7 +2287,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 5,
     "coverColor": "from-purple-600 to-indigo-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211428-L.jpg",
-    "pdfUrl": "/buku_digital/Advice_for_the_Muslim.pdf"
+    "pdfUrl": "/buku_digital/eb-133_Petualangan_di_Taman_Nasional_Komodo_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-134",
@@ -2303,7 +2303,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 6,
     "coverColor": "from-amber-600 to-yellow-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211439-L.jpg",
-    "pdfUrl": "/buku_digital/Berani-jadi-SE-24Jun2015-final.pdf"
+    "pdfUrl": "/buku_digital/eb-134_Pesona_Raja_Ampat_Papua_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-135",
@@ -2319,7 +2319,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 7,
     "coverColor": "from-rose-600 to-pink-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211441-L.jpg",
-    "pdfUrl": "/buku_digital/Blown_to_Bits.pdf"
+    "pdfUrl": "/buku_digital/eb-135_Filosofi_Teras_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-136",
@@ -2335,7 +2335,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 8,
     "coverColor": "from-cyan-600 to-blue-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211452-L.jpg",
-    "pdfUrl": "/buku_digital/Coding project in scratch.pdf"
+    "pdfUrl": "/buku_digital/eb-136_Atom_Habits_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-137",
@@ -2351,7 +2351,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 9,
     "coverColor": "from-teal-600 to-slate-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211463-L.jpg",
-    "pdfUrl": "/buku_digital/Documents_of_the_Right_Word.pdf"
+    "pdfUrl": "/buku_digital/eb-137_Psychology_of_Money_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-138",
@@ -2367,7 +2367,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 3,
     "coverColor": "from-red-600 to-amber-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211474-L.jpg",
-    "pdfUrl": "/buku_digital/Islam_and_Christianity.pdf"
+    "pdfUrl": "/buku_digital/eb-138_Sapiens_Riwayat_Singkat_Umat_Manusia_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-139",
@@ -2383,7 +2383,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 4,
     "coverColor": "from-violet-600 to-purple-950",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211485-L.jpg",
-    "pdfUrl": "/buku_digital/Java_Facts_and_Fancies.pdf"
+    "pdfUrl": "/buku_digital/eb-139_Homo_Deus_Masa_Depan_Umat_Manusia_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-140",
@@ -2399,7 +2399,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 5,
     "coverColor": "from-slate-700 to-zinc-950",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211496-L.jpg",
-    "pdfUrl": "/buku_digital/KAJIAN-PUISI.pdf"
+    "pdfUrl": "/buku_digital/eb-140_21_Pelajaran_untuk_Abad_ke-21_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-141",
@@ -2415,7 +2415,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 6,
     "coverColor": "from-blue-600 to-indigo-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211507-L.jpg",
-    "pdfUrl": "/buku_digital/Konspirasi alam semesta - fiersa besari.pdf"
+    "pdfUrl": "/buku_digital/eb-141_Rich_Dad_Poor_Dad_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-142",
@@ -2431,7 +2431,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 7,
     "coverColor": "from-emerald-600 to-teal-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211518-L.jpg",
-    "pdfUrl": "/buku_digital/Letters_of_a_Javanese_Princess.pdf"
+    "pdfUrl": "/buku_digital/eb-142_Sebuah_Seni_untuk_Bersikap_Bodo_Amat_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-143",
@@ -2447,7 +2447,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 8,
     "coverColor": "from-purple-600 to-indigo-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211529-L.jpg",
-    "pdfUrl": "/buku_digital/Lord_Jim.pdf"
+    "pdfUrl": "/buku_digital/eb-143_Gadis_Kretek_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-144",
@@ -2463,7 +2463,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 9,
     "coverColor": "from-amber-600 to-yellow-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211531-L.jpg",
-    "pdfUrl": "/buku_digital/Max_Havelaar.pdf"
+    "pdfUrl": "/buku_digital/eb-144_Bumi_Manusia_Jilid_II_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-145",
@@ -2479,7 +2479,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 3,
     "coverColor": "from-rose-600 to-pink-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211542-L.jpg",
-    "pdfUrl": "/buku_digital/Monumental_Java.pdf"
+    "pdfUrl": "/buku_digital/eb-145_Orang-Orang_Biasa_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-146",
@@ -2495,7 +2495,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 4,
     "coverColor": "from-cyan-600 to-blue-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211553-L.jpg",
-    "pdfUrl": "/buku_digital/Negeri di ujung tanduk - tere liye.pdf"
+    "pdfUrl": "/buku_digital/eb-146_Dua_Garis_Biru_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-147",
@@ -2511,7 +2511,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 5,
     "coverColor": "from-teal-600 to-slate-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211564-L.jpg",
-    "pdfUrl": "/buku_digital/Prosiding sosiologi- Konflik dan Politik Identitas ( PDFDrive ).pdf"
+    "pdfUrl": "/buku_digital/eb-147_Nanti_Kita_Ceritakan_Tentang_Hari_Ini_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-148",
@@ -2527,7 +2527,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 6,
     "coverColor": "from-red-600 to-amber-900",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211575-L.jpg",
-    "pdfUrl": "/buku_digital/Sejarah Geografi Agraria Indonesia ( PDFDrive ).pdf"
+    "pdfUrl": "/buku_digital/eb-148_Dilan_1990_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-149",
@@ -2543,7 +2543,7 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 7,
     "coverColor": "from-violet-600 to-purple-950",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211586-L.jpg",
-    "pdfUrl": "/buku_digital/Suara-dari-Kelas-Kecil-Kumpulan-Bahan-Literasi-Antikorupsi.pdf"
+    "pdfUrl": "/buku_digital/eb-149_Milea_Suara_dari_Dilan_Edisi_Kolektor.pdf"
   },
   {
     "id": "eb-150",
@@ -2559,6 +2559,6 @@ export const INITIAL_BOOKS: Book[] = [
     "stock": 8,
     "coverColor": "from-slate-700 to-zinc-950",
     "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211597-L.jpg",
-    "pdfUrl": "/buku_digital/Tere Liye - Bulan.pdf"
+    "pdfUrl": "/buku_digital/eb-150_Ancika_Dia_yang_Bersamaku_Tahun_1995_Edisi_Kolektor.pdf"
   }
 ];

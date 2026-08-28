@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { Book } from '../types';
 import { X, BookOpen, Star, Bookmark, Heart, Sparkles, MapPin, Layers } from 'lucide-react';
 import { soundFX } from '../utils/audio';
+import { resolveBookPdfUrl } from '../utils/pdfResolver';
+import { resolveBookCover, getCachedCover } from '../utils/coverResolver';
 
 interface BookOpen3DModalProps {
   book: Book | null;
@@ -22,10 +24,21 @@ export default function BookOpen3DModal({
 }: BookOpen3DModalProps) {
   const [isOpenAnimation, setIsOpenAnimation] = useState(false);
 
+  // Dynamic cover resolution
+  const cachedCover = book ? getCachedCover(book.isbn || '', book.title) : undefined;
+  const [resolvedCover, setResolvedCover] = useState<string | null>(
+    cachedCover !== undefined ? cachedCover : (book?.coverUrl || null)
+  );
+
   useEffect(() => {
     if (book) {
       soundFX.playBookOpen();
       const timer = setTimeout(() => setIsOpenAnimation(true), 150);
+
+      resolveBookCover(book.isbn || '', book.title, book.author, book.coverUrl).then(url => {
+        setResolvedCover(url);
+      });
+
       return () => clearTimeout(timer);
     } else {
       setIsOpenAnimation(false);
@@ -33,6 +46,8 @@ export default function BookOpen3DModal({
   }, [book]);
 
   if (!book) return null;
+
+  const pdfUrl = resolveBookPdfUrl(book);
 
   // Extract primary cover gradient color
   const getCoverColor = (colorStr?: string) => {
@@ -79,9 +94,9 @@ export default function BookOpen3DModal({
               backgroundImage: `linear-gradient(135deg, ${primaryColor} 0%, rgba(0,0,0,0.7) 100%)`,
             }}
           >
-            {book.coverUrl ? (
+            {resolvedCover ? (
               <div className="absolute inset-0 w-full h-full">
-                <img src={book.coverUrl} alt={book.title} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                <img src={resolvedCover} alt={book.title} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                 <div className="absolute top-0 bottom-0 left-0 w-2.5 bg-gradient-to-r from-black/50 to-transparent pointer-events-none z-10" />
               </div>
             ) : (
@@ -130,7 +145,7 @@ export default function BookOpen3DModal({
         </div>
 
         <div className="space-y-2.5 pt-2">
-          {book.pdfUrl && onReadEbook && (
+          {pdfUrl && onReadEbook && (
             <button
               onClick={() => {
                 soundFX.playPageFlip();
@@ -280,7 +295,7 @@ export default function BookOpen3DModal({
                 <div>
                   <span className="text-[10px] font-bold text-blue-400 uppercase tracking-widest block">Status Akses</span>
                   <span className="text-xs font-black text-white mt-0.5 block">
-                    {book.pdfUrl ? '⚡ E-Book Digital & Fisik Tersedia' : '📚 Hanya Peminjaman Fisik'}
+                    {pdfUrl ? '⚡ E-Book Digital & Fisik Tersedia' : '📚 Hanya Peminjaman Fisik'}
                   </span>
                 </div>
               </div>
@@ -288,7 +303,7 @@ export default function BookOpen3DModal({
 
             {/* ACTION BUTTONS */}
             <div className="space-y-3 pt-4 border-t border-slate-800/80">
-              {book.pdfUrl && onReadEbook && (
+              {pdfUrl && onReadEbook && (
                 <button
                   onClick={() => {
                     soundFX.playPageFlip();
@@ -347,9 +362,9 @@ export default function BookOpen3DModal({
               boxShadow: '0 20px 50px rgba(0,0,0,0.8)',
             }}
           >
-            {book.coverUrl ? (
+            {resolvedCover ? (
               <div className="absolute inset-0 w-full h-full">
-                <img src={book.coverUrl} alt={book.title} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                <img src={resolvedCover} alt={book.title} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                 <div className="absolute top-0 bottom-0 left-0 w-4 bg-gradient-to-r from-black/60 via-black/20 to-transparent pointer-events-none z-10" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none z-10" />
                 <div className="absolute bottom-4 left-4 right-4 z-20">

@@ -415,9 +415,30 @@ export default function EBookReader3D({ book, onClose, currentUser }: EBookReade
       {/* WORKSPACE AREA */}
       {readerMode === 'pdf' ? (
         <div className="flex-1 w-full h-full p-1 sm:p-4 bg-slate-950 overflow-hidden relative flex flex-col min-h-0">
+          {/* Quick PDF Sub-bar */}
+          <div className="flex items-center justify-between px-3 py-1.5 bg-slate-900/80 border-t border-b border-slate-800 text-[11px] text-slate-400 mb-1 rounded-t-xl shrink-0">
+            <span className="truncate">📄 Menampilkan dokumen PDF asli ({book.title})</span>
+            <div className="flex items-center gap-2 shrink-0">
+              <a
+                href={pdfUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-cyan-400 hover:text-cyan-300 font-bold underline flex items-center gap-1"
+              >
+                <span>Buka Tab Baru ↗</span>
+              </a>
+              <span className="text-slate-600">|</span>
+              <button
+                onClick={() => setReaderMode('3d')}
+                className="text-indigo-400 hover:text-indigo-300 font-bold"
+              >
+                Gunakan Flipbook 3D
+              </button>
+            </div>
+          </div>
           <iframe
             src={`${pdfUrl}#toolbar=1`}
-            className="w-full h-full rounded-xl sm:rounded-2xl border border-slate-800 shadow-2xl bg-slate-900 flex-1 min-h-0"
+            className="w-full h-full rounded-b-xl sm:rounded-b-2xl border border-slate-800 shadow-2xl bg-slate-900 flex-1 min-h-0"
             title={book.title}
           />
         </div>

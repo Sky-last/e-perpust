@@ -1,7 +1,7 @@
 import { supabase, isSupabaseConfigured } from './supabase';
 import { Book, User, SystemLog, Borrowing } from '../types';
 import { INITIAL_BOOKS } from '../data/books';
-import { BOOK_PDF_MAP } from '../utils/pdfResolver';
+import { BOOK_PDF_MAP, resolveBookPdfUrl } from '../utils/pdfResolver';
 
 // Helper to format date
 const getFormattedDate = () => {
@@ -77,16 +77,36 @@ export async function getBooks(): Promise<Book[]> {
 
   // LocalStorage fallback
   const stored = localStorage.getItem('digital_library_books');
+  let finalBooks = INITIAL_BOOKS;
   if (stored) {
     try {
-      const parsed = JSON.parse(stored);
-      if (Array.isArray(parsed) && parsed.length >= INITIAL_BOOKS.length) {
-        return parsed;
+      const parsed: Book[] = JSON.parse(stored);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        // Merge stored books with updated INITIAL_BOOKS to ensure updated metadata (pdfUrl, coverUrl, title, etc) takes effect
+        finalBooks = INITIAL_BOOKS.map(initBook => {
+          const foundInStored = parsed.find(b => b.id === initBook.id);
+          if (foundInStored) {
+            return {
+              ...initBook,
+              // Keep user-edited properties if any (like stock changes from borrowing), but enforce correct pdfUrl & title
+              stock: foundInStored.stock !== undefined ? foundInStored.stock : initBook.stock,
+              pdfUrl: resolveBookPdfUrl(initBook),
+            };
+          }
+          return {
+            ...initBook,
+            pdfUrl: resolveBookPdfUrl(initBook)
+          };
+        });
+
+        // Also append any newly created custom books from admin
+        const customBooks = parsed.filter(b => !INITIAL_BOOKS.some(ib => ib.id === b.id));
+        finalBooks = [...finalBooks, ...customBooks];
       }
     } catch (e) {}
   }
-  localStorage.setItem('digital_library_books', JSON.stringify(INITIAL_BOOKS));
-  return INITIAL_BOOKS;
+  localStorage.setItem('digital_library_books', JSON.stringify(finalBooks));
+  return finalBooks;
 }
 
 export async function saveBook(book: Omit<Book, 'status'>, isNew: boolean): Promise<Book> {
