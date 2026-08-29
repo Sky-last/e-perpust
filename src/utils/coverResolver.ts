@@ -137,7 +137,7 @@ export async function resolveBookCover(
   const fetchPromise = (async (): Promise<string | null> => {
     // 1. If existing cover URL looks valid, use it immediately.
     //    The <img> onError in the component will handle if it actually fails to load.
-    if (existingCoverUrl && existingCoverUrl.startsWith('http')) {
+    if (existingCoverUrl && (existingCoverUrl.startsWith('http') || existingCoverUrl.startsWith('/'))) {
       coverCache.set(cacheKey, existingCoverUrl);
       return existingCoverUrl;
     }

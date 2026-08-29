@@ -14,7 +14,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 5,
     "coverColor": "from-amber-600 to-yellow-800",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/9781404334900-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-1_The_Little_Duke_or_Richard_the_Fearless.jpg",
     "pdfUrl": "/buku_digital/eb-1_The_Little_Duke_or_Richard_the_Fearless.pdf"
   },
   {
@@ -30,7 +30,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 4,
     "coverColor": "from-pink-600 to-rose-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/0755116232-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-2_Mistress_Wilding.jpg",
     "pdfUrl": "/buku_digital/eb-2_Mistress_Wilding.pdf"
   },
   {
@@ -46,7 +46,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 8,
     "coverColor": "from-sky-500 to-blue-800",
-    "coverUrl": "https://cdn.gramedia.com/uploads/items/9786021046043.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-9_Konspirasi_Alam_Semesta.jpg",
     "pdfUrl": "/buku_digital/eb-9_Konspirasi_Alam_Semesta.pdf"
   },
   {
@@ -62,7 +62,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 5,
     "coverColor": "from-zinc-800 to-zinc-950",
-    "coverUrl": "https://cdn.gramedia.com/uploads/items/9789792288056.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-10_Negeri_di_Ujung_Tanduk.jpg",
     "pdfUrl": "/buku_digital/eb-10_Negeri_di_Ujung_Tanduk.pdf"
   },
   {
@@ -78,7 +78,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 6,
     "coverColor": "from-yellow-500 to-orange-700",
-    "coverUrl": "https://ebooks.gramedia.com/ebook-covers/31352/big_covers/ID_MIZ2016MTH03BMTH_B.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-14_Bulan.jpg",
     "pdfUrl": "/buku_digital/eb-14_Bulan.pdf"
   },
   {
@@ -94,7 +94,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 5,
     "coverColor": "from-indigo-650 to-purple-900",
-    "coverUrl": "https://cdn.gramedia.com/uploads/items/9786028997751_tentang-kamu.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-15_Tentang_Kamu.jpg",
     "pdfUrl": "/buku_digital/eb-15_Tentang_Kamu.pdf"
   },
   {
@@ -110,7 +110,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 6,
     "coverColor": "from-orange-600 to-red-900",
-    "coverUrl": "https://cdn.gramedia.com/uploads/items/9786020328706_Matahari.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-16_Matahari.jpg",
     "pdfUrl": "/buku_digital/eb-16_Matahari.pdf"
   },
   {
@@ -126,7 +126,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 8,
     "coverColor": "from-green-800 to-emerald-950",
-    "coverUrl": "https://covers.openlibrary.org/b/id/10482829-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_gut-2_Max_Havelaar.jpg",
     "pdfUrl": "/buku_digital/gut-2_Max_Havelaar.pdf"
   },
   {
@@ -142,7 +142,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 6,
     "coverColor": "from-blue-900 to-slate-950",
-    "coverUrl": "https://covers.openlibrary.org/b/id/8235657-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_gut-4_Lord_Jim.jpg",
     "pdfUrl": "/buku_digital/gut-4_Lord_Jim.pdf"
   },
   {
@@ -158,7 +158,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 5,
     "coverColor": "from-purple-800 to-violet-950",
-    "coverUrl": "https://covers.openlibrary.org/b/id/8235631-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_gut-6_The_Hidden_Force_A_Story_of_Modern_Java.jpg",
     "pdfUrl": "/buku_digital/gut-6_The_Hidden_Force_A_Story_of_Modern_Java.pdf"
   },
   {
@@ -174,7 +174,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 6,
     "coverColor": "from-red-700 to-orange-950",
-    "coverUrl": "https://covers.openlibrary.org/b/id/8235716-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_gut-8_Blown_to_Bits_or_The_Lonely_Man_of_Rakata.jpg",
     "pdfUrl": "/buku_digital/gut-8_Blown_to_Bits_or_The_Lonely_Man_of_Rakata.pdf"
   },
   {
@@ -190,7 +190,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 10,
     "coverColor": "from-blue-500 to-cyan-700",
-    "coverUrl": "https://books.google.com/books/content?id=tz7r6ocrqIAC&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+    "coverUrl": "/buku_sampul/real_cover_eb-19_Laskar_Pelangi.jpg",
     "pdfUrl": "/buku_digital/eb-19_Laskar_Pelangi.pdf"
   },
   {
@@ -206,7 +206,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 7,
     "coverColor": "from-amber-800 to-red-950",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/9789799731234-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-20_Bumi_Manusia.jpg",
     "pdfUrl": "/buku_digital/eb-20_Bumi_Manusia.pdf"
   },
   {
@@ -222,7 +222,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 5,
     "coverColor": "from-yellow-800 to-amber-950",
-    "coverUrl": "https://cdn.gramedia.com/uploads/images/1/28054/image_highres/ID_ASD2016MTH10ASD.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-21_Anak_Semua_Bangsa.jpg",
     "pdfUrl": "/buku_digital/eb-21_Anak_Semua_Bangsa.pdf"
   },
   {
@@ -238,7 +238,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 6,
     "coverColor": "from-rose-800 to-stone-900",
-    "coverUrl": "https://cdn.gramedia.com/uploads/images/1/28056/image_highres/ID_JL2016MTH10JL.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-22_Jejak_Langkah.jpg",
     "pdfUrl": "/buku_digital/eb-22_Jejak_Langkah.pdf"
   },
   {
@@ -254,7 +254,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 4,
     "coverColor": "from-slate-800 to-black",
-    "coverUrl": "https://cdn.gramedia.com/uploads/images/1/28059/image_highres/ID_RK2016MTH11RK.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-23_Rumah_Kaca.jpg",
     "pdfUrl": "/buku_digital/eb-23_Rumah_Kaca.pdf"
   },
   {
@@ -270,7 +270,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 5,
     "coverColor": "from-emerald-700 to-stone-900",
-    "coverUrl": "https://cdn.gramedia.com/uploads/items/9789792268317.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-24_Ronggeng_Dukuh_Paruk.jpg",
     "pdfUrl": "/buku_digital/eb-24_Ronggeng_Dukuh_Paruk.pdf"
   },
   {
@@ -286,7 +286,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 6,
     "coverColor": "from-purple-700 to-pink-950",
-    "coverUrl": "https://books.google.com/books/content?id=cantik-itu-luka&printsec=frontcover&img=1&zoom=1",
+    "coverUrl": "/buku_sampul/real_cover_eb-25_Cantik_Itu_Luka.jpg",
     "pdfUrl": "/buku_digital/eb-25_Cantik_Itu_Luka.pdf"
   },
   {
@@ -302,7 +302,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 4,
     "coverColor": "from-orange-700 to-amber-900",
-    "coverUrl": "https://cdn.gramedia.com/uploads/items/9789792209419.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-26_Lelaki_Harimau.jpg",
     "pdfUrl": "/buku_digital/eb-26_Lelaki_Harimau.pdf"
   },
   {
@@ -318,7 +318,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 7,
     "coverColor": "from-cyan-600 to-blue-800",
-    "coverUrl": "https://cdn.gramedia.com/uploads/items/9789791227780.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-27_Perahu_Kertas.jpg",
     "pdfUrl": "/buku_digital/eb-27_Perahu_Kertas.pdf"
   },
   {
@@ -334,7 +334,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 5,
     "coverColor": "from-indigo-800 to-violet-950",
-    "coverUrl": "https://cdn.gramedia.com/uploads/items/9789799625700.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-28_Supernova_Ksatria_Puteri_dan_Bintang_Jatuh.jpg",
     "pdfUrl": "/buku_digital/eb-28_Supernova_Ksatria_Puteri_dan_Bintang_Jatuh.pdf"
   },
   {
@@ -350,7 +350,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 5,
     "coverColor": "from-blue-900 to-slate-900",
-    "coverUrl": "https://cdn.gramedia.com/uploads/items/9789799105158_Pulang.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-29_Pulang.jpg",
     "pdfUrl": "/buku_digital/eb-29_Pulang.pdf"
   },
   {
@@ -366,7 +366,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 9,
     "coverColor": "from-teal-800 to-cyan-950",
-    "coverUrl": "https://cdn.gramedia.com/uploads/items/9786024246945_Laut_Bercerita.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-30_Laut_Bercerita.jpg",
     "pdfUrl": "/buku_digital/eb-30_Laut_Bercerita.pdf"
   },
   {
@@ -382,7 +382,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 6,
     "coverColor": "from-sky-700 to-indigo-900",
-    "coverUrl": "https://cdn.gramedia.com/uploads/items/9786020324708_Hujan.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-31_Hujan.jpg",
     "pdfUrl": "/buku_digital/eb-31_Hujan.pdf"
   },
   {
@@ -398,7 +398,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 8,
     "coverColor": "from-emerald-700 to-green-900",
-    "coverUrl": "https://cdn.gramedia.com/uploads/items/9786020301129.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-32_Bumi.jpg",
     "pdfUrl": "/buku_digital/eb-32_Bumi.pdf"
   },
   {
@@ -414,7 +414,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 5,
     "coverColor": "from-purple-800 to-indigo-950",
-    "coverUrl": "https://cdn.gramedia.com/uploads/items/9786020351117.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-33_Bintang.jpg",
     "pdfUrl": "/buku_digital/eb-33_Bintang.pdf"
   },
   {
@@ -430,7 +430,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 4,
     "coverColor": "from-stone-800 to-zinc-950",
-    "coverUrl": "https://cdn.gramedia.com/uploads/items/9786020385914.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-34_Ceros_dan_Batozar.jpg",
     "pdfUrl": "/buku_digital/eb-34_Ceros_dan_Batozar.pdf"
   },
   {
@@ -446,7 +446,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 5,
     "coverColor": "from-blue-700 to-teal-900",
-    "coverUrl": "https://cdn.gramedia.com/uploads/items/9786020385921.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-35_Komet.jpg",
     "pdfUrl": "/buku_digital/eb-35_Komet.pdf"
   },
   {
@@ -462,7 +462,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 5,
     "coverColor": "from-blue-600 to-cyan-800",
-    "coverUrl": "https://images-na.ssl-images-amazon.com/images/I/51iN5L8ZpKL._SX384_BO1,204,203,200_.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-4_Berani_Jadi_Software_Engineer.jpg",
     "pdfUrl": "/buku_digital/eb-4_Berani_Jadi_Software_Engineer.pdf"
   },
   {
@@ -478,7 +478,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 4,
     "coverColor": "from-yellow-600 to-orange-800",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/9781465444820-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-5_Coding_Projects_in_Scratch.jpg",
     "pdfUrl": "/buku_digital/eb-5_Coding_Projects_in_Scratch.pdf"
   },
   {
@@ -494,7 +494,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 3,
     "coverColor": "from-slate-700 to-neutral-900",
-    "coverUrl": "https://images-na.ssl-images-amazon.com/images/I/51B7xqYZdkL._SX384_BO1,204,203,200_.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-18_Computer_Forensics_and_Cyber_Investigation.jpg",
     "pdfUrl": "/buku_digital/eb-18_Computer_Forensics_and_Cyber_Investigation.pdf"
   },
   {
@@ -510,7 +510,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 8,
     "coverColor": "from-cyan-700 to-blue-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/9780132350884-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-36_Clean_Code_A_Handbook_of_Agile_Software_Craftsmanship.jpg",
     "pdfUrl": "/buku_digital/eb-36_Clean_Code_A_Handbook_of_Agile_Software_Craftsmanship.pdf"
   },
   {
@@ -526,7 +526,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 6,
     "coverColor": "from-purple-700 to-indigo-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/9780201616224-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-37_The_Pragmatic_Programmer.jpg",
     "pdfUrl": "/buku_digital/eb-37_The_Pragmatic_Programmer.pdf"
   },
   {
@@ -542,7 +542,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 5,
     "coverColor": "from-blue-800 to-slate-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/9780201633610-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-38_Design_Patterns_Elements_of_Reusable_Object-Oriented_Software.jpg",
     "pdfUrl": "/buku_digital/eb-38_Design_Patterns_Elements_of_Reusable_Object-Oriented_Software.pdf"
   },
   {
@@ -558,7 +558,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 7,
     "coverColor": "from-emerald-700 to-teal-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/9780134610993-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-39_Artificial_Intelligence_A_Modern_Approach.jpg",
     "pdfUrl": "/buku_digital/eb-39_Artificial_Intelligence_A_Modern_Approach.pdf"
   },
   {
@@ -574,7 +574,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 4,
     "coverColor": "from-rose-800 to-slate-950",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/9780262033848-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-40_Introduction_to_Algorithms_CLRS.jpg",
     "pdfUrl": "/buku_digital/eb-40_Introduction_to_Algorithms_CLRS.pdf"
   },
   {
@@ -590,7 +590,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 6,
     "coverColor": "from-yellow-600 to-amber-800",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/9781491904244-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-41_You_Dont_Know_JS_Yet.jpg",
     "pdfUrl": "/buku_digital/eb-41_You_Dont_Know_JS_Yet.pdf"
   },
   {
@@ -606,7 +606,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 8,
     "coverColor": "from-blue-600 to-amber-700",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/9781593279288-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-42_Python_Crash_Course.jpg",
     "pdfUrl": "/buku_digital/eb-42_Python_Crash_Course.pdf"
   },
   {
@@ -622,7 +622,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 5,
     "coverColor": "from-red-800 to-stone-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/9781449373320-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-43_Designing_Data-Intensive_Applications.jpg",
     "pdfUrl": "/buku_digital/eb-43_Designing_Data-Intensive_Applications.pdf"
   },
   {
@@ -638,7 +638,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 6,
     "coverColor": "from-emerald-700 to-teal-950",
-    "coverUrl": "https://images-na.ssl-images-amazon.com/images/I/51JqXb7HQJL._SX331_BO1,204,203,200_.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-3_Advice_for_the_Muslim.jpg",
     "pdfUrl": "/buku_digital/eb-3_Advice_for_the_Muslim.pdf"
   },
   {
@@ -654,7 +654,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 3,
     "coverColor": "from-teal-800 to-slate-900",
-    "coverUrl": "https://images-na.ssl-images-amazon.com/images/I/41VpDqh0JxL._SX331_BO1,204,203,200_.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-6_Documents_of_the_Right_Word.jpg",
     "pdfUrl": "/buku_digital/eb-6_Documents_of_the_Right_Word.pdf"
   },
   {
@@ -670,7 +670,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 5,
     "coverColor": "from-indigo-800 to-violet-950",
-    "coverUrl": "https://images-na.ssl-images-amazon.com/images/I/51wKZLJ3GvL._SX331_BO1,204,203,200_.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-7_Islam_and_Christianity.jpg",
     "pdfUrl": "/buku_digital/eb-7_Islam_and_Christianity.pdf"
   },
   {
@@ -686,7 +686,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 8,
     "coverColor": "from-emerald-800 to-teal-950",
-    "coverUrl": "https://cdn.gramedia.com/uploads/items/ihya-ulumuddin-jilid-1-pustaka-azzam.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-44_Ihya_Ulumuddin_Kebangkitan_Ilmu_Agama.jpg",
     "pdfUrl": "/buku_digital/eb-44_Ihya_Ulumuddin_Kebangkitan_Ilmu_Agama.pdf"
   },
   {
@@ -702,7 +702,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 10,
     "coverColor": "from-amber-700 to-yellow-950",
-    "coverUrl": "https://cdn.gramedia.com/uploads/items/Sirah_Nabawiyah.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-45_Sirah_Nabawiyah_Sejarah_Hidup_Nabi_Muhammad_SAW.jpg",
     "pdfUrl": "/buku_digital/eb-45_Sirah_Nabawiyah_Sejarah_Hidup_Nabi_Muhammad_SAW.pdf"
   },
   {
@@ -718,7 +718,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 4,
     "coverColor": "from-violet-650 to-indigo-900",
-    "coverUrl": "https://cdn.gramedia.com/uploads/items/9786024246945_Laut_Bercerita.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-8_Kajian_Puisi_Indonesia_Modern.jpg",
     "pdfUrl": "/buku_digital/eb-8_Kajian_Puisi_Indonesia_Modern.pdf"
   },
   {
@@ -734,7 +734,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 3,
     "coverColor": "from-rose-800 to-slate-900",
-    "coverUrl": "https://images-na.ssl-images-amazon.com/images/I/51p7Z8QLAUL._SX384_BO1,204,203,200_.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-11_Prosiding_Sosiologi_Konflik_dan_Politik_Identitas.jpg",
     "pdfUrl": "/buku_digital/eb-11_Prosiding_Sosiologi_Konflik_dan_Politik_Identitas.pdf"
   },
   {
@@ -750,7 +750,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 7,
     "coverColor": "from-red-600 to-red-950",
-    "coverUrl": "https://acch.kpk.go.id/documents/20124/0/Suara+dari+Kelas+Kecil.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-13_Suara_dari_Kelas_Kecil_Kumpulan_Bahan_Literasi_Antikorupsi.jpg",
     "pdfUrl": "/buku_digital/eb-13_Suara_dari_Kelas_Kecil_Kumpulan_Bahan_Literasi_Antikorupsi.pdf"
   },
   {
@@ -766,7 +766,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 12,
     "coverColor": "from-blue-700 to-slate-900",
-    "coverUrl": "https://badanbahasa.kemdikbud.go.id/lamanbahasa/sites/default/files/PUEBI.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-46_Pedoman_Umum_Ejaan_Bahasa_Indonesia_PUEBI.jpg",
     "pdfUrl": "/buku_digital/eb-46_Pedoman_Umum_Ejaan_Bahasa_Indonesia_PUEBI.pdf"
   },
   {
@@ -782,7 +782,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 3,
     "coverColor": "from-amber-800 to-amber-950",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/9786021234579-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-12_Sejarah_Geografi_Agraria_Indonesia.jpg",
     "pdfUrl": "/buku_digital/eb-12_Sejarah_Geografi_Agraria_Indonesia.pdf"
   },
   {
@@ -798,7 +798,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 10,
     "coverColor": "from-rose-700 to-pink-950",
-    "coverUrl": "https://covers.openlibrary.org/b/id/8235657-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_gut-1_Letters_of_a_Javanese_Princess.jpg",
     "pdfUrl": "/buku_digital/gut-1_Letters_of_a_Javanese_Princess.pdf"
   },
   {
@@ -814,7 +814,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 5,
     "coverColor": "from-amber-700 to-yellow-900",
-    "coverUrl": "https://covers.openlibrary.org/b/id/8491016-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_gut-3_The_History_of_Sumatra.jpg",
     "pdfUrl": "/buku_digital/gut-3_The_History_of_Sumatra.pdf"
   },
   {
@@ -830,7 +830,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 4,
     "coverColor": "from-teal-700 to-cyan-950",
-    "coverUrl": "https://covers.openlibrary.org/b/id/8235706-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_gut-5_The_History_of_Java_Vol_1_2.jpg",
     "pdfUrl": "/buku_digital/gut-5_The_History_of_Java_Vol_1_2.pdf"
   },
   {
@@ -846,7 +846,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 4,
     "coverColor": "from-green-600 to-emerald-900",
-    "coverUrl": "https://images-na.ssl-images-amazon.com/images/I/518aXt5xThL._SX331_BO1,204,203,200_.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-17_The_Deliciously_Keto_Cookbook.jpg",
     "pdfUrl": "/buku_digital/eb-17_The_Deliciously_Keto_Cookbook.pdf"
   },
   {
@@ -862,7 +862,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 4,
     "coverColor": "from-orange-700 to-amber-950",
-    "coverUrl": "https://covers.openlibrary.org/b/id/8235671-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_gut-7_Monumental_Java.jpg",
     "pdfUrl": "/buku_digital/gut-7_Monumental_Java.pdf"
   },
   {
@@ -878,7 +878,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 5,
     "coverColor": "from-lime-700 to-green-950",
-    "coverUrl": "https://covers.openlibrary.org/b/id/8235661-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_gut-9_Java_Facts_and_Fancies.jpg",
     "pdfUrl": "/buku_digital/gut-9_Java_Facts_and_Fancies.pdf"
   },
   {
@@ -894,7 +894,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 4,
     "coverColor": "from-cyan-700 to-teal-950",
-    "coverUrl": "https://covers.openlibrary.org/b/id/8235666-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_gut-10_Travels_in_the_East_Indian_Archipelago.jpg",
     "pdfUrl": "/buku_digital/gut-10_Travels_in_the_East_Indian_Archipelago.pdf"
   },
   {
@@ -910,7 +910,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 3,
     "coverColor": "from-teal-600 to-slate-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210563-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-47_Keamanan_Jaringan_Ethical_Hacking.jpg",
     "pdfUrl": "/buku_digital/eb-47_Keamanan_Jaringan_Ethical_Hacking.pdf"
   },
   {
@@ -926,7 +926,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 4,
     "coverColor": "from-red-600 to-amber-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210574-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-48_Pengantar_Machine_Learning.jpg",
     "pdfUrl": "/buku_digital/eb-48_Pengantar_Machine_Learning.pdf"
   },
   {
@@ -942,7 +942,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 5,
     "coverColor": "from-violet-600 to-purple-950",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210585-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-49_Arsitektur_Microservices_Modern.jpg",
     "pdfUrl": "/buku_digital/eb-49_Arsitektur_Microservices_Modern.pdf"
   },
   {
@@ -958,7 +958,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 6,
     "coverColor": "from-slate-700 to-zinc-950",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210596-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-50_Manajemen_Basis_Data_SQL_NoSQL.jpg",
     "pdfUrl": "/buku_digital/eb-50_Manajemen_Basis_Data_SQL_NoSQL.pdf"
   },
   {
@@ -974,7 +974,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 7,
     "coverColor": "from-blue-600 to-indigo-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210607-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-51_Rekayasa_Perangkat_Lunak_Agile.jpg",
     "pdfUrl": "/buku_digital/eb-51_Rekayasa_Perangkat_Lunak_Agile.pdf"
   },
   {
@@ -990,7 +990,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 8,
     "coverColor": "from-emerald-600 to-teal-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210618-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-52_Pengembangan_Aplikasi_Mobile_React_Native.jpg",
     "pdfUrl": "/buku_digital/eb-52_Pengembangan_Aplikasi_Mobile_React_Native.pdf"
   },
   {
@@ -1006,7 +1006,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 9,
     "coverColor": "from-purple-600 to-indigo-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210629-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-53_Cloud_Computing_DevOps_Guide.jpg",
     "pdfUrl": "/buku_digital/eb-53_Cloud_Computing_DevOps_Guide.pdf"
   },
   {
@@ -1022,7 +1022,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 3,
     "coverColor": "from-amber-600 to-yellow-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210631-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-54_Tafsir_Al-Mishbah_Vol_1.jpg",
     "pdfUrl": "/buku_digital/eb-54_Tafsir_Al-Mishbah_Vol_1.pdf"
   },
   {
@@ -1038,7 +1038,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 4,
     "coverColor": "from-rose-600 to-pink-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210642-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-55_Fiqih_Sunnah_Wanita.jpg",
     "pdfUrl": "/buku_digital/eb-55_Fiqih_Sunnah_Wanita.pdf"
   },
   {
@@ -1054,7 +1054,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 5,
     "coverColor": "from-cyan-600 to-blue-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210653-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-56_Biografi_Empat_Mazhab.jpg",
     "pdfUrl": "/buku_digital/eb-56_Biografi_Empat_Mazhab.pdf"
   },
   {
@@ -1070,7 +1070,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 6,
     "coverColor": "from-teal-600 to-slate-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210664-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-57_Ensiklopedia_Hadits_Shahih.jpg",
     "pdfUrl": "/buku_digital/eb-57_Ensiklopedia_Hadits_Shahih.pdf"
   },
   {
@@ -1086,7 +1086,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 7,
     "coverColor": "from-red-600 to-amber-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210675-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-58_Metodologi_Penelitian_Pendidikan.jpg",
     "pdfUrl": "/buku_digital/eb-58_Metodologi_Penelitian_Pendidikan.pdf"
   },
   {
@@ -1102,7 +1102,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 8,
     "coverColor": "from-violet-600 to-purple-950",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210686-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-59_Psikologi_Perkembangan_Anak.jpg",
     "pdfUrl": "/buku_digital/eb-59_Psikologi_Perkembangan_Anak.pdf"
   },
   {
@@ -1118,7 +1118,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 9,
     "coverColor": "from-slate-700 to-zinc-950",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210697-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-60_Teori_Belajar_Pembelajaran.jpg",
     "pdfUrl": "/buku_digital/eb-60_Teori_Belajar_Pembelajaran.pdf"
   },
   {
@@ -1134,7 +1134,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 3,
     "coverColor": "from-blue-600 to-indigo-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210708-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-61_Sejarah_Peradaban_Islam.jpg",
     "pdfUrl": "/buku_digital/eb-61_Sejarah_Peradaban_Islam.pdf"
   },
   {
@@ -1150,7 +1150,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 4,
     "coverColor": "from-emerald-600 to-teal-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210719-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-62_Nusantara_Sejarah_Indonesia.jpg",
     "pdfUrl": "/buku_digital/eb-62_Nusantara_Sejarah_Indonesia.pdf"
   },
   {
@@ -1166,7 +1166,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 5,
     "coverColor": "from-purple-600 to-indigo-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210721-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-63_Sejarah_Kebudayaan_Jawa.jpg",
     "pdfUrl": "/buku_digital/eb-63_Sejarah_Kebudayaan_Jawa.pdf"
   },
   {
@@ -1182,7 +1182,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 6,
     "coverColor": "from-amber-600 to-yellow-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210732-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-64_Fisika_Dasar_untuk_Universitas.jpg",
     "pdfUrl": "/buku_digital/eb-64_Fisika_Dasar_untuk_Universitas.pdf"
   },
   {
@@ -1198,7 +1198,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 7,
     "coverColor": "from-rose-600 to-pink-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210743-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-65_Kimia_Organik_Modern.jpg",
     "pdfUrl": "/buku_digital/eb-65_Kimia_Organik_Modern.pdf"
   },
   {
@@ -1214,7 +1214,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 8,
     "coverColor": "from-cyan-600 to-blue-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210754-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-66_Biologi_Molekuler_Genetik.jpg",
     "pdfUrl": "/buku_digital/eb-66_Biologi_Molekuler_Genetik.pdf"
   },
   {
@@ -1230,7 +1230,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 9,
     "coverColor": "from-teal-600 to-slate-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210765-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-67_Matematika_Diskrit_Komputasi.jpg",
     "pdfUrl": "/buku_digital/eb-67_Matematika_Diskrit_Komputasi.pdf"
   },
   {
@@ -1246,7 +1246,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 3,
     "coverColor": "from-red-600 to-amber-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210776-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-68_Manajemen_Keuangan_Perusahaan.jpg",
     "pdfUrl": "/buku_digital/eb-68_Manajemen_Keuangan_Perusahaan.pdf"
   },
   {
@@ -1262,7 +1262,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 4,
     "coverColor": "from-violet-600 to-purple-950",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210787-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-69_Pemasaran_Digital_Branding.jpg",
     "pdfUrl": "/buku_digital/eb-69_Pemasaran_Digital_Branding.pdf"
   },
   {
@@ -1278,7 +1278,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 5,
     "coverColor": "from-slate-700 to-zinc-950",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210798-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-70_Kewirausahaan_Inovasi_Startup.jpg",
     "pdfUrl": "/buku_digital/eb-70_Kewirausahaan_Inovasi_Startup.pdf"
   },
   {
@@ -1294,7 +1294,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 6,
     "coverColor": "from-blue-600 to-indigo-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210809-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-71_Sejarah_Seni_Rupa_Indonesia.jpg",
     "pdfUrl": "/buku_digital/eb-71_Sejarah_Seni_Rupa_Indonesia.pdf"
   },
   {
@@ -1310,7 +1310,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 7,
     "coverColor": "from-emerald-600 to-teal-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210811-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-72_Arsitektur_Nusantara_Rumah_Adat.jpg",
     "pdfUrl": "/buku_digital/eb-72_Arsitektur_Nusantara_Rumah_Adat.pdf"
   },
   {
@@ -1326,7 +1326,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 8,
     "coverColor": "from-purple-600 to-indigo-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210822-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-73_Nutrisi_Gaya_Hidup_Sehat.jpg",
     "pdfUrl": "/buku_digital/eb-73_Nutrisi_Gaya_Hidup_Sehat.pdf"
   },
   {
@@ -1342,7 +1342,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 9,
     "coverColor": "from-amber-600 to-yellow-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210833-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-74_Panduan_Pertolongan_Pertama_P3K.jpg",
     "pdfUrl": "/buku_digital/eb-74_Panduan_Pertolongan_Pertama_P3K.pdf"
   },
   {
@@ -1358,7 +1358,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 3,
     "coverColor": "from-rose-600 to-pink-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210844-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-75_Petualangan_di_Taman_Nasional_Komodo.jpg",
     "pdfUrl": "/buku_digital/eb-75_Petualangan_di_Taman_Nasional_Komodo.pdf"
   },
   {
@@ -1374,7 +1374,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 4,
     "coverColor": "from-cyan-600 to-blue-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210855-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-76_Pesona_Raja_Ampat_Papua.jpg",
     "pdfUrl": "/buku_digital/eb-76_Pesona_Raja_Ampat_Papua.pdf"
   },
   {
@@ -1390,7 +1390,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 5,
     "coverColor": "from-teal-600 to-slate-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210866-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-77_Filosofi_Teras.jpg",
     "pdfUrl": "/buku_digital/eb-77_Filosofi_Teras.pdf"
   },
   {
@@ -1406,7 +1406,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 6,
     "coverColor": "from-red-600 to-amber-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210877-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-78_Atom_Habits.jpg",
     "pdfUrl": "/buku_digital/eb-78_Atom_Habits.pdf"
   },
   {
@@ -1422,7 +1422,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 7,
     "coverColor": "from-violet-600 to-purple-950",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210888-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-79_Psychology_of_Money.jpg",
     "pdfUrl": "/buku_digital/eb-79_Psychology_of_Money.pdf"
   },
   {
@@ -1438,7 +1438,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 8,
     "coverColor": "from-slate-700 to-zinc-950",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210899-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-80_Sapiens_Riwayat_Singkat_Umat_Manusia.jpg",
     "pdfUrl": "/buku_digital/eb-80_Sapiens_Riwayat_Singkat_Umat_Manusia.pdf"
   },
   {
@@ -1454,7 +1454,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 9,
     "coverColor": "from-blue-600 to-indigo-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210901-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-81_Homo_Deus_Masa_Depan_Umat_Manusia.jpg",
     "pdfUrl": "/buku_digital/eb-81_Homo_Deus_Masa_Depan_Umat_Manusia.pdf"
   },
   {
@@ -1470,7 +1470,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 3,
     "coverColor": "from-emerald-600 to-teal-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210912-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-82_21_Pelajaran_untuk_Abad_ke-21.jpg",
     "pdfUrl": "/buku_digital/eb-82_21_Pelajaran_untuk_Abad_ke-21.pdf"
   },
   {
@@ -1486,7 +1486,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 4,
     "coverColor": "from-purple-600 to-indigo-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210923-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-83_Rich_Dad_Poor_Dad.jpg",
     "pdfUrl": "/buku_digital/eb-83_Rich_Dad_Poor_Dad.pdf"
   },
   {
@@ -1502,7 +1502,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 5,
     "coverColor": "from-amber-600 to-yellow-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210934-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-84_Sebuah_Seni_untuk_Bersikap_Bodo_Amat.jpg",
     "pdfUrl": "/buku_digital/eb-84_Sebuah_Seni_untuk_Bersikap_Bodo_Amat.pdf"
   },
   {
@@ -1518,7 +1518,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 6,
     "coverColor": "from-rose-600 to-pink-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210945-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-85_Gadis_Kretek.jpg",
     "pdfUrl": "/buku_digital/eb-85_Gadis_Kretek.pdf"
   },
   {
@@ -1534,7 +1534,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 7,
     "coverColor": "from-cyan-600 to-blue-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210956-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-86_Bumi_Manusia_Jilid_II.jpg",
     "pdfUrl": "/buku_digital/eb-86_Bumi_Manusia_Jilid_II.pdf"
   },
   {
@@ -1550,7 +1550,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 8,
     "coverColor": "from-teal-600 to-slate-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210967-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-87_Orang-Orang_Biasa.jpg",
     "pdfUrl": "/buku_digital/eb-87_Orang-Orang_Biasa.pdf"
   },
   {
@@ -1566,7 +1566,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 9,
     "coverColor": "from-red-600 to-amber-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210978-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-88_Dua_Garis_Biru.jpg",
     "pdfUrl": "/buku_digital/eb-88_Dua_Garis_Biru.pdf"
   },
   {
@@ -1582,7 +1582,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 3,
     "coverColor": "from-violet-600 to-purple-950",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210989-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-89_Nanti_Kita_Ceritakan_Tentang_Hari_Ini.jpg",
     "pdfUrl": "/buku_digital/eb-89_Nanti_Kita_Ceritakan_Tentang_Hari_Ini.pdf"
   },
   {
@@ -1598,7 +1598,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 4,
     "coverColor": "from-slate-700 to-zinc-950",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860210991-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-90_Dilan_1990.jpg",
     "pdfUrl": "/buku_digital/eb-90_Dilan_1990.pdf"
   },
   {
@@ -1614,7 +1614,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 5,
     "coverColor": "from-blue-600 to-indigo-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211002-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-91_Milea_Suara_dari_Dilan_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-91_Milea_Suara_dari_Dilan_Edisi_Kolektor.pdf"
   },
   {
@@ -1630,7 +1630,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 6,
     "coverColor": "from-emerald-600 to-teal-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211013-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-92_Ancika_Dia_yang_Bersamaku_Tahun_1995_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-92_Ancika_Dia_yang_Bersamaku_Tahun_1995_Edisi_Kolektor.pdf"
   },
   {
@@ -1646,7 +1646,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 7,
     "coverColor": "from-purple-600 to-indigo-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211024-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-93_Pulang_-_Pergi_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-93_Pulang_-_Pergi_Edisi_Kolektor.pdf"
   },
   {
@@ -1662,7 +1662,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 8,
     "coverColor": "from-amber-600 to-yellow-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211035-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-94_Selamat_Tinggal_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-94_Selamat_Tinggal_Edisi_Kolektor.pdf"
   },
   {
@@ -1678,7 +1678,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 9,
     "coverColor": "from-rose-600 to-pink-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211046-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-95_Janji_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-95_Janji_Edisi_Kolektor.pdf"
   },
   {
@@ -1694,7 +1694,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 3,
     "coverColor": "from-cyan-600 to-blue-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211057-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-96_Rasa_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-96_Rasa_Edisi_Kolektor.pdf"
   },
   {
@@ -1710,7 +1710,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 4,
     "coverColor": "from-teal-600 to-slate-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211068-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-97_Si_Anak_Kuat_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-97_Si_Anak_Kuat_Edisi_Kolektor.pdf"
   },
   {
@@ -1726,7 +1726,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 5,
     "coverColor": "from-red-600 to-amber-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211079-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-98_Si_Anak_Spesial_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-98_Si_Anak_Spesial_Edisi_Kolektor.pdf"
   },
   {
@@ -1742,7 +1742,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 6,
     "coverColor": "from-violet-600 to-purple-950",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211081-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-99_Si_Anak_Pintar_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-99_Si_Anak_Pintar_Edisi_Kolektor.pdf"
   },
   {
@@ -1758,7 +1758,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 7,
     "coverColor": "from-slate-700 to-zinc-950",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211092-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-100_Si_Anak_Pemberani_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-100_Si_Anak_Pemberani_Edisi_Kolektor.pdf"
   },
   {
@@ -1774,7 +1774,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 8,
     "coverColor": "from-blue-600 to-indigo-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211103-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-101_Si_Anak_Savana_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-101_Si_Anak_Savana_Edisi_Kolektor.pdf"
   },
   {
@@ -1790,7 +1790,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 9,
     "coverColor": "from-emerald-600 to-teal-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211114-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-102_Dasar-Dasar_Pemrograman_Web_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-102_Dasar-Dasar_Pemrograman_Web_Edisi_Kolektor.pdf"
   },
   {
@@ -1806,7 +1806,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 3,
     "coverColor": "from-purple-600 to-indigo-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211125-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-103_Pemrograman_Berorientasi_Objek_Java_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-103_Pemrograman_Berorientasi_Objek_Java_Edisi_Kolektor.pdf"
   },
   {
@@ -1822,7 +1822,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 4,
     "coverColor": "from-amber-600 to-yellow-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211136-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-104_Struktur_Data_Algoritma_Python_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-104_Struktur_Data_Algoritma_Python_Edisi_Kolektor.pdf"
   },
   {
@@ -1838,7 +1838,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 5,
     "coverColor": "from-rose-600 to-pink-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211147-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-105_Keamanan_Jaringan_Ethical_Hacking_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-105_Keamanan_Jaringan_Ethical_Hacking_Edisi_Kolektor.pdf"
   },
   {
@@ -1854,7 +1854,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 6,
     "coverColor": "from-cyan-600 to-blue-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211158-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-106_Pengantar_Machine_Learning_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-106_Pengantar_Machine_Learning_Edisi_Kolektor.pdf"
   },
   {
@@ -1870,7 +1870,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 7,
     "coverColor": "from-teal-600 to-slate-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211169-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-107_Arsitektur_Microservices_Modern_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-107_Arsitektur_Microservices_Modern_Edisi_Kolektor.pdf"
   },
   {
@@ -1886,7 +1886,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 8,
     "coverColor": "from-red-600 to-amber-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211171-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-108_Manajemen_Basis_Data_SQL_NoSQL_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-108_Manajemen_Basis_Data_SQL_NoSQL_Edisi_Kolektor.pdf"
   },
   {
@@ -1902,7 +1902,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 9,
     "coverColor": "from-violet-600 to-purple-950",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211182-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-109_Rekayasa_Perangkat_Lunak_Agile_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-109_Rekayasa_Perangkat_Lunak_Agile_Edisi_Kolektor.pdf"
   },
   {
@@ -1918,7 +1918,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 3,
     "coverColor": "from-slate-700 to-zinc-950",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211193-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-110_Pengembangan_Aplikasi_Mobile_React_Native_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-110_Pengembangan_Aplikasi_Mobile_React_Native_Edisi_Kolektor.pdf"
   },
   {
@@ -1934,7 +1934,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 4,
     "coverColor": "from-blue-600 to-indigo-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211204-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-111_Cloud_Computing_DevOps_Guide_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-111_Cloud_Computing_DevOps_Guide_Edisi_Kolektor.pdf"
   },
   {
@@ -1950,7 +1950,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 5,
     "coverColor": "from-emerald-600 to-teal-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211215-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-112_Tafsir_Al-Mishbah_Vol_1_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-112_Tafsir_Al-Mishbah_Vol_1_Edisi_Kolektor.pdf"
   },
   {
@@ -1966,7 +1966,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 6,
     "coverColor": "from-purple-600 to-indigo-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211226-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-113_Fiqih_Sunnah_Wanita_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-113_Fiqih_Sunnah_Wanita_Edisi_Kolektor.pdf"
   },
   {
@@ -1982,7 +1982,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 7,
     "coverColor": "from-amber-600 to-yellow-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211237-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-114_Biografi_Empat_Mazhab_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-114_Biografi_Empat_Mazhab_Edisi_Kolektor.pdf"
   },
   {
@@ -1998,7 +1998,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 8,
     "coverColor": "from-rose-600 to-pink-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211248-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-115_Ensiklopedia_Hadits_Shahih_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-115_Ensiklopedia_Hadits_Shahih_Edisi_Kolektor.pdf"
   },
   {
@@ -2014,7 +2014,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 9,
     "coverColor": "from-cyan-600 to-blue-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211259-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-116_Metodologi_Penelitian_Pendidikan_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-116_Metodologi_Penelitian_Pendidikan_Edisi_Kolektor.pdf"
   },
   {
@@ -2030,7 +2030,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 3,
     "coverColor": "from-teal-600 to-slate-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211261-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-117_Psikologi_Perkembangan_Anak_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-117_Psikologi_Perkembangan_Anak_Edisi_Kolektor.pdf"
   },
   {
@@ -2046,7 +2046,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 4,
     "coverColor": "from-red-600 to-amber-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211272-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-118_Teori_Belajar_Pembelajaran_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-118_Teori_Belajar_Pembelajaran_Edisi_Kolektor.pdf"
   },
   {
@@ -2062,7 +2062,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 5,
     "coverColor": "from-violet-600 to-purple-950",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211283-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-119_Sejarah_Peradaban_Islam_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-119_Sejarah_Peradaban_Islam_Edisi_Kolektor.pdf"
   },
   {
@@ -2078,7 +2078,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 6,
     "coverColor": "from-slate-700 to-zinc-950",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211294-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-120_Nusantara_Sejarah_Indonesia_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-120_Nusantara_Sejarah_Indonesia_Edisi_Kolektor.pdf"
   },
   {
@@ -2094,7 +2094,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 7,
     "coverColor": "from-blue-600 to-indigo-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211305-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-121_Sejarah_Kebudayaan_Jawa_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-121_Sejarah_Kebudayaan_Jawa_Edisi_Kolektor.pdf"
   },
   {
@@ -2110,7 +2110,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 8,
     "coverColor": "from-emerald-600 to-teal-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211316-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-122_Fisika_Dasar_untuk_Universitas_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-122_Fisika_Dasar_untuk_Universitas_Edisi_Kolektor.pdf"
   },
   {
@@ -2126,7 +2126,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 9,
     "coverColor": "from-purple-600 to-indigo-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211327-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-123_Kimia_Organik_Modern_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-123_Kimia_Organik_Modern_Edisi_Kolektor.pdf"
   },
   {
@@ -2142,7 +2142,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 3,
     "coverColor": "from-amber-600 to-yellow-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211338-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-124_Biologi_Molekuler_Genetik_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-124_Biologi_Molekuler_Genetik_Edisi_Kolektor.pdf"
   },
   {
@@ -2158,7 +2158,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 4,
     "coverColor": "from-rose-600 to-pink-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211349-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-125_Matematika_Diskrit_Komputasi_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-125_Matematika_Diskrit_Komputasi_Edisi_Kolektor.pdf"
   },
   {
@@ -2174,7 +2174,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 5,
     "coverColor": "from-cyan-600 to-blue-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211351-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-126_Manajemen_Keuangan_Perusahaan_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-126_Manajemen_Keuangan_Perusahaan_Edisi_Kolektor.pdf"
   },
   {
@@ -2190,7 +2190,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 6,
     "coverColor": "from-teal-600 to-slate-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211362-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-127_Pemasaran_Digital_Branding_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-127_Pemasaran_Digital_Branding_Edisi_Kolektor.pdf"
   },
   {
@@ -2206,7 +2206,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 7,
     "coverColor": "from-red-600 to-amber-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211373-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-128_Kewirausahaan_Inovasi_Startup_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-128_Kewirausahaan_Inovasi_Startup_Edisi_Kolektor.pdf"
   },
   {
@@ -2222,7 +2222,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 8,
     "coverColor": "from-violet-600 to-purple-950",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211384-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-129_Sejarah_Seni_Rupa_Indonesia_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-129_Sejarah_Seni_Rupa_Indonesia_Edisi_Kolektor.pdf"
   },
   {
@@ -2238,7 +2238,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 9,
     "coverColor": "from-slate-700 to-zinc-950",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211395-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-130_Arsitektur_Nusantara_Rumah_Adat_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-130_Arsitektur_Nusantara_Rumah_Adat_Edisi_Kolektor.pdf"
   },
   {
@@ -2254,7 +2254,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 3,
     "coverColor": "from-blue-600 to-indigo-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211406-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-131_Nutrisi_Gaya_Hidup_Sehat_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-131_Nutrisi_Gaya_Hidup_Sehat_Edisi_Kolektor.pdf"
   },
   {
@@ -2270,7 +2270,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 4,
     "coverColor": "from-emerald-600 to-teal-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211417-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-132_Panduan_Pertolongan_Pertama_P3K_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-132_Panduan_Pertolongan_Pertama_P3K_Edisi_Kolektor.pdf"
   },
   {
@@ -2286,7 +2286,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 5,
     "coverColor": "from-purple-600 to-indigo-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211428-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-133_Petualangan_di_Taman_Nasional_Komodo_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-133_Petualangan_di_Taman_Nasional_Komodo_Edisi_Kolektor.pdf"
   },
   {
@@ -2302,7 +2302,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 6,
     "coverColor": "from-amber-600 to-yellow-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211439-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-134_Pesona_Raja_Ampat_Papua_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-134_Pesona_Raja_Ampat_Papua_Edisi_Kolektor.pdf"
   },
   {
@@ -2318,7 +2318,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 7,
     "coverColor": "from-rose-600 to-pink-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211441-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-135_Filosofi_Teras_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-135_Filosofi_Teras_Edisi_Kolektor.pdf"
   },
   {
@@ -2334,7 +2334,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 8,
     "coverColor": "from-cyan-600 to-blue-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211452-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-136_Atom_Habits_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-136_Atom_Habits_Edisi_Kolektor.pdf"
   },
   {
@@ -2350,7 +2350,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 9,
     "coverColor": "from-teal-600 to-slate-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211463-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-137_Psychology_of_Money_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-137_Psychology_of_Money_Edisi_Kolektor.pdf"
   },
   {
@@ -2366,7 +2366,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 3,
     "coverColor": "from-red-600 to-amber-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211474-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-138_Sapiens_Riwayat_Singkat_Umat_Manusia_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-138_Sapiens_Riwayat_Singkat_Umat_Manusia_Edisi_Kolektor.pdf"
   },
   {
@@ -2382,7 +2382,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 4,
     "coverColor": "from-violet-600 to-purple-950",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211485-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-139_Homo_Deus_Masa_Depan_Umat_Manusia_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-139_Homo_Deus_Masa_Depan_Umat_Manusia_Edisi_Kolektor.pdf"
   },
   {
@@ -2398,7 +2398,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 5,
     "coverColor": "from-slate-700 to-zinc-950",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211496-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-140_21_Pelajaran_untuk_Abad_ke-21_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-140_21_Pelajaran_untuk_Abad_ke-21_Edisi_Kolektor.pdf"
   },
   {
@@ -2414,7 +2414,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 6,
     "coverColor": "from-blue-600 to-indigo-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211507-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-141_Rich_Dad_Poor_Dad_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-141_Rich_Dad_Poor_Dad_Edisi_Kolektor.pdf"
   },
   {
@@ -2430,7 +2430,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 7,
     "coverColor": "from-emerald-600 to-teal-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211518-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-142_Sebuah_Seni_untuk_Bersikap_Bodo_Amat_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-142_Sebuah_Seni_untuk_Bersikap_Bodo_Amat_Edisi_Kolektor.pdf"
   },
   {
@@ -2446,7 +2446,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 8,
     "coverColor": "from-purple-600 to-indigo-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211529-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-143_Gadis_Kretek_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-143_Gadis_Kretek_Edisi_Kolektor.pdf"
   },
   {
@@ -2462,7 +2462,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 9,
     "coverColor": "from-amber-600 to-yellow-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211531-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-144_Bumi_Manusia_Jilid_II_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-144_Bumi_Manusia_Jilid_II_Edisi_Kolektor.pdf"
   },
   {
@@ -2478,7 +2478,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 3,
     "coverColor": "from-rose-600 to-pink-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211542-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-145_Orang-Orang_Biasa_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-145_Orang-Orang_Biasa_Edisi_Kolektor.pdf"
   },
   {
@@ -2494,7 +2494,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 4,
     "coverColor": "from-cyan-600 to-blue-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211553-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-146_Dua_Garis_Biru_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-146_Dua_Garis_Biru_Edisi_Kolektor.pdf"
   },
   {
@@ -2510,7 +2510,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 5,
     "coverColor": "from-teal-600 to-slate-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211564-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-147_Nanti_Kita_Ceritakan_Tentang_Hari_Ini_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-147_Nanti_Kita_Ceritakan_Tentang_Hari_Ini_Edisi_Kolektor.pdf"
   },
   {
@@ -2526,7 +2526,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 6,
     "coverColor": "from-red-600 to-amber-900",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211575-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-148_Dilan_1990_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-148_Dilan_1990_Edisi_Kolektor.pdf"
   },
   {
@@ -2542,7 +2542,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 7,
     "coverColor": "from-violet-600 to-purple-950",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211586-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-149_Milea_Suara_dari_Dilan_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-149_Milea_Suara_dari_Dilan_Edisi_Kolektor.pdf"
   },
   {
@@ -2558,7 +2558,7 @@ export const INITIAL_BOOKS: Book[] = [
     "status": "Tersedia",
     "stock": 8,
     "coverColor": "from-slate-700 to-zinc-950",
-    "coverUrl": "https://covers.openlibrary.org/b/isbn/97860211597-L.jpg",
+    "coverUrl": "/buku_sampul/real_cover_eb-150_Ancika_Dia_yang_Bersamaku_Tahun_1995_Edisi_Kolektor.jpg",
     "pdfUrl": "/buku_digital/eb-150_Ancika_Dia_yang_Bersamaku_Tahun_1995_Edisi_Kolektor.pdf"
   }
 ];
