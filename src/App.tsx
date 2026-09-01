@@ -1085,13 +1085,10 @@ export default function App() {
 
   const handleUpdateUser = async (userId: string, updatedData: Partial<User>) => {
     try {
-      console.log('handleUpdateUser called:', { userId, updatedData });
-
       // Optimistic update dulu (langsung update UI)
       const updatedUsers = users.map(u => {
         if (u.id === userId) {
           const updated = { ...u, ...updatedData };
-          console.log('Updating user:', { old: u, new: updated });
           
           // Update currentUser jika user yang diupdate adalah currentUser
           if (currentUser && u.id === currentUser.id) {
@@ -1103,7 +1100,6 @@ export default function App() {
         return u;
       });
 
-      console.log('Setting updated users:', updatedUsers.length);
       setUsers(updatedUsers);
       localStorage.setItem('digital_library_users', JSON.stringify(updatedUsers));
 
@@ -1119,10 +1115,8 @@ export default function App() {
       if (isSupabaseConfigured) {
         try {
           await updateUserInDb(userId, updatedData);
-          console.log('Supabase sync successful');
         } catch (error) {
           console.error('Failed to sync with Supabase:', error);
-          // Jangan throw error, biarkan local update tetap berjalan
         }
       }
     } catch (error) {

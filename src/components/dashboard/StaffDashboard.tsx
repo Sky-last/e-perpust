@@ -1133,10 +1133,10 @@ export default function StaffDashboard({
                       <tbody className="divide-y divide-slate-800 text-slate-300">
                         {filteredUsers.map(u => {
                           // Normalisasi role dengan defensive checking
-                          const userRole = String(u.role || 'user').toLowerCase();
+                          const userRoleStr = String(u.role || 'user').toLowerCase();
                           const normalizedRole = 
-                            ['staf', 'petugas', 'staff', UserRole.PETUGAS].includes(userRole as any) ? 'staf' :
-                            ['admin', 'administrator', UserRole.ADMIN].includes(userRole as any) ? 'admin' : 
+                            ['staf', 'petugas', 'staff'].includes(userRoleStr) ? 'staf' :
+                            ['admin', 'administrator'].includes(userRoleStr) ? 'admin' : 
                             'user';
                           
                           return (
@@ -1158,14 +1158,8 @@ export default function StaffDashboard({
                                     value={normalizedRole}
                                     onChange={(e) => {
                                       e.stopPropagation();
-                                      e.preventDefault();
                                       const newRole = e.target.value;
-                                      console.log('Updating user role:', { userId: u.id, userName: u.name, oldRole: u.role, newRole });
-                                      try {
-                                        onUpdateUser(u.id, { role: newRole as any });
-                                      } catch (error) {
-                                        console.error('Error updating user role:', error);
-                                      }
+                                      onUpdateUser(u.id, { role: newRole as any });
                                     }}
                                     onClick={(e) => e.stopPropagation()}
                                     className="bg-slate-950 border border-slate-800 text-cyan-300 text-[11px] font-extrabold rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-cyan-500 cursor-pointer"
