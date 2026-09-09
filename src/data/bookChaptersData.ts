@@ -97,7 +97,7 @@ export function getBookReadingPages(book: {
     pageNumber: 7,
     chapterTitle: "Bab IV: Penutup & Kesimpulan",
     subTitle: "Rangkuman & Pesan Utama",
-    text: `Sebagai penutup dari bab-bab sebelumnya, ${book.author} merangkum inti sari pemikiran dalam "${book.title}". Karya ini meninggalkan pesan berharga tentang keberanian berpikir, ketekunan, dan semangat belajar tanpa henti.\n\nSemoga naskah ini memberikan manfaat luas bagi seluruh pengguna Perpustakaan Digital.`,
+    text: `Sebagai penutup dari bab-bab sebelumnya, ${book.author} merangkum inti sari pemikiran dalam "${book.title}". Karya ini meninggalkan pesan berharga tentang keberanian berpikir, ketekunan, dan semangat belajar tanpa henti.\n\nSemoga naskah ini memberikan manfaat luas bagi seluruh pengguna Perpustakaan Kita.`,
     quote: "Pendidikan dan literasi adalah investasi terbaik untuk masa depan."
   });
 

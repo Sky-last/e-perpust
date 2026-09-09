@@ -117,7 +117,7 @@ export default function PinjamModal({
                 className="mt-1 h-4 w-4 rounded border-slate-200 text-blue-600 focus:ring-blue-500 cursor-pointer"
               />
               <label htmlFor="agreed" className="text-[11px] text-slate-500 leading-normal cursor-pointer select-none">
-                Saya menyetujui seluruh syarat & ketentuan peminjaman siber perpustakaan digital, serta bersedia mengembalikan buku tepat waktu sebelum batas tempo.
+                Saya menyetujui seluruh syarat & ketentuan peminjaman siber Perpustakaan Kita, serta bersedia mengembalikan buku tepat waktu sebelum batas tempo.
               </label>
             </div>
 

@@ -1,0 +1,1555 @@
+{
+  "timestamp": "2026-09-09T03:30:40.431Z",
+  "totalBooks": 154,
+  "totalPdfFiles": 0,
+  "issues": [
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gut-2",
+      "bookTitle": "Max Havelaar",
+      "filePath": "gut-2_Max_Havelaar.pdf",
+      "message": "File PDF \"gut-2_Max_Havelaar.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gut-4",
+      "bookTitle": "Lord Jim",
+      "filePath": "gut-4_Lord_Jim.pdf",
+      "message": "File PDF \"gut-4_Lord_Jim.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gut-6",
+      "bookTitle": "The Hidden Force: A Story of Modern Java",
+      "filePath": "gut-6_The_Hidden_Force_A_Story_of_Modern_Java.pdf",
+      "message": "File PDF \"gut-6_The_Hidden_Force_A_Story_of_Modern_Java.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gut-8",
+      "bookTitle": "Blown to Bits; or, The Lonely Man of Rakata",
+      "filePath": "gut-8_Blown_to_Bits_or_The_Lonely_Man_of_Rakata.pdf",
+      "message": "File PDF \"gut-8_Blown_to_Bits_or_The_Lonely_Man_of_Rakata.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gut-1",
+      "bookTitle": "Letters of a Javanese Princess",
+      "filePath": "gut-1_Letters_of_a_Javanese_Princess.pdf",
+      "message": "File PDF \"gut-1_Letters_of_a_Javanese_Princess.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-1",
+      "bookTitle": "Syifa dan Burung Kenari",
+      "filePath": "real_bks_1_Syifa_dan_Burung_Kenari.pdf",
+      "message": "File PDF \"real_bks_1_Syifa_dan_Burung_Kenari.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-2",
+      "bookTitle": "Rusaknya Suara Kodok",
+      "filePath": "real_bks_2_Rusaknya_Suara_Kodok.pdf",
+      "message": "File PDF \"real_bks_2_Rusaknya_Suara_Kodok.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-3",
+      "bookTitle": "Lepu pun Tersenyum",
+      "filePath": "real_bks_3_Lepu_pun_Tersenyum.pdf",
+      "message": "File PDF \"real_bks_3_Lepu_pun_Tersenyum.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-4",
+      "bookTitle": "Bumi, Ayo Bangun!",
+      "filePath": "real_bks_4_Bumi_Ayo_Bangun.pdf",
+      "message": "File PDF \"real_bks_4_Bumi_Ayo_Bangun.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-5",
+      "bookTitle": "Kutilang yang Suka Bernyanyi",
+      "filePath": "real_bks_5_Kutilang_yang_Suka_Bernyanyi.pdf",
+      "message": "File PDF \"real_bks_5_Kutilang_yang_Suka_Bernyanyi.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-6",
+      "bookTitle": "Operasi Sampah di Taman",
+      "filePath": "real_bks_6_Operasi_Sampah_di_Taman.pdf",
+      "message": "File PDF \"real_bks_6_Operasi_Sampah_di_Taman.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-7",
+      "bookTitle": "Pesut Tak Lapar Lagi",
+      "filePath": "real_bks_7_Pesut_Tak_Lapar_Lagi.pdf",
+      "message": "File PDF \"real_bks_7_Pesut_Tak_Lapar_Lagi.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-8",
+      "bookTitle": "Biji Merah Luna",
+      "filePath": "real_bks_8_Biji_Merah_Luna.pdf",
+      "message": "File PDF \"real_bks_8_Biji_Merah_Luna.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-9",
+      "bookTitle": "Gambar Lucu Mika",
+      "filePath": "real_bks_9_Gambar_Lucu_Mika.pdf",
+      "message": "File PDF \"real_bks_9_Gambar_Lucu_Mika.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-10",
+      "bookTitle": "Hmm, Enaaak!",
+      "filePath": "real_bks_10_Hmm_Enaaak.pdf",
+      "message": "File PDF \"real_bks_10_Hmm_Enaaak.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-11",
+      "bookTitle": "Jaket Pinjaman",
+      "filePath": "real_bks_11_Jaket_Pinjaman.pdf",
+      "message": "File PDF \"real_bks_11_Jaket_Pinjaman.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-12",
+      "bookTitle": "Kisah Beruk dan Hewan Lainnya",
+      "filePath": "real_bks_12_Kisah_Beruk_dan_Hewan_Lainnya.pdf",
+      "message": "File PDF \"real_bks_12_Kisah_Beruk_dan_Hewan_Lainnya.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-13",
+      "bookTitle": "Rewako, Ammang! = Beranilah, Ammang!",
+      "filePath": "real_bks_13_Rewako_Ammang_Beranilah_Ammang.pdf",
+      "message": "File PDF \"real_bks_13_Rewako_Ammang_Beranilah_Ammang.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-14",
+      "bookTitle": "Di Mana Ibu?",
+      "filePath": "real_bks_14_Di_Mana_Ibu.pdf",
+      "message": "File PDF \"real_bks_14_Di_Mana_Ibu.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-15",
+      "bookTitle": "Di Mana Keli?",
+      "filePath": "real_bks_15_Di_Mana_Keli.pdf",
+      "message": "File PDF \"real_bks_15_Di_Mana_Keli.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-16",
+      "bookTitle": "Dina Bisa Cerita",
+      "filePath": "real_bks_16_Dina_Bisa_Cerita.pdf",
+      "message": "File PDF \"real_bks_16_Dina_Bisa_Cerita.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-17",
+      "bookTitle": "Dongeng untuk Santi",
+      "filePath": "real_bks_17_Dongeng_untuk_Santi.pdf",
+      "message": "File PDF \"real_bks_17_Dongeng_untuk_Santi.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-18",
+      "bookTitle": "Dua Potong Gorengan",
+      "filePath": "real_bks_18_Dua_Potong_Gorengan.pdf",
+      "message": "File PDF \"real_bks_18_Dua_Potong_Gorengan.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-19",
+      "bookTitle": "Fao Si Pelompat Batu",
+      "filePath": "real_bks_19_Fao_Si_Pelompat_Batu.pdf",
+      "message": "File PDF \"real_bks_19_Fao_Si_Pelompat_Batu.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-20",
+      "bookTitle": "Kue Kimu",
+      "filePath": "real_bks_20_Kue_Kimu.pdf",
+      "message": "File PDF \"real_bks_20_Kue_Kimu.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-21",
+      "bookTitle": "Sahabatku Indonesia: Tingkat A1 (BIPA 1)",
+      "filePath": "real_bks_21_Sahabatku_Indonesia_Tingkat_A1_BIPA_1.pdf",
+      "message": "File PDF \"real_bks_21_Sahabatku_Indonesia_Tingkat_A1_BIPA_1.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-22",
+      "bookTitle": "Sahabatku Indonesia: Tingkat C2",
+      "filePath": "real_bks_22_Sahabatku_Indonesia_Tingkat_C2.pdf",
+      "message": "File PDF \"real_bks_22_Sahabatku_Indonesia_Tingkat_C2.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-23",
+      "bookTitle": "Buku Praktis Bahasa Indonesia 1",
+      "filePath": "real_bks_23_Buku_Praktis_Bahasa_Indonesia_1.pdf",
+      "message": "File PDF \"real_bks_23_Buku_Praktis_Bahasa_Indonesia_1.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-24",
+      "bookTitle": "Buku Praktis Bahasa Indonesia 2",
+      "filePath": "real_bks_24_Buku_Praktis_Bahasa_Indonesia_2.pdf",
+      "message": "File PDF \"real_bks_24_Buku_Praktis_Bahasa_Indonesia_2.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-25",
+      "bookTitle": "Bahasa Indonesia: Buku Guru SMP/MTs Kelas VIII",
+      "filePath": "real_bks_25_Bahasa_Indonesia_Buku_Guru_SMPMTs_Kelas_VIII.pdf",
+      "message": "File PDF \"real_bks_25_Bahasa_Indonesia_Buku_Guru_SMPMTs_Kelas_VIII.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-26",
+      "bookTitle": "Pendidikan Agama Katolik dan Budi Pekerti SD Kelas IV",
+      "filePath": "real_bks_26_Pendidikan_Agama_Katolik_dan_Budi_Pekerti_SD_Kelas_IV.pdf",
+      "message": "File PDF \"real_bks_26_Pendidikan_Agama_Katolik_dan_Budi_Pekerti_SD_Kelas_IV.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-27",
+      "bookTitle": "Glosarium Matematika",
+      "filePath": "real_bks_27_Glosarium_Matematika.pdf",
+      "message": "File PDF \"real_bks_27_Glosarium_Matematika.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-28",
+      "bookTitle": "Latihan Soal Kemahiran Berbahasa Indonesia",
+      "filePath": "real_bks_28_Latihan_Soal_Kemahiran_Berbahasa_Indonesia.pdf",
+      "message": "File PDF \"real_bks_28_Latihan_Soal_Kemahiran_Berbahasa_Indonesia.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-29",
+      "bookTitle": "Seri Pelatihan UKBI",
+      "filePath": "real_bks_29_Seri_Pelatihan_UKBI.pdf",
+      "message": "File PDF \"real_bks_29_Seri_Pelatihan_UKBI.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-30",
+      "bookTitle": "Tata Bahasa Baku Bahasa Indonesia",
+      "filePath": "real_bks_30_Tata_Bahasa_Baku_Bahasa_Indonesia.pdf",
+      "message": "File PDF \"real_bks_30_Tata_Bahasa_Baku_Bahasa_Indonesia.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-31",
+      "bookTitle": "History of Indonesia: A Resource Book",
+      "filePath": "real_bks_31_History_of_Indonesia_A_Resource_Book.pdf",
+      "message": "File PDF \"real_bks_31_History_of_Indonesia_A_Resource_Book.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-32",
+      "bookTitle": "1957: Deklarasi Djuanda dan Kedaulatan Laut Kita",
+      "filePath": "real_bks_32_1957_Deklarasi_Djuanda_dan_Kedaulatan_Laut_Kita.pdf",
+      "message": "File PDF \"real_bks_32_1957_Deklarasi_Djuanda_dan_Kedaulatan_Laut_Kita.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-33",
+      "bookTitle": "Sisingamangaraja: Pemersatu Batak di Toba",
+      "filePath": "real_bks_33_Sisingamangaraja_Pemersatu_Batak_di_Toba.pdf",
+      "message": "File PDF \"real_bks_33_Sisingamangaraja_Pemersatu_Batak_di_Toba.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-34",
+      "bookTitle": "Tinggalan Kolonial di Jawa Timur",
+      "filePath": "real_bks_34_Tinggalan_Kolonial_di_Jawa_Timur.pdf",
+      "message": "File PDF \"real_bks_34_Tinggalan_Kolonial_di_Jawa_Timur.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-35",
+      "bookTitle": "Kebhinekaan Budaya Papua: Perspektif Arkeologi Prasejarah",
+      "filePath": "real_bks_35_Kebhinekaan_Budaya_Papua_Perspektif_Arkeologi_Prasejarah.pdf",
+      "message": "File PDF \"real_bks_35_Kebhinekaan_Budaya_Papua_Perspektif_Arkeologi_Prasejarah.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-36",
+      "bookTitle": "Kepahlawanan Trunajaya",
+      "filePath": "real_bks_36_Kepahlawanan_Trunajaya.pdf",
+      "message": "File PDF \"real_bks_36_Kepahlawanan_Trunajaya.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-37",
+      "bookTitle": "Asal-Usul Danau Maninjau",
+      "filePath": "real_bks_37_Asal-Usul_Danau_Maninjau.pdf",
+      "message": "File PDF \"real_bks_37_Asal-Usul_Danau_Maninjau.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-38",
+      "bookTitle": "Bahasa Daerah di Indonesia: Kebersamaan dalam Keberagaman",
+      "filePath": "real_bks_38_Bahasa_Daerah_di_Indonesia_Kebersamaan_dalam_Keberagaman.pdf",
+      "message": "File PDF \"real_bks_38_Bahasa_Daerah_di_Indonesia_Kebersamaan_dalam_Keberagaman.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-39",
+      "bookTitle": "Ceritera Rakyat Daerah Jambi",
+      "filePath": "real_bks_39_Ceritera_Rakyat_Daerah_Jambi.pdf",
+      "message": "File PDF \"real_bks_39_Ceritera_Rakyat_Daerah_Jambi.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-40",
+      "bookTitle": "Ungkapan Tradisional Daerah Istimewa Aceh",
+      "filePath": "real_bks_40_Ungkapan_Tradisional_Daerah_Istimewa_Aceh.pdf",
+      "message": "File PDF \"real_bks_40_Ungkapan_Tradisional_Daerah_Istimewa_Aceh.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-41",
+      "bookTitle": "Purnama Alam I",
+      "filePath": "real_bks_41_Purnama_Alam_I.pdf",
+      "message": "File PDF \"real_bks_41_Purnama_Alam_I.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-42",
+      "bookTitle": "Carita Badak Pamalang: Carita Pantun Sunda",
+      "filePath": "real_bks_42_Carita_Badak_Pamalang_Carita_Pantun_Sunda.pdf",
+      "message": "File PDF \"real_bks_42_Carita_Badak_Pamalang_Carita_Pantun_Sunda.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-43",
+      "bookTitle": "Babad Majapahit",
+      "filePath": "real_bks_43_Babad_Majapahit.pdf",
+      "message": "File PDF \"real_bks_43_Babad_Majapahit.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-44",
+      "bookTitle": "Ceritera Panji Pakang Raras",
+      "filePath": "real_bks_44_Ceritera_Panji_Pakang_Raras.pdf",
+      "message": "File PDF \"real_bks_44_Ceritera_Panji_Pakang_Raras.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-45",
+      "bookTitle": "Ancimun Tuminggang Dui: Mentimun Menimpa Duri",
+      "filePath": "real_bks_45_Ancimun_Tuminggang_Dui_Mentimun_Menimpa_Duri.pdf",
+      "message": "File PDF \"real_bks_45_Ancimun_Tuminggang_Dui_Mentimun_Menimpa_Duri.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-46",
+      "bookTitle": "Supraba Lan Suminten",
+      "filePath": "real_bks_46_Supraba_Lan_Suminten.pdf",
+      "message": "File PDF \"real_bks_46_Supraba_Lan_Suminten.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-47",
+      "bookTitle": "Kidung Megat Kung",
+      "filePath": "real_bks_47_Kidung_Megat_Kung.pdf",
+      "message": "File PDF \"real_bks_47_Kidung_Megat_Kung.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-48",
+      "bookTitle": "Sistem Sapaan Dialek Jakarta",
+      "filePath": "real_bks_48_Sistem_Sapaan_Dialek_Jakarta.pdf",
+      "message": "File PDF \"real_bks_48_Sistem_Sapaan_Dialek_Jakarta.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-49",
+      "bookTitle": "Pedoman Penelitian Sosiologi Sastra",
+      "filePath": "real_bks_49_Pedoman_Penelitian_Sosiologi_Sastra.pdf",
+      "message": "File PDF \"real_bks_49_Pedoman_Penelitian_Sosiologi_Sastra.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "bks-50",
+      "bookTitle": "Verba Taktransitif Bahasa Sunda",
+      "filePath": "real_bks_50_Verba_Taktransitif_Bahasa_Sunda.pdf",
+      "message": "File PDF \"real_bks_50_Verba_Taktransitif_Bahasa_Sunda.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-izaukojkq",
+      "bookTitle": "101 tip dan trick pemrograman php",
+      "filePath": "101 tip dan trick pemrograman php.pdf",
+      "message": "File PDF \"101 tip dan trick pemrograman php.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-7v7upzk6i",
+      "bookTitle": "1740363594 101. Bicara itu ada seninya (1)",
+      "filePath": "1740363594_101._Bicara_itu_ada_seninya_(1).pdf",
+      "message": "File PDF \"1740363594_101._Bicara_itu_ada_seninya_(1).pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-1pe73872w",
+      "bookTitle": "5 6251107178845831336",
+      "filePath": "5_6251107178845831336.pdf",
+      "message": "File PDF \"5_6251107178845831336.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-jmqneehat",
+      "bookTitle": "69490a7377f5b the little duke or richard the fearless by charlotte mary yonge",
+      "filePath": "69490a7377f5b-the-little-duke-or-richard-the-fearless-by-charlotte-mary-yonge.pdf",
+      "message": "File PDF \"69490a7377f5b-the-little-duke-or-richard-the-fearless-by-charlotte-mary-yonge.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-xuv656u8f",
+      "bookTitle": "69496235abd9b mistress wilding by rafael sabatini",
+      "filePath": "69496235abd9b-mistress-wilding-by-rafael-sabatini.pdf",
+      "message": "File PDF \"69496235abd9b-mistress-wilding-by-rafael-sabatini.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-pu5plksbx",
+      "bookTitle": "Advice for the Muslim",
+      "filePath": "Advice_for_the_Muslim.pdf",
+      "message": "File PDF \"Advice_for_the_Muslim.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-ek5aziy1p",
+      "bookTitle": "Bahagia kenapa tidak 1",
+      "filePath": "Bahagia kenapa tidak 1.pdf",
+      "message": "File PDF \"Bahagia kenapa tidak 1.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-9mk6ajr3g",
+      "bookTitle": "Berani jadi SE 24Jun2015 final",
+      "filePath": "Berani-jadi-SE-24Jun2015-final.pdf",
+      "message": "File PDF \"Berani-jadi-SE-24Jun2015-final.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-sk6fhzsnm",
+      "bookTitle": "bks 10 Hmm  Enaaak",
+      "filePath": "bks_10_Hmm__Enaaak.pdf",
+      "message": "File PDF \"bks_10_Hmm__Enaaak.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-1lqzbf2ft",
+      "bookTitle": "bks 11 Jaket Pinjaman",
+      "filePath": "bks_11_Jaket_Pinjaman.pdf",
+      "message": "File PDF \"bks_11_Jaket_Pinjaman.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-3yul6gnok",
+      "bookTitle": "bks 12 Kisah Beruk dan Hewan Lainnya",
+      "filePath": "bks_12_Kisah_Beruk_dan_Hewan_Lainnya.pdf",
+      "message": "File PDF \"bks_12_Kisah_Beruk_dan_Hewan_Lainnya.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-qfjq8mlly",
+      "bookTitle": "bks 13 Rewako  Ammang    Beranilah  Ammang",
+      "filePath": "bks_13_Rewako__Ammang____Beranilah__Ammang.pdf",
+      "message": "File PDF \"bks_13_Rewako__Ammang____Beranilah__Ammang.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-xape8njqk",
+      "bookTitle": "bks 14 Di Mana Ibu",
+      "filePath": "bks_14_Di_Mana_Ibu.pdf",
+      "message": "File PDF \"bks_14_Di_Mana_Ibu.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-j386paouw",
+      "bookTitle": "bks 15 Di Mana Keli",
+      "filePath": "bks_15_Di_Mana_Keli.pdf",
+      "message": "File PDF \"bks_15_Di_Mana_Keli.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-yy1c82pic",
+      "bookTitle": "bks 16 Dina Bisa Cerita",
+      "filePath": "bks_16_Dina_Bisa_Cerita.pdf",
+      "message": "File PDF \"bks_16_Dina_Bisa_Cerita.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-z7or4adsh",
+      "bookTitle": "bks 17 Dongeng untuk Santi",
+      "filePath": "bks_17_Dongeng_untuk_Santi.pdf",
+      "message": "File PDF \"bks_17_Dongeng_untuk_Santi.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-aauxjyq0e",
+      "bookTitle": "bks 18 Dua Potong Gorengan",
+      "filePath": "bks_18_Dua_Potong_Gorengan.pdf",
+      "message": "File PDF \"bks_18_Dua_Potong_Gorengan.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-2vx9u8p19",
+      "bookTitle": "bks 19 Fao Si Pelompat Batu",
+      "filePath": "bks_19_Fao_Si_Pelompat_Batu.pdf",
+      "message": "File PDF \"bks_19_Fao_Si_Pelompat_Batu.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-wvux0qwr0",
+      "bookTitle": "bks 1 Syifa dan Burung Kenari",
+      "filePath": "bks_1_Syifa_dan_Burung_Kenari.pdf",
+      "message": "File PDF \"bks_1_Syifa_dan_Burung_Kenari.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-fx7cktpa1",
+      "bookTitle": "bks 20 Kue Kimu",
+      "filePath": "bks_20_Kue_Kimu.pdf",
+      "message": "File PDF \"bks_20_Kue_Kimu.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-9txu4x6ms",
+      "bookTitle": "bks 21 Sahabatku Indonesia  Tingkat A1  BIPA 1",
+      "filePath": "bks_21_Sahabatku_Indonesia__Tingkat_A1__BIPA_1.pdf",
+      "message": "File PDF \"bks_21_Sahabatku_Indonesia__Tingkat_A1__BIPA_1.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-u22922qcg",
+      "bookTitle": "bks 22 Sahabatku Indonesia  Tingkat C2",
+      "filePath": "bks_22_Sahabatku_Indonesia__Tingkat_C2.pdf",
+      "message": "File PDF \"bks_22_Sahabatku_Indonesia__Tingkat_C2.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-32nq9aboo",
+      "bookTitle": "bks 23 Buku Praktis Bahasa Indonesia 1",
+      "filePath": "bks_23_Buku_Praktis_Bahasa_Indonesia_1.pdf",
+      "message": "File PDF \"bks_23_Buku_Praktis_Bahasa_Indonesia_1.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-mz7bf9b1u",
+      "bookTitle": "bks 24 Buku Praktis Bahasa Indonesia 2",
+      "filePath": "bks_24_Buku_Praktis_Bahasa_Indonesia_2.pdf",
+      "message": "File PDF \"bks_24_Buku_Praktis_Bahasa_Indonesia_2.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-y3vbv6hpx",
+      "bookTitle": "bks 25 Bahasa Indonesia  Buku Guru SMP MTs Kelas VIII",
+      "filePath": "bks_25_Bahasa_Indonesia__Buku_Guru_SMP_MTs_Kelas_VIII.pdf",
+      "message": "File PDF \"bks_25_Bahasa_Indonesia__Buku_Guru_SMP_MTs_Kelas_VIII.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-l6c7w066z",
+      "bookTitle": "bks 26 Pendidikan Agama Katolik dan Budi Pekerti SD Kelas IV",
+      "filePath": "bks_26_Pendidikan_Agama_Katolik_dan_Budi_Pekerti_SD_Kelas_IV.pdf",
+      "message": "File PDF \"bks_26_Pendidikan_Agama_Katolik_dan_Budi_Pekerti_SD_Kelas_IV.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-i7dnrkpl5",
+      "bookTitle": "bks 27 Glosarium Matematika",
+      "filePath": "bks_27_Glosarium_Matematika.pdf",
+      "message": "File PDF \"bks_27_Glosarium_Matematika.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-7dd8q1mpo",
+      "bookTitle": "bks 28 Latihan Soal Kemahiran Berbahasa Indonesia",
+      "filePath": "bks_28_Latihan_Soal_Kemahiran_Berbahasa_Indonesia.pdf",
+      "message": "File PDF \"bks_28_Latihan_Soal_Kemahiran_Berbahasa_Indonesia.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-thtul1fm2",
+      "bookTitle": "bks 29 Seri Pelatihan UKBI",
+      "filePath": "bks_29_Seri_Pelatihan_UKBI.pdf",
+      "message": "File PDF \"bks_29_Seri_Pelatihan_UKBI.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-d7ivtxv3o",
+      "bookTitle": "bks 2 Rusaknya Suara Kodok",
+      "filePath": "bks_2_Rusaknya_Suara_Kodok.pdf",
+      "message": "File PDF \"bks_2_Rusaknya_Suara_Kodok.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-ir8q10c0g",
+      "bookTitle": "bks 30 Tata Bahasa Baku Bahasa Indonesia",
+      "filePath": "bks_30_Tata_Bahasa_Baku_Bahasa_Indonesia.pdf",
+      "message": "File PDF \"bks_30_Tata_Bahasa_Baku_Bahasa_Indonesia.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-yb3zfhnye",
+      "bookTitle": "bks 31 History of Indonesia  A Resource Book",
+      "filePath": "bks_31_History_of_Indonesia__A_Resource_Book.pdf",
+      "message": "File PDF \"bks_31_History_of_Indonesia__A_Resource_Book.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-bfp3tju1v",
+      "bookTitle": "bks 32 1957  Deklarasi Djuanda dan Kedaulatan Laut Kita",
+      "filePath": "bks_32_1957__Deklarasi_Djuanda_dan_Kedaulatan_Laut_Kita.pdf",
+      "message": "File PDF \"bks_32_1957__Deklarasi_Djuanda_dan_Kedaulatan_Laut_Kita.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-uxhjidyl4",
+      "bookTitle": "bks 33 Sisingamangaraja  Pemersatu Batak di Toba",
+      "filePath": "bks_33_Sisingamangaraja__Pemersatu_Batak_di_Toba.pdf",
+      "message": "File PDF \"bks_33_Sisingamangaraja__Pemersatu_Batak_di_Toba.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-48kkc0jbg",
+      "bookTitle": "bks 34 Tinggalan Kolonial di Jawa Timur",
+      "filePath": "bks_34_Tinggalan_Kolonial_di_Jawa_Timur.pdf",
+      "message": "File PDF \"bks_34_Tinggalan_Kolonial_di_Jawa_Timur.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-806a13lo6",
+      "bookTitle": "bks 35 Kebhinekaan Budaya Papua  Perspektif Arkeologi Prasejarah",
+      "filePath": "bks_35_Kebhinekaan_Budaya_Papua__Perspektif_Arkeologi_Prasejarah.pdf",
+      "message": "File PDF \"bks_35_Kebhinekaan_Budaya_Papua__Perspektif_Arkeologi_Prasejarah.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-9rqb0gfgk",
+      "bookTitle": "bks 36 Kepahlawanan Trunajaya",
+      "filePath": "bks_36_Kepahlawanan_Trunajaya.pdf",
+      "message": "File PDF \"bks_36_Kepahlawanan_Trunajaya.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-6uhprj5ke",
+      "bookTitle": "bks 37 Asal Usul Danau Maninjau",
+      "filePath": "bks_37_Asal_Usul_Danau_Maninjau.pdf",
+      "message": "File PDF \"bks_37_Asal_Usul_Danau_Maninjau.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-sas9qgkvh",
+      "bookTitle": "bks 38 Bahasa Daerah di Indonesia  Kebersamaan dalam Keberagaman",
+      "filePath": "bks_38_Bahasa_Daerah_di_Indonesia__Kebersamaan_dalam_Keberagaman.pdf",
+      "message": "File PDF \"bks_38_Bahasa_Daerah_di_Indonesia__Kebersamaan_dalam_Keberagaman.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-kr641iody",
+      "bookTitle": "bks 39 Ceritera Rakyat Daerah Jambi",
+      "filePath": "bks_39_Ceritera_Rakyat_Daerah_Jambi.pdf",
+      "message": "File PDF \"bks_39_Ceritera_Rakyat_Daerah_Jambi.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-afrohgkkq",
+      "bookTitle": "bks 3 Lepu pun Tersenyum",
+      "filePath": "bks_3_Lepu_pun_Tersenyum.pdf",
+      "message": "File PDF \"bks_3_Lepu_pun_Tersenyum.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-ui0weyal8",
+      "bookTitle": "bks 40 Ungkapan Tradisional Daerah Istimewa Aceh",
+      "filePath": "bks_40_Ungkapan_Tradisional_Daerah_Istimewa_Aceh.pdf",
+      "message": "File PDF \"bks_40_Ungkapan_Tradisional_Daerah_Istimewa_Aceh.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-1xiwy9k55",
+      "bookTitle": "bks 41 Purnama Alam I",
+      "filePath": "bks_41_Purnama_Alam_I.pdf",
+      "message": "File PDF \"bks_41_Purnama_Alam_I.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-53vrz3g4z",
+      "bookTitle": "bks 42 Carita Badak Pamalang  Carita Pantun Sunda",
+      "filePath": "bks_42_Carita_Badak_Pamalang__Carita_Pantun_Sunda.pdf",
+      "message": "File PDF \"bks_42_Carita_Badak_Pamalang__Carita_Pantun_Sunda.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-xwzbwuofa",
+      "bookTitle": "bks 43 Babad Majapahit",
+      "filePath": "bks_43_Babad_Majapahit.pdf",
+      "message": "File PDF \"bks_43_Babad_Majapahit.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-0rtmmrc3g",
+      "bookTitle": "bks 44 Ceritera Panji Pakang Raras",
+      "filePath": "bks_44_Ceritera_Panji_Pakang_Raras.pdf",
+      "message": "File PDF \"bks_44_Ceritera_Panji_Pakang_Raras.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-pvf2j7y94",
+      "bookTitle": "bks 45 Ancimun Tuminggang Dui  Mentimun Menimpa Duri",
+      "filePath": "bks_45_Ancimun_Tuminggang_Dui__Mentimun_Menimpa_Duri.pdf",
+      "message": "File PDF \"bks_45_Ancimun_Tuminggang_Dui__Mentimun_Menimpa_Duri.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-chfqxsapg",
+      "bookTitle": "bks 46 Supraba Lan Suminten",
+      "filePath": "bks_46_Supraba_Lan_Suminten.pdf",
+      "message": "File PDF \"bks_46_Supraba_Lan_Suminten.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-uqmrmysuv",
+      "bookTitle": "bks 47 Kidung Megat Kung",
+      "filePath": "bks_47_Kidung_Megat_Kung.pdf",
+      "message": "File PDF \"bks_47_Kidung_Megat_Kung.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-ue8zyt5tk",
+      "bookTitle": "bks 48 Sistem Sapaan Dialek Jakarta",
+      "filePath": "bks_48_Sistem_Sapaan_Dialek_Jakarta.pdf",
+      "message": "File PDF \"bks_48_Sistem_Sapaan_Dialek_Jakarta.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-nwqti9cou",
+      "bookTitle": "bks 49 Pedoman Penelitian Sosiologi Sastra",
+      "filePath": "bks_49_Pedoman_Penelitian_Sosiologi_Sastra.pdf",
+      "message": "File PDF \"bks_49_Pedoman_Penelitian_Sosiologi_Sastra.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-oixpdv38o",
+      "bookTitle": "bks 4 Bumi  Ayo Bangun",
+      "filePath": "bks_4_Bumi__Ayo_Bangun.pdf",
+      "message": "File PDF \"bks_4_Bumi__Ayo_Bangun.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-nqa62av47",
+      "bookTitle": "bks 50 Verba Taktransitif Bahasa Sunda",
+      "filePath": "bks_50_Verba_Taktransitif_Bahasa_Sunda.pdf",
+      "message": "File PDF \"bks_50_Verba_Taktransitif_Bahasa_Sunda.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-y524jhegx",
+      "bookTitle": "bks 5 Kutilang yang Suka Bernyanyi",
+      "filePath": "bks_5_Kutilang_yang_Suka_Bernyanyi.pdf",
+      "message": "File PDF \"bks_5_Kutilang_yang_Suka_Bernyanyi.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-osntt8ldb",
+      "bookTitle": "bks 6 Operasi Sampah di Taman",
+      "filePath": "bks_6_Operasi_Sampah_di_Taman.pdf",
+      "message": "File PDF \"bks_6_Operasi_Sampah_di_Taman.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-9knzevvyz",
+      "bookTitle": "bks 7 Pesut Tak Lapar Lagi",
+      "filePath": "bks_7_Pesut_Tak_Lapar_Lagi.pdf",
+      "message": "File PDF \"bks_7_Pesut_Tak_Lapar_Lagi.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-9u6an9mee",
+      "bookTitle": "bks 8 Biji Merah Luna",
+      "filePath": "bks_8_Biji_Merah_Luna.pdf",
+      "message": "File PDF \"bks_8_Biji_Merah_Luna.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-tj5i07yl3",
+      "bookTitle": "bks 9 Gambar Lucu Mika",
+      "filePath": "bks_9_Gambar_Lucu_Mika.pdf",
+      "message": "File PDF \"bks_9_Gambar_Lucu_Mika.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-fu99jijxn",
+      "bookTitle": "Blown to Bits",
+      "filePath": "Blown_to_Bits.pdf",
+      "message": "File PDF \"Blown_to_Bits.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-sj29yvsjp",
+      "bookTitle": "buku kumpulan eksperimen sains",
+      "filePath": "buku-kumpulan-eksperimen-sains.pdf",
+      "message": "File PDF \"buku-kumpulan-eksperimen-sains.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-2t0wej6a0",
+      "bookTitle": "Bumi   Tere liye",
+      "filePath": "Bumi - Tere liye.pdf",
+      "message": "File PDF \"Bumi - Tere liye.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-bxog6nras",
+      "bookTitle": "Coding games in python",
+      "filePath": "Coding games in python.pdf",
+      "message": "File PDF \"Coding games in python.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-lullrn4vw",
+      "bookTitle": "Coding project in scratch",
+      "filePath": "Coding project in scratch.pdf",
+      "message": "File PDF \"Coding project in scratch.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-e0u3gtwwv",
+      "bookTitle": "computer forensics",
+      "filePath": "computer forensics.pdf",
+      "message": "File PDF \"computer forensics.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-os3luksze",
+      "bookTitle": "Documents of the Right Word",
+      "filePath": "Documents_of_the_Right_Word.pdf",
+      "message": "File PDF \"Documents_of_the_Right_Word.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-e69iqkymo",
+      "bookTitle": "FILOSOFI TERAS HENRY MANAMPIRING",
+      "filePath": "FILOSOFI-TERAS-HENRY-MANAMPIRING.pdf",
+      "message": "File PDF \"FILOSOFI-TERAS-HENRY-MANAMPIRING.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gut-10",
+      "bookTitle": "Travels in the East Indian Archipelago",
+      "filePath": "gut-10_Travels_in_the_East_Indian_Archipelago.pdf",
+      "message": "File PDF \"gut-10_Travels_in_the_East_Indian_Archipelago.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gut-3",
+      "bookTitle": "The History of Sumatra",
+      "filePath": "gut-3_The_History_of_Sumatra.pdf",
+      "message": "File PDF \"gut-3_The_History_of_Sumatra.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gut-5",
+      "bookTitle": "The History of Java Vol 1 2",
+      "filePath": "gut-5_The_History_of_Java_Vol_1_2.pdf",
+      "message": "File PDF \"gut-5_The_History_of_Java_Vol_1_2.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gut-7",
+      "bookTitle": "Monumental Java",
+      "filePath": "gut-7_Monumental_Java.pdf",
+      "message": "File PDF \"gut-7_Monumental_Java.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gut-9",
+      "bookTitle": "Java Facts and Fancies",
+      "filePath": "gut-9_Java_Facts_and_Fancies.pdf",
+      "message": "File PDF \"gut-9_Java_Facts_and_Fancies.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-n8kgq39y6",
+      "bookTitle": "Islam and Christianity",
+      "filePath": "Islam_and_Christianity.pdf",
+      "message": "File PDF \"Islam_and_Christianity.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-u86ng5bs7",
+      "bookTitle": "Java Facts and Fancies",
+      "filePath": "Java_Facts_and_Fancies.pdf",
+      "message": "File PDF \"Java_Facts_and_Fancies.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-s9yt4xq8z",
+      "bookTitle": "KAJIAN PUISI",
+      "filePath": "KAJIAN-PUISI.pdf",
+      "message": "File PDF \"KAJIAN-PUISI.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-ayxaqj5d9",
+      "bookTitle": "Konspirasi alam semesta   fiersa besari",
+      "filePath": "Konspirasi alam semesta - fiersa besari.pdf",
+      "message": "File PDF \"Konspirasi alam semesta - fiersa besari.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-7sldaf6j8",
+      "bookTitle": "Letters of a Javanese Princess",
+      "filePath": "Letters_of_a_Javanese_Princess.pdf",
+      "message": "File PDF \"Letters_of_a_Javanese_Princess.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-4e5b8ycsc",
+      "bookTitle": "Lord Jim",
+      "filePath": "Lord_Jim.pdf",
+      "message": "File PDF \"Lord_Jim.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-ujcmc9eqs",
+      "bookTitle": "Max Havelaar",
+      "filePath": "Max_Havelaar.pdf",
+      "message": "File PDF \"Max_Havelaar.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-29u9lgrbe",
+      "bookTitle": "Monumental Java",
+      "filePath": "Monumental_Java.pdf",
+      "message": "File PDF \"Monumental_Java.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-z8sw328ul",
+      "bookTitle": "Negeri di ujung tanduk   tere liye",
+      "filePath": "Negeri di ujung tanduk - tere liye.pdf",
+      "message": "File PDF \"Negeri di ujung tanduk - tere liye.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-sh2r7j67p",
+      "bookTitle": "OWJkMWI3YmE5YjA1ZDI3ZTc5OTFkYjQ2NWMxZWI0MzU4MDFjNjMyNQ==",
+      "filePath": "OWJkMWI3YmE5YjA1ZDI3ZTc5OTFkYjQ2NWMxZWI0MzU4MDFjNjMyNQ==.pdf",
+      "message": "File PDF \"OWJkMWI3YmE5YjA1ZDI3ZTc5OTFkYjQ2NWMxZWI0MzU4MDFjNjMyNQ==.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-kzkd5t8wo",
+      "bookTitle": "Prosiding sosiologi  Konflik dan Politik Identitas ( PDFDrive )",
+      "filePath": "Prosiding sosiologi- Konflik dan Politik Identitas ( PDFDrive ).pdf",
+      "message": "File PDF \"Prosiding sosiologi- Konflik dan Politik Identitas ( PDFDrive ).pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-nri2pdyyy",
+      "bookTitle": "ragam eksperesi islam nusantara",
+      "filePath": "ragam eksperesi islam nusantara.pdf",
+      "message": "File PDF \"ragam eksperesi islam nusantara.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-ual94otxl",
+      "bookTitle": "Sejarah Geografi Agraria Indonesia ( PDFDrive )",
+      "filePath": "Sejarah Geografi Agraria Indonesia ( PDFDrive ).pdf",
+      "message": "File PDF \"Sejarah Geografi Agraria Indonesia ( PDFDrive ).pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-tlwnegle3",
+      "bookTitle": "Sejarah Islam di Nusantara ( PDFDrive )",
+      "filePath": "Sejarah Islam di Nusantara ( PDFDrive ).pdf",
+      "message": "File PDF \"Sejarah Islam di Nusantara ( PDFDrive ).pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-3n74eb68p",
+      "bookTitle": "Suara dari Kelas Kecil Kumpulan Bahan Literasi Antikorupsi",
+      "filePath": "Suara-dari-Kelas-Kecil-Kumpulan-Bahan-Literasi-Antikorupsi.pdf",
+      "message": "File PDF \"Suara-dari-Kelas-Kecil-Kumpulan-Bahan-Literasi-Antikorupsi.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-bv99231ji",
+      "bookTitle": "Tere Liye   Bulan",
+      "filePath": "Tere Liye - Bulan.pdf",
+      "message": "File PDF \"Tere Liye - Bulan.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-65wnnbpkm",
+      "bookTitle": "Tere liye   tentang kamu",
+      "filePath": "Tere liye - tentang kamu.pdf",
+      "message": "File PDF \"Tere liye - tentang kamu.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-2evthj692",
+      "bookTitle": "Tere liye   the falling leaf never hates the",
+      "filePath": "Tere liye - the falling leaf never hates the .pdf",
+      "message": "File PDF \"Tere liye - the falling leaf never hates the .pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-ixvmguseu",
+      "bookTitle": "Tere Liye   Matahari",
+      "filePath": "Tere_Liye_-_Matahari.pdf",
+      "message": "File PDF \"Tere_Liye_-_Matahari.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-d415jh3lw",
+      "bookTitle": "Tere Liye   Matahari.pdf",
+      "filePath": "Tere_Liye_-_Matahari.pdf.pdf",
+      "message": "File PDF \"Tere_Liye_-_Matahari.pdf.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-ixid1zpvd",
+      "bookTitle": "The Deliciously Keto Cookbook",
+      "filePath": "The Deliciously Keto Cookbook.pdf",
+      "message": "File PDF \"The Deliciously Keto Cookbook.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-zy1qkprhi",
+      "bookTitle": "The Hidden Force",
+      "filePath": "The_Hidden_Force.pdf",
+      "message": "File PDF \"The_Hidden_Force.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-qba1ez8i6",
+      "bookTitle": "The History of Java",
+      "filePath": "The_History_of_Java.pdf",
+      "message": "File PDF \"The_History_of_Java.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-3p0ipdpaw",
+      "bookTitle": "The History of Sumatra",
+      "filePath": "The_History_of_Sumatra.pdf",
+      "message": "File PDF \"The_History_of_Sumatra.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-g6zmc4b58",
+      "bookTitle": "tipe dan sebaran longsoran di das alo provinsi gorontalo",
+      "filePath": "tipe-dan-sebaran-longsoran-di-das-alo-provinsi-gorontalo.pdf",
+      "message": "File PDF \"tipe-dan-sebaran-longsoran-di-das-alo-provinsi-gorontalo.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-n9arv3555",
+      "bookTitle": "Towards demicracy",
+      "filePath": "Towards demicracy.pdf",
+      "message": "File PDF \"Towards demicracy.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-9khanfuq3",
+      "bookTitle": "Travels in the East Indian Archipelago",
+      "filePath": "Travels_in_the_East_Indian_Archipelago.pdf",
+      "message": "File PDF \"Travels_in_the_East_Indian_Archipelago.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    },
+    {
+      "type": "broken_reference",
+      "severity": "critical",
+      "bookId": "gen-se257dwr3",
+      "bookTitle": "Yang fana adalah waktu",
+      "filePath": "Yang fana adalah waktu.pdf",
+      "message": "File PDF \"Yang fana adalah waktu.pdf\" tidak ditemukan di assets folder",
+      "autoFixed": false,
+      "fixAction": "Set isActive=false untuk buku ini"
+    }
+  ],
+  "fixedCount": 0,
+  "summary": {
+    "brokenReferences": 154,
+    "orphanFiles": 0,
+    "corruptedPdfs": 0,
+    "invalidPaths": 0,
+    "missingInResolver": 0
+  }
+}

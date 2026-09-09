@@ -365,7 +365,7 @@ export default function VT3DImmersiveExperience({
                   <p className="text-xs text-slate-400 font-semibold">Penulis: {currentBook.author}</p>
                   <div className="h-px bg-slate-800 my-2" />
                   <p className="text-xs text-slate-300 leading-relaxed font-normal">
-                    {currentBook.description || 'Pustaka Digital Indonesia menghadirkan koleksi literasi terbaik dengan teknologi interaktif futuristik.'}
+                    {currentBook.description || 'Perpustakaan Kita Indonesia menghadirkan koleksi literasi terbaik dengan teknologi interaktif futuristik.'}
                   </p>
                 </div>
 
@@ -464,7 +464,7 @@ export default function VT3DImmersiveExperience({
                     </div>
 
                     <div className="pt-4 border-t border-white/20 flex justify-between items-center text-xs font-mono">
-                      <span>Pustaka Digital</span>
+                      <span>Perpustakaan Kita</span>
                       <Sparkles className="w-5 h-5 text-amber-300 animate-pulse" />
                     </div>
                   </>

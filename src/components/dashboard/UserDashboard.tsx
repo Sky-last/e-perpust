@@ -304,7 +304,7 @@ export default function UserDashboard({
               </div>
               <div className="min-w-0">
                 <h2 className="font-display text-base font-semibold text-[#F6F1E7] tracking-tight truncate">
-                  Pustaka Digital
+                  Perpustakaan Kita
                 </h2>
                 <span className="font-mono-lib text-[9px] text-[#C08B34] uppercase tracking-[0.2em] block">
                   Ruang Baca Publik
@@ -447,7 +447,7 @@ export default function UserDashboard({
                     <Feather className="w-5 h-5 text-[#20301F]" />
                   </div>
                   <div>
-                    <h2 className="font-display text-sm font-semibold text-[#F6F1E7]">Pustaka Digital</h2>
+                    <h2 className="font-display text-sm font-semibold text-[#F6F1E7]">Perpustakaan Kita</h2>
                     <span className="font-mono-lib text-[9px] text-[#C08B34] uppercase tracking-widest">Ruang Baca Publik</span>
                   </div>
                 </div>
@@ -669,7 +669,7 @@ export default function UserDashboard({
                           <h4 className="text-xs font-bold text-[#1F2A24] truncate mt-0.5">
                             {myBorrowings.find(b => b.status === 'approved' || b.status === 'Sedang Dipinjam')?.bookTitle || 'Buku Sedang Dipinjam'}
                           </h4>
-                          <p className="text-[10px] text-[#1F2A24]/50 font-medium mt-0.5">Tersedia sebagai e-book 3D interaktif.</p>
+                          <p className="text-[10px] text-[#1F2A24]/50 font-medium mt-0.5">Tersedia sebagai e-book interaktif.</p>
                         </div>
                       </div>
                       <button
@@ -683,7 +683,7 @@ export default function UserDashboard({
                                 pdfUrl: resolveBookPdfUrl(bObj)
                               });
                             } else {
-                              const tempBook: Partial<Book> = { id: activeBorrow.bookId, title: activeBorrow.bookTitle, coverUrl: activeBorrow.coverUrl };
+                              const tempBook = { id: activeBorrow.bookId, title: activeBorrow.bookTitle };
                               setReadingBook3D({
                                 id: activeBorrow.bookId,
                                 title: activeBorrow.bookTitle,
@@ -691,10 +691,10 @@ export default function UserDashboard({
                                 coverUrl: activeBorrow.coverUrl,
                                 pdfUrl: resolveBookPdfUrl(tempBook),
                                 category: 'Koleksi Pinjaman',
-                                author: 'Pustaka Digital',
-                                publisher: 'Pustaka Digital',
+                                author: 'Perpustakaan Kita',
+                                publisher: 'Perpustakaan Kita',
                                 isbn: '000-000-000',
-                                description: `E-book digital "${activeBorrow.bookTitle}" koleksi Pustaka Digital.`,
+                                description: `E-book digital "${activeBorrow.bookTitle}" koleksi Perpustakaan Kita.`,
                                 year: 2026,
                                 rating: 5,
                                 status: 'Tersedia',
@@ -1068,14 +1068,13 @@ export default function UserDashboard({
 
                               {(b.status === 'approved' || b.status === 'overdue' || b.status === 'Sedang Dipinjam') && (
                                 <div className="flex flex-wrap items-center gap-2 md:justify-end">
-                                  {book && (
-                                    <button
-                                      onClick={() => setReadingBook3D(book)}
-                                      className="px-3.5 py-2 bg-[#20301F] hover:bg-[#2A3F27] text-[#F6F1E7] rounded-lg text-[10px] font-bold transition-colors cursor-pointer active:scale-95 flex items-center gap-1.5"
-                                    >
-                                      <BookOpen className="w-3.5 h-3.5" /> Baca E-Book
-                                    </button>
-                                  )}
+                                  <button
+                                    onClick={() => book && setReadingBook3D(book)}
+                                    disabled={!book}
+                                    className="px-3.5 py-2 bg-[#20301F] hover:bg-[#2A3F27] text-[#F6F1E7] rounded-lg text-[10px] font-bold transition-colors cursor-pointer active:scale-95 flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                                  >
+                                    <BookOpen className="w-3.5 h-3.5" /> Baca E-Book
+                                  </button>
                                   <button
                                     onClick={() => onRequestReturn(b.id)}
                                     className="px-3.5 py-2 bg-white hover:bg-[#F6F1E7] text-[#1F2A24] border border-[#1F2A24]/15 rounded-lg text-[10px] font-bold transition-colors cursor-pointer active:scale-95"
@@ -1512,7 +1511,7 @@ export default function UserDashboard({
 
                     <div className="bg-[#C08B34]/10 p-4 rounded-xl border border-[#C08B34]/25 text-[11px] text-[#8A5F22] space-y-1 font-bold">
                       <p className="font-bold flex items-center gap-1.5"><Info className="w-4 h-4" /> Ketentuan Layanan:</p>
-                      <p>1. Nikmati fitur pembaca e-book 3D interaktif secara bebas.</p>
+                      <p>1. Nikmati fitur pembaca e-book interaktif secara bebas.</p>
                       <p>2. Pengajuan buku fisik dapat diambil langsung setelah disetujui staf.</p>
                     </div>
 
@@ -1627,5 +1626,6 @@ function BookCard({
     </motion.button>
   );
 }
+
 
 

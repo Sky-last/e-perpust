@@ -4,9 +4,15 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --open",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "audit-fix": "tsx scripts/auto_fix_digital_library.ts",
+    "sync:scan": "tsx scripts/sync_pdf_catalog.ts --mode=scan",
+    "sync:import": "tsx scripts/sync_pdf_catalog.ts --mode=import",
+    "sync:cleanup": "tsx scripts/sync_pdf_catalog.ts --mode=cleanup --dry-run",
+    "sync:report": "tsx scripts/sync_pdf_catalog.ts --mode=report",
+    "generate:covers": "tsx scripts/generate_pdf_covers.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.110.1",

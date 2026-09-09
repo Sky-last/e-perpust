@@ -1,0 +1,405 @@
+{
+  "totalBooks": 55,
+  "validBooks": 55,
+  "fixedPaths": 0,
+  "missingPdfs": [],
+  "corruptPdfs": [],
+  "orphanFiles": [
+    {
+      "filename": "101 tip dan trick pemrograman php.pdf",
+      "sizeBytes": 7157288
+    },
+    {
+      "filename": "1740363594_101._Bicara_itu_ada_seninya_(1).pdf",
+      "sizeBytes": 1997544
+    },
+    {
+      "filename": "5_6251107178845831336.pdf",
+      "sizeBytes": 4666980
+    },
+    {
+      "filename": "69490a7377f5b-the-little-duke-or-richard-the-fearless-by-charlotte-mary-yonge.pdf",
+      "sizeBytes": 621447
+    },
+    {
+      "filename": "69496235abd9b-mistress-wilding-by-rafael-sabatini.pdf",
+      "sizeBytes": 1174262
+    },
+    {
+      "filename": "Advice_for_the_Muslim.pdf",
+      "sizeBytes": 8094077
+    },
+    {
+      "filename": "Bahagia kenapa tidak 1.pdf",
+      "sizeBytes": 3315146
+    },
+    {
+      "filename": "Berani-jadi-SE-24Jun2015-final.pdf",
+      "sizeBytes": 19581650
+    },
+    {
+      "filename": "bks_10_Hmm__Enaaak.pdf",
+      "sizeBytes": 7129
+    },
+    {
+      "filename": "bks_11_Jaket_Pinjaman.pdf",
+      "sizeBytes": 7154
+    },
+    {
+      "filename": "bks_12_Kisah_Beruk_dan_Hewan_Lainnya.pdf",
+      "sizeBytes": 7370
+    },
+    {
+      "filename": "bks_13_Rewako__Ammang____Beranilah__Ammang.pdf",
+      "sizeBytes": 7381
+    },
+    {
+      "filename": "bks_14_Di_Mana_Ibu.pdf",
+      "sizeBytes": 7144
+    },
+    {
+      "filename": "bks_15_Di_Mana_Keli.pdf",
+      "sizeBytes": 7110
+    },
+    {
+      "filename": "bks_16_Dina_Bisa_Cerita.pdf",
+      "sizeBytes": 7127
+    },
+    {
+      "filename": "bks_17_Dongeng_untuk_Santi.pdf",
+      "sizeBytes": 7172
+    },
+    {
+      "filename": "bks_18_Dua_Potong_Gorengan.pdf",
+      "sizeBytes": 7160
+    },
+    {
+      "filename": "bks_19_Fao_Si_Pelompat_Batu.pdf",
+      "sizeBytes": 7200
+    },
+    {
+      "filename": "bks_1_Syifa_dan_Burung_Kenari.pdf",
+      "sizeBytes": 7298
+    },
+    {
+      "filename": "bks_20_Kue_Kimu.pdf",
+      "sizeBytes": 7043
+    },
+    {
+      "filename": "bks_21_Sahabatku_Indonesia__Tingkat_A1__BIPA_1.pdf",
+      "sizeBytes": 7436
+    },
+    {
+      "filename": "bks_22_Sahabatku_Indonesia__Tingkat_C2.pdf",
+      "sizeBytes": 7358
+    },
+    {
+      "filename": "bks_23_Buku_Praktis_Bahasa_Indonesia_1.pdf",
+      "sizeBytes": 7328
+    },
+    {
+      "filename": "bks_24_Buku_Praktis_Bahasa_Indonesia_2.pdf",
+      "sizeBytes": 7328
+    },
+    {
+      "filename": "bks_25_Bahasa_Indonesia__Buku_Guru_SMP_MTs_Kelas_VIII.pdf",
+      "sizeBytes": 7347
+    },
+    {
+      "filename": "bks_26_Pendidikan_Agama_Katolik_dan_Budi_Pekerti_SD_Kelas_IV.pdf",
+      "sizeBytes": 7551
+    },
+    {
+      "filename": "bks_27_Glosarium_Matematika.pdf",
+      "sizeBytes": 7269
+    },
+    {
+      "filename": "bks_28_Latihan_Soal_Kemahiran_Berbahasa_Indonesia.pdf",
+      "sizeBytes": 7417
+    },
+    {
+      "filename": "bks_29_Seri_Pelatihan_UKBI.pdf",
+      "sizeBytes": 7176
+    },
+    {
+      "filename": "bks_2_Rusaknya_Suara_Kodok.pdf",
+      "sizeBytes": 7283
+    },
+    {
+      "filename": "bks_30_Tata_Bahasa_Baku_Bahasa_Indonesia.pdf",
+      "sizeBytes": 7286
+    },
+    {
+      "filename": "bks_31_History_of_Indonesia__A_Resource_Book.pdf",
+      "sizeBytes": 7586
+    },
+    {
+      "filename": "bks_32_1957__Deklarasi_Djuanda_dan_Kedaulatan_Laut_Kita.pdf",
+      "sizeBytes": 7373
+    },
+    {
+      "filename": "bks_33_Sisingamangaraja__Pemersatu_Batak_di_Toba.pdf",
+      "sizeBytes": 7298
+    },
+    {
+      "filename": "bks_34_Tinggalan_Kolonial_di_Jawa_Timur.pdf",
+      "sizeBytes": 7344
+    },
+    {
+      "filename": "bks_35_Kebhinekaan_Budaya_Papua__Perspektif_Arkeologi_Prasejarah.pdf",
+      "sizeBytes": 7548
+    },
+    {
+      "filename": "bks_36_Kepahlawanan_Trunajaya.pdf",
+      "sizeBytes": 7183
+    },
+    {
+      "filename": "bks_37_Asal_Usul_Danau_Maninjau.pdf",
+      "sizeBytes": 7340
+    },
+    {
+      "filename": "bks_38_Bahasa_Daerah_di_Indonesia__Kebersamaan_dalam_Keberagaman.pdf",
+      "sizeBytes": 7444
+    },
+    {
+      "filename": "bks_39_Ceritera_Rakyat_Daerah_Jambi.pdf",
+      "sizeBytes": 7281
+    },
+    {
+      "filename": "bks_3_Lepu_pun_Tersenyum.pdf",
+      "sizeBytes": 7270
+    },
+    {
+      "filename": "bks_40_Ungkapan_Tradisional_Daerah_Istimewa_Aceh.pdf",
+      "sizeBytes": 7417
+    },
+    {
+      "filename": "bks_41_Purnama_Alam_I.pdf",
+      "sizeBytes": 7138
+    },
+    {
+      "filename": "bks_42_Carita_Badak_Pamalang__Carita_Pantun_Sunda.pdf",
+      "sizeBytes": 7384
+    },
+    {
+      "filename": "bks_43_Babad_Majapahit.pdf",
+      "sizeBytes": 7170
+    },
+    {
+      "filename": "bks_44_Ceritera_Panji_Pakang_Raras.pdf",
+      "sizeBytes": 7330
+    },
+    {
+      "filename": "bks_45_Ancimun_Tuminggang_Dui__Mentimun_Menimpa_Duri.pdf",
+      "sizeBytes": 7453
+    },
+    {
+      "filename": "bks_46_Supraba_Lan_Suminten.pdf",
+      "sizeBytes": 7178
+    },
+    {
+      "filename": "bks_47_Kidung_Megat_Kung.pdf",
+      "sizeBytes": 7289
+    },
+    {
+      "filename": "bks_48_Sistem_Sapaan_Dialek_Jakarta.pdf",
+      "sizeBytes": 7352
+    },
+    {
+      "filename": "bks_49_Pedoman_Penelitian_Sosiologi_Sastra.pdf",
+      "sizeBytes": 7351
+    },
+    {
+      "filename": "bks_4_Bumi__Ayo_Bangun.pdf",
+      "sizeBytes": 7280
+    },
+    {
+      "filename": "bks_50_Verba_Taktransitif_Bahasa_Sunda.pdf",
+      "sizeBytes": 7410
+    },
+    {
+      "filename": "bks_5_Kutilang_yang_Suka_Bernyanyi.pdf",
+      "sizeBytes": 7307
+    },
+    {
+      "filename": "bks_6_Operasi_Sampah_di_Taman.pdf",
+      "sizeBytes": 7278
+    },
+    {
+      "filename": "bks_7_Pesut_Tak_Lapar_Lagi.pdf",
+      "sizeBytes": 7253
+    },
+    {
+      "filename": "bks_8_Biji_Merah_Luna.pdf",
+      "sizeBytes": 7132
+    },
+    {
+      "filename": "bks_9_Gambar_Lucu_Mika.pdf",
+      "sizeBytes": 7141
+    },
+    {
+      "filename": "Blown_to_Bits.pdf",
+      "sizeBytes": 621447
+    },
+    {
+      "filename": "buku-kumpulan-eksperimen-sains.pdf",
+      "sizeBytes": 7337735
+    },
+    {
+      "filename": "Bumi - Tere liye.pdf",
+      "sizeBytes": 1598492
+    },
+    {
+      "filename": "Coding games in python.pdf",
+      "sizeBytes": 15922950
+    },
+    {
+      "filename": "Coding project in scratch.pdf",
+      "sizeBytes": 33654237
+    },
+    {
+      "filename": "computer forensics.pdf",
+      "sizeBytes": 3787358
+    },
+    {
+      "filename": "Documents_of_the_Right_Word.pdf",
+      "sizeBytes": 1476516
+    },
+    {
+      "filename": "FILOSOFI-TERAS-HENRY-MANAMPIRING.pdf",
+      "sizeBytes": 4541403
+    },
+    {
+      "filename": "gut-10_Travels_in_the_East_Indian_Archipelago.pdf",
+      "sizeBytes": 6437
+    },
+    {
+      "filename": "gut-3_The_History_of_Sumatra.pdf",
+      "sizeBytes": 6313
+    },
+    {
+      "filename": "gut-5_The_History_of_Java_Vol_1_2.pdf",
+      "sizeBytes": 6447
+    },
+    {
+      "filename": "gut-7_Monumental_Java.pdf",
+      "sizeBytes": 6275
+    },
+    {
+      "filename": "gut-9_Java_Facts_and_Fancies.pdf",
+      "sizeBytes": 6335
+    },
+    {
+      "filename": "Islam_and_Christianity.pdf",
+      "sizeBytes": 784475
+    },
+    {
+      "filename": "Java_Facts_and_Fancies.pdf",
+      "sizeBytes": 621447
+    },
+    {
+      "filename": "KAJIAN-PUISI.pdf",
+      "sizeBytes": 1556631
+    },
+    {
+      "filename": "Konspirasi alam semesta - fiersa besari.pdf",
+      "sizeBytes": 7625556
+    },
+    {
+      "filename": "Letters_of_a_Javanese_Princess.pdf",
+      "sizeBytes": 14872901
+    },
+    {
+      "filename": "Lord_Jim.pdf",
+      "sizeBytes": 621447
+    },
+    {
+      "filename": "Max_Havelaar.pdf",
+      "sizeBytes": 621447
+    },
+    {
+      "filename": "Monumental_Java.pdf",
+      "sizeBytes": 621447
+    },
+    {
+      "filename": "Negeri di ujung tanduk - tere liye.pdf",
+      "sizeBytes": 5369441
+    },
+    {
+      "filename": "OWJkMWI3YmE5YjA1ZDI3ZTc5OTFkYjQ2NWMxZWI0MzU4MDFjNjMyNQ==.pdf",
+      "sizeBytes": 1675958
+    },
+    {
+      "filename": "Prosiding sosiologi- Konflik dan Politik Identitas ( PDFDrive ).pdf",
+      "sizeBytes": 1346294
+    },
+    {
+      "filename": "ragam eksperesi islam nusantara.pdf",
+      "sizeBytes": 23800557
+    },
+    {
+      "filename": "Sejarah Geografi Agraria Indonesia ( PDFDrive ).pdf",
+      "sizeBytes": 12204138
+    },
+    {
+      "filename": "Sejarah Islam di Nusantara ( PDFDrive ).pdf",
+      "sizeBytes": 2971790
+    },
+    {
+      "filename": "Suara-dari-Kelas-Kecil-Kumpulan-Bahan-Literasi-Antikorupsi.pdf",
+      "sizeBytes": 63484673
+    },
+    {
+      "filename": "Tere Liye - Bulan.pdf",
+      "sizeBytes": 5411057
+    },
+    {
+      "filename": "Tere liye - tentang kamu.pdf",
+      "sizeBytes": 3036213
+    },
+    {
+      "filename": "Tere liye - the falling leaf never hates the .pdf",
+      "sizeBytes": 3355571
+    },
+    {
+      "filename": "Tere_Liye_-_Matahari.pdf",
+      "sizeBytes": 7148074
+    },
+    {
+      "filename": "Tere_Liye_-_Matahari.pdf.pdf",
+      "sizeBytes": 7148074
+    },
+    {
+      "filename": "The Deliciously Keto Cookbook.pdf",
+      "sizeBytes": 38450816
+    },
+    {
+      "filename": "The_Hidden_Force.pdf",
+      "sizeBytes": 621447
+    },
+    {
+      "filename": "The_History_of_Java.pdf",
+      "sizeBytes": 621447
+    },
+    {
+      "filename": "The_History_of_Sumatra.pdf",
+      "sizeBytes": 621447
+    },
+    {
+      "filename": "tipe-dan-sebaran-longsoran-di-das-alo-provinsi-gorontalo.pdf",
+      "sizeBytes": 40409384
+    },
+    {
+      "filename": "Towards demicracy.pdf",
+      "sizeBytes": 2212965
+    },
+    {
+      "filename": "Travels_in_the_East_Indian_Archipelago.pdf",
+      "sizeBytes": 621447
+    },
+    {
+      "filename": "Yang fana adalah waktu.pdf",
+      "sizeBytes": 1300744
+    }
+  ]
+}

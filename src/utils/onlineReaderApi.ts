@@ -29,7 +29,7 @@ export async function getOnlineReaderUrl(book: Book): Promise<OnlineReaderResult
     return {
       type: 'pdf',
       url: '/buku_digital/default.pdf',
-      sourceName: 'Pustaka Digital PDF'
+      sourceName: 'Perpustakaan Kita PDF'
     };
   }
 
@@ -97,7 +97,7 @@ export async function getOnlineReaderUrl(book: Book): Promise<OnlineReaderResult
   const localResult: OnlineReaderResult = {
     type: 'pdf',
     url: book.pdfUrl || `/buku_digital/${book.id}.pdf`,
-    sourceName: 'Pustaka Digital Local PDF'
+    sourceName: 'Perpustakaan Kita Local PDF'
   };
   readerCache.set(cacheKey, localResult);
   return localResult;

@@ -26,9 +26,9 @@ export default function LoginPage({ onNavigate, onLogin, addToast }: LoginPagePr
     id: 'login-demo',
     title: 'Digital Library Modern',
     author: 'Pustaka Indonesia',
-    publisher: 'Pustaka Digital',
+    publisher: 'Perpustakaan Kita',
     category: 'Sistem Digital',
-    description: 'Sistem perpustakaan digital imersif dengan teknologi modern.',
+    description: 'Sistem Perpustakaan Kita imersif dengan teknologi modern.',
     coverColor: 'from-blue-600 to-slate-900',
     rating: 4.9,
     year: 2026,
@@ -115,7 +115,7 @@ export default function LoginPage({ onNavigate, onLogin, addToast }: LoginPagePr
                 <Sparkles className="w-3 h-3" /> Sesi Keanggotaan
               </div>
               <h2 className="text-2xl lg:text-3xl font-black text-white leading-tight">
-                Selamat Datang Kembali di Pustaka
+                Selamat Datang Kembali di Perpustakaan Kita
               </h2>
               <p className="text-xs text-slate-400 leading-relaxed font-medium">
                 Masuk ke akun Anda untuk melanjutkan riwayat bacaan dan peminjaman buku.
@@ -138,7 +138,7 @@ export default function LoginPage({ onNavigate, onLogin, addToast }: LoginPagePr
                     <span className="text-[9px] font-black uppercase tracking-widest text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">
                       Digital Member Pass
                     </span>
-                    <h4 className="text-sm font-black text-white mt-1">Pustaka Digital</h4>
+                    <h4 className="text-sm font-black text-white mt-1">Perpustakaan Kita</h4>
                   </div>
                   {/* Microchip graphic */}
                   <div className="w-8 h-6 rounded bg-gradient-to-tr from-amber-400 to-yellow-200 border border-amber-300/60 shadow flex items-center justify-center">
@@ -158,7 +158,7 @@ export default function LoginPage({ onNavigate, onLogin, addToast }: LoginPagePr
                 {/* Card Footer */}
                 <div className="flex justify-between items-end z-10 pt-2 border-t border-slate-800">
                   <span className="text-[9px] text-slate-400">Verified Identity</span>
-                  <span className="text-[9px] font-mono text-blue-300 font-bold">PUSTAKA INDONESIA</span>
+                  <span className="text-[9px] font-mono text-blue-300 font-bold">PERPUSTAKAAN KITA</span>
                 </div>
               </div>
             </div>

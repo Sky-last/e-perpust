@@ -13,33 +13,28 @@ export default function Book3D({ book, size = 'md', className = '', onClick }: B
   const containerRef = useRef<HTMLDivElement>(null);
   const [rotate, setRotate] = useState({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false);
-  const [isMoving, setIsMoving] = useState(false);
+  const animFrameRef = useRef<number | null>(null);
 
-  // Cover URL state — starts with cached or existing cover, then resolves dynamically
-  const cached = getCachedCover(book.isbn || '', book.title);
-  const [resolvedCover, setResolvedCover] = useState<string | null>(
-    cached !== undefined ? cached : (book.coverUrl || null)
-  );
+  // Cover URL state — starts with verified book.coverUrl immediately
+  const [resolvedCover, setResolvedCover] = useState<string | null>(book.coverUrl || null);
   const [coverLoadFailed, setCoverLoadFailed] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
-    // If we already have a resolved cover from cache, use it
-    if (cached !== undefined) {
-      setResolvedCover(cached);
+    if (book.coverUrl) {
+      setResolvedCover(book.coverUrl);
       setCoverLoadFailed(false);
       return;
     }
-    resolveBookCover(book.isbn || '', book.title, book.author, book.coverUrl).then(url => {
-      if (!cancelled) {
+    resolveBookCover(book.isbn || '', book.title, book.author).then(url => {
+      if (!cancelled && url) {
         setResolvedCover(url);
         setCoverLoadFailed(false);
       }
     });
     return () => { cancelled = true; };
-  }, [book.id, book.isbn, book.title, book.author, book.coverUrl]);
+  }, [book.id, book.coverUrl, book.isbn, book.title, book.author]);
 
-  // When the img fails to load, try fetching from Google Books API without the existing URL
   const handleCoverError = () => {
     resolveBookCoverFallback(book.isbn || '', book.title, book.author).then(url => {
       if (url && url !== resolvedCover) {
@@ -51,10 +46,8 @@ export default function Book3D({ book, size = 'md', className = '', onClick }: B
     });
   };
 
-
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!containerRef.current) return;
-    setIsMoving(true);
     const rect = containerRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
@@ -62,16 +55,19 @@ export default function Book3D({ book, size = 'md', className = '', onClick }: B
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
 
-    const rotateY = ((x - centerX) / centerX) * 22;
-    const rotateX = -((y - centerY) / centerY) * 22;
+    const rotateY = ((x - centerX) / centerX) * 16;
+    const rotateX = -((y - centerY) / centerY) * 16;
 
-    setRotate({ x: rotateX, y: rotateY });
+    if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+    animFrameRef.current = requestAnimationFrame(() => {
+      setRotate({ x: rotateX, y: rotateY });
+    });
   };
 
   const handleMouseEnter = () => setIsHovered(true);
   const handleMouseLeave = () => {
+    if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
     setIsHovered(false);
-    setIsMoving(false);
     setRotate({ x: 0, y: 0 });
   };
 
@@ -130,12 +126,10 @@ export default function Book3D({ book, size = 'md', className = '', onClick }: B
 
       {/* 3D Book Container */}
       <div
-        className="w-full h-full relative"
+        className="w-full h-full relative pointer-events-none"
         style={{
           transformStyle: 'preserve-3d',
-          transition: isMoving
-            ? 'transform 0.05s ease-out'
-            : 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
+          transition: isHovered ? 'transform 0.1s ease-out' : 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
           transform: isHovered
             ? `rotateX(${rotate.x}deg) rotateY(${rotate.y}deg) translateZ(10px)`
             : 'rotateX(8deg) rotateY(-18deg) rotateZ(0deg)',
@@ -204,7 +198,7 @@ export default function Book3D({ book, size = 'md', className = '', onClick }: B
           }}
         >
           <div className="text-[9px] font-sans leading-relaxed space-y-1">
-            <p className="font-bold text-white uppercase text-[8px] tracking-wider">Perpustakaan Digital</p>
+            <p className="font-bold text-white uppercase text-[8px] tracking-wider">Perpustakaan Kita</p>
             <p className="line-clamp-6 text-slate-300">{book.description || 'Koleksi e-book literasi digital berkualitas.'}</p>
           </div>
           <div className="text-[8px] font-mono text-slate-500 text-center border-t border-white/10 pt-2">

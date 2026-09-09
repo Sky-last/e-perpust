@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clear Cache - Perpustakaan Digital</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        p {
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin: 10px;
+        }
+        
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        
+        .button:active {
+            transform: translateY(0);
+        }
+        
+        .button.secondary {
+            background: #6c757d;
+        }
+        
+        .button.secondary:hover {
+            box-shadow: 0 10px 30px rgba(108, 117, 125, 0.4);
+        }
+        
+        .icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+        
+        .success {
+            color: #28a745;
+            font-weight: 600;
+            margin-top: 20px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .success.show {
+            opacity: 1;
+        }
+        
+        .info-box {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: left;
+            border-radius: 5px;
+        }
+        
+        .info-box h3 {
+            color: #667eea;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        
+        .info-box ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .info-box li {
+            color: #666;
+            font-size: 13px;
+            margin: 5px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .info-box li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #28a745;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">🗑️</div>
+        <h1>Clear Cache & Data</h1>
+        <p>Hapus cache aplikasi untuk memuat data buku terbaru dari server.</p>
+        
+        <div class="info-box">
+            <h3>Yang akan dihapus:</h3>
+            <ul>
+                <li>Data buku di localStorage</li>
+                <li>Kategori buku tersimpan</li>
+                <li>Cache pengaturan aplikasi</li>
+                <li>Data notifikasi lokal</li>
+            </ul>
+        </div>
+        
+        <button class="button" onclick="clearCache()">
+            🧹 Clear Cache Sekarang
+        </button>
+        
+        <button class="button secondary" onclick="goBack()">
+            ← Kembali ke Aplikasi
+        </button>
+        
+        <div class="success" id="successMsg">
+            ✅ Cache berhasil dihapus! Silakan refresh atau kembali ke aplikasi.
+        </div>
+    </div>
+    
+    <script>
+        function clearCache() {
+            try {
+                // Clear all localStorage items related to the app
+                const keysToRemove = [
+                    'digital_library_books',
+                    'digital_library_categories',
+                    'digital_library_settings',
+                    'digital_library_notifications',
+                    'digital_library_borrowings',
+                    'digital_library_users',
+                    'digital_library_logs'
+                ];
+                
+                keysToRemove.forEach(key => {
+                    localStorage.removeItem(key);
+                    console.log(`Removed: ${key}`);
+                });
+                
+                // Show success message
+                const successMsg = document.getElementById('successMsg');
+                successMsg.classList.add('show');
+                
+                // Confetti effect (simple)
+                console.log('✨ Cache cleared successfully!');
+                
+                // Auto redirect after 2 seconds
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 2000);
+                
+            } catch (error) {
+                alert('Error saat menghapus cache: ' + error.message);
+                console.error(error);
+            }
+        }
+        
+        function goBack() {
+            window.location.href = '/';
+        }
+        
+        // Shortcut: Ctrl+Shift+R untuk clear cache
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.shiftKey && e.key === 'R') {
+                e.preventDefault();
+                clearCache();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -51,10 +51,10 @@ export default function PinjamanPage({
         coverUrl,
         pdfUrl: resolveBookPdfUrl(tempBook),
         category: 'Koleksi Pinjaman',
-        author: 'Pustaka Digital',
-        publisher: 'Pustaka Digital',
+        author: 'Perpustakaan Kita',
+        publisher: 'Perpustakaan Kita',
         isbn: '000-000-000',
-        description: `E-book digital "${bookTitle}" koleksi Pustaka Digital.`,
+        description: `E-book digital "${bookTitle}" koleksi Perpustakaan Kita.`,
         year: 2026,
         rating: 5,
         status: 'Tersedia',
@@ -67,7 +67,7 @@ export default function PinjamanPage({
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">Daftar Pinjaman Buku</h1>
-        <p className="text-slate-400 text-xs md:text-sm">Pantau status, lakukan perpanjangan durasi, atau baca e-book 3D dan kembalikan pinjaman Anda di sini.</p>
+        <p className="text-slate-400 text-xs md:text-sm">Pantau status, lakukan perpanjangan durasi, atau baca e-book dan kembalikan pinjaman Anda di sini.</p>
       </div>
 
       {sortedBorrowings.length > 0 ? (
@@ -124,7 +124,7 @@ export default function PinjamanPage({
                                 coverUrl: item.coverUrl,
                                 category: 'Pinjaman',
                                 author: 'Pustaka',
-                                publisher: 'Pustaka Digital',
+                                publisher: 'Perpustakaan Kita',
                                 isbn: '000-000',
                                 description: '',
                                 year: 2026,
@@ -190,7 +190,7 @@ export default function PinjamanPage({
                               <button 
                                 onClick={() => handleOpenReader(item.bookId, item.bookTitle, item.coverColor, item.coverUrl)}
                                 className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold rounded-lg shadow-sm transition-all flex items-center space-x-1 cursor-pointer"
-                                title="Baca E-Book 3D"
+                                title="Baca E-Book"
                               >
                                 <BookOpen className="w-3.5 h-3.5" />
                                 <span>Baca E-Book</span>

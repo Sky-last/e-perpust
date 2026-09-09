@@ -22,7 +22,7 @@ export const DEFAULT_SETTINGS: LibrarySettings = {
 export const DEFAULT_USERS: User[] = [
   {
     id: 'u1',
-    name: 'Admin Pustaka',
+    name: 'Admin Perpustakaan Kita',
     email: 'admin@pustaka.com',
     password: 'admin',
     role: UserRole.ADMIN,

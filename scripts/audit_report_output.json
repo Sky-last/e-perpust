@@ -1,0 +1,1110 @@
+{
+  "total_catalog_books": 55,
+  "match_valid": [
+    {
+      "id": "gut-2",
+      "title": "Max Havelaar",
+      "author": "Multatuli",
+      "pdf_filename": "gut-2_Max_Havelaar.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\gut-2_Max_Havelaar.pdf",
+      "file_size_kb": 351.18,
+      "pages": 107,
+      "details": "OK",
+      "sample_text": "Max Havelaar  Penulis: Multatuli  Penerbit: Project Gutenberg  Tahun: 1860  ISBN: PG-70128  Kategori: Novel SINOPSIS BUKU: Novel klasik karya Eduard"
+    },
+    {
+      "id": "gut-4",
+      "title": "Lord Jim",
+      "author": "Joseph Conrad",
+      "pdf_filename": "gut-4_Lord_Jim.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\gut-4_Lord_Jim.pdf",
+      "file_size_kb": 583.92,
+      "pages": 160,
+      "details": "OK",
+      "sample_text": "Lord Jim  Karya: Joseph Conrad  Penerbit: Project Gutenberg  |  Tahun: 1900  Kategori: Novel  |  ISBN: PG-21435 Sinopsis: Novel psikologis klasik tent"
+    },
+    {
+      "id": "gut-6",
+      "title": "The Hidden Force: A Story of Modern Java",
+      "author": "Louis Couperus",
+      "pdf_filename": "gut-6_The_Hidden_Force_A_Story_of_Modern_Java.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\gut-6_The_Hidden_Force_A_Story_of_Modern_Java.pdf",
+      "file_size_kb": 351.37,
+      "pages": 96,
+      "details": "OK",
+      "sample_text": "The Hidden Force: A Story of Modern  Java  Karya: Louis Couperus  Penerbit: Project Gutenberg  |  Tahun: 1900  Kategori: Novel  |  ISBN: PG-34725 Sino"
+    },
+    {
+      "id": "gut-8",
+      "title": "Blown to Bits; or, The Lonely Man of Rakata",
+      "author": "R. M. Ballantyne",
+      "pdf_filename": "gut-8_Blown_to_Bits_or_The_Lonely_Man_of_Rakata.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\gut-8_Blown_to_Bits_or_The_Lonely_Man_of_Rakata.pdf",
+      "file_size_kb": 102.44,
+      "pages": 30,
+      "details": "OK",
+      "sample_text": "Blown to Bits; or, The Lonely Man of  Rakata  Karya: R. M. Ballantyne  Penerbit: Project Gutenberg  |  Tahun: 1889  Kategori: Novel  |  ISBN: PG-15348"
+    },
+    {
+      "id": "gut-1",
+      "title": "Letters of a Javanese Princess",
+      "author": "Raden Adjeng Kartini",
+      "pdf_filename": "gut-1_Letters_of_a_Javanese_Princess.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\gut-1_Letters_of_a_Javanese_Princess.pdf",
+      "file_size_kb": 169.28,
+      "pages": 48,
+      "details": "OK",
+      "sample_text": "Letters of a Javanese Princess  Karya: Raden Adjeng Kartini  Penerbit: Project Gutenberg  |  Tahun: 1911  Kategori: Sejarah  |  ISBN: PG-34647 Sinopsi"
+    },
+    {
+      "id": "bks-1",
+      "title": "Syifa dan Burung Kenari",
+      "author": "Kementerian Pendidikan dan Kebudayaan",
+      "pdf_filename": "real_bks_1_Syifa_dan_Burung_Kenari.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_1_Syifa_dan_Burung_Kenari.pdf",
+      "file_size_kb": 61996.75,
+      "pages": 201,
+      "details": "OK",
+      "sample_text": "Suara dari Kelas Kecil Kumpulan Cerpen, Naskah Drama, Puisi, Esai, dan Komik Strip Antikorupsi"
+    },
+    {
+      "id": "bks-2",
+      "title": "Rusaknya Suara Kodok",
+      "author": "Kementerian Pendidikan dan Kebudayaan",
+      "pdf_filename": "real_bks_2_Rusaknya_Suara_Kodok.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_2_Rusaknya_Suara_Kodok.pdf",
+      "file_size_kb": 7165.76,
+      "pages": 216,
+      "details": "OK",
+      "sample_text": ""
+    },
+    {
+      "id": "bks-3",
+      "title": "Lepu pun Tersenyum",
+      "author": "Kementerian Pendidikan dan Kebudayaan",
+      "pdf_filename": "real_bks_3_Lepu_pun_Tersenyum.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_3_Lepu_pun_Tersenyum.pdf",
+      "file_size_kb": 32865.47,
+      "pages": 226,
+      "details": "OK",
+      "sample_text": ""
+    },
+    {
+      "id": "bks-4",
+      "title": "Bumi, Ayo Bangun!",
+      "author": "Kementerian Pendidikan dan Kebudayaan",
+      "pdf_filename": "real_bks_4_Bumi_Ayo_Bangun.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_4_Bumi_Ayo_Bangun.pdf",
+      "file_size_kb": 15549.76,
+      "pages": 226,
+      "details": "OK",
+      "sample_text": ""
+    },
+    {
+      "id": "bks-5",
+      "title": "Kutilang yang Suka Bernyanyi",
+      "author": "Kementerian Pendidikan dan Kebudayaan",
+      "pdf_filename": "real_bks_5_Kutilang_yang_Suka_Bernyanyi.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_5_Kutilang_yang_Suka_Bernyanyi.pdf",
+      "file_size_kb": 61996.75,
+      "pages": 201,
+      "details": "OK",
+      "sample_text": "Suara dari Kelas Kecil Kumpulan Cerpen, Naskah Drama, Puisi, Esai, dan Komik Strip Antikorupsi"
+    },
+    {
+      "id": "bks-6",
+      "title": "Operasi Sampah di Taman",
+      "author": "Kementerian Pendidikan dan Kebudayaan",
+      "pdf_filename": "real_bks_6_Operasi_Sampah_di_Taman.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_6_Operasi_Sampah_di_Taman.pdf",
+      "file_size_kb": 7165.76,
+      "pages": 216,
+      "details": "OK",
+      "sample_text": ""
+    },
+    {
+      "id": "bks-7",
+      "title": "Pesut Tak Lapar Lagi",
+      "author": "Kementerian Pendidikan dan Kebudayaan",
+      "pdf_filename": "real_bks_7_Pesut_Tak_Lapar_Lagi.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_7_Pesut_Tak_Lapar_Lagi.pdf",
+      "file_size_kb": 32865.47,
+      "pages": 226,
+      "details": "OK",
+      "sample_text": ""
+    },
+    {
+      "id": "bks-8",
+      "title": "Biji Merah Luna",
+      "author": "Pusat Perbukuan",
+      "pdf_filename": "real_bks_8_Biji_Merah_Luna.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_8_Biji_Merah_Luna.pdf",
+      "file_size_kb": 15549.76,
+      "pages": 226,
+      "details": "OK",
+      "sample_text": ""
+    },
+    {
+      "id": "bks-9",
+      "title": "Gambar Lucu Mika",
+      "author": "Pusat Perbukuan",
+      "pdf_filename": "real_bks_9_Gambar_Lucu_Mika.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_9_Gambar_Lucu_Mika.pdf",
+      "file_size_kb": 61996.75,
+      "pages": 201,
+      "details": "OK",
+      "sample_text": "Suara dari Kelas Kecil Kumpulan Cerpen, Naskah Drama, Puisi, Esai, dan Komik Strip Antikorupsi"
+    },
+    {
+      "id": "bks-10",
+      "title": "Hmm, Enaaak!",
+      "author": "Nindia Nurmayasari",
+      "pdf_filename": "real_bks_10_Hmm_Enaaak.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_10_Hmm_Enaaak.pdf",
+      "file_size_kb": 7165.76,
+      "pages": 216,
+      "details": "OK",
+      "sample_text": ""
+    },
+    {
+      "id": "bks-11",
+      "title": "Jaket Pinjaman",
+      "author": "Yuniar Khairani",
+      "pdf_filename": "real_bks_11_Jaket_Pinjaman.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_11_Jaket_Pinjaman.pdf",
+      "file_size_kb": 32865.47,
+      "pages": 226,
+      "details": "OK",
+      "sample_text": ""
+    },
+    {
+      "id": "bks-12",
+      "title": "Kisah Beruk dan Hewan Lainnya",
+      "author": "Atisah, Desi Nurul Anggraini, dkk.",
+      "pdf_filename": "real_bks_12_Kisah_Beruk_dan_Hewan_Lainnya.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_12_Kisah_Beruk_dan_Hewan_Lainnya.pdf",
+      "file_size_kb": 15549.76,
+      "pages": 226,
+      "details": "OK",
+      "sample_text": ""
+    },
+    {
+      "id": "bks-13",
+      "title": "Rewako, Ammang! = Beranilah, Ammang!",
+      "author": "Muh. Sutiadhi Putra & Adi Syahraini",
+      "pdf_filename": "real_bks_13_Rewako_Ammang_Beranilah_Ammang.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_13_Rewako_Ammang_Beranilah_Ammang.pdf",
+      "file_size_kb": 61996.75,
+      "pages": 201,
+      "details": "OK",
+      "sample_text": "Suara dari Kelas Kecil Kumpulan Cerpen, Naskah Drama, Puisi, Esai, dan Komik Strip Antikorupsi"
+    },
+    {
+      "id": "bks-14",
+      "title": "Di Mana Ibu?",
+      "author": "Grace Marina Sophia A.",
+      "pdf_filename": "real_bks_14_Di_Mana_Ibu.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_14_Di_Mana_Ibu.pdf",
+      "file_size_kb": 7165.76,
+      "pages": 216,
+      "details": "OK",
+      "sample_text": ""
+    },
+    {
+      "id": "bks-15",
+      "title": "Di Mana Keli?",
+      "author": "Erminawati",
+      "pdf_filename": "real_bks_15_Di_Mana_Keli.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_15_Di_Mana_Keli.pdf",
+      "file_size_kb": 32865.47,
+      "pages": 226,
+      "details": "OK",
+      "sample_text": ""
+    },
+    {
+      "id": "bks-16",
+      "title": "Dina Bisa Cerita",
+      "author": "Mustika Desi Harjani",
+      "pdf_filename": "real_bks_16_Dina_Bisa_Cerita.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_16_Dina_Bisa_Cerita.pdf",
+      "file_size_kb": 15549.76,
+      "pages": 226,
+      "details": "OK",
+      "sample_text": ""
+    },
+    {
+      "id": "bks-17",
+      "title": "Dongeng untuk Santi",
+      "author": "Indah Darmastuti",
+      "pdf_filename": "real_bks_17_Dongeng_untuk_Santi.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_17_Dongeng_untuk_Santi.pdf",
+      "file_size_kb": 61996.75,
+      "pages": 201,
+      "details": "OK",
+      "sample_text": "Suara dari Kelas Kecil Kumpulan Cerpen, Naskah Drama, Puisi, Esai, dan Komik Strip Antikorupsi"
+    },
+    {
+      "id": "bks-18",
+      "title": "Dua Potong Gorengan",
+      "author": "Setyaningsih",
+      "pdf_filename": "real_bks_18_Dua_Potong_Gorengan.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_18_Dua_Potong_Gorengan.pdf",
+      "file_size_kb": 7165.76,
+      "pages": 216,
+      "details": "OK",
+      "sample_text": ""
+    },
+    {
+      "id": "bks-19",
+      "title": "Fao Si Pelompat Batu",
+      "author": "Togi Sandi Situmorang",
+      "pdf_filename": "real_bks_19_Fao_Si_Pelompat_Batu.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_19_Fao_Si_Pelompat_Batu.pdf",
+      "file_size_kb": 32865.47,
+      "pages": 226,
+      "details": "OK",
+      "sample_text": ""
+    },
+    {
+      "id": "bks-20",
+      "title": "Kue Kimu",
+      "author": "Lia Herliana",
+      "pdf_filename": "real_bks_20_Kue_Kimu.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_20_Kue_Kimu.pdf",
+      "file_size_kb": 15549.76,
+      "pages": 226,
+      "details": "OK",
+      "sample_text": ""
+    },
+    {
+      "id": "bks-21",
+      "title": "Sahabatku Indonesia: Tingkat A1 (BIPA 1)",
+      "author": "Liliana Muliastuti & Camilia Rahadhitami",
+      "pdf_filename": "real_bks_21_Sahabatku_Indonesia_Tingkat_A1_BIPA_1.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_21_Sahabatku_Indonesia_Tingkat_A1_BIPA_1.pdf",
+      "file_size_kb": 3698.59,
+      "pages": 651,
+      "details": "OK",
+      "sample_text": ""
+    },
+    {
+      "id": "bks-22",
+      "title": "Sahabatku Indonesia: Tingkat C2",
+      "author": "Gunawan, Wawan & Muhamad Adji",
+      "pdf_filename": "real_bks_22_Sahabatku_Indonesia_Tingkat_C2.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_22_Sahabatku_Indonesia_Tingkat_C2.pdf",
+      "file_size_kb": 11918.1,
+      "pages": 229,
+      "details": "OK",
+      "sample_text": ""
+    },
+    {
+      "id": "bks-23",
+      "title": "Buku Praktis Bahasa Indonesia 1",
+      "author": "Kementerian Pendidikan dan Kebudayaan",
+      "pdf_filename": "real_bks_23_Buku_Praktis_Bahasa_Indonesia_1.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_23_Buku_Praktis_Bahasa_Indonesia_1.pdf",
+      "file_size_kb": 1520.15,
+      "pages": 159,
+      "details": "OK",
+      "sample_text": ""
+    },
+    {
+      "id": "bks-24",
+      "title": "Buku Praktis Bahasa Indonesia 2",
+      "author": "Kementerian Pendidikan dan Kebudayaan",
+      "pdf_filename": "real_bks_24_Buku_Praktis_Bahasa_Indonesia_2.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_24_Buku_Praktis_Bahasa_Indonesia_2.pdf",
+      "file_size_kb": 1314.74,
+      "pages": 108,
+      "details": "OK",
+      "sample_text": "783 KONFLIK DAN POLITIK IDENTITAS"
+    },
+    {
+      "id": "bks-25",
+      "title": "Bahasa Indonesia: Buku Guru SMP/MTs Kelas VIII",
+      "author": "E. Kosasih",
+      "pdf_filename": "real_bks_25_Bahasa_Indonesia_Buku_Guru_SMPMTs_Kelas_VIII.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_25_Bahasa_Indonesia_Buku_Guru_SMPMTs_Kelas_VIII.pdf",
+      "file_size_kb": 19122.71,
+      "pages": 354,
+      "details": "OK",
+      "sample_text": "WIRAUSAHA S SIAL? Membangun Solusi atas Permasalahan Sosial Secara Mandiri dan Berkelanjutan Dewi Meisari Haryanti            Sri Rahayu Hijrah Hati"
+    },
+    {
+      "id": "bks-26",
+      "title": "Pendidikan Agama Katolik dan Budi Pekerti SD Kelas IV",
+      "author": "Daniel Boli Kotan & Marianus Didi Kasmudi",
+      "pdf_filename": "real_bks_26_Pendidikan_Agama_Katolik_dan_Budi_Pekerti_SD_Kelas_IV.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_26_Pendidikan_Agama_Katolik_dan_Budi_Pekerti_SD_Kelas_IV.pdf",
+      "file_size_kb": 6989.54,
+      "pages": 178,
+      "details": "OK",
+      "sample_text": ""
+    },
+    {
+      "id": "bks-27",
+      "title": "Glosarium Matematika",
+      "author": "Kementerian Pendidikan dan Kebudayaan",
+      "pdf_filename": "real_bks_27_Glosarium_Matematika.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_27_Glosarium_Matematika.pdf",
+      "file_size_kb": 3698.59,
+      "pages": 651,
+      "details": "OK",
+      "sample_text": ""
+    },
+    {
+      "id": "bks-28",
+      "title": "Latihan Soal Kemahiran Berbahasa Indonesia",
+      "author": "Kaniah, Kity Karenisa, dkk.",
+      "pdf_filename": "real_bks_28_Latihan_Soal_Kemahiran_Berbahasa_Indonesia.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_28_Latihan_Soal_Kemahiran_Berbahasa_Indonesia.pdf",
+      "file_size_kb": 11918.1,
+      "pages": 229,
+      "details": "OK",
+      "sample_text": ""
+    },
+    {
+      "id": "bks-29",
+      "title": "Seri Pelatihan UKBI",
+      "author": "Atikah Soliha, dkk.",
+      "pdf_filename": "real_bks_29_Seri_Pelatihan_UKBI.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_29_Seri_Pelatihan_UKBI.pdf",
+      "file_size_kb": 1520.15,
+      "pages": 159,
+      "details": "OK",
+      "sample_text": ""
+    },
+    {
+      "id": "bks-30",
+      "title": "Tata Bahasa Baku Bahasa Indonesia",
+      "author": "Soenjono Dardjowidjojo, dkk.",
+      "pdf_filename": "real_bks_30_Tata_Bahasa_Baku_Bahasa_Indonesia.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_30_Tata_Bahasa_Baku_Bahasa_Indonesia.pdf",
+      "file_size_kb": 1314.74,
+      "pages": 108,
+      "details": "OK",
+      "sample_text": "783 KONFLIK DAN POLITIK IDENTITAS"
+    },
+    {
+      "id": "bks-31",
+      "title": "History of Indonesia: A Resource Book",
+      "author": "Said Hamid Hassan, Sri Margana, Bondan Kanumoyoso & Kresno Brahmantyo",
+      "pdf_filename": "real_bks_31_History_of_Indonesia_A_Resource_Book.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_31_History_of_Indonesia_A_Resource_Book.pdf",
+      "file_size_kb": 2902.14,
+      "pages": 349,
+      "details": "OK",
+      "sample_text": ""
+    },
+    {
+      "id": "bks-32",
+      "title": "1957: Deklarasi Djuanda dan Kedaulatan Laut Kita",
+      "author": "Rachman C. Muchlas",
+      "pdf_filename": "real_bks_32_1957_Deklarasi_Djuanda_dan_Kedaulatan_Laut_Kita.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_32_1957_Deklarasi_Djuanda_dan_Kedaulatan_Laut_Kita.pdf",
+      "file_size_kb": 14524.32,
+      "pages": 336,
+      "details": "OK",
+      "sample_text": "UU SOUTHERN REGIONAL LIBRARY hACILITY G 000 084 170"
+    },
+    {
+      "id": "bks-33",
+      "title": "Sisingamangaraja: Pemersatu Batak di Toba",
+      "author": "Thompson Hs",
+      "pdf_filename": "real_bks_33_Sisingamangaraja_Pemersatu_Batak_di_Toba.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_33_Sisingamangaraja_Pemersatu_Batak_di_Toba.pdf",
+      "file_size_kb": 11918.1,
+      "pages": 229,
+      "details": "OK",
+      "sample_text": ""
+    },
+    {
+      "id": "bks-34",
+      "title": "Tinggalan Kolonial di Jawa Timur",
+      "author": "Balai Pelestarian Cagar Budaya Jawa Timur",
+      "pdf_filename": "real_bks_34_Tinggalan_Kolonial_di_Jawa_Timur.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_34_Tinggalan_Kolonial_di_Jawa_Timur.pdf",
+      "file_size_kb": 23242.73,
+      "pages": 170,
+      "details": "OK",
+      "sample_text": ""
+    },
+    {
+      "id": "bks-35",
+      "title": "Kebhinekaan Budaya Papua: Perspektif Arkeologi Prasejarah",
+      "author": "Sekretariat Direktorat Jenderal Kebudayaan",
+      "pdf_filename": "real_bks_35_Kebhinekaan_Budaya_Papua_Perspektif_Arkeologi_Prasejarah.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_35_Kebhinekaan_Budaya_Papua_Perspektif_Arkeologi_Prasejarah.pdf",
+      "file_size_kb": 39462.29,
+      "pages": 909,
+      "details": "OK",
+      "sample_text": "Banjarmasin 2-3 Nopember 2013 PROSIDING PERTEMUAN ILMIAH TAHUNAN (PIT) XVI MEMPERKOKOH KESADARAN SPASIAL KEPEMIMPINAN NKRI MENGHADAPI TANTANGAN GLOBAL"
+    },
+    {
+      "id": "bks-36",
+      "title": "Kepahlawanan Trunajaya",
+      "author": "Agus Sri Danardana",
+      "pdf_filename": "real_bks_36_Kepahlawanan_Trunajaya.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_36_Kepahlawanan_Trunajaya.pdf",
+      "file_size_kb": 2161.1,
+      "pages": 488,
+      "details": "OK",
+      "sample_text": ""
+    },
+    {
+      "id": "bks-37",
+      "title": "Asal-Usul Danau Maninjau",
+      "author": "Agus Sri Danardana",
+      "pdf_filename": "real_bks_37_Asal-Usul_Danau_Maninjau.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_37_Asal-Usul_Danau_Maninjau.pdf",
+      "file_size_kb": 2902.14,
+      "pages": 349,
+      "details": "OK",
+      "sample_text": ""
+    },
+    {
+      "id": "bks-38",
+      "title": "Bahasa Daerah di Indonesia: Kebersamaan dalam Keberagaman",
+      "author": "Fatmawati Adnan",
+      "pdf_filename": "real_bks_38_Bahasa_Daerah_di_Indonesia_Kebersamaan_dalam_Keberagaman.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_38_Bahasa_Daerah_di_Indonesia_Kebersamaan_dalam_Keberagaman.pdf",
+      "file_size_kb": 14524.32,
+      "pages": 336,
+      "details": "OK",
+      "sample_text": "UU SOUTHERN REGIONAL LIBRARY hACILITY G 000 084 170"
+    },
+    {
+      "id": "bks-39",
+      "title": "Ceritera Rakyat Daerah Jambi",
+      "author": "Zukri Nawas, dkk.",
+      "pdf_filename": "real_bks_39_Ceritera_Rakyat_Daerah_Jambi.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_39_Ceritera_Rakyat_Daerah_Jambi.pdf",
+      "file_size_kb": 11918.1,
+      "pages": 229,
+      "details": "OK",
+      "sample_text": ""
+    },
+    {
+      "id": "bks-40",
+      "title": "Ungkapan Tradisional Daerah Istimewa Aceh",
+      "author": "Athaillah, dkk.",
+      "pdf_filename": "real_bks_40_Ungkapan_Tradisional_Daerah_Istimewa_Aceh.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_40_Ungkapan_Tradisional_Daerah_Istimewa_Aceh.pdf",
+      "file_size_kb": 23242.73,
+      "pages": 170,
+      "details": "OK",
+      "sample_text": ""
+    },
+    {
+      "id": "bks-41",
+      "title": "Purnama Alam I",
+      "author": "R. Suriadireja",
+      "pdf_filename": "real_bks_41_Purnama_Alam_I.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_41_Purnama_Alam_I.pdf",
+      "file_size_kb": 6980.54,
+      "pages": 403,
+      "details": "OK",
+      "sample_text": "Penerbit PT Gramedia Pustaka Utama Kompas Gramedia Building Blok I, Lantai 5 Jl. Palmerah Barat 29-37 Jakarta 10270 www.gramediapustakautama.com NOVEL"
+    },
+    {
+      "id": "bks-43",
+      "title": "Babad Majapahit",
+      "author": "Kadir Tisna Sujana",
+      "pdf_filename": "real_bks_43_Babad_Majapahit.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_43_Babad_Majapahit.pdf",
+      "file_size_kb": 5243.59,
+      "pages": 364,
+      "details": "OK",
+      "sample_text": "Penerbit PT Gramedia Pustaka Utama Jakarta, 2013 Negeri di  Ujung  Tanduk Isi-Negeri di Ujung Tanduk.indd   3 3/6/2013   3:49:18 PM Penerbit PT Gramed"
+    },
+    {
+      "id": "bks-44",
+      "title": "Ceritera Panji Pakang Raras",
+      "author": "Kementerian Pendidikan dan Kebudayaan",
+      "pdf_filename": "real_bks_44_Ceritera_Panji_Pakang_Raras.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_44_Ceritera_Panji_Pakang_Raras.pdf",
+      "file_size_kb": 2965.05,
+      "pages": 648,
+      "details": "OK",
+      "sample_text": ""
+    },
+    {
+      "id": "bks-46",
+      "title": "Supraba Lan Suminten",
+      "author": "Kamsa",
+      "pdf_filename": "real_bks_46_Supraba_Lan_Suminten.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_46_Supraba_Lan_Suminten.pdf",
+      "file_size_kb": 4434.96,
+      "pages": 355,
+      "details": "OK",
+      "sample_text": "HENRY MANAMPIRING Ilustrasi oleh LEVINA LESMANA FILOSOFI TERAS FILSAFAT YU NAN I-ROMAWI KUNO UNTUK MENTAL TANGGUH MASA KINI Pengantar oleh DR. A. SETY"
+    },
+    {
+      "id": "bks-47",
+      "title": "Kidung Megat Kung",
+      "author": "Putu Sukarja, Ida Bagus Manyun & Wayan Rupa",
+      "pdf_filename": "real_bks_47_Kidung_Megat_Kung.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_47_Kidung_Megat_Kung.pdf",
+      "file_size_kb": 7446.83,
+      "pages": 246,
+      "details": "OK",
+      "sample_text": ""
+    },
+    {
+      "id": "bks-48",
+      "title": "Sistem Sapaan Dialek Jakarta",
+      "author": "M. Dj. Nasution, Sulistiati & Atika S.",
+      "pdf_filename": "real_bks_48_Sistem_Sapaan_Dialek_Jakarta.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_48_Sistem_Sapaan_Dialek_Jakarta.pdf",
+      "file_size_kb": 1314.74,
+      "pages": 108,
+      "details": "OK",
+      "sample_text": "783 KONFLIK DAN POLITIK IDENTITAS"
+    },
+    {
+      "id": "bks-49",
+      "title": "Pedoman Penelitian Sosiologi Sastra",
+      "author": "Sapardi Djoko Damono",
+      "pdf_filename": "real_bks_49_Pedoman_Penelitian_Sosiologi_Sastra.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_49_Pedoman_Penelitian_Sosiologi_Sastra.pdf",
+      "file_size_kb": 1314.74,
+      "pages": 108,
+      "details": "OK",
+      "sample_text": "783 KONFLIK DAN POLITIK IDENTITAS"
+    },
+    {
+      "id": "bks-50",
+      "title": "Verba Taktransitif Bahasa Sunda",
+      "author": "Gugun Gunardi, Cece Sobarna & Waway Tiswaya",
+      "pdf_filename": "real_bks_50_Verba_Taktransitif_Bahasa_Sunda.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_50_Verba_Taktransitif_Bahasa_Sunda.pdf",
+      "file_size_kb": 6989.54,
+      "pages": 178,
+      "details": "OK",
+      "sample_text": ""
+    }
+  ],
+  "missing_pdf": [],
+  "corrupted_unreadable": [
+    {
+      "id": "bks-42",
+      "title": "Carita Badak Pamalang: Carita Pantun Sunda",
+      "author": "Ajip Rosidi & Ki Samid",
+      "pdf_filename": "real_bks_42_Carita_Badak_Pamalang_Carita_Pantun_Sunda.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_42_Carita_Badak_Pamalang_Carita_Pantun_Sunda.pdf",
+      "file_size_kb": 0,
+      "pages": 0,
+      "details": "UNREADABLE_PDF_STREAM: cryptography>=3.1 is required for AES algorithm",
+      "sample_text": ""
+    },
+    {
+      "id": "bks-45",
+      "title": "Ancimun Tuminggang Dui: Mentimun Menimpa Duri",
+      "author": "D. Ritonga Baginda Guru",
+      "pdf_filename": "real_bks_45_Ancimun_Tuminggang_Dui_Mentimun_Menimpa_Duri.pdf",
+      "target_path": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\real_bks_45_Ancimun_Tuminggang_Dui_Mentimun_Menimpa_Duri.pdf",
+      "file_size_kb": 0,
+      "pages": 0,
+      "details": "UNREADABLE_PDF_STREAM: cryptography>=3.1 is required for AES algorithm",
+      "sample_text": ""
+    }
+  ],
+  "orphan_pdf": [
+    {
+      "pdf_filename": "101 tip dan trick pemrograman php.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\101 tip dan trick pemrograman php.pdf",
+      "file_size_kb": 6989.54
+    },
+    {
+      "pdf_filename": "1740363594_101._Bicara_itu_ada_seninya_(1).pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\1740363594_101._Bicara_itu_ada_seninya_(1).pdf",
+      "file_size_kb": 1950.73
+    },
+    {
+      "pdf_filename": "5_6251107178845831336.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\5_6251107178845831336.pdf",
+      "file_size_kb": 4557.6
+    },
+    {
+      "pdf_filename": "69490a7377f5b-the-little-duke-or-richard-the-fearless-by-charlotte-mary-yonge.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\69490a7377f5b-the-little-duke-or-richard-the-fearless-by-charlotte-mary-yonge.pdf",
+      "file_size_kb": 606.88
+    },
+    {
+      "pdf_filename": "69496235abd9b-mistress-wilding-by-rafael-sabatini.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\69496235abd9b-mistress-wilding-by-rafael-sabatini.pdf",
+      "file_size_kb": 1146.74
+    },
+    {
+      "pdf_filename": "Advice_for_the_Muslim.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\Advice_for_the_Muslim.pdf",
+      "file_size_kb": 7904.37
+    },
+    {
+      "pdf_filename": "Bahagia kenapa tidak 1.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\Bahagia kenapa tidak 1.pdf",
+      "file_size_kb": 3237.45
+    },
+    {
+      "pdf_filename": "Berani-jadi-SE-24Jun2015-final.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\Berani-jadi-SE-24Jun2015-final.pdf",
+      "file_size_kb": 19122.71
+    },
+    {
+      "pdf_filename": "bks_10_Hmm__Enaaak.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_10_Hmm__Enaaak.pdf",
+      "file_size_kb": 6.96
+    },
+    {
+      "pdf_filename": "bks_11_Jaket_Pinjaman.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_11_Jaket_Pinjaman.pdf",
+      "file_size_kb": 6.99
+    },
+    {
+      "pdf_filename": "bks_12_Kisah_Beruk_dan_Hewan_Lainnya.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_12_Kisah_Beruk_dan_Hewan_Lainnya.pdf",
+      "file_size_kb": 7.2
+    },
+    {
+      "pdf_filename": "bks_13_Rewako__Ammang____Beranilah__Ammang.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_13_Rewako__Ammang____Beranilah__Ammang.pdf",
+      "file_size_kb": 7.21
+    },
+    {
+      "pdf_filename": "bks_14_Di_Mana_Ibu.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_14_Di_Mana_Ibu.pdf",
+      "file_size_kb": 6.98
+    },
+    {
+      "pdf_filename": "bks_15_Di_Mana_Keli.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_15_Di_Mana_Keli.pdf",
+      "file_size_kb": 6.94
+    },
+    {
+      "pdf_filename": "bks_16_Dina_Bisa_Cerita.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_16_Dina_Bisa_Cerita.pdf",
+      "file_size_kb": 6.96
+    },
+    {
+      "pdf_filename": "bks_17_Dongeng_untuk_Santi.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_17_Dongeng_untuk_Santi.pdf",
+      "file_size_kb": 7.0
+    },
+    {
+      "pdf_filename": "bks_18_Dua_Potong_Gorengan.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_18_Dua_Potong_Gorengan.pdf",
+      "file_size_kb": 6.99
+    },
+    {
+      "pdf_filename": "bks_19_Fao_Si_Pelompat_Batu.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_19_Fao_Si_Pelompat_Batu.pdf",
+      "file_size_kb": 7.03
+    },
+    {
+      "pdf_filename": "bks_1_Syifa_dan_Burung_Kenari.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_1_Syifa_dan_Burung_Kenari.pdf",
+      "file_size_kb": 7.13
+    },
+    {
+      "pdf_filename": "bks_20_Kue_Kimu.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_20_Kue_Kimu.pdf",
+      "file_size_kb": 6.88
+    },
+    {
+      "pdf_filename": "bks_21_Sahabatku_Indonesia__Tingkat_A1__BIPA_1.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_21_Sahabatku_Indonesia__Tingkat_A1__BIPA_1.pdf",
+      "file_size_kb": 7.26
+    },
+    {
+      "pdf_filename": "bks_22_Sahabatku_Indonesia__Tingkat_C2.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_22_Sahabatku_Indonesia__Tingkat_C2.pdf",
+      "file_size_kb": 7.19
+    },
+    {
+      "pdf_filename": "bks_23_Buku_Praktis_Bahasa_Indonesia_1.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_23_Buku_Praktis_Bahasa_Indonesia_1.pdf",
+      "file_size_kb": 7.16
+    },
+    {
+      "pdf_filename": "bks_24_Buku_Praktis_Bahasa_Indonesia_2.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_24_Buku_Praktis_Bahasa_Indonesia_2.pdf",
+      "file_size_kb": 7.16
+    },
+    {
+      "pdf_filename": "bks_25_Bahasa_Indonesia__Buku_Guru_SMP_MTs_Kelas_VIII.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_25_Bahasa_Indonesia__Buku_Guru_SMP_MTs_Kelas_VIII.pdf",
+      "file_size_kb": 7.17
+    },
+    {
+      "pdf_filename": "bks_26_Pendidikan_Agama_Katolik_dan_Budi_Pekerti_SD_Kelas_IV.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_26_Pendidikan_Agama_Katolik_dan_Budi_Pekerti_SD_Kelas_IV.pdf",
+      "file_size_kb": 7.37
+    },
+    {
+      "pdf_filename": "bks_27_Glosarium_Matematika.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_27_Glosarium_Matematika.pdf",
+      "file_size_kb": 7.1
+    },
+    {
+      "pdf_filename": "bks_28_Latihan_Soal_Kemahiran_Berbahasa_Indonesia.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_28_Latihan_Soal_Kemahiran_Berbahasa_Indonesia.pdf",
+      "file_size_kb": 7.24
+    },
+    {
+      "pdf_filename": "bks_29_Seri_Pelatihan_UKBI.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_29_Seri_Pelatihan_UKBI.pdf",
+      "file_size_kb": 7.01
+    },
+    {
+      "pdf_filename": "bks_2_Rusaknya_Suara_Kodok.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_2_Rusaknya_Suara_Kodok.pdf",
+      "file_size_kb": 7.11
+    },
+    {
+      "pdf_filename": "bks_30_Tata_Bahasa_Baku_Bahasa_Indonesia.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_30_Tata_Bahasa_Baku_Bahasa_Indonesia.pdf",
+      "file_size_kb": 7.12
+    },
+    {
+      "pdf_filename": "bks_31_History_of_Indonesia__A_Resource_Book.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_31_History_of_Indonesia__A_Resource_Book.pdf",
+      "file_size_kb": 7.41
+    },
+    {
+      "pdf_filename": "bks_32_1957__Deklarasi_Djuanda_dan_Kedaulatan_Laut_Kita.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_32_1957__Deklarasi_Djuanda_dan_Kedaulatan_Laut_Kita.pdf",
+      "file_size_kb": 7.2
+    },
+    {
+      "pdf_filename": "bks_33_Sisingamangaraja__Pemersatu_Batak_di_Toba.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_33_Sisingamangaraja__Pemersatu_Batak_di_Toba.pdf",
+      "file_size_kb": 7.13
+    },
+    {
+      "pdf_filename": "bks_34_Tinggalan_Kolonial_di_Jawa_Timur.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_34_Tinggalan_Kolonial_di_Jawa_Timur.pdf",
+      "file_size_kb": 7.17
+    },
+    {
+      "pdf_filename": "bks_35_Kebhinekaan_Budaya_Papua__Perspektif_Arkeologi_Prasejarah.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_35_Kebhinekaan_Budaya_Papua__Perspektif_Arkeologi_Prasejarah.pdf",
+      "file_size_kb": 7.37
+    },
+    {
+      "pdf_filename": "bks_36_Kepahlawanan_Trunajaya.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_36_Kepahlawanan_Trunajaya.pdf",
+      "file_size_kb": 7.01
+    },
+    {
+      "pdf_filename": "bks_37_Asal_Usul_Danau_Maninjau.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_37_Asal_Usul_Danau_Maninjau.pdf",
+      "file_size_kb": 7.17
+    },
+    {
+      "pdf_filename": "bks_38_Bahasa_Daerah_di_Indonesia__Kebersamaan_dalam_Keberagaman.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_38_Bahasa_Daerah_di_Indonesia__Kebersamaan_dalam_Keberagaman.pdf",
+      "file_size_kb": 7.27
+    },
+    {
+      "pdf_filename": "bks_39_Ceritera_Rakyat_Daerah_Jambi.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_39_Ceritera_Rakyat_Daerah_Jambi.pdf",
+      "file_size_kb": 7.11
+    },
+    {
+      "pdf_filename": "bks_3_Lepu_pun_Tersenyum.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_3_Lepu_pun_Tersenyum.pdf",
+      "file_size_kb": 7.1
+    },
+    {
+      "pdf_filename": "bks_40_Ungkapan_Tradisional_Daerah_Istimewa_Aceh.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_40_Ungkapan_Tradisional_Daerah_Istimewa_Aceh.pdf",
+      "file_size_kb": 7.24
+    },
+    {
+      "pdf_filename": "bks_41_Purnama_Alam_I.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_41_Purnama_Alam_I.pdf",
+      "file_size_kb": 6.97
+    },
+    {
+      "pdf_filename": "bks_42_Carita_Badak_Pamalang__Carita_Pantun_Sunda.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_42_Carita_Badak_Pamalang__Carita_Pantun_Sunda.pdf",
+      "file_size_kb": 7.21
+    },
+    {
+      "pdf_filename": "bks_43_Babad_Majapahit.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_43_Babad_Majapahit.pdf",
+      "file_size_kb": 7.0
+    },
+    {
+      "pdf_filename": "bks_44_Ceritera_Panji_Pakang_Raras.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_44_Ceritera_Panji_Pakang_Raras.pdf",
+      "file_size_kb": 7.16
+    },
+    {
+      "pdf_filename": "bks_45_Ancimun_Tuminggang_Dui__Mentimun_Menimpa_Duri.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_45_Ancimun_Tuminggang_Dui__Mentimun_Menimpa_Duri.pdf",
+      "file_size_kb": 7.28
+    },
+    {
+      "pdf_filename": "bks_46_Supraba_Lan_Suminten.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_46_Supraba_Lan_Suminten.pdf",
+      "file_size_kb": 7.01
+    },
+    {
+      "pdf_filename": "bks_47_Kidung_Megat_Kung.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_47_Kidung_Megat_Kung.pdf",
+      "file_size_kb": 7.12
+    },
+    {
+      "pdf_filename": "bks_48_Sistem_Sapaan_Dialek_Jakarta.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_48_Sistem_Sapaan_Dialek_Jakarta.pdf",
+      "file_size_kb": 7.18
+    },
+    {
+      "pdf_filename": "bks_49_Pedoman_Penelitian_Sosiologi_Sastra.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_49_Pedoman_Penelitian_Sosiologi_Sastra.pdf",
+      "file_size_kb": 7.18
+    },
+    {
+      "pdf_filename": "bks_4_Bumi__Ayo_Bangun.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_4_Bumi__Ayo_Bangun.pdf",
+      "file_size_kb": 7.11
+    },
+    {
+      "pdf_filename": "bks_50_Verba_Taktransitif_Bahasa_Sunda.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_50_Verba_Taktransitif_Bahasa_Sunda.pdf",
+      "file_size_kb": 7.24
+    },
+    {
+      "pdf_filename": "bks_5_Kutilang_yang_Suka_Bernyanyi.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_5_Kutilang_yang_Suka_Bernyanyi.pdf",
+      "file_size_kb": 7.14
+    },
+    {
+      "pdf_filename": "bks_6_Operasi_Sampah_di_Taman.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_6_Operasi_Sampah_di_Taman.pdf",
+      "file_size_kb": 7.11
+    },
+    {
+      "pdf_filename": "bks_7_Pesut_Tak_Lapar_Lagi.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_7_Pesut_Tak_Lapar_Lagi.pdf",
+      "file_size_kb": 7.08
+    },
+    {
+      "pdf_filename": "bks_8_Biji_Merah_Luna.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_8_Biji_Merah_Luna.pdf",
+      "file_size_kb": 6.96
+    },
+    {
+      "pdf_filename": "bks_9_Gambar_Lucu_Mika.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\bks_9_Gambar_Lucu_Mika.pdf",
+      "file_size_kb": 6.97
+    },
+    {
+      "pdf_filename": "Blown_to_Bits.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\Blown_to_Bits.pdf",
+      "file_size_kb": 606.88
+    },
+    {
+      "pdf_filename": "buku-kumpulan-eksperimen-sains.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\buku-kumpulan-eksperimen-sains.pdf",
+      "file_size_kb": 7165.76
+    },
+    {
+      "pdf_filename": "Bumi - Tere liye.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\Bumi - Tere liye.pdf",
+      "file_size_kb": 1561.03
+    },
+    {
+      "pdf_filename": "Coding games in python.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\Coding games in python.pdf",
+      "file_size_kb": 15549.76
+    },
+    {
+      "pdf_filename": "Coding project in scratch.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\Coding project in scratch.pdf",
+      "file_size_kb": 32865.47
+    },
+    {
+      "pdf_filename": "computer forensics.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\computer forensics.pdf",
+      "file_size_kb": 3698.59
+    },
+    {
+      "pdf_filename": "Documents_of_the_Right_Word.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\Documents_of_the_Right_Word.pdf",
+      "file_size_kb": 1441.91
+    },
+    {
+      "pdf_filename": "FILOSOFI-TERAS-HENRY-MANAMPIRING.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\FILOSOFI-TERAS-HENRY-MANAMPIRING.pdf",
+      "file_size_kb": 4434.96
+    },
+    {
+      "pdf_filename": "gut-10_Travels_in_the_East_Indian_Archipelago.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\gut-10_Travels_in_the_East_Indian_Archipelago.pdf",
+      "file_size_kb": 6.29
+    },
+    {
+      "pdf_filename": "gut-3_The_History_of_Sumatra.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\gut-3_The_History_of_Sumatra.pdf",
+      "file_size_kb": 6.17
+    },
+    {
+      "pdf_filename": "gut-5_The_History_of_Java_Vol_1_2.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\gut-5_The_History_of_Java_Vol_1_2.pdf",
+      "file_size_kb": 6.3
+    },
+    {
+      "pdf_filename": "gut-7_Monumental_Java.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\gut-7_Monumental_Java.pdf",
+      "file_size_kb": 6.13
+    },
+    {
+      "pdf_filename": "gut-9_Java_Facts_and_Fancies.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\gut-9_Java_Facts_and_Fancies.pdf",
+      "file_size_kb": 6.19
+    },
+    {
+      "pdf_filename": "Islam_and_Christianity.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\Islam_and_Christianity.pdf",
+      "file_size_kb": 766.09
+    },
+    {
+      "pdf_filename": "Java_Facts_and_Fancies.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\Java_Facts_and_Fancies.pdf",
+      "file_size_kb": 606.88
+    },
+    {
+      "pdf_filename": "KAJIAN-PUISI.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\KAJIAN-PUISI.pdf",
+      "file_size_kb": 1520.15
+    },
+    {
+      "pdf_filename": "Konspirasi alam semesta - fiersa besari.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\Konspirasi alam semesta - fiersa besari.pdf",
+      "file_size_kb": 7446.83
+    },
+    {
+      "pdf_filename": "Letters_of_a_Javanese_Princess.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\Letters_of_a_Javanese_Princess.pdf",
+      "file_size_kb": 14524.32
+    },
+    {
+      "pdf_filename": "Lord_Jim.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\Lord_Jim.pdf",
+      "file_size_kb": 606.88
+    },
+    {
+      "pdf_filename": "Max_Havelaar.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\Max_Havelaar.pdf",
+      "file_size_kb": 606.88
+    },
+    {
+      "pdf_filename": "Monumental_Java.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\Monumental_Java.pdf",
+      "file_size_kb": 606.88
+    },
+    {
+      "pdf_filename": "Negeri di ujung tanduk - tere liye.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\Negeri di ujung tanduk - tere liye.pdf",
+      "file_size_kb": 5243.59
+    },
+    {
+      "pdf_filename": "OWJkMWI3YmE5YjA1ZDI3ZTc5OTFkYjQ2NWMxZWI0MzU4MDFjNjMyNQ==.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\OWJkMWI3YmE5YjA1ZDI3ZTc5OTFkYjQ2NWMxZWI0MzU4MDFjNjMyNQ==.pdf",
+      "file_size_kb": 1636.68
+    },
+    {
+      "pdf_filename": "Prosiding sosiologi- Konflik dan Politik Identitas ( PDFDrive ).pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\Prosiding sosiologi- Konflik dan Politik Identitas ( PDFDrive ).pdf",
+      "file_size_kb": 1314.74
+    },
+    {
+      "pdf_filename": "ragam eksperesi islam nusantara.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\ragam eksperesi islam nusantara.pdf",
+      "file_size_kb": 23242.73
+    },
+    {
+      "pdf_filename": "Sejarah Geografi Agraria Indonesia ( PDFDrive ).pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\Sejarah Geografi Agraria Indonesia ( PDFDrive ).pdf",
+      "file_size_kb": 11918.1
+    },
+    {
+      "pdf_filename": "Sejarah Islam di Nusantara ( PDFDrive ).pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\Sejarah Islam di Nusantara ( PDFDrive ).pdf",
+      "file_size_kb": 2902.14
+    },
+    {
+      "pdf_filename": "Suara-dari-Kelas-Kecil-Kumpulan-Bahan-Literasi-Antikorupsi.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\Suara-dari-Kelas-Kecil-Kumpulan-Bahan-Literasi-Antikorupsi.pdf",
+      "file_size_kb": 61996.75
+    },
+    {
+      "pdf_filename": "Tere Liye - Bulan.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\Tere Liye - Bulan.pdf",
+      "file_size_kb": 5284.24
+    },
+    {
+      "pdf_filename": "Tere liye - tentang kamu.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\Tere liye - tentang kamu.pdf",
+      "file_size_kb": 2965.05
+    },
+    {
+      "pdf_filename": "Tere liye - the falling leaf never hates the .pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\Tere liye - the falling leaf never hates the .pdf",
+      "file_size_kb": 3276.92
+    },
+    {
+      "pdf_filename": "Tere_Liye_-_Matahari.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\Tere_Liye_-_Matahari.pdf",
+      "file_size_kb": 6980.54
+    },
+    {
+      "pdf_filename": "Tere_Liye_-_Matahari.pdf.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\Tere_Liye_-_Matahari.pdf.pdf",
+      "file_size_kb": 6980.54
+    },
+    {
+      "pdf_filename": "The Deliciously Keto Cookbook.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\The Deliciously Keto Cookbook.pdf",
+      "file_size_kb": 37549.62
+    },
+    {
+      "pdf_filename": "The_Hidden_Force.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\The_Hidden_Force.pdf",
+      "file_size_kb": 606.88
+    },
+    {
+      "pdf_filename": "The_History_of_Java.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\The_History_of_Java.pdf",
+      "file_size_kb": 606.88
+    },
+    {
+      "pdf_filename": "The_History_of_Sumatra.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\The_History_of_Sumatra.pdf",
+      "file_size_kb": 606.88
+    },
+    {
+      "pdf_filename": "tipe-dan-sebaran-longsoran-di-das-alo-provinsi-gorontalo.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\tipe-dan-sebaran-longsoran-di-das-alo-provinsi-gorontalo.pdf",
+      "file_size_kb": 39462.29
+    },
+    {
+      "pdf_filename": "Towards demicracy.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\Towards demicracy.pdf",
+      "file_size_kb": 2161.1
+    },
+    {
+      "pdf_filename": "Travels_in_the_East_Indian_Archipelago.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\Travels_in_the_East_Indian_Archipelago.pdf",
+      "file_size_kb": 606.88
+    },
+    {
+      "pdf_filename": "Yang fana adalah waktu.pdf",
+      "filepath": "D:\\project1\\perpustakaan_digital\\public\\buku_digital\\Yang fana adalah waktu.pdf",
+      "file_size_kb": 1270.26
+    }
+  ]
+}

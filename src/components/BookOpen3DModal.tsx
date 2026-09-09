@@ -24,20 +24,21 @@ export default function BookOpen3DModal({
 }: BookOpen3DModalProps) {
   const [isOpenAnimation, setIsOpenAnimation] = useState(false);
 
-  // Dynamic cover resolution
-  const cachedCover = book ? getCachedCover(book.isbn || '', book.title) : undefined;
-  const [resolvedCover, setResolvedCover] = useState<string | null>(
-    cachedCover !== undefined ? cachedCover : (book?.coverUrl || null)
-  );
+  // Cover resolution - use verified book.coverUrl immediately
+  const [resolvedCover, setResolvedCover] = useState<string | null>(book?.coverUrl || null);
 
   useEffect(() => {
     if (book) {
       soundFX.playBookOpen();
       const timer = setTimeout(() => setIsOpenAnimation(true), 150);
 
-      resolveBookCover(book.isbn || '', book.title, book.author, book.coverUrl).then(url => {
-        setResolvedCover(url);
-      });
+      if (book.coverUrl) {
+        setResolvedCover(book.coverUrl);
+      } else {
+        resolveBookCover(book.isbn || '', book.title, book.author).then(url => {
+          if (url) setResolvedCover(url);
+        });
+      }
 
       return () => clearTimeout(timer);
     } else {
@@ -147,25 +148,27 @@ export default function BookOpen3DModal({
         <div className="space-y-2.5 pt-2">
           {pdfUrl && onReadEbook && (
             <button
+              type="button"
               onClick={() => {
                 soundFX.playPageFlip();
                 onReadEbook(book);
               }}
-              className="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold text-xs rounded-xl shadow-lg flex items-center justify-center gap-2"
+              className="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold text-xs rounded-xl shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-colors duration-200 cursor-pointer"
             >
               <BookOpen className="w-4 h-4" />
-              <span>Baca E-Book Sekarang</span>
+              <span>Baca Dokumen PDF Asli</span>
             </button>
           )}
 
           <div className="flex gap-2">
             {onPinjam && (
               <button
+                type="button"
                 onClick={() => {
                   soundFX.playClick();
                   onPinjam(book);
                 }}
-                className="flex-1 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs rounded-xl shadow-lg flex items-center justify-center gap-2"
+                className="flex-1 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs rounded-xl shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-colors duration-200 cursor-pointer"
               >
                 <Bookmark className="w-4 h-4" />
                 <span>Pinjam Buku</span>
@@ -305,25 +308,27 @@ export default function BookOpen3DModal({
             <div className="space-y-3 pt-4 border-t border-slate-800/80">
               {pdfUrl && onReadEbook && (
                 <button
+                  type="button"
                   onClick={() => {
                     soundFX.playPageFlip();
                     onReadEbook(book);
                   }}
-                  className="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-extrabold rounded-xl shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 flex items-center justify-center gap-2 transition-all cursor-pointer hover:scale-[1.02]"
+                  className="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-extrabold rounded-xl shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 flex items-center justify-center gap-2 transition-colors duration-200 cursor-pointer active:scale-95"
                 >
                   <BookOpen className="w-4 h-4" />
-                  <span>Baca E-Book Sekarang (3D Viewer)</span>
+                  <span>Baca Dokumen PDF Asli</span>
                 </button>
               )}
 
               <div className="flex gap-3">
                 {onPinjam && (
                   <button
+                    type="button"
                     onClick={() => {
                       soundFX.playClick();
                       onPinjam(book);
                     }}
-                    className="flex-1 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold rounded-xl shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2 transition-all cursor-pointer hover:scale-[1.02]"
+                    className="flex-1 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold rounded-xl shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2 transition-colors duration-200 cursor-pointer active:scale-95"
                   >
                     <Bookmark className="w-4 h-4" />
                     <span>Ajukan Peminjaman</span>

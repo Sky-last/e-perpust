@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -592,7 +592,7 @@ export default function StaffDashboard({
             <button onClick={() => setMobileMenuOpen(true)} className="lg:hidden p-2 bg-slate-800 rounded-xl text-slate-300"><Menu className="w-5 h-5" /></button>
             <div>
               <span className="text-[9px] bg-cyan-500/10 text-cyan-400 font-extrabold px-2.5 py-0.5 rounded-full uppercase border border-cyan-500/20">
-                Staff Admin • Pustaka Digital
+                Staff Admin • Perpustakaan Kita
               </span>
               <h1 className="text-sm lg:text-base font-black text-white mt-1 flex items-center gap-2">
                 {currentUser.name}

@@ -154,10 +154,10 @@ export default function DetailPage({
           <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center gap-3">
             <button 
               onClick={() => setShow3DReader(true)}
-              className="w-full sm:w-auto px-6 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition-all shadow-md hover:shadow-lg hover:shadow-emerald-250/50 cursor-pointer flex items-center justify-center space-x-2"
+              className="w-full sm:w-auto px-6 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition-all shadow-md hover:shadow-lg hover:shadow-emerald-500/50 cursor-pointer flex items-center justify-center space-x-2"
             >
               <BookOpen className="w-4 h-4" />
-              <span>Baca E-Book 3D</span>
+              <span>Baca E-Book</span>
             </button>
 
             <button 

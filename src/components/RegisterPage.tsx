@@ -27,8 +27,8 @@ export default function RegisterPage({ onNavigate, onRegister, addToast }: Regis
   const showcaseBook: Book = {
     id: 'reg-demo',
     title: 'Panduan Literasi Digital Modern',
-    author: 'Pustaka Digital Team',
-    publisher: 'Pustaka Digital',
+    author: 'Tim Perpustakaan Kita',
+    publisher: 'Perpustakaan Kita',
     category: 'E-Book',
     description: 'Nikmati akses tak terbatas ke ribuan e-book digital dengan pengalaman membaca yang imersif.',
     coverColor: 'from-blue-600 to-indigo-900',
@@ -126,10 +126,10 @@ export default function RegisterPage({ onNavigate, onRegister, addToast }: Regis
                 <Sparkles className="w-3 h-3" /> Keanggotaan Umum
               </div>
               <h2 className="text-2xl lg:text-3xl font-black text-white leading-tight">
-                Pustaka Digital Untuk Masyarakat Umum
+                Perpustakaan Kita Untuk Masyarakat Umum
               </h2>
               <p className="text-xs text-slate-400 leading-relaxed font-medium">
-                Nikmati akses gratis ke ribuan e-book, flipbook 3D, dan koleksi literasi untuk seluruh lapisan masyarakat.
+                Nikmati akses gratis ke ribuan e-book, flipbook interaktif, dan koleksi literasi untuk seluruh lapisan masyarakat.
               </p>
             </div>
 
@@ -149,7 +149,7 @@ export default function RegisterPage({ onNavigate, onRegister, addToast }: Regis
                     <span className="text-[9px] font-black uppercase tracking-widest text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20">
                       KARTU ANGGOTA PUBLIK
                     </span>
-                    <h4 className="text-sm font-black text-white mt-1">Pustaka Digital</h4>
+                    <h4 className="text-sm font-black text-white mt-1">Perpustakaan Kita</h4>
                   </div>
                   {/* Microchip graphic */}
                   <div className="w-8 h-6 rounded bg-gradient-to-tr from-amber-400 to-yellow-200 border border-amber-300/60 shadow flex items-center justify-center">
@@ -177,7 +177,7 @@ export default function RegisterPage({ onNavigate, onRegister, addToast }: Regis
 
           <div className="space-y-2.5 pt-4 border-t border-slate-800/80 text-xs">
             {[
-              'Bebas baca e-book 3D interaktif kapan saja',
+              'Bebas baca e-book interaktif kapan saja',
               'Tanpa biaya pendaftaran — 100% Gratis!',
               'Terbuka untuk Umum, Pelajar, & Profesional',
             ].map((text, i) => (
@@ -359,7 +359,7 @@ export default function RegisterPage({ onNavigate, onRegister, addToast }: Regis
           </form>
 
           <div className="mt-6 pt-4 border-t border-slate-800/80 text-center text-[10px] text-slate-500">
-            Dengan mendaftar, Anda menyetujui Ketentuan Layanan & Kebijakan Privasi Pustaka Digital Publik.
+            Dengan mendaftar, Anda menyetujui Ketentuan Layanan & Kebijakan Privasi Perpustakaan Kita.
           </div>
         </div>
       </div>

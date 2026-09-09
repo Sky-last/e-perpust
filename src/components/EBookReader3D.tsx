@@ -1,28 +1,54 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Book, User } from '../types';
 import { 
   X, ChevronLeft, ChevronRight, Volume2, VolumeX, Maximize2, Minimize2, 
   Bookmark, Sparkles, FileText, Download, ZoomIn, ZoomOut, Mic, Play, 
   Square, CloudRain, Coffee, Waves, Lock, Moon, Sun, BookOpen, AlignLeft,
-  List, Settings, Check
+  List, Settings, Check, AlertTriangle, RefreshCw
 } from 'lucide-react';
 import { soundFX } from '../utils/audio';
-import { resolveBookPdfUrl } from '../utils/pdfResolver';
+import { resolveBookPdfUrl, checkPdfAvailability } from '../utils/pdfResolver';
 import { getBookReadingPages, PageContent } from '../data/bookChaptersData';
 
 interface EBookReader3DProps {
   book: Book;
   onClose: () => void;
   currentUser?: User | null;
+  initialMode?: 'read' | 'pdf';
 }
 
 type ReaderTheme = 'sepia' | 'dark' | 'light' | 'oled';
 type FontFamily = 'serif' | 'sans' | 'mono';
 
-export default function EBookReader3D({ book, onClose, currentUser }: EBookReader3DProps) {
+export default function EBookReader3D({ book, onClose, currentUser, initialMode = 'pdf' }: EBookReader3DProps) {
   // Mode Switcher: 'read' (Interactive Kindle Reader) vs 'pdf' (PDF Viewer)
-  const [mode, setMode] = useState<'read' | 'pdf'>('read');
+  const [mode, setMode] = useState<'read' | 'pdf'>(initialMode);
   const pdfUrl = resolveBookPdfUrl(book);
+
+  // Debug logging
+  useEffect(() => {
+    console.log('📄 PDF Viewer Debug:', {
+      bookId: book.id,
+      bookTitle: book.title,
+      resolvedPdfUrl: pdfUrl,
+      bookPdfUrl: book.pdfUrl,
+      mode
+    });
+  }, [book, pdfUrl, mode]);
+
+  // PDF Availability State — skip HEAD check, load iframe directly
+  const [pdfStatus, setPdfStatus] = useState<'checking' | 'valid' | 'invalid'>('valid');
+  const [pdfErrorMessage, setPdfErrorMessage] = useState<string>('');
+  const [pdfRetryCount, setPdfRetryCount] = useState<number>(0);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  // Reset to valid whenever the PDF URL or mode changes
+  useEffect(() => {
+    if (mode === 'pdf') {
+      setPdfStatus('valid');
+      setPdfErrorMessage('');
+    }
+  }, [mode, pdfUrl, pdfRetryCount]);
 
   // Pages & Chapter Data
   const readingPages: PageContent[] = getBookReadingPages(book);
@@ -301,23 +327,23 @@ export default function EBookReader3D({ book, onClose, currentUser }: EBookReade
           {/* Center: Mode Tabs */}
           <div className="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800 shrink-0">
             <button
-              onClick={() => setMode('read')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all cursor-pointer flex items-center gap-1.5 ${
-                mode === 'read' ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md' : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              <BookOpen className="w-3.5 h-3.5" />
-              <span>Baca E-Book</span>
-            </button>
-
-            <button
               onClick={() => setMode('pdf')}
               className={`px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all cursor-pointer flex items-center gap-1.5 ${
                 mode === 'pdf' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-400 hover:text-white'
               }`}
             >
               <FileText className="w-3.5 h-3.5" />
-              <span>Dokumen PDF</span>
+              <span>Dokumen PDF Asli</span>
+            </button>
+
+            <button
+              onClick={() => setMode('read')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all cursor-pointer flex items-center gap-1.5 ${
+                mode === 'read' ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md' : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <BookOpen className="w-3.5 h-3.5" />
+              <span>Mode Teks Interaktif</span>
             </button>
           </div>
 
@@ -698,24 +724,85 @@ export default function EBookReader3D({ book, onClose, currentUser }: EBookReade
               </button>
             </div>
           ) : (
-            /* PDF VIEWER MODE */
-            <div className="flex-1 w-full h-full bg-slate-950 flex flex-col min-h-0">
-              <div className="flex items-center justify-between px-4 py-2 bg-slate-900 border-b border-slate-800 text-xs text-slate-400">
-                <span className="truncate">📄 Menampilkan Dokumen PDF Resmi Perpustakaan ({book.title})</span>
-                <a
-                  href={pdfUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-cyan-400 hover:text-cyan-300 font-bold underline"
-                >
-                  Buka Tab Baru ↗
-                </a>
+            /* PDF VIEWER MODE WITH SECURITY & GRACEFUL FALLBACK */
+            <div className="flex-1 w-full h-full bg-slate-950 flex flex-col min-h-0 relative">
+              <div className="flex items-center justify-between px-4 py-2.5 bg-slate-900 border-b border-slate-800 text-xs text-slate-300 shrink-0">
+                <div className="flex items-center gap-2 truncate">
+                  <span className={`w-2.5 h-2.5 rounded-full ${pdfStatus === 'valid' ? 'bg-emerald-400 animate-pulse' : pdfStatus === 'checking' ? 'bg-amber-400 animate-ping' : 'bg-rose-500'}`} />
+                  <span className="truncate font-bold">📄 Dokumen PDF Resmi: <span className="text-white">{book.title}</span></span>
+                </div>
+                {pdfStatus === 'valid' && (
+                  <a
+                    href={pdfUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-3 py-1 bg-blue-600/30 hover:bg-blue-600/50 text-cyan-300 border border-blue-500/40 rounded-lg font-bold text-[11px] transition-all flex items-center gap-1 shrink-0"
+                  >
+                    <span>Buka Tab Baru</span>
+                    <span>↗</span>
+                  </a>
+                )}
               </div>
-              <iframe
-                src={`${pdfUrl}#toolbar=1`}
-                className="w-full h-full bg-slate-900 border-none flex-1 min-h-0"
-                title={book.title}
-              />
+
+              {pdfStatus === 'checking' ? (
+                <div className="flex-1 flex flex-col items-center justify-center p-8 space-y-4 text-slate-300">
+                  <RefreshCw className="w-8 h-8 text-indigo-400 animate-spin" />
+                  <p className="text-xs font-bold tracking-wide">Memverifikasi Integritas & Ketersediaan PDF...</p>
+                </div>
+              ) : pdfStatus === 'invalid' ? (
+                /* GRACEFUL FALLBACK SCREEN (PDF Missing / Corrupted / Unreachable) */
+                <div className="flex-1 flex flex-col items-center justify-center p-6 sm:p-12 text-center my-auto max-w-lg mx-auto space-y-5 animate-fadeIn">
+                  <div className="p-4 bg-rose-500/10 text-rose-400 border border-rose-500/30 rounded-3xl shadow-xl">
+                    <AlertTriangle className="w-12 h-12" />
+                  </div>
+
+                  <div className="space-y-2">
+                    <h3 className="text-xl font-black text-white">Buku Sedang Tidak Dapat Diakses</h3>
+                    <p className="text-xs text-slate-400 leading-relaxed">
+                      Dokumen PDF untuk buku <strong className="text-white">"{book.title}"</strong> sedang bermasalah, tidak ditemukan, atau berkas korup di server.
+                    </p>
+                    {pdfErrorMessage && (
+                      <p className="text-[11px] text-rose-400 font-mono bg-rose-950/40 border border-rose-900/50 p-2.5 rounded-xl mt-2">
+                        Pesan Sistem: {pdfErrorMessage}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="pt-2 flex flex-col sm:flex-row gap-3 w-full">
+                    <button
+                      onClick={() => setMode('read')}
+                      className="flex-1 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-extrabold text-xs rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all cursor-pointer"
+                    >
+                      <BookOpen className="w-4 h-4" />
+                      <span>Baca Mode Interaktif</span>
+                    </button>
+                    <button
+                      onClick={onClose}
+                      className="flex-1 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs rounded-xl border border-slate-700 transition-all cursor-pointer"
+                    >
+                      Kembali Ke Katalog
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                /* DIRECT PDF VIEWER */
+                <div className="flex-1 relative w-full h-full min-h-0">
+                  <iframe
+                    ref={iframeRef}
+                    src={pdfUrl}
+                    className="w-full h-full bg-slate-900 border-none absolute inset-0"
+                    title={book.title}
+                    onLoad={() => {
+                      // Check if iframe loaded correctly (some browsers show error page inside iframe)
+                      setPdfStatus('valid');
+                    }}
+                    onError={() => {
+                      setPdfStatus('invalid');
+                      setPdfErrorMessage('File PDF tidak ditemukan atau tidak dapat dibuka di browser ini.');
+                    }}
+                  />
+                </div>
+              )}
             </div>
           )}
         </div>

@@ -86,6 +86,14 @@ export default function App() {
   // LOAD DATABASE ON MOUNT
   useEffect(() => {
     async function initData() {
+      // Force refresh if cached books count does not match catalog or contains old structure
+      const cacheVersion = localStorage.getItem('digital_library_version');
+      const CURRENT_VERSION = '2.0.0-catalog-111';
+      if (cacheVersion !== CURRENT_VERSION) {
+        localStorage.removeItem('digital_library_books');
+        localStorage.setItem('digital_library_version', CURRENT_VERSION);
+      }
+
       // 1. Books Initialization
       const booksList = await getBooks();
       setBooks(booksList);
@@ -266,7 +274,7 @@ export default function App() {
             setCurrentUser(localUser);
             localStorage.setItem('digital_library_active_user', localUser.email);
             setFavorites(localUser.favorites || []);
-            addToast('Berhasil masuk ke Pustaka Digital (Sesi Demo)!', 'success');
+            addToast('Berhasil masuk ke Perpustakaan Kita (Sesi Demo)!', 'success');
             setCurrentView('dashboard');
             return true;
           }
@@ -293,7 +301,7 @@ export default function App() {
           setFavorites(profile.favorites || []);
           localStorage.setItem('digital_library_active_user', profile.email);
           localStorage.setItem('digital_library_active_user_data', JSON.stringify(profile));
-          addToast('Berhasil masuk ke Pustaka Digital!', 'success');
+          addToast('Berhasil masuk ke Perpustakaan Kita!', 'success');
           setCurrentView('dashboard');
           return true;
         }
@@ -318,7 +326,7 @@ export default function App() {
       } else {
         setFavorites([]);
       }
-      addToast('Berhasil masuk ke Pustaka Digital!', 'success');
+      addToast('Berhasil masuk ke Perpustakaan Kita!', 'success');
       setCurrentView('dashboard');
       return true;
     }
@@ -397,7 +405,7 @@ export default function App() {
           setFavorites([]);
           localStorage.setItem('digital_library_active_user', profile.email);
           localStorage.setItem('digital_library_active_user_data', JSON.stringify(profile));
-          addToast('Registrasi berhasil! Selamat datang di Pustaka Digital Publik.', 'success');
+          addToast('Registrasi berhasil! Selamat datang di Perpustakaan Kita.', 'success');
           setCurrentView('dashboard');
           await pushLog(email, name, 'register', '');
           return true;
@@ -449,7 +457,7 @@ export default function App() {
     localStorage.removeItem('digital_library_active_user');
     localStorage.removeItem('digital_library_active_user_data');
     setCurrentView('landing');
-    addToast('Anda berhasil keluar dari sesi Pustaka Digital.', 'success');
+    addToast('Anda berhasil keluar dari sesi Perpustakaan Kita.', 'success');
   };
 
   // PROFILE UPDATES
@@ -1447,7 +1455,7 @@ export default function App() {
           <div className="p-2 bg-blue-600 text-white rounded-xl shadow-md shadow-blue-100">
             <BookOpen className="w-5 h-5" />
           </div>
-          <span className="font-extrabold text-slate-900 tracking-tight text-sm">Pustaka Digital</span>
+          <span className="font-extrabold text-slate-900 tracking-tight text-sm">Perpustakaan Kita</span>
         </div>
         
         <button 
@@ -1474,7 +1482,7 @@ export default function App() {
                 <BookOpen className="w-5.5 h-5.5" />
               </div>
               <div className="leading-tight">
-                <span className="text-lg font-bold tracking-tight text-slate-800">Pustaka<span className="text-blue-600 text-sm font-black font-mono ml-0.5 uppercase tracking-wider">v3</span></span>
+                <span className="text-lg font-bold tracking-tight text-slate-800">Perpustakaan <span className="text-blue-600 text-sm font-black font-mono ml-0.5 uppercase tracking-wider">Kita</span></span>
                 <p className="text-[9px] text-slate-400 font-bold font-mono uppercase tracking-wider">Sleek Interface</p>
               </div>
             </div>
@@ -1605,7 +1613,7 @@ export default function App() {
         {/* TOP BAR / BREADCRUMB (Desktop only) */}
         <header className="hidden lg:flex h-16 bg-white border-b border-slate-200 items-center justify-between px-8 z-10 flex-shrink-0 shadow-sm sticky top-0">
           <div className="flex items-center space-x-1.5 text-xs font-semibold text-slate-400">
-            <span>Pustaka Digital</span>
+            <span>Perpustakaan Kita</span>
             <ChevronRight className="w-3 h-3" />
             <span className="text-slate-700 font-bold capitalize">{currentView === 'detail-buku' ? 'Detail Buku' : currentView}</span>
           </div>

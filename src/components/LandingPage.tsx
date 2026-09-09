@@ -42,7 +42,7 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
   const cursorGlowRef = useRef<HTMLDivElement>(null);
 
   // Typing effect for hero headline
-  const fullText = 'Pustaka Digital';
+  const fullText = 'Perpustakaan Kita';
   useEffect(() => {
     let i = 0;
     setTypedText('');
@@ -108,14 +108,14 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
     ? popularBooks 
     : [...books].sort((a, b) => b.rating - a.rating).slice(0, 5);
   
-  // Prioritaskan buku "Bulan" (eb-14) di posisi pertama, exclude "The History of Java" (gut-5)
-  const bulanBook = books.find(b => b.id === 'eb-14');
-  const otherBooks = sortedBooks.filter(b => b.id !== 'eb-14' && b.id !== 'gut-5').slice(0, 4);
-  const displayBooks = bulanBook ? [bulanBook, ...otherBooks] : sortedBooks.filter(b => b.id !== 'gut-5');
+  // Prioritaskan buku bks-1 di posisi pertama
+  const topBook = books.find(b => b.id === 'bks-1');
+  const otherBooks = sortedBooks.filter(b => b.id !== 'bks-1').slice(0, 4);
+  const displayBooks = topBook ? [topBook, ...otherBooks] : sortedBooks;
   
   const shelfBooks = books.slice(0, 18);
   const totalUniqueBooks = books.length;
-  const featuredBook = books.find(b => b.id === 'eb-4') || books[0];
+  const featuredBook = books.find(b => b.id === 'bks-4') || books[0];
 
   const handleOpen3DBook = (id: string) => {
     const b = books.find(item => item.id === id);
@@ -151,7 +151,7 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
               <BookOpen className="w-5 h-5 text-white" />
             </div>
             <span className="text-base font-black tracking-tight">
-              Pustaka<span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Digital</span>
+              Perpustakaan <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Kita</span>
             </span>
           </div>
 
@@ -461,6 +461,31 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
                       <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
                       <span className={`text-[10px] font-bold ${sub}`}>{book.rating}</span>
                     </div>
+
+                    <div className="flex items-center justify-between gap-1.5 mt-2.5 pt-2 border-t border-slate-800/30">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          soundFX.playPageFlip?.();
+                          setReadingBook3D(book);
+                        }}
+                        className="flex-1 py-1.5 px-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-[11px] rounded-lg text-center transition-all cursor-pointer shadow-sm shadow-emerald-500/20"
+                      >
+                        📖 Baca PDF
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          soundFX.playBookOpen?.();
+                          handleOpen3DBook(book.id);
+                        }}
+                        className={`py-1.5 px-2.5 rounded-lg text-[11px] font-semibold transition-colors cursor-pointer ${
+                          dk ? 'bg-slate-800 hover:bg-slate-700 text-slate-300' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                        }`}
+                      >
+                        Info 3D
+                      </button>
+                    </div>
                   </div>
                 </div>
               );
@@ -476,16 +501,16 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
           <div className="reveal-left space-y-6">
             <span className="text-blue-400 text-xs font-bold uppercase tracking-widest">Tentang Platform</span>
             <h2 className={`text-3xl md:text-4xl font-black leading-tight ${text}`}>
-              Misi Kami: Literasi Digital 3D untuk Semua
+              Misi Kami: Literasi untuk Semua
             </h2>
             <p className={`text-sm leading-relaxed ${sub}`}>
-              Pustaka Digital adalah platform perpustakaan online modern. Dengan animasi buku 3D interaktif, e-reader flipbook, serta efek suara futuristik.
+              Perpustakaan Kita adalah platform perpustakaan online modern. Dengan animasi buku interaktif, e-reader flipbook, serta efek suara futuristik.
             </p>
             <div className="space-y-4">
               {[
-                { t: 'Animasi Buku Terbuka 3D', d: 'Visualisasi cover buku berputar 3D dan membungkus halaman secara dinamis.' },
-                { t: 'E-Reader Page Flip 3D', d: 'Membaca e-book PDF dengan efek membalik halaman dan suara kertas yang sintetis.' },
-                { t: '3D Showcase Room', d: 'Putar kamera 360° untuk melihat panggung buku pada pedestal bercahaya.' },
+                { t: 'Animasi Buku Terbuka', d: 'Visualisasi cover buku berputar dan membungkus halaman secara dinamis.' },
+                { t: 'E-Reader Page Flip', d: 'Membaca e-book PDF dengan efek membalik halaman dan suara kertas yang sintetis.' },
+                { t: 'Showcase Room', d: 'Putar kamera 360° untuk melihat panggung buku pada pedestal bercahaya.' },
               ].map((item, i) => {
                 const delays = ['delay-100', 'delay-300', 'delay-500'];
                 return (
@@ -576,7 +601,7 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
                     </div>
                     <h4 className={`text-xl font-bold ${text}`}>Pesan Anda Berhasil Terkirim!</h4>
                     <p className={`text-xs max-w-md mx-auto ${sub}`}>
-                      Tanggapan akan dikirimkan ke email Anda dalam waktu 1x24 jam kerja. Terima kasih telah menghubungi Pustaka Digital.
+                      Tanggapan akan dikirimkan ke email Anda dalam waktu 1x24 jam kerja. Terima kasih telah menghubungi Perpustakaan Kita.
                     </p>
                     <button
                       onClick={() => {
@@ -665,9 +690,9 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
             <div className="w-9 h-9 bg-gradient-to-tr from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
               <BookOpen className="w-5 h-5 text-white" />
             </div>
-            <span className={`font-black text-base ${text}`}>Pustaka<span className="text-blue-400">Digital 3D</span></span>
+            <span className={`font-black text-base ${text}`}>Perpustakaan <span className="text-blue-400">Kita</span></span>
           </div>
-          <p className={`text-xs ${sub}`}>© 2026 Pustaka Digital Indonesia</p>
+          <p className={`text-xs ${sub}`}>© 2026 Perpustakaan Kita Indonesia</p>
         </div>
       </footer>
 

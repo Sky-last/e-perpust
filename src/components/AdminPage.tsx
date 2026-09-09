@@ -782,7 +782,7 @@ export default function AdminPage({
         <div className="bg-white border border-slate-200/60 rounded-3xl p-6 space-y-4 shadow-sm">
           <div>
             <h3 className="font-extrabold text-slate-800 text-base">Laporan Riwayat Peminjaman Lengkap</h3>
-            <p className="text-slate-400 text-xs">Merekam audit trail log sistem dari semua transaksi pengguna perpustakaan digital.</p>
+            <p className="text-slate-400 text-xs">Merekam audit trail log sistem dari semua transaksi pengguna Perpustakaan Kita.</p>
           </div>
 
           <div className="overflow-x-auto">
@@ -818,7 +818,7 @@ export default function AdminPage({
                       {log.type === 'pinjam' && `Berhasil meminjam buku "${log.bookTitle}"`}
                       {log.type === 'kembali' && `Berhasil mengembalikan buku "${log.bookTitle}"`}
                       {log.type === 'perpanjang' && `Memperpanjang tenggat waktu buku "${log.bookTitle}"`}
-                      {log.type === 'register' && `Mendaftar ke sistem Pustaka Digital`}
+                      {log.type === 'register' && `Mendaftar ke sistem Perpustakaan Kita`}
                       {log.type === 'update_profile' && `Memperbarui detail profil pribadi`}
                     </td>
                   </tr>

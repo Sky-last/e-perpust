@@ -120,7 +120,7 @@ export default function AILibrarianAssistant({ books, onNavigate, onOpenPinjamMo
     } else if (q.includes('pinjam') || q.includes('cara')) {
       replyText = 'Untuk meminjam buku, Anda cukup memilih buku dari Katalog, lalu klik tombol **"Pinjam Sekarang"**. Masa peminjaman standar adalah 7 - 14 hari!';
     } else if (q.includes('3d') || q.includes('ruang') || q.includes('tour')) {
-      replyText = 'Anda bisa menikmati pengalaman membaca 3D interaktif dan mengunjungi Ruang Perpustakaan 3D Imersif melalui menu Katalog & Fitur 3D!';
+      replyText = 'Anda bisa menikmati pengalaman membaca interaktif dan mengunjungi Ruang Perpustakaan Imersif melalui menu Katalog & Fitur!';
     } else {
       // General search filter
       matchedBooks = bookList.filter(b => 
@@ -191,7 +191,7 @@ export default function AILibrarianAssistant({ books, onNavigate, onOpenPinjamMo
                     Online
                   </span>
                 </div>
-                <p className="text-xs text-slate-400">Asisten Interaktif Pustaka Digital</p>
+                <p className="text-xs text-slate-400">Asisten Interaktif Perpustakaan Kita</p>
               </div>
             </div>
             <button

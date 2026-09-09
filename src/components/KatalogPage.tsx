@@ -5,6 +5,7 @@ import Book3D from './Book3D';
 import BookOpen3DModal from './BookOpen3DModal';
 import EBookReader3D from './EBookReader3D';
 import { soundFX } from '../utils/audio';
+import { BOOK_PDF_MAP } from '../utils/pdfResolver';
 
 interface KatalogPageProps {
   books: Book[];
@@ -45,6 +46,12 @@ export default function KatalogPage({
   // Handle filtering
   const filteredBooks = useMemo(() => {
     return books.filter(book => {
+      // FILTER 1: Hide books without PDF (isActive check)
+      if (book.isActive === false) return false;
+      
+      // FILTER 2: Hide books without pdfUrl mapping
+      if (!book.pdfUrl && !BOOK_PDF_MAP[book.id]) return false;
+      
       const matchesSearch =
         book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         book.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -490,6 +497,17 @@ export default function KatalogPage({
                         </div>
 
                         <div className="flex gap-2">
+                          {/* Tombol Baca PDF - langsung buka reader */}
+                          <button
+                            onClick={() => {
+                              soundFX.playPageFlip();
+                              setReadingBook3D(book);
+                            }}
+                            className="flex-1 py-2.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer text-center bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-lg shadow-emerald-500/20"
+                          >
+                            📖 Baca
+                          </button>
+
                           <button
                             onClick={() => {
                               soundFX.playBookOpen();
@@ -499,7 +517,7 @@ export default function KatalogPage({
                               dk ? 'bg-slate-800 hover:bg-slate-700 text-slate-200' : 'bg-slate-100 hover:bg-slate-200 text-slate-800'
                             }`}
                           >
-                            Buka 3D
+                            Info 3D
                           </button>
 
                           <button

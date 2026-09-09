@@ -14,6 +14,14 @@ const getFormattedDate = () => {
 // ==========================================
 
 export async function getBooks(): Promise<Book[]> {
+  // Always base our digital library catalog on INITIAL_BOOKS (the 111 authentic digital books from assets/buku digital)
+  let catalogBooks: Book[] = INITIAL_BOOKS.map(b => ({
+    ...b,
+    pdfUrl: resolveBookPdfUrl(b),
+    coverUrl: b.coverUrl || `/buku_sampul/cover_${b.id}.jpg`,
+    isActive: true
+  }));
+
   if (isSupabaseConfigured) {
     try {
       const { data, error } = await supabase
@@ -21,92 +29,79 @@ export async function getBooks(): Promise<Book[]> {
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (!error && data && data.length > 0) {
+        // Merge Supabase updates (e.g. stock, status, or newly added custom books)
+        catalogBooks = catalogBooks.map(initBook => {
+          const remote = data.find(r => r.id === initBook.id);
+          if (remote) {
+            return {
+              ...initBook,
+              stock: remote.stock !== undefined ? remote.stock : initBook.stock,
+              status: remote.status || initBook.status
+            };
+          }
+          return initBook;
+        });
 
-      // If database is empty, seed it with INITIAL_BOOKS
-      if (!data || data.length === 0) {
-        const insertData = INITIAL_BOOKS.map(b => ({
-          id: b.id,
-          title: b.title,
-          author: b.author,
-          category: b.category,
-          publisher: b.publisher,
-          isbn: b.isbn,
-          description: b.description,
-          year: b.year,
-          rating: b.rating,
-          status: b.status,
-          stock: b.stock,
-          cover_color: b.coverColor,
-          cover_url: b.pdfUrl || b.coverUrl || null,
-          is_ai_generated: b.isAiGenerated || false
-        }));
+        // If there are custom admin-added books in Supabase (excluding old dummy 'eb-' books):
+        const customRemoteBooks: Book[] = data
+          .filter(r => !r.id.startsWith('eb-') && !catalogBooks.some(cb => cb.id === r.id))
+          .map(b => ({
+            id: b.id,
+            title: b.title,
+            author: b.author,
+            category: b.category,
+            publisher: b.publisher,
+            isbn: b.isbn,
+            description: b.description,
+            year: b.year,
+            rating: Number(b.rating),
+            status: b.status as 'Tersedia' | 'Sedang Dipinjam',
+            stock: b.stock,
+            coverColor: b.cover_color,
+            coverUrl: b.cover_url || `/buku_sampul/cover_${b.id}.jpg`,
+            pdfUrl: resolveBookPdfUrl(b),
+            isAiGenerated: b.is_ai_generated,
+            isActive: true
+          }));
 
-        const { error: seedError } = await supabase.from('books').insert(insertData);
-        if (seedError) console.error('Failed to seed books:', seedError);
-        return INITIAL_BOOKS;
+        catalogBooks = [...catalogBooks, ...customRemoteBooks];
       }
-
-      return data.map(b => {
-        const isImageUrl = b.cover_url && (b.cover_url.startsWith('http') || b.cover_url.startsWith('data:'));
-        const isPdfUrl = b.cover_url && (b.cover_url.endsWith('.pdf') || b.cover_url.startsWith('/buku_digital/')) && !isImageUrl;
-        // Resolve pdfUrl: prefer stored pdf path, fallback to BOOK_PDF_MAP by ID
-        const resolvedPdfUrl = isPdfUrl ? b.cover_url : (BOOK_PDF_MAP[b.id] || undefined);
-        return {
-          id: b.id,
-          title: b.title,
-          author: b.author,
-          category: b.category,
-          publisher: b.publisher,
-          isbn: b.isbn,
-          description: b.description,
-          year: b.year,
-          rating: Number(b.rating),
-          status: b.status as 'Tersedia' | 'Sedang Dipinjam',
-          stock: b.stock,
-          coverColor: b.cover_color,
-          coverUrl: isImageUrl ? b.cover_url : undefined,
-          pdfUrl: resolvedPdfUrl,
-          isAiGenerated: b.is_ai_generated
-        };
-      });
     } catch (e) {
-      console.error('Supabase error fetching books, falling back to local:', e);
+      console.error('Supabase error fetching books, using full digital catalog:', e);
     }
   }
 
-  // LocalStorage fallback
+  // Also merge any local storage stock/status modifications
   const stored = localStorage.getItem('digital_library_books');
-  let finalBooks = INITIAL_BOOKS;
   if (stored) {
     try {
       const parsed: Book[] = JSON.parse(stored);
       if (Array.isArray(parsed) && parsed.length > 0) {
-        // Merge stored books with updated INITIAL_BOOKS to ensure updated metadata (pdfUrl, coverUrl, title, etc) takes effect
-        finalBooks = INITIAL_BOOKS.map(initBook => {
-          const foundInStored = parsed.find(b => b.id === initBook.id);
-          if (foundInStored) {
+        catalogBooks = catalogBooks.map(initBook => {
+          const found = parsed.find(b => b.id === initBook.id);
+          if (found) {
             return {
               ...initBook,
-              // Keep user-edited properties if any (like stock changes from borrowing), but enforce correct pdfUrl & title
-              stock: foundInStored.stock !== undefined ? foundInStored.stock : initBook.stock,
-              pdfUrl: resolveBookPdfUrl(initBook),
+              stock: found.stock !== undefined ? found.stock : initBook.stock,
+              status: found.status || initBook.status
             };
           }
-          return {
-            ...initBook,
-            pdfUrl: resolveBookPdfUrl(initBook)
-          };
+          return initBook;
         });
 
-        // Also append any newly created custom books from admin
-        const customBooks = parsed.filter(b => !INITIAL_BOOKS.some(ib => ib.id === b.id));
-        finalBooks = [...finalBooks, ...customBooks];
+        const customLocal = parsed.filter(b =>
+          !b.id.startsWith('eb-') &&
+          !catalogBooks.some(cb => cb.id === b.id) &&
+          b.isActive !== false
+        );
+        catalogBooks = [...catalogBooks, ...customLocal];
       }
     } catch (e) {}
   }
-  localStorage.setItem('digital_library_books', JSON.stringify(finalBooks));
-  return finalBooks;
+
+  localStorage.setItem('digital_library_books', JSON.stringify(catalogBooks));
+  return catalogBooks;
 }
 
 export async function saveBook(book: Omit<Book, 'status'>, isNew: boolean): Promise<Book> {
