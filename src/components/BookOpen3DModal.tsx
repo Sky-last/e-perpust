@@ -35,7 +35,7 @@ export default function BookOpen3DModal({
       if (book.coverUrl) {
         setResolvedCover(book.coverUrl);
       } else {
-        resolveBookCover(book.isbn || '', book.title, book.author).then(url => {
+        resolveBookCover(book.isbn || '', book.title, book.author, book.coverUrl, book.pdfUrl).then(url => {
           if (url) setResolvedCover(url);
         });
       }
@@ -150,47 +150,34 @@ export default function BookOpen3DModal({
             <button
               type="button"
               onClick={() => {
+                console.log('Baca E-Book clicked (mobile)!', book.title);
                 soundFX.playPageFlip();
                 onReadEbook(book);
               }}
               className="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold text-xs rounded-xl shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-colors duration-200 cursor-pointer"
             >
               <BookOpen className="w-4 h-4" />
-              <span>Baca Dokumen PDF Asli</span>
+              <span>Baca E-Book Sekarang</span>
             </button>
           )}
 
-          <div className="flex gap-2">
-            {onPinjam && (
-              <button
-                type="button"
-                onClick={() => {
-                  soundFX.playClick();
-                  onPinjam(book);
-                }}
-                className="flex-1 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs rounded-xl shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-colors duration-200 cursor-pointer"
-              >
-                <Bookmark className="w-4 h-4" />
-                <span>Pinjam Buku</span>
-              </button>
-            )}
-
-            {onToggleFavorite && (
-              <button
-                onClick={() => {
-                  soundFX.playClick();
-                  onToggleFavorite(book.id);
-                }}
-                className={`p-3 rounded-xl border transition-all ${
-                  isFavorite
-                    ? 'bg-rose-500/20 text-rose-400 border-rose-500/40'
-                    : 'bg-slate-800 text-slate-400 border-slate-700'
-                }`}
-              >
-                <Heart className={`w-5 h-5 ${isFavorite ? 'fill-current' : ''}`} />
-              </button>
-            )}
-          </div>
+          {onToggleFavorite && (
+            <button
+              type="button"
+              onClick={() => {
+                soundFX.playClick();
+                onToggleFavorite(book.id);
+              }}
+              className={`w-full py-3 rounded-xl border transition-all text-xs font-bold flex items-center justify-center gap-2 cursor-pointer ${
+                isFavorite
+                  ? 'bg-rose-500/20 text-rose-400 border-rose-500/40'
+                  : 'bg-slate-800 text-slate-400 border-slate-700'
+              }`}
+            >
+              <Heart className={`w-5 h-5 ${isFavorite ? 'fill-current' : ''}`} />
+              <span>{isFavorite ? 'Hapus dari Favorit' : 'Tambah ke Favorit'}</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -310,48 +297,34 @@ export default function BookOpen3DModal({
                 <button
                   type="button"
                   onClick={() => {
+                    console.log('Baca E-Book clicked!', book.title);
                     soundFX.playPageFlip();
                     onReadEbook(book);
                   }}
                   className="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-extrabold rounded-xl shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 flex items-center justify-center gap-2 transition-colors duration-200 cursor-pointer active:scale-95"
                 >
                   <BookOpen className="w-4 h-4" />
-                  <span>Baca Dokumen PDF Asli</span>
+                  <span>Baca E-Book Sekarang (3D Viewer)</span>
                 </button>
               )}
 
-              <div className="flex gap-3">
-                {onPinjam && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      soundFX.playClick();
-                      onPinjam(book);
-                    }}
-                    className="flex-1 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold rounded-xl shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2 transition-colors duration-200 cursor-pointer active:scale-95"
-                  >
-                    <Bookmark className="w-4 h-4" />
-                    <span>Ajukan Peminjaman</span>
-                  </button>
-                )}
-
-                {onToggleFavorite && (
-                  <button
-                    onClick={() => {
-                      soundFX.playClick();
-                      onToggleFavorite(book.id);
-                    }}
-                    className={`p-3 rounded-xl border transition-all cursor-pointer ${
-                      isFavorite
-                        ? 'bg-rose-500/20 text-rose-400 border-rose-500/40'
-                        : 'bg-slate-800 text-slate-400 border-slate-700 hover:text-rose-400 hover:border-rose-500/30'
-                    }`}
-                    title="Simpan Favorit"
-                  >
-                    <Heart className={`w-5 h-5 ${isFavorite ? 'fill-current' : ''}`} />
-                  </button>
-                )}
-              </div>
+              {onToggleFavorite && (
+                <button
+                  onClick={() => {
+                    soundFX.playClick();
+                    onToggleFavorite(book.id);
+                  }}
+                  className={`w-full py-3 rounded-xl border transition-all cursor-pointer flex items-center justify-center gap-2 ${
+                    isFavorite
+                      ? 'bg-rose-500/20 text-rose-400 border-rose-500/40'
+                      : 'bg-slate-800 text-slate-400 border-slate-700 hover:text-rose-400 hover:border-rose-500/30'
+                  }`}
+                  title="Simpan Favorit"
+                >
+                  <Heart className={`w-5 h-5 ${isFavorite ? 'fill-current' : ''}`} />
+                  <span>{isFavorite ? 'Hapus dari Favorit' : 'Tambah ke Favorit'}</span>
+                </button>
+              )}
             </div>
           </div>
 

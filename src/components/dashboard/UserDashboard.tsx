@@ -1446,9 +1446,19 @@ export default function UserDashboard({
       {/* ── MODALS ── */}
       {selectedBook && !isBorrowingModalOpen && (
         <BookOpen3DModal
-          book={selectedBook}
+          book={{
+            ...selectedBook,
+            pdfUrl: selectedBook.pdfUrl || resolveBookPdfUrl(selectedBook)
+          }}
           onClose={() => setSelectedBook(null)}
-          onReadEbook={(b) => { setSelectedBook(null); setReadingBook3D(b); }}
+          onReadEbook={(b) => { 
+            console.log('onReadEbook called with:', b.title, 'pdfUrl:', b.pdfUrl);
+            setSelectedBook(null); 
+            setReadingBook3D({
+              ...b,
+              pdfUrl: b.pdfUrl || resolveBookPdfUrl(b)
+            }); 
+          }}
           onPinjam={() => setIsBorrowingModalOpen(true)}
         />
       )}

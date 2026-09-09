@@ -18,7 +18,6 @@ import PinjamanPage from './components/PinjamanPage';
 import FavoritPage from './components/FavoritPage';
 import ProfilPage from './components/ProfilPage';
 import AdminPage from './components/AdminPage';
-import PinjamModal from './components/PinjamModal';
 import ToastNotification, { Toast } from './components/ToastNotification';
 import AILibrarianAssistant from './components/AILibrarianAssistant';
 
@@ -79,8 +78,6 @@ export default function App() {
   
   // Interaction state
   const [toasts, setToasts] = useState<Toast[]>([]);
-  const [pinjamModalOpen, setPinjamModalOpen] = useState(false);
-  const [selectedPinjamBook, setSelectedPinjamBook] = useState<Book | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false); // Mobile sidebar toggle
 
   // LOAD DATABASE ON MOUNT
@@ -552,115 +549,7 @@ export default function App() {
   };
 
   // BORROWING OPERATIONS
-  const handleOpenPinjamModal = (book: Book) => {
-    setSelectedPinjamBook(book);
-    setPinjamModalOpen(true);
-  };
-
-  const handleConfirmPinjam = async (bookId: string, durationDays: number, bookObj?: Book) => {
-    const targetBook = bookObj || selectedPinjamBook || books.find(b => b.id === bookId);
-    if (!currentUser || !targetBook) return;
-
-    // Validation: Check stock availability
-    if (targetBook.stock <= 0) {
-      addToast(`Gagal! Stok buku "${targetBook.title}" sedang habis. Silakan tunggu buku dikembalikan.`, 'error');
-      setPinjamModalOpen(false);
-      return;
-    }
-
-    // Validation: Max borrowing check (Reguler 3, Premium 5)
-    const activeBorrowings = (currentUser.borrowings || []).filter(b => b.status === 'Sedang Dipinjam' || b.status === 'approved' || b.status === 'pending');
-    const maxAllowed = currentUser.badge === 'Premium' ? 5 : 3;
-
-    if (activeBorrowings.length >= maxAllowed) {
-      addToast(`Gagal! Batas pinjaman aktif anggota ${currentUser.badge} adalah ${maxAllowed} buku.`, 'error');
-      setPinjamModalOpen(false);
-      return;
-    }
-
-    if (isSupabaseConfigured) {
-      try {
-        const borrowRes = await makeBorrowing(
-          currentUser.id, 
-          bookId, 
-          targetBook.title, 
-          targetBook.coverColor, 
-          targetBook.coverUrl, 
-          durationDays
-        );
-
-        if (borrowRes) {
-          // Refresh books and profile
-          const booksList = await getBooks();
-          setBooks(booksList);
-          const profile = await getUserProfile(currentUser.id);
-          if (profile) {
-            setCurrentUser(profile);
-            localStorage.setItem('digital_library_active_user_data', JSON.stringify(profile));
-          }
-
-          await pushLog(currentUser.email, currentUser.name, 'pinjam', targetBook.title);
-          addToast(`Peminjaman buku "${targetBook.title}" dikonfirmasi!`, 'success');
-          setPinjamModalOpen(false);
-          setSelectedPinjamBook(null);
-          return;
-        }
-      } catch (err: any) {
-        console.warn('Supabase borrowing error, using local fallback:', err);
-      }
-    }
-
-    // LocalStorage fallback
-    const now = new Date();
-    const formattedBorrowDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-    
-    const returnDueDate = new Date();
-    returnDueDate.setDate(now.getDate() + durationDays);
-    const formattedDueDate = `${returnDueDate.getFullYear()}-${String(returnDueDate.getMonth() + 1).padStart(2, '0')}-${String(returnDueDate.getDate()).padStart(2, '0')}`;
-
-    // Update User borrowings
-    const newBorrow: Borrowing = {
-      id: 'brw_' + Math.random().toString(36).substr(2, 9),
-      bookId: targetBook.id,
-      bookTitle: targetBook.title,
-      coverColor: targetBook.coverColor,
-      coverUrl: targetBook.coverUrl,
-      borrowDate: formattedBorrowDate,
-      dueDate: formattedDueDate,
-      status: 'approved'
-    };
-
-    const updatedUserBorrowings = [newBorrow, ...(currentUser.borrowings || [])];
-    const updatedCurrentUser = { ...currentUser, borrowings: updatedUserBorrowings };
-
-    const userExists = users.some(u => u.id === currentUser.id || u.email.toLowerCase() === currentUser.email.toLowerCase());
-    const updatedUsersList = userExists
-      ? users.map(u => (u.id === currentUser.id || u.email.toLowerCase() === currentUser.email.toLowerCase()) ? updatedCurrentUser : u)
-      : [...users, updatedCurrentUser];
-
-    // Update Book stock (decrement by 1)
-    const updatedBooksList = books.map(b => {
-      if (b.id === bookId) {
-        return { ...b, stock: Math.max(0, b.stock - 1) };
-      }
-      return b;
-    });
-
-    // Save states
-    setCurrentUser(updatedCurrentUser);
-    setUsers(updatedUsersList);
-    setBooks(updatedBooksList);
-
-    localStorage.setItem('digital_library_users', JSON.stringify(updatedUsersList));
-    localStorage.setItem('digital_library_active_user_data', JSON.stringify(updatedCurrentUser));
-    localStorage.setItem('digital_library_books', JSON.stringify(updatedBooksList));
-
-    await pushLog(currentUser.email, currentUser.name, 'pinjam', targetBook.title);
-
-    addToast(`Peminjaman buku "${targetBook.title}" dikonfirmasi!`, 'success');
-    setPinjamModalOpen(false);
-    setSelectedPinjamBook(null);
-  };
+  // Borrowing feature removed (feature disabled)
 
   const handleReturnBook = async (borrowingId: string) => {
     let targetUser = currentUser;
@@ -1223,13 +1112,7 @@ export default function App() {
             borrowings={(currentUser.borrowings || []).map(b => ({ ...b, studentId: currentUser.id }))}
             notifications={notifications}
             settings={settings}
-            onRequestBorrow={(bookId, days, _notes) => {
-              const book = books.find(b => b.id === bookId);
-              if (book) {
-                setSelectedPinjamBook(book);
-                handleConfirmPinjam(bookId, days, book);
-              }
-            }}
+            onRequestBorrow={() => {}} // Feature disabled
             onRequestReturn={handleReturnBook}
             onUpdateProfile={(data) => handleUpdateProfile(data)}
             onMarkNotifRead={handleMarkNotifRead}
@@ -1242,7 +1125,6 @@ export default function App() {
             onNavigate={handleNavigate} 
             favorites={favorites}
             onToggleFavorite={handleToggleFavorite}
-            onOpenPinjamModal={handleOpenPinjamModal}
             currentUser={currentUser}
           />
         );
@@ -1254,7 +1136,6 @@ export default function App() {
             onNavigate={handleNavigate} 
             favorites={favorites}
             onToggleFavorite={handleToggleFavorite}
-            onOpenPinjamModal={handleOpenPinjamModal}
             currentUser={currentUser}
           />
         );
@@ -1278,7 +1159,6 @@ export default function App() {
             books={books} 
             favorites={favorites}
             onToggleFavorite={handleToggleFavorite}
-            onOpenPinjamModal={handleOpenPinjamModal}
             onNavigate={handleNavigate}
           />
         );
@@ -1426,14 +1306,7 @@ export default function App() {
       <div className="relative h-screen overflow-hidden">
         {renderViewContent()}
         <ToastNotification toasts={toasts} onDismiss={handleDismissToast} />
-        <AILibrarianAssistant books={books} onNavigate={handleNavigate} onOpenPinjamModal={handleOpenPinjamModal} />
-        <PinjamModal 
-          isOpen={pinjamModalOpen} 
-          onClose={() => setPinjamModalOpen(false)}
-          book={selectedPinjamBook}
-          currentUser={currentUser}
-          onConfirmPinjam={handleConfirmPinjam}
-        />
+        <AILibrarianAssistant books={books} onNavigate={handleNavigate} />
       </div>
     );
   }
@@ -1639,15 +1512,6 @@ export default function App() {
         </div>
       </main>
 
-      {/* Pinjam modal */}
-      <PinjamModal 
-        isOpen={pinjamModalOpen} 
-        onClose={() => setPinjamModalOpen(false)}
-        book={selectedPinjamBook}
-        currentUser={currentUser}
-        onConfirmPinjam={handleConfirmPinjam}
-      />
-
       {/* Toast notifications */}
       <ToastNotification toasts={toasts} onDismiss={handleDismissToast} />
 
@@ -1655,7 +1519,6 @@ export default function App() {
       <AILibrarianAssistant
         books={books}
         onNavigate={handleNavigate}
-        onOpenPinjamModal={handleOpenPinjamModal}
       />
     </div>
   );

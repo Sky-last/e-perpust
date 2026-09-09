@@ -26,14 +26,14 @@ export default function Book3D({ book, size = 'md', className = '', onClick }: B
       setCoverLoadFailed(false);
       return;
     }
-    resolveBookCover(book.isbn || '', book.title, book.author).then(url => {
+    resolveBookCover(book.isbn || '', book.title, book.author, undefined, book.pdfUrl).then(url => {
       if (!cancelled && url) {
         setResolvedCover(url);
         setCoverLoadFailed(false);
       }
     });
     return () => { cancelled = true; };
-  }, [book.id, book.coverUrl, book.isbn, book.title, book.author]);
+  }, [book.id, book.coverUrl, book.isbn, book.title, book.author, book.pdfUrl]);
 
   const handleCoverError = () => {
     resolveBookCoverFallback(book.isbn || '', book.title, book.author).then(url => {

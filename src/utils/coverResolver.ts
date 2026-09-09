@@ -120,7 +120,8 @@ export async function resolveBookCover(
   isbn: string,
   title: string,
   author: string,
-  existingCoverUrl?: string
+  existingCoverUrl?: string,
+  pdfUrl?: string
 ): Promise<string | null> {
   const cacheKey = `${isbn}||${title}`;
 
@@ -135,6 +136,24 @@ export async function resolveBookCover(
   }
 
   const fetchPromise = (async (): Promise<string | null> => {
+    // 0. Try to derive cover from pdfUrl if available
+    if (pdfUrl && pdfUrl.startsWith('/buku_digital/')) {
+      const pdfFileName = pdfUrl.split('/').pop()?.replace('.pdf', '');
+      if (pdfFileName) {
+        const coverPath = `/buku_sampul/cover_${pdfFileName}.jpg`;
+        // Check if this cover exists by trying to load it
+        try {
+          const response = await fetch(coverPath, { method: 'HEAD' });
+          if (response.ok) {
+            coverCache.set(cacheKey, coverPath);
+            return coverPath;
+          }
+        } catch (e) {
+          // Cover doesn't exist, continue to other methods
+        }
+      }
+    }
+
     // 1. If existing cover URL looks valid, use it immediately.
     //    The <img> onError in the component will handle if it actually fails to load.
     if (existingCoverUrl && (existingCoverUrl.startsWith('http') || existingCoverUrl.startsWith('/'))) {
