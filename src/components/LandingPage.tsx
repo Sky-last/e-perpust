@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { BookOpen, Star, Heart, ArrowRight, Users, BookMarked, CheckCircle, Sun, Moon, Sparkles, Mail, Phone, MapPin, Clock, Send, MessageSquare, Menu, X, ChevronDown } from 'lucide-react';
-import { Book, ViewType } from '../types';
+import { Book, ViewType, User } from '../types';
 import Book3D from './Book3D';
 import BookShelf3D from './BookShelf3D';
 import FloatingParticles from './FloatingParticles';

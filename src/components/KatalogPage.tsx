@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect as React_useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import * as React from 'react';
 import { Book, User, ViewType } from '../types';
 import { Search, SlidersHorizontal, Heart, Star, BookOpen, RefreshCw, Sun, Moon, Sparkles, Menu, X, Download } from 'lucide-react';
@@ -6,7 +6,7 @@ import Book3D from './Book3D';
 import BookOpen3DModal from './BookOpen3DModal';
 import EBookReader3D from './EBookReader3D';
 import { soundFX } from '../utils/audio';
-import { BOOK_PDF_MAP, resolveBookPdfUrl } from '../utils/pdfResolver';
+import { BOOK_PDF_MAP } from '../utils/pdfResolver';
 
 interface KatalogPageProps {
   books: Book[];
@@ -57,10 +57,7 @@ export default function KatalogPage({
   // Handle filtering
   const filteredBooks = useMemo(() => {
     return books.filter(book => {
-      // FILTER 1: Hide books without PDF (isActive check)
-      if (book.isActive === false) return false;
-      
-      // FILTER 2: Hide books without pdfUrl mapping
+      // FILTER: Hide books without pdfUrl mapping
       if (!book.pdfUrl && !BOOK_PDF_MAP[book.id]) return false;
       
       const matchesSearch =
