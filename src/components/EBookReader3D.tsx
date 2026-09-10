@@ -303,6 +303,77 @@ export default function EBookReader3D({ book, onClose, currentUser, initialMode 
     return 'font-sans';
   };
 
+  // 🔐 LOGIN GATE: Jika belum login, tampilkan halaman login prompt, BUKAN reader/PDF
+  if (!currentUser) {
+    return (
+      <div className="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
+        <div className="w-full max-w-md bg-slate-900 rounded-3xl border border-slate-700 shadow-2xl overflow-hidden">
+          {/* Header */}
+          <div className="relative px-6 pt-8 pb-6 text-center bg-gradient-to-b from-indigo-950/60 to-slate-900 border-b border-slate-800">
+            <button
+              onClick={onClose}
+              className="absolute top-4 right-4 p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-all cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            {/* Book Cover Preview */}
+            {book.coverUrl ? (
+              <img src={book.coverUrl} alt={book.title} className="w-20 h-28 object-cover rounded-xl mx-auto mb-4 shadow-xl ring-2 ring-indigo-500/40" />
+            ) : (
+              <div className="w-20 h-28 rounded-xl mx-auto mb-4 shadow-xl bg-indigo-900 flex items-center justify-center">
+                <BookOpen className="w-8 h-8 text-indigo-300" />
+              </div>
+            )}
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500/20 border border-amber-500/40 rounded-full text-amber-400 text-[11px] font-bold mb-3">
+              <Lock className="w-3.5 h-3.5" />
+              <span>Akses Terbatas</span>
+            </div>
+            <h2 className="text-lg font-black text-white leading-tight">{book.title}</h2>
+            <p className="text-xs text-slate-400 mt-1">{book.author}</p>
+          </div>
+
+          {/* Body */}
+          <div className="px-6 py-6 space-y-5">
+            <div className="text-center space-y-2">
+              <p className="text-sm text-slate-300 font-semibold">
+                Login diperlukan untuk membaca dan mengunduh buku ini
+              </p>
+              <p className="text-xs text-slate-500 leading-relaxed">
+                Buat akun gratis atau masuk untuk membaca koleksi digital, menyimpan favorit, dan mengunduh buku ke perangkat Anda.
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <button
+                onClick={() => {
+                  onClose();
+                  onNavigate?.('login');
+                }}
+                className="w-full py-3.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-extrabold rounded-xl shadow-lg shadow-indigo-500/30 flex items-center justify-center gap-2 transition-all cursor-pointer text-sm"
+              >
+                <Lock className="w-4 h-4" />
+                <span>Masuk / Login</span>
+              </button>
+              <button
+                onClick={() => {
+                  onClose();
+                  onNavigate?.('register');
+                }}
+                className="w-full py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl border border-slate-700 transition-all cursor-pointer text-sm"
+              >
+                Daftar Gratis Sekarang
+              </button>
+            </div>
+
+            <p className="text-center text-[11px] text-slate-600">
+              Membaca e-book & mengunduh PDF memerlukan akun aktif
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-md flex items-center justify-center p-0 sm:p-4 select-none animate-in fade-in duration-200">
       <div className="w-full h-full max-w-6xl max-h-[96vh] bg-slate-900 rounded-none sm:rounded-3xl border border-slate-800 shadow-2xl overflow-hidden flex flex-col relative">
