@@ -1,0 +1,125 @@
+╔════════════════════════════════════════════════════════════════════╗
+║                    CARA HOSTING FILE PDF                            ║
+║                 (Karena Terlalu Besar untuk Git)                   ║
+╚════════════════════════════════════════════════════════════════════╝
+
+📌 MASALAH:
+   File PDF di folder public/buku_digital/ terlalu besar untuk di-push ke Git
+   (GitHub limit: 100MB per file, total repo max 1GB)
+
+✅ SOLUSI MUDAH - PILIH SALAH SATU:
+
+═══════════════════════════════════════════════════════════════════════
+🎯 OPSI 1: GITHUB PAGES (RECOMMENDED - GRATIS UNLIMITED)
+═══════════════════════════════════════════════════════════════════════
+
+1️⃣ BUAT REPOSITORY BARU DI GITHUB:
+   - Buka github.com
+   - Klik tombol "+ New Repository"
+   - Nama: perpustakaan-digital-pdf
+   - Public
+   - Jangan centang "Add README"
+   - Klik "Create repository"
+
+2️⃣ UPLOAD FOLDER PDF:
+   Buka PowerShell/CMD di folder project ini, ketik:
+
+   cd public
+   git init
+   git add buku_digital/
+   git commit -m "Add PDF library files"
+   git branch -M main
+   git remote add origin https://github.com/USERNAME-ANDA/perpustakaan-digital-pdf.git
+   git push -u origin main
+
+   ⚠️ GANTI "USERNAME-ANDA" dengan username GitHub Anda!
+
+3️⃣ ENABLE GITHUB PAGES:
+   - Buka repository perpustakaan-digital-pdf di GitHub
+   - Klik tab "Settings"
+   - Klik "Pages" di sidebar kiri
+   - Source: pilih branch "main" 
+   - Folder: "/ (root)"
+   - Klik "Save"
+   - Tunggu 2-3 menit
+
+4️⃣ UPDATE KODE:
+   Buka file: src/utils/pdfResolver.ts
+   
+   Cari baris:
+   const PDF_BASE_URL = import.meta.env.PROD 
+     ? '' // TODO: Ganti dengan URL...
+
+   Ganti menjadi:
+   const PDF_BASE_URL = import.meta.env.PROD 
+     ? 'https://USERNAME-ANDA.github.io/perpustakaan-digital-pdf'
+     : '';
+
+   ⚠️ GANTI "USERNAME-ANDA" dengan username GitHub Anda!
+
+5️⃣ PUSH & DEPLOY:
+   git add .
+   git commit -m "Update PDF base URL"
+   git push
+
+✅ SELESAI! PDF akan di-load dari GitHub Pages saat production.
+
+═══════════════════════════════════════════════════════════════════════
+🌐 OPSI 2: GOOGLE DRIVE (PALING MUDAH)
+═══════════════════════════════════════════════════════════════════════
+
+1️⃣ Upload folder buku_digital/ ke Google Drive
+
+2️⃣ Klik kanan folder → "Share" → "Anyone with the link"
+
+3️⃣ Untuk setiap file PDF:
+   - Klik kanan file → "Get link" → Copy link
+   - Link format: https://drive.google.com/file/d/FILE_ID/view
+   
+4️⃣ Update src/utils/pdfResolver.ts:
+   Ubah setiap URL di BOOK_PDF_MAP menjadi:
+   "buku-001": "https://drive.google.com/uc?export=download&id=FILE_ID",
+
+⚠️ KEKURANGAN: Google Drive ada rate limit, kadang lambat
+
+═══════════════════════════════════════════════════════════════════════
+☁️ OPSI 3: CLOUDINARY (PROFESSIONAL, FREE 25GB)
+═══════════════════════════════════════════════════════════════════════
+
+1️⃣ Daftar gratis di: https://cloudinary.com
+
+2️⃣ Upload semua PDF via dashboard Cloudinary
+
+3️⃣ Copy URL setiap file (format: https://res.cloudinary.com/...)
+
+4️⃣ Update BOOK_PDF_MAP di src/utils/pdfResolver.ts dengan URL Cloudinary
+
+✅ KELEBIHAN: CDN cepat, professional, reliable
+
+═══════════════════════════════════════════════════════════════════════
+📦 OPSI 4: VERCEL BLOB (KALAU PAKAI VERCEL HOSTING)
+═══════════════════════════════════════════════════════════════════════
+
+1️⃣ Install Vercel Blob:
+   npm install @vercel/blob
+
+2️⃣ Upload via Vercel dashboard atau API
+
+3️⃣ Update kode dengan Vercel Blob URLs
+
+⚠️ LIMIT: Free tier hanya 500MB
+
+═══════════════════════════════════════════════════════════════════════
+
+❓ MANA YANG SEBAIKNYA DIPILIH?
+
+✅ GitHub Pages      → Gratis unlimited, cepat, untuk jangka panjang
+✅ Google Drive      → Tercepat setup tapi mungkin lambat akses
+✅ Cloudinary        → Paling professional, CDN global
+✅ Vercel Blob       → Kalau sudah pakai Vercel, tapi limit kecil
+
+🎯 REKOMENDASI: GITHUB PAGES (Opsi 1)
+
+═══════════════════════════════════════════════════════════════════════
+
+Butuh bantuan? Tanya saya!
