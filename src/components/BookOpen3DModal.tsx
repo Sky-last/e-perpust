@@ -151,19 +151,21 @@ export default function BookOpen3DModal({
           {pdfUrl && onReadEbook && (
             <button
               type="button"
-              onClick={(e) => {
+              onPointerDown={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                console.log('🔵 [MOBILE] Baca E-Book clicked!', {
-                  title: book.title,
-                  pdfUrl,
-                  onReadEbook: typeof onReadEbook,
-                  event: e.type
-                });
-                soundFX.playPageFlip();
-                onReadEbook(book);
+                console.log('👆 [MOBILE] Button pointerDown - executing action!', book.title, 'PDF:', pdfUrl);
+                console.log('👆 [MOBILE] onReadEbook function exists:', !!onReadEbook);
+                try {
+                  soundFX.playPageFlip();
+                  onReadEbook(book);
+                  console.log('✅ [MOBILE] onReadEbook executed successfully');
+                } catch (error) {
+                  console.error('❌ [MOBILE] Error calling onReadEbook:', error);
+                }
               }}
-              className="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold text-xs rounded-xl shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-colors duration-200 cursor-pointer"
+              className="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold text-xs rounded-xl shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-colors duration-200 cursor-pointer touch-manipulation"
+              style={{ pointerEvents: 'auto', zIndex: 10 }}
             >
               <BookOpen className="w-4 h-4" />
               <span>Baca E-Book Sekarang</span>
@@ -305,19 +307,21 @@ export default function BookOpen3DModal({
               {pdfUrl && onReadEbook && (
                 <button
                   type="button"
-                  onClick={(e) => {
+                  onPointerDown={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    console.log('🔵 [DESKTOP] Baca E-Book clicked!', {
-                      title: book.title,
-                      pdfUrl,
-                      onReadEbook: typeof onReadEbook,
-                      event: e.type
-                    });
-                    soundFX.playPageFlip();
-                    onReadEbook(book);
+                    console.log('👆 [DESKTOP] Button pointerDown - executing action!', book.title, 'PDF:', pdfUrl);
+                    console.log('👆 [DESKTOP] onReadEbook function exists:', !!onReadEbook);
+                    try {
+                      soundFX.playPageFlip();
+                      onReadEbook(book);
+                      console.log('✅ [DESKTOP] onReadEbook executed successfully');
+                    } catch (error) {
+                      console.error('❌ [DESKTOP] Error calling onReadEbook:', error);
+                    }
                   }}
-                  className="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-extrabold rounded-xl shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer active:scale-95 text-xs"
+                  className="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-extrabold rounded-xl shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer active:scale-95 text-xs touch-manipulation"
+                  style={{ pointerEvents: 'auto', zIndex: 10 }}
                 >
                   <BookOpen className="w-4 h-4" />
                   <span>Baca E-Book Sekarang</span>

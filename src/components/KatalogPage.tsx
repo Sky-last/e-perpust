@@ -485,57 +485,16 @@ export default function KatalogPage({
                           <span>Tahun: {book.year}</span>
                         </div>
 
+                        {/* Tombol Baca E-Book & Favorit */}
                         <div className="flex gap-2">
-                          {/* Tombol Baca PDF - langsung buka reader */}
-                          <button
-                            onClick={() => {
-                              soundFX.playPageFlip();
-                              setReadingBook3D(book);
-                            }}
-                            className="flex-1 py-2.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer text-center bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-lg shadow-emerald-500/20"
-                          >
-                            📖 Baca
-                          </button>
-
                           <button
                             onClick={() => {
                               soundFX.playBookOpen();
                               setSelectedBook3D(book);
                             }}
-                            className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer text-center ${
-                              dk ? 'bg-slate-800 hover:bg-slate-700 text-slate-200' : 'bg-slate-100 hover:bg-slate-200 text-slate-800'
-                            }`}
+                            className="flex-1 py-2.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer text-center bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-lg shadow-emerald-500/20"
                           >
-                            Info 3D
-                          </button>
-
-                          <button
-                            onClick={() => {
-                              soundFX.playClick();
-                              if (!currentUser) {
-                                alert('Silakan masuk (login) terlebih dahulu untuk mengunduh file buku digital (PDF).');
-                                onNavigate('login');
-                              } else if (onDownloadBook) {
-                                onDownloadBook(book);
-                              } else {
-                                const pdfPath = book.pdfUrl || resolveBookPdfUrl(book);
-                                if (pdfPath) {
-                                  const link = document.createElement('a');
-                                  link.href = pdfPath;
-                                  link.download = `${book.title.replace(/[/\\?%*:|"<>]/g, '_')}.pdf`;
-                                  link.target = '_blank';
-                                  link.rel = 'noopener noreferrer';
-                                  document.body.appendChild(link);
-                                  link.click();
-                                  document.body.removeChild(link);
-                                }
-                              }
-                            }}
-                            className="flex-1 py-2.5 text-xs font-extrabold rounded-xl shadow-lg transition-all cursor-pointer bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-blue-500/20 flex items-center justify-center gap-1"
-                            title={currentUser ? "Unduh buku PDF" : "Login untuk mengunduh PDF"}
-                          >
-                            <Download className="w-3.5 h-3.5" />
-                            <span>Unduh</span>
+                            📖 Baca E-Book
                           </button>
 
                           <button
