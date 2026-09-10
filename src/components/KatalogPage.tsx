@@ -1,18 +1,20 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect as React_useEffect } from 'react';
+import * as React from 'react';
 import { Book, User, ViewType } from '../types';
-import { Search, SlidersHorizontal, Heart, Star, BookOpen, RefreshCw, Sun, Moon, Sparkles, Menu, X } from 'lucide-react';
+import { Search, SlidersHorizontal, Heart, Star, BookOpen, RefreshCw, Sun, Moon, Sparkles, Menu, X, Download } from 'lucide-react';
 import Book3D from './Book3D';
 import BookOpen3DModal from './BookOpen3DModal';
 import EBookReader3D from './EBookReader3D';
 import { soundFX } from '../utils/audio';
-import { BOOK_PDF_MAP } from '../utils/pdfResolver';
+import { BOOK_PDF_MAP, resolveBookPdfUrl } from '../utils/pdfResolver';
 
 interface KatalogPageProps {
   books: Book[];
   onNavigate: (view: ViewType, selectedId?: string) => void;
   favorites: string[];
   onToggleFavorite: (id: string) => void;
-  onOpenPinjamModal: (book: Book) => void;
+  onOpenPinjamModal?: (book: Book) => void;
+  onDownloadBook?: (book: Book) => void;
   currentUser: User | null;
 }
 
@@ -21,7 +23,8 @@ export default function KatalogPage({
   onNavigate,
   favorites,
   onToggleFavorite,
-  onOpenPinjamModal,
+  onOpenPinjamModal: _onOpenPinjamModal,
+  onDownloadBook,
   currentUser
 }: KatalogPageProps) {
   const [darkMode, setDarkMode] = useState(true);
@@ -37,6 +40,14 @@ export default function KatalogPage({
   // Interactive 3D Modals State
   const [selectedBook3D, setSelectedBook3D] = useState<Book | null>(null);
   const [readingBook3D, setReadingBook3D] = useState<Book | null>(null);
+
+  // Debug state changes
+  React.useEffect(() => {
+    console.log('📖 KatalogPage State Changed:', {
+      selectedBook3D: selectedBook3D?.title || null,
+      readingBook3D: readingBook3D?.title || null
+    });
+  }, [selectedBook3D, readingBook3D]);
 
   // Get distinct categories
   const categories = useMemo(() => {
@@ -59,10 +70,7 @@ export default function KatalogPage({
 
       const matchesCategory = selectedCategory === 'Semua' || book.category === selectedCategory;
 
-      const matchesStatus =
-        selectedStatus === 'Semua' ||
-        (selectedStatus === 'Tersedia' && book.stock > 0) ||
-        (selectedStatus === 'Sedang Dipinjam' && book.stock === 0);
+      const matchesStatus = true; // No stock restriction — all books always available
 
       let matchesYear = true;
       if (selectedYear !== 'Semua') {
@@ -118,59 +126,38 @@ export default function KatalogPage({
       <nav className={`fixed top-0 left-0 right-0 border-b backdrop-blur-xl z-50 shadow-sm transition-colors ${nav}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center space-x-3 cursor-pointer" onClick={() => onNavigate('landing')}>
-            <div className="p-2 bg-gradient-to-tr from-blue-500 to-indigo-600 rounded-xl shadow-lg shadow-blue-500/30">
+          <div className="flex items-center gap-3 cursor-pointer group" onClick={() => { soundFX.playClick(); onNavigate('landing'); }}>
+            <div className="w-9 h-9 bg-gradient-to-tr from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
               <BookOpen className="w-5 h-5 text-white" />
             </div>
-            <div>
-              <span className="text-lg font-black tracking-tight">
-                Pustaka<span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Digital 3D</span>
-              </span>
-            </div>
+            <span className="text-base font-black tracking-tight">
+              Perpustakaan <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Kita</span>
+            </span>
           </div>
 
           {/* Navigation Links */}
-          <div className="hidden md:flex items-center space-x-8">
-            <button
-              onClick={() => {
-                soundFX.playHover();
-                setActiveSection('home');
-                onNavigate('landing');
-              }}
-              className={`text-sm font-semibold transition-colors relative group ${
-                activeSection === 'home' ? 'text-blue-400' : `${sub} hover:text-blue-400`
-              }`}
-            >
-              Home
-            </button>
-            <button
-              onClick={() => {
-                soundFX.playHover();
-                setActiveSection('katalog');
-              }}
-              className={`text-sm font-semibold transition-colors relative group ${
-                activeSection === 'katalog' ? 'text-blue-400' : `${sub} hover:text-blue-400`
-              }`}
-            >
-              Katalog
-              <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-blue-400 rounded-full" />
-            </button>
-            <button
-              onClick={() => {
-                soundFX.playHover();
-                setActiveSection('tentang');
-                onNavigate('landing');
-                setTimeout(() => {
-                  const element = document.getElementById('tentang');
-                  if (element) element.scrollIntoView({ behavior: 'smooth' });
-                }, 100);
-              }}
-              className={`text-sm font-semibold transition-colors relative group ${
-                activeSection === 'tentang' ? 'text-blue-400' : `${sub} hover:text-blue-400`
-              }`}
-            >
-              Tentang
-            </button>
+          <div className="hidden md:flex items-center gap-8">
+            {(['Home', 'Katalog', 'Tentang', 'Kontak'] as const).map(item => {
+              const isActive = item === 'Katalog';
+              return (
+                <button key={item}
+                  onClick={() => {
+                    soundFX.playHover();
+                    if (item === 'Katalog') { return; } // Already in catalog
+                    if (item === 'Home') { onNavigate('landing'); return; }
+                    // Navigate to landing with section
+                    onNavigate('landing');
+                    setTimeout(() => {
+                      document.getElementById(item.toLowerCase())?.scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
+                  }}
+                  className={`text-sm font-semibold transition-colors relative ${isActive ? 'text-blue-400' : `${sub} hover:text-blue-400`}`}
+                >
+                  {item}
+                  {isActive && <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-blue-400 rounded-full" />}
+                </button>
+              );
+            })}
           </div>
 
           {/* CTA & Theme Controls */}
@@ -271,6 +258,19 @@ export default function KatalogPage({
                 className={`w-full text-left px-4 py-3 text-sm font-bold rounded-xl transition-all flex items-center justify-between ${sub} hover:bg-slate-800/40`}
               >
                 <span>Tentang</span>
+              </button>
+              <button
+                onClick={() => {
+                  soundFX.playClick();
+                  setMobileMenuOpen(false);
+                  onNavigate('landing');
+                  setTimeout(() => {
+                    document.getElementById('kontak')?.scrollIntoView({ behavior: 'smooth' });
+                  }, 100);
+                }}
+                className={`w-full text-left px-4 py-3 text-sm font-bold rounded-xl transition-all flex items-center justify-between ${sub} hover:bg-slate-800/40`}
+              >
+                <span>Kontak</span>
               </button>
             </div>
 
@@ -386,9 +386,7 @@ export default function KatalogPage({
                   onChange={(e) => setSelectedStatus(e.target.value)}
                   className={`w-full px-3 py-2.5 border rounded-xl text-sm outline-none font-medium ${inputBg}`}
                 >
-                  <option value="Semua">Semua Status</option>
-                  <option value="Tersedia">Tersedia (Stok &gt; 0)</option>
-                  <option value="Sedang Dipinjam">Sedang Dipinjam (Kosong)</option>
+                  <option value="Semua">Semua Buku</option>
                 </select>
               </div>
 
@@ -444,7 +442,6 @@ export default function KatalogPage({
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {sortedBooks.map((book) => {
                 const isFav = favorites.includes(book.id);
-                const isAvailable = book.stock > 0;
                 return (
                   <div
                     key={book.id}
@@ -475,14 +472,7 @@ export default function KatalogPage({
                     {/* Book Text Details */}
                     <div className="p-4 space-y-3 flex-1 flex flex-col justify-between border-t border-slate-800/40">
                       <div className="space-y-1.5">
-                        <div className="flex items-center justify-between">
-                          <span className={`text-[10px] font-mono font-semibold ${sub}`}>ISBN: {book.isbn}</span>
-                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${
-                            isAvailable ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
-                          }`}>
-                            {isAvailable ? 'Tersedia' : 'Habis'}
-                          </span>
-                        </div>
+                        <span className={`text-[10px] font-mono font-semibold ${sub}`}>ISBN: {book.isbn}</span>
                         <h3 className={`font-black text-sm leading-tight line-clamp-2 group-hover:text-blue-400 transition-colors ${text}`}>
                           {book.title}
                         </h3>
@@ -493,7 +483,6 @@ export default function KatalogPage({
                       <div className="space-y-3 pt-3 border-t border-slate-800/40">
                         <div className={`flex items-center justify-between text-xs font-semibold ${sub}`}>
                           <span>Tahun: {book.year}</span>
-                          <span>Stok: {book.stock} Eks</span>
                         </div>
 
                         <div className="flex gap-2">
@@ -524,19 +513,29 @@ export default function KatalogPage({
                             onClick={() => {
                               soundFX.playClick();
                               if (!currentUser) {
+                                alert('Silakan masuk (login) terlebih dahulu untuk mengunduh file buku digital (PDF).');
                                 onNavigate('login');
+                              } else if (onDownloadBook) {
+                                onDownloadBook(book);
                               } else {
-                                onOpenPinjamModal(book);
+                                const pdfPath = book.pdfUrl || resolveBookPdfUrl(book);
+                                if (pdfPath) {
+                                  const link = document.createElement('a');
+                                  link.href = pdfPath;
+                                  link.download = `${book.title.replace(/[/\\?%*:|"<>]/g, '_')}.pdf`;
+                                  link.target = '_blank';
+                                  link.rel = 'noopener noreferrer';
+                                  document.body.appendChild(link);
+                                  link.click();
+                                  document.body.removeChild(link);
+                                }
                               }
                             }}
-                            disabled={!isAvailable}
-                            className={`flex-1 py-2.5 text-xs font-extrabold rounded-xl shadow-lg transition-all cursor-pointer ${
-                              isAvailable
-                                ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-blue-500/20'
-                                : 'bg-slate-800 text-slate-500 cursor-not-allowed shadow-none'
-                            }`}
+                            className="flex-1 py-2.5 text-xs font-extrabold rounded-xl shadow-lg transition-all cursor-pointer bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-blue-500/20 flex items-center justify-center gap-1"
+                            title={currentUser ? "Unduh buku PDF" : "Login untuk mengunduh PDF"}
                           >
-                            Pinjam
+                            <Download className="w-3.5 h-3.5" />
+                            <span>Unduh</span>
                           </button>
 
                           <button
@@ -588,13 +587,23 @@ export default function KatalogPage({
           book={selectedBook3D}
           onClose={() => setSelectedBook3D(null)}
           onReadEbook={(b) => {
+            console.log('🟢 KatalogPage: onReadEbook called with:', {
+              title: b.title,
+              id: b.id,
+              pdfUrl: b.pdfUrl
+            });
             setSelectedBook3D(null);
             setReadingBook3D(b);
+            console.log('🟢 KatalogPage: readingBook3D state set, should open EBookReader3D');
           }}
           onPinjam={(b) => {
             setSelectedBook3D(null);
-            if (!currentUser) onNavigate('login');
-            else onOpenPinjamModal(b);
+            if (!currentUser) {
+              alert('Silakan masuk (login) terlebih dahulu untuk mengunduh buku digital (PDF).');
+              onNavigate('login');
+            } else if (onDownloadBook) {
+              onDownloadBook(b);
+            }
           }}
           onToggleFavorite={onToggleFavorite}
           isFavorite={favorites.includes(selectedBook3D.id)}

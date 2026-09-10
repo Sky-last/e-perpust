@@ -392,8 +392,8 @@ export default function VT3DImmersiveExperience({
                   <div className="p-3 bg-slate-800/60 rounded-xl border border-slate-700/50 space-y-1 text-xs">
                     <p className="text-[10px] text-slate-400 font-bold uppercase">ISBN & Status</p>
                     <p className="font-mono text-slate-300">{currentBook.isbn}</p>
-                    <p className={`font-bold ${currentBook.stock > 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-                      {currentBook.stock > 0 ? `Tersedia (${currentBook.stock} stok)` : 'Sedang Dipinjam'}
+                    <p className="font-bold text-emerald-400">
+                      Tersedia Digital
                     </p>
                   </div>
                 </div>

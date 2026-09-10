@@ -48,7 +48,6 @@ export default function AdminPage({
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('Teknologi');
   const [year, setYear] = useState<number>(2024);
-  const [stock, setStock] = useState<number>(5);
   const [rating, setRating] = useState<number>(4.5);
   const [coverColor, setCoverColor] = useState(COLOR_PRESETS[0]);
   const [coverUrl, setCoverUrl] = useState('');
@@ -62,7 +61,7 @@ export default function AdminPage({
   const [adminCategory, setAdminCategory] = useState('Semua');
 
   // Stats
-  const totalBooksCount = books.reduce((acc, b) => acc + b.stock, 0);
+  const totalBooksCount = books.length;
   const activeBorrowingsCount = users.reduce((acc, u) => {
     return acc + u.borrowings.filter(b => b.status === 'Sedang Dipinjam').length;
   }, 0);
@@ -86,8 +85,7 @@ export default function AdminPage({
         category,
         year: Number(year),
         rating: Number(rating),
-        status: stock > 0 ? 'Tersedia' : 'Sedang Dipinjam',
-        stock: Number(stock),
+        status: 'Tersedia',
         coverColor,
         coverUrl: coverUrl || undefined
       };
@@ -104,7 +102,6 @@ export default function AdminPage({
         category,
         year: Number(year),
         rating: Number(rating),
-        stock: Number(stock),
         coverColor,
         coverUrl: coverUrl || undefined
       };
@@ -124,7 +121,6 @@ export default function AdminPage({
     setDescription(book.description);
     setCategory(book.category);
     setYear(book.year);
-    setStock(book.stock);
     setRating(book.rating);
     setCoverColor(book.coverColor);
     setCoverUrl(book.coverUrl || '');
@@ -155,7 +151,6 @@ export default function AdminPage({
     setDescription('');
     setCategory('Teknologi');
     setYear(2024);
-    setStock(5);
     setRating(4.5);
     setCoverColor(COLOR_PRESETS[0]);
     setCoverUrl('');
@@ -275,7 +270,7 @@ export default function AdminPage({
               </div>
               <div>
                 <p className="text-2xl font-extrabold text-slate-800">{totalBooksCount}</p>
-                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider font-mono">Total Stok Buku</p>
+                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider font-mono">Total Koleksi Buku</p>
               </div>
             </div>
 
@@ -537,22 +532,13 @@ export default function AdminPage({
                   </select>
                 </div>
 
-                <div className="space-y-1.5 grid grid-cols-3 gap-2 sm:col-span-1">
+                <div className="space-y-1.5 grid grid-cols-2 gap-2 sm:col-span-1">
                   <div>
                     <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider">Tahun</label>
                     <input
                       type="number"
                       value={year}
                       onChange={(e) => setYear(Number(e.target.value))}
-                      className="block w-full px-2 py-2.5 border border-slate-200 rounded-xl text-xs outline-none text-center"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wider">Stok</label>
-                    <input
-                      type="number"
-                      value={stock}
-                      onChange={(e) => setStock(Number(e.target.value))}
                       className="block w-full px-2 py-2.5 border border-slate-200 rounded-xl text-xs outline-none text-center"
                     />
                   </div>
@@ -639,7 +625,6 @@ export default function AdminPage({
                     <th className="p-3 font-bold text-slate-400 font-mono">ISBN</th>
                     <th className="p-3 font-bold text-slate-400 font-mono">Penerbit</th>
                     <th className="p-3 font-bold text-slate-400 font-mono text-center">Tahun</th>
-                    <th className="p-3 font-bold text-slate-400 font-mono text-center">Stok</th>
                     <th className="p-3 font-bold text-slate-400 font-mono text-center">Rating</th>
                     <th className="p-3 font-bold text-slate-400 font-mono text-right">Aksi</th>
                   </tr>
@@ -662,7 +647,6 @@ export default function AdminPage({
                       <td className="p-3 text-slate-500 font-medium font-mono">{book.isbn}</td>
                       <td className="p-3 text-slate-600 font-medium">{book.publisher || 'TechPress'}</td>
                       <td className="p-3 text-center text-slate-600 font-bold">{book.year}</td>
-                      <td className="p-3 text-center text-slate-700 font-bold">{book.stock}</td>
                       <td className="p-3 text-center text-amber-500 font-bold">{book.rating}</td>
                       <td className="p-3 text-right whitespace-nowrap">
                         <div className="flex items-center justify-end space-x-1.5">

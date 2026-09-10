@@ -1,15 +1,17 @@
 import { useState } from 'react';
 import { Book, User, ViewType } from '../types';
-import { Star, Heart, ArrowLeft, Shield, BookOpen } from 'lucide-react';
+import { Star, Heart, ArrowLeft, Shield, BookOpen, Download } from 'lucide-react';
 import Book3D from './Book3D';
 import EBookReader3D from './EBookReader3D';
+import { resolveBookPdfUrl } from '../utils/pdfResolver';
 
 interface DetailPageProps {
   book: Book | null;
   onNavigate: (view: ViewType, selectedId?: string) => void;
   favorites: string[];
   onToggleFavorite: (id: string) => void;
-  onOpenPinjamModal: (book: Book) => void;
+  onOpenPinjamModal?: (book: Book) => void;
+  onDownloadBook?: (book: Book) => void;
   currentUser: User | null;
 }
 
@@ -18,7 +20,8 @@ export default function DetailPage({
   onNavigate,
   favorites,
   onToggleFavorite,
-  onOpenPinjamModal,
+  onOpenPinjamModal: _onOpenPinjamModal,
+  onDownloadBook,
   currentUser
 }: DetailPageProps) {
   const [show3DReader, setShow3DReader] = useState(false);
@@ -42,7 +45,6 @@ export default function DetailPage({
   }
 
   const isFav = favorites.includes(book.id);
-  const isAvailable = book.stock > 0;
   // Dynamic page count mock based on ISBN
   const pageCount = (parseInt(book.isbn.replace(/[^0-9]/g, '')) % 150) + 180;
 
@@ -92,8 +94,8 @@ export default function DetailPage({
               <span className="text-xs font-bold px-3 py-1 bg-blue-50 text-blue-600 rounded-full font-mono tracking-wide uppercase">
                 {book.category}
               </span>
-              <span className={`text-xs font-bold px-3 py-1 rounded-full ${isAvailable ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'}`}>
-                {isAvailable ? `Tersedia (Stok: ${book.stock})` : 'Sedang Dipinjam / Kosong'}
+              <span className="text-xs font-bold px-3 py-1 rounded-full bg-emerald-50 text-emerald-600">
+                Tersedia (Digital)
               </span>
             </div>
 
@@ -137,8 +139,8 @@ export default function DetailPage({
               <p className="font-bold text-slate-700 text-sm mt-0.5">{book.isbn}</p>
             </div>
             <div className="text-center sm:text-left">
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">Stok Tersedia</p>
-              <p className="font-bold text-slate-700 text-sm mt-0.5">{book.stock} unit</p>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">Format</p>
+              <p className="font-bold text-slate-700 text-sm mt-0.5">PDF Digital</p>
             </div>
           </div>
 
@@ -163,19 +165,29 @@ export default function DetailPage({
             <button 
               onClick={() => {
                 if (!currentUser) {
+                  alert('Silakan masuk (login) terlebih dahulu untuk mengunduh buku digital (PDF).');
                   onNavigate('login');
+                } else if (onDownloadBook) {
+                  onDownloadBook(book);
                 } else {
-                  onOpenPinjamModal(book);
+                  const pdfPath = book.pdfUrl || resolveBookPdfUrl(book);
+                  if (pdfPath) {
+                    const link = document.createElement('a');
+                    link.href = pdfPath;
+                    link.download = `${book.title.replace(/[/\\?%*:|"<>]/g, '_')}.pdf`;
+                    link.target = '_blank';
+                    link.rel = 'noopener noreferrer';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                  }
                 }
               }}
-              disabled={!isAvailable}
-              className={`w-full sm:w-auto px-8 py-3.5 rounded-xl text-xs font-bold transition-all shadow-md cursor-pointer ${
-                isAvailable 
-                  ? 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-200/50' 
-                  : 'bg-slate-100 text-slate-400 cursor-not-allowed shadow-none'
-              }`}
+              className="w-full sm:w-auto px-8 py-3.5 rounded-xl text-xs font-bold transition-all shadow-md cursor-pointer bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-200/50 flex items-center justify-center space-x-2"
+              title={currentUser ? "Unduh buku PDF" : "Login untuk mengunduh"}
             >
-              Pinjam Buku Sekarang
+              <Download className="w-4 h-4" />
+              <span>Unduh PDF (Offline)</span>
             </button>
             <button 
               onClick={() => onNavigate('katalog')}
@@ -186,8 +198,8 @@ export default function DetailPage({
           </div>
 
           <div className="pt-2 flex items-center space-x-2 text-[10px] text-slate-400">
-            <Shield className="w-3.5 h-3.5" />
-            <span>Peminjaman online aman, jatah durasi pinjam default adalah 7 hari kalender.</span>
+            <Shield className="w-3.5 h-3.5 text-emerald-500" />
+            <span>Akses baca e-book bebas untuk umum di website. Masuk / login untuk mengunduh dokumen PDF ke perangkat Anda.</span>
           </div>
         </div>
       </div>

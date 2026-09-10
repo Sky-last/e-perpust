@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Book } from '../types';
-import { X, BookOpen, Star, Bookmark, Heart, Sparkles, MapPin, Layers } from 'lucide-react';
+import { X, BookOpen, Star, Bookmark, Heart, Sparkles, MapPin, Layers, Download } from 'lucide-react';
 import { soundFX } from '../utils/audio';
 import { resolveBookPdfUrl } from '../utils/pdfResolver';
 import { resolveBookCover, getCachedCover } from '../utils/coverResolver';
@@ -10,6 +10,7 @@ interface BookOpen3DModalProps {
   onClose: () => void;
   onReadEbook?: (book: Book) => void;
   onPinjam?: (book: Book) => void;
+  onDownload?: (book: Book) => void;
   onToggleFavorite?: (id: string) => void;
   isFavorite?: boolean;
 }
@@ -19,6 +20,7 @@ export default function BookOpen3DModal({
   onClose,
   onReadEbook,
   onPinjam,
+  onDownload,
   onToggleFavorite,
   isFavorite = false
 }: BookOpen3DModalProps) {
@@ -140,8 +142,8 @@ export default function BookOpen3DModal({
             <span className="text-xs font-extrabold text-white truncate block">{book.publisher}</span>
           </div>
           <div className="p-2.5 bg-slate-800/60 rounded-xl border border-slate-700/50">
-            <span className="text-[9px] text-slate-400 font-bold uppercase block">Stok & Rak</span>
-            <span className="text-xs font-extrabold text-blue-400 block">{book.stock} Eks ({book.rackLocation || 'Rak A-01'})</span>
+            <span className="text-[9px] text-slate-400 font-bold uppercase block">Rak Lokasi</span>
+            <span className="text-xs font-extrabold text-blue-400 block">{book.rackLocation || 'Rak A-01'}</span>
           </div>
         </div>
 
@@ -149,8 +151,15 @@ export default function BookOpen3DModal({
           {pdfUrl && onReadEbook && (
             <button
               type="button"
-              onClick={() => {
-                console.log('Baca E-Book clicked (mobile)!', book.title);
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('🔵 [MOBILE] Baca E-Book clicked!', {
+                  title: book.title,
+                  pdfUrl,
+                  onReadEbook: typeof onReadEbook,
+                  event: e.type
+                });
                 soundFX.playPageFlip();
                 onReadEbook(book);
               }}
@@ -274,8 +283,8 @@ export default function BookOpen3DModal({
                 <div className="p-3 bg-slate-800/50 rounded-xl border border-slate-700/50 flex items-center gap-2">
                   <Layers className="w-4 h-4 text-blue-400 flex-shrink-0" />
                   <div>
-                    <span className="text-[10px] text-slate-400 font-bold block uppercase">Stok Tersedia</span>
-                    <span className="text-xs font-extrabold text-blue-400 block">{book.stock} Eks</span>
+                    <span className="text-[10px] text-slate-400 font-bold block uppercase">Format</span>
+                    <span className="text-xs font-extrabold text-blue-400 block">PDF Digital</span>
                   </div>
                 </div>
               </div>
@@ -292,19 +301,26 @@ export default function BookOpen3DModal({
             </div>
 
             {/* ACTION BUTTONS */}
-            <div className="space-y-3 pt-4 border-t border-slate-800/80">
+            <div className="space-y-2.5 pt-4 border-t border-slate-800/80">
               {pdfUrl && onReadEbook && (
                 <button
                   type="button"
-                  onClick={() => {
-                    console.log('Baca E-Book clicked!', book.title);
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('🔵 [DESKTOP] Baca E-Book clicked!', {
+                      title: book.title,
+                      pdfUrl,
+                      onReadEbook: typeof onReadEbook,
+                      event: e.type
+                    });
                     soundFX.playPageFlip();
                     onReadEbook(book);
                   }}
-                  className="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-extrabold rounded-xl shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 flex items-center justify-center gap-2 transition-colors duration-200 cursor-pointer active:scale-95"
+                  className="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-extrabold rounded-xl shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer active:scale-95 text-xs"
                 >
                   <BookOpen className="w-4 h-4" />
-                  <span>Baca E-Book Sekarang (3D Viewer)</span>
+                  <span>Baca E-Book Sekarang</span>
                 </button>
               )}
 
@@ -314,14 +330,14 @@ export default function BookOpen3DModal({
                     soundFX.playClick();
                     onToggleFavorite(book.id);
                   }}
-                  className={`w-full py-3 rounded-xl border transition-all cursor-pointer flex items-center justify-center gap-2 ${
+                  className={`w-full py-2.5 rounded-xl border transition-all cursor-pointer flex items-center justify-center gap-2 text-xs ${
                     isFavorite
                       ? 'bg-rose-500/20 text-rose-400 border-rose-500/40'
                       : 'bg-slate-800 text-slate-400 border-slate-700 hover:text-rose-400 hover:border-rose-500/30'
                   }`}
                   title="Simpan Favorit"
                 >
-                  <Heart className={`w-5 h-5 ${isFavorite ? 'fill-current' : ''}`} />
+                  <Heart className={`w-4 h-4 ${isFavorite ? 'fill-current' : ''}`} />
                   <span>{isFavorite ? 'Hapus dari Favorit' : 'Tambah ke Favorit'}</span>
                 </button>
               )}

@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+/assets/buku digital/
+/public/buku_digital/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

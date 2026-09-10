@@ -38,9 +38,11 @@ import {
   PieChart,
   Activity,
   Feather,
-  Stamp
+  Stamp,
+  Download,
+  Trash2
 } from 'lucide-react';
-import { User, Book, Category, Borrowing, LibrarySettings, Notification } from '../../types';
+import { User, Book, Category, Borrowing, LibrarySettings, Notification, DownloadedBook } from '../../types';
 import { uploadAvatar } from '../../lib/db';
 import Book3D from '../Book3D';
 import BookOpen3DModal from '../BookOpen3DModal';
@@ -59,6 +61,7 @@ interface UserDashboardProps {
   onRequestReturn: (borrowingId: string) => void;
   onUpdateProfile: (updatedData: Partial<User>) => void;
   onMarkNotifRead: (notifId: string) => void;
+  onDownloadBook?: (book: Book) => void;
 }
 
 /** Shared type-system + palette, injected once. See design notes at bottom of file. */
@@ -102,7 +105,8 @@ export default function UserDashboard({
   onRequestBorrow,
   onRequestReturn,
   onUpdateProfile,
-  onMarkNotifRead
+  onMarkNotifRead,
+  onDownloadBook
 }: UserDashboardProps) {
   const [activeTab, setActiveTab] = useState<'home' | 'books' | 'history' | 'stats' | 'profile'>('home');
   const [searchQuery, setSearchQuery] = useState('');
@@ -181,7 +185,7 @@ export default function UserDashboard({
     if (sortBy === 'populer') return (b.rating || 0) - (a.rating || 0);
     if (sortBy === 'abjad') return a.title.localeCompare(b.title);
     if (sortBy === 'terbaru') return (b.year || 0) - (a.year || 0);
-    if (sortBy === 'tersedia') return b.stock - a.stock;
+    if (sortBy === 'tersedia') return b.rating - a.rating; // fallback to rating when no stock
     return 0;
   });
 
@@ -191,16 +195,22 @@ export default function UserDashboard({
     return cat ? cat.name : 'Umum';
   };
 
+  const userDownloads: DownloadedBook[] = currentUser.downloads || [];
+  const handleRemoveDownload = (downloadId: string) => {
+    const updated = userDownloads.filter(d => d.id !== downloadId);
+    onUpdateProfile({ downloads: updated });
+  };
+
   const myBorrowings = borrowings.filter((b) => !b.studentId || b.studentId === currentUser.id || b.userId === currentUser.id);
   const myUnreadNotifications = notifications.filter(n => (!n.userId || n.userId === currentUser.id) && !n.read);
 
-  const completedCount = myBorrowings.filter(b => b.status === 'returned' || b.status === 'Dikembalikan').length;
+  const completedCount = userDownloads.length;
   const goalTarget = settings?.maxBorrowBooks ?? 5;
   const progressGoalPercent = Math.min(Math.round((completedCount / goalTarget) * 100), 100);
 
-  const totalBorrowedCount = myBorrowings.length;
-  const activeBorrowedCount = myBorrowings.filter(b => b.status === 'approved' || b.status === 'Sedang Dipinjam' || b.status === 'overdue').length;
-  const overdueCount = myBorrowings.filter(b => b.status === 'overdue').length;
+  const totalBorrowedCount = userDownloads.length;
+  const activeBorrowedCount = userDownloads.length;
+  const overdueCount = 0;
 
   const onTimePercentage = totalBorrowedCount > 0
     ? Math.max(0, Math.round(((totalBorrowedCount - overdueCount) / totalBorrowedCount) * 100))
@@ -269,7 +279,7 @@ export default function UserDashboard({
   const navItems = [
     { id: 'home', label: 'Beranda', desc: 'Ringkasan & aktivitas', icon: Home },
     { id: 'books', label: 'Katalog', desc: 'Jelajah koleksi 3D', icon: BookMarked },
-    { id: 'history', label: 'Peminjaman', desc: 'Riwayat sirkulasi', icon: Clock },
+    { id: 'history', label: 'Buku Diunduh', desc: 'Daftar buku offline', icon: Download },
     { id: 'stats', label: 'Almanak Baca', desc: 'Statistik & capaian', icon: TrendingUp },
     { id: 'profile', label: 'Kartu Anggota', desc: 'Profil & pengaturan', icon: UserIcon }
   ];
@@ -657,97 +667,75 @@ export default function UserDashboard({
                     </div>
                   </div>
 
-                  {/* Continue reading */}
-                  {myBorrowings.filter(b => b.status === 'approved' || b.status === 'Sedang Dipinjam').length > 0 && (
+                  {/* Continue reading / Unduhan Terkini */}
+                  {userDownloads.length > 0 && (
                     <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="bg-white border border-[#1F2A24]/10 rounded-xl p-4 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                       <div className="flex items-center gap-3.5 min-w-0">
                         <div className="p-3 bg-[#C08B34]/15 text-[#C08B34] rounded-lg shrink-0">
                           <BookOpen className="w-6 h-6" />
                         </div>
                         <div className="min-w-0">
-                          <span className="font-mono-lib text-[9px] text-[#C08B34] uppercase tracking-wide block">Lanjutkan membaca</span>
+                          <span className="font-mono-lib text-[9px] text-[#C08B34] uppercase tracking-wide block">Buku Offline Tersimpan</span>
                           <h4 className="text-xs font-bold text-[#1F2A24] truncate mt-0.5">
-                            {myBorrowings.find(b => b.status === 'approved' || b.status === 'Sedang Dipinjam')?.bookTitle || 'Buku Sedang Dipinjam'}
+                            {userDownloads[0].bookTitle}
                           </h4>
-                          <p className="text-[10px] text-[#1F2A24]/50 font-medium mt-0.5">Tersedia sebagai e-book interaktif.</p>
+                          <p className="text-[10px] text-[#1F2A24]/50 font-medium mt-0.5">Siap dibaca offline kapan saja.</p>
                         </div>
                       </div>
-                      <button
-                        onClick={() => {
-                          const activeBorrow = myBorrowings.find(b => b.status === 'approved' || b.status === 'Sedang Dipinjam');
-                          if (activeBorrow) {
-                            const bObj = books.find(x => x.id === activeBorrow.bookId || x.title === activeBorrow.bookTitle);
+                      <div className="flex items-center gap-2 shrink-0">
+                        <button
+                          onClick={() => {
+                            const bObj = books.find(x => x.id === userDownloads[0].bookId || x.title === userDownloads[0].bookTitle);
                             if (bObj) {
                               setReadingBook3D({
                                 ...bObj,
                                 pdfUrl: resolveBookPdfUrl(bObj)
                               });
                             } else {
-                              const tempBook = { id: activeBorrow.bookId, title: activeBorrow.bookTitle };
-                              setReadingBook3D({
-                                id: activeBorrow.bookId,
-                                title: activeBorrow.bookTitle,
-                                coverColor: activeBorrow.coverColor || 'from-blue-600 to-indigo-900',
-                                coverUrl: activeBorrow.coverUrl,
-                                pdfUrl: resolveBookPdfUrl(tempBook),
-                                category: 'Koleksi Pinjaman',
-                                author: 'Perpustakaan Kita',
+                              // Fallback: create minimal book object
+                              const fallbackBook: Book = {
+                                id: userDownloads[0].bookId,
+                                title: userDownloads[0].bookTitle,
+                                coverColor: userDownloads[0].coverColor || 'from-emerald-600 to-teal-900',
+                                coverUrl: userDownloads[0].coverUrl,
+                                pdfUrl: userDownloads[0].pdfUrl || '',
+                                category: userDownloads[0].category || 'Koleksi Digital',
+                                author: userDownloads[0].author || 'Perpustakaan Kita',
                                 publisher: 'Perpustakaan Kita',
                                 isbn: '000-000-000',
-                                description: `E-book digital "${activeBorrow.bookTitle}" koleksi Perpustakaan Kita.`,
+                                description: `Buku digital "${userDownloads[0].bookTitle}".`,
                                 year: 2026,
                                 rating: 5,
-                                status: 'Tersedia',
-                                stock: 1
+                                categoryId: '',
+                                rackLocation: 'Digital'
+                              };
+                              setReadingBook3D({
+                                ...fallbackBook,
+                                pdfUrl: fallbackBook.pdfUrl || resolveBookPdfUrl(fallbackBook)
                               });
                             }
-                          } else {
-                            setActiveTab('history');
-                          }
-                        }}
-                        className="px-4 py-2 bg-[#20301F] hover:bg-[#2A3F27] text-[#F6F1E7] rounded-lg text-xs font-bold cursor-pointer shrink-0 transition-colors flex items-center gap-1.5"
-                      >
-                        <Sparkles className="w-4 h-4 text-[#C08B34]" /> Buka E-Book
-                      </button>
+                          }}
+                          className="px-4 py-2 bg-[#20301F] hover:bg-[#2A3F27] text-[#F6F1E7] rounded-lg text-xs font-bold cursor-pointer transition-colors flex items-center gap-1.5"
+                        >
+                          <Sparkles className="w-4 h-4 text-[#C08B34]" /> Buka E-Book
+                        </button>
+                        <button
+                          onClick={() => setActiveTab('history')}
+                          className="px-3 py-2 bg-white hover:bg-[#F6F1E7] text-[#1F2A24] border border-[#1F2A24]/15 rounded-lg text-xs font-bold transition-colors cursor-pointer"
+                        >
+                          Lihat Semua ({userDownloads.length})
+                        </button>
+                      </div>
                     </motion.div>
                   )}
 
-                  {/* Urgent due-date alert */}
-                  {urgentBorrowings.length > 0 && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="flex items-start gap-3 bg-[#B4573F]/10 border border-[#B4573F]/30 rounded-xl p-4"
-                    >
-                      <div className="p-2.5 bg-[#B4573F]/15 rounded-lg shrink-0">
-                        <AlarmClock className="w-5 h-5 text-[#B4573F]" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="text-xs font-bold text-[#8C3F2C]">Segera jatuh tempo</h4>
-                        <p className="text-[10px] text-[#8C3F2C]/80 mt-0.5 font-medium">
-                          Kamu punya <strong>{urgentBorrowings.length} buku</strong> yang harus segera dikembalikan agar terhindar dari denda.
-                        </p>
-                        <div className="mt-2 flex flex-wrap gap-2">
-                          {urgentBorrowings.map(b => (
-                            <span key={b.id} className="text-[9px] bg-[#B4573F]/10 text-[#8C3F2C] px-2.5 py-1 rounded-md font-bold border border-[#B4573F]/20">
-                              {b.bookTitle} — {b.status === 'overdue' ? 'Terlambat' : `Tempo: ${b.dueDate}`}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                      <button onClick={() => setActiveTab('history')} className="shrink-0 text-[10px] text-[#8C3F2C] font-bold border border-[#B4573F]/30 bg-white px-3 py-1.5 rounded-lg transition-colors cursor-pointer hover:bg-[#B4573F]/5">
-                        Lihat Detail
-                      </button>
-                    </motion.div>
-                  )}
-
-                  {/* Stat cards, styled as due-date stub cards */}
+                  {/* Stat cards */}
                   <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                     {[
-                      { label: 'Dipinjam Aktif', val: `${activeBorrowedCount}`, unit: 'buku', sub: 'Peminjaman aktif', accent: '#20301F', Icon: BookOpen },
-                      { label: 'Menunggu Verifikasi', val: `${myBorrowings.filter((b) => b.status === 'pending').length}`, unit: 'buku', sub: 'Diproses staf', accent: '#C08B34', Icon: Clock },
-                      { label: 'Selesai Dikembalikan', val: `${completedCount}`, unit: 'buku', sub: 'Terselesaikan', accent: '#5F7A63', Icon: CheckCircle2 },
-                      { label: 'Poin & Rentetan Baca', val: `${completedCount * 120 + 50}`, unit: 'pts', sub: `${Math.min(completedCount + 3, 7)} hari beruntun`, accent: '#B4573F', Icon: Flame }
+                      { label: 'Buku Diunduh', val: `${userDownloads.length}`, unit: 'buku', sub: 'Tersimpan offline', accent: '#20301F', Icon: Download },
+                      { label: 'Koleksi Digital', val: `${books.length}`, unit: 'judul', sub: 'Bebas baca di web', accent: '#C08B34', Icon: BookOpen },
+                      { label: 'Kategori Koleksi', val: `${categories.length}`, unit: 'bidang', sub: 'Ragam topik ilmu', accent: '#5F7A63', Icon: BookCheck },
+                      { label: 'Poin Pembaca', val: `${userDownloads.length * 50 + 50}`, unit: 'pts', sub: 'Tingkat aktif', accent: '#B4573F', Icon: Flame }
                     ].map((stat, i) => (
                       <motion.div
                         key={i}
@@ -763,7 +751,7 @@ export default function UserDashboard({
                           <h3 className="font-mono-lib text-2xl font-semibold text-[#1F2A24]">
                             {stat.val}<span className="text-xs text-[#1F2A24]/40 ml-1">{stat.unit}</span>
                           </h3>
-                          <span className="text-[10px] text-[#1F2A24]/50 font-semibold block mt-1">{stat.sub}</span>
+                          <p className="text-[10px] font-semibold text-[#1F2A24]/50 mt-1">{stat.sub}</p>
                         </div>
                       </motion.div>
                     ))}
@@ -912,7 +900,6 @@ export default function UserDashboard({
                           { key: 'populer', label: 'Terpopuler' },
                           { key: 'abjad', label: 'A–Z' },
                           { key: 'terbaru', label: 'Terbaru' },
-                          { key: 'tersedia', label: 'Stok tersedia' },
                         ].map(s => (
                           <button
                             key={s.key}
@@ -961,7 +948,7 @@ export default function UserDashboard({
 
                   <div className="space-y-4">
                     <p className="text-xs text-[#1F2A24]/50 font-bold">
-                      Menampilkan {filteredBooks.length} buku · Urutan: <span className="text-[#C08B34]">{sortBy === 'populer' ? 'Terpopuler' : sortBy === 'abjad' ? 'A–Z' : sortBy === 'terbaru' ? 'Terbaru' : 'Stok tersedia'}</span>
+                      Menampilkan {filteredBooks.length} buku · Urutan: <span className="text-[#C08B34]">{sortBy === 'populer' ? 'Terpopuler' : sortBy === 'abjad' ? 'A–Z' : 'Terbaru'}</span>
                     </p>
 
                     {filteredBooks.length === 0 ? (
@@ -993,109 +980,132 @@ export default function UserDashboard({
                 </motion.div>
               )}
 
-              {/* ── TAB: HISTORY ── */}
+              {/* ── TAB: HISTORY (Buku yang Di-download) ── */}
               {activeTab === 'history' && (
                 <motion.div key="history" {...tabTransition} className="space-y-6">
-                  <div>
-                    <h3 className="font-display text-base font-semibold text-[#1F2A24]">Riwayat Peminjaman</h3>
-                    <p className="text-xs text-[#1F2A24]/50 font-medium mt-1">Status pengajuan peminjaman fisik dan peminjaman digital aktif.</p>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                      <h3 className="font-display text-base font-semibold text-[#1F2A24]">Buku yang Di-download</h3>
+                      <p className="text-xs text-[#1F2A24]/50 font-medium mt-1">Daftar file buku digital (PDF) yang telah Anda unduh untuk dibaca secara offline.</p>
+                    </div>
+                    <span className="font-mono-lib text-xs text-[#C08B34] bg-[#C08B34]/10 border border-[#C08B34]/20 px-3 py-1.5 rounded-full font-bold self-start sm:self-auto">
+                      {userDownloads.length} Buku Tersimpan
+                    </span>
                   </div>
 
-                  {myBorrowings.length === 0 ? (
-                    <div className="bg-white border border-dashed border-[#1F2A24]/20 rounded-2xl py-16 text-center">
-                      <Clock className="w-12 h-12 text-[#1F2A24]/20 mx-auto mb-3" />
-                      <h4 className="text-sm font-bold text-[#1F2A24]">Belum ada peminjaman</h4>
-                      <p className="text-xs text-[#1F2A24]/50 font-medium mt-1">Pilih buku dari katalog untuk mengajukan peminjaman pertamamu.</p>
+                  {userDownloads.length === 0 ? (
+                    <div className="bg-white border border-dashed border-[#1F2A24]/20 rounded-2xl py-16 text-center px-4">
+                      <div className="w-14 h-14 rounded-2xl bg-[#C08B34]/10 text-[#C08B34] flex items-center justify-center mx-auto mb-3">
+                        <Download className="w-7 h-7" />
+                      </div>
+                      <h4 className="text-sm font-bold text-[#1F2A24]">Belum ada buku yang diunduh</h4>
+                      <p className="text-xs text-[#1F2A24]/50 font-medium mt-1 max-w-md mx-auto">
+                        Anda dapat membaca seluruh koleksi buku digital langsung di web secara bebas, atau unduh PDF untuk disimpan dan dibaca offline.
+                      </p>
                       <button
                         onClick={() => setActiveTab('books')}
-                        className="mt-4 px-4 py-2 bg-[#20301F] text-[#F6F1E7] rounded-lg text-xs font-bold cursor-pointer hover:bg-[#2A3F27] transition-colors"
+                        className="mt-5 px-5 py-2.5 bg-[#20301F] text-[#F6F1E7] rounded-xl text-xs font-bold cursor-pointer hover:bg-[#2A3F27] transition-all shadow-md active:scale-95 inline-flex items-center gap-2"
                       >
-                        Buka Katalog
+                        <BookMarked className="w-4 h-4 text-[#C08B34]" /> Buka Katalog Buku
                       </button>
                     </div>
                   ) : (
                     <div className="space-y-4">
-                      {myBorrowings.map((b) => {
-                        const book = books.find((x) => x.id === b.bookId);
-
-                        let activeStep = 1;
-                        if (b.status === 'approved' || b.status === 'overdue' || b.status === 'Sedang Dipinjam') activeStep = 2;
-                        if (b.status === 'returned' || b.status === 'Dikembalikan') activeStep = 3;
-
-                        const statusStamp = () => {
-                          if (b.status === 'pending') return { label: 'Menunggu', color: '#C08B34' };
-                          if (b.status === 'approved' || b.status === 'Sedang Dipinjam') return { label: 'Dipinjam', color: '#5F7A63' };
-                          if (b.status === 'returned' || b.status === 'Dikembalikan') return { label: 'Kembali', color: '#20301F' };
-                          if (b.status === 'overdue') return { label: 'Terlambat', color: '#B4573F' };
-                          return { label: 'Ditolak', color: '#8B8378' };
+                      {userDownloads.map((dl) => {
+                        const book = books.find((x) => x.id === dl.bookId || x.title === dl.bookTitle);
+                        const bookObj: Book = book || {
+                          id: dl.bookId,
+                          title: dl.bookTitle,
+                          author: dl.author || 'Perpustakaan Digital',
+                          publisher: 'Perpustakaan Digital',
+                          isbn: '000-000-000',
+                          description: `Buku digital "${dl.bookTitle}".`,
+                          year: 2026,
+                          rating: 5,
+                          status: 'Tersedia' as 'Tersedia',
+                          coverColor: dl.coverColor || 'from-emerald-600 to-teal-900',
+                          coverUrl: dl.coverUrl,
+                          pdfUrl: dl.pdfUrl || '',
+                          category: dl.category || 'Koleksi Digital',
+                          categoryId: '',
+                          rackLocation: 'Digital'
                         };
-                        const stamp = statusStamp();
+
+                        // Resolve PDF URL if not present
+                        if (!bookObj.pdfUrl) {
+                          bookObj.pdfUrl = resolveBookPdfUrl(bookObj);
+                        }
 
                         return (
                           <motion.div
-                            key={b.id}
+                            key={dl.id}
                             whileHover={{ y: -2 }}
                             className="catalog-card bg-white border border-[#1F2A24]/10 rounded-xl p-5 shadow-sm space-y-4 relative overflow-hidden"
                           >
-                            {/* Ink stamp */}
+                            {/* Ink stamp badge */}
                             <div
-                              className="stamp-tilt absolute top-4 right-4 font-mono-lib text-[9px] font-bold uppercase px-2.5 py-1 rounded border-2 pointer-events-none"
-                              style={{ color: stamp.color, borderColor: stamp.color }}
+                              className="stamp-tilt absolute top-4 right-4 font-mono-lib text-[9px] font-bold uppercase px-2.5 py-1 rounded border-2 pointer-events-none text-[#5F7A63] border-[#5F7A63]"
                             >
-                              {stamp.label}
+                              Tersimpan Offline
                             </div>
 
                             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pr-16">
                               <div className="flex items-start gap-4">
                                 <div className="w-12 h-16 flex items-center justify-center shrink-0 overflow-visible">
-                                  {book ? <Book3D book={book} size="xs" /> : <div className="w-9 h-12 bg-[#F6F1E7] rounded-md" />}
+                                  <Book3D book={bookObj} size="xs" />
                                 </div>
                                 <div>
-                                  <h4 className="text-xs font-bold text-[#1F2A24] leading-snug">{book?.title || b.bookTitle || 'Buku Digital'}</h4>
-                                  <p className="text-[10px] text-[#1F2A24]/50 font-semibold mt-1">Penulis: {book?.author || 'Perpustakaan'}</p>
+                                  <h4 className="text-xs font-bold text-[#1F2A24] leading-snug">{dl.bookTitle}</h4>
+                                  <p className="text-[10px] text-[#1F2A24]/50 font-semibold mt-0.5">Penulis: {bookObj.author}</p>
                                   <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] text-[#1F2A24]/60 font-semibold mt-2">
                                     <span className="flex items-center gap-1">
                                       <Calendar className="w-3.5 h-3.5 text-[#C08B34]" />
-                                      Pinjam: <strong className="text-[#1F2A24]">{b.borrowDate}</strong>
+                                      Diunduh: <strong className="text-[#1F2A24]">{dl.downloadDate}</strong>
                                     </span>
-                                    <span className="flex items-center gap-1">
-                                      <Clock className="w-3.5 h-3.5 text-[#C08B34]" />
-                                      Tempo: <strong className="text-[#8A5F22]">{b.dueDate || '7 Hari'}</strong>
+                                    <span className="flex items-center gap-1 text-[#5F7A63]">
+                                      <CheckCircle2 className="w-3.5 h-3.5" />
+                                      Format: <strong>PDF Resmi</strong>
                                     </span>
                                   </div>
                                 </div>
                               </div>
 
-                              {(b.status === 'approved' || b.status === 'overdue' || b.status === 'Sedang Dipinjam') && (
-                                <div className="flex flex-wrap items-center gap-2 md:justify-end">
-                                  <button
-                                    onClick={() => book && setReadingBook3D(book)}
-                                    disabled={!book}
-                                    className="px-3.5 py-2 bg-[#20301F] hover:bg-[#2A3F27] text-[#F6F1E7] rounded-lg text-[10px] font-bold transition-colors cursor-pointer active:scale-95 flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
-                                  >
-                                    <BookOpen className="w-3.5 h-3.5" /> Baca E-Book
-                                  </button>
-                                  <button
-                                    onClick={() => onRequestReturn(b.id)}
-                                    className="px-3.5 py-2 bg-white hover:bg-[#F6F1E7] text-[#1F2A24] border border-[#1F2A24]/15 rounded-lg text-[10px] font-bold transition-colors cursor-pointer active:scale-95"
-                                  >
-                                    Ajukan Pengembalian
-                                  </button>
-                                </div>
-                              )}
-                            </div>
-
-                            <div className="pt-3 border-t border-dashed border-[#1F2A24]/15">
-                              <div className="flex items-center justify-between text-[9px] font-bold text-[#1F2A24]/40 px-1">
-                                <span className={activeStep >= 1 ? 'text-[#C08B34]' : ''}>1. Permohonan</span>
-                                <span className={activeStep >= 2 ? 'text-[#5F7A63]' : ''}>2. Persetujuan</span>
-                                <span className={activeStep >= 2 ? 'text-[#5F7A63]' : ''}>3. Aktif</span>
-                                <span className={activeStep >= 3 ? 'text-[#20301F]' : ''}>4. Kembali</span>
-                              </div>
-                              <div className="w-full h-1.5 bg-[#F6F1E7] rounded-full mt-2 overflow-hidden flex border border-[#1F2A24]/10">
-                                <div className={`h-full transition-all duration-500 ${activeStep >= 1 ? 'bg-[#C08B34] w-1/3' : 'w-0'}`} />
-                                <div className={`h-full transition-all duration-500 ${activeStep >= 2 ? 'bg-[#5F7A63] w-1/3' : 'w-0'}`} />
-                                <div className={`h-full transition-all duration-500 ${activeStep >= 3 ? 'bg-[#20301F] w-1/3' : 'w-0'}`} />
+                              <div className="flex flex-wrap items-center gap-2 md:justify-end">
+                                <button
+                                  onClick={() => setReadingBook3D(bookObj)}
+                                  className="px-3.5 py-2 bg-[#20301F] hover:bg-[#2A3F27] text-[#F6F1E7] rounded-lg text-[10px] font-bold transition-colors cursor-pointer active:scale-95 flex items-center gap-1.5"
+                                >
+                                  <BookOpen className="w-3.5 h-3.5 text-[#C08B34]" /> Baca E-Book
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    if (onDownloadBook) {
+                                      onDownloadBook(bookObj);
+                                    } else {
+                                      const pdfPath = bookObj.pdfUrl || resolveBookPdfUrl(bookObj);
+                                      if (pdfPath) {
+                                        const a = document.createElement('a');
+                                        a.href = pdfPath;
+                                        a.download = `${bookObj.title.replace(/[/\\?%*:|"<>]/g, '_')}.pdf`;
+                                        a.target = '_blank';
+                                        a.rel = 'noopener noreferrer';
+                                        document.body.appendChild(a);
+                                        a.click();
+                                        document.body.removeChild(a);
+                                      }
+                                    }
+                                  }}
+                                  className="px-3.5 py-2 bg-[#F6F1E7] hover:bg-[#EAE3D4] text-[#1F2A24] border border-[#1F2A24]/15 rounded-lg text-[10px] font-bold transition-colors cursor-pointer active:scale-95 flex items-center gap-1.5"
+                                >
+                                  <Download className="w-3.5 h-3.5 text-[#C08B34]" /> Unduh Ulang
+                                </button>
+                                <button
+                                  onClick={() => handleRemoveDownload(dl.id)}
+                                  className="p-2 hover:bg-rose-50 text-[#1F2A24]/40 hover:text-rose-600 rounded-lg text-[10px] font-bold transition-colors cursor-pointer"
+                                  title="Hapus dari daftar unduhan"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
                               </div>
                             </div>
                           </motion.div>
@@ -1459,7 +1469,12 @@ export default function UserDashboard({
               pdfUrl: b.pdfUrl || resolveBookPdfUrl(b)
             }); 
           }}
-          onPinjam={() => setIsBorrowingModalOpen(true)}
+          onPinjam={() => {
+            if (onDownloadBook && selectedBook) {
+              onDownloadBook(selectedBook);
+              setSelectedBook(null);
+            }
+          }}
         />
       )}
 
@@ -1625,9 +1640,9 @@ function BookCard({
             </div>
           )}
           <div className="mt-2.5 pt-2 border-t border-dashed border-[#1F2A24]/15 flex items-center justify-between text-[9px] font-bold">
-            <span className={book.stock > 0 ? 'text-[#5F7A63] flex items-center gap-1' : 'text-[#B4573F] flex items-center gap-1'}>
-              <span className={`w-1.5 h-1.5 rounded-full ${book.stock > 0 ? 'bg-[#5F7A63]' : 'bg-[#B4573F]'}`} />
-              {book.stock > 0 ? `${book.stock} Eks` : 'Habis'}
+            <span className="text-[#5F7A63] flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#5F7A63]" />
+              Tersedia
             </span>
             <span className="font-mono-lib text-[#1F2A24]/30">{book.year}</span>
           </div>

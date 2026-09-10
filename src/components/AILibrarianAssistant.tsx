@@ -6,7 +6,6 @@ import { soundFX } from '../utils/audio';
 interface AILibrarianAssistantProps {
   books: Book[];
   onNavigate: (view: any, bookId?: string) => void;
-  onOpenPinjamModal?: (book: Book) => void;
 }
 
 interface ChatMessage {
@@ -17,7 +16,7 @@ interface ChatMessage {
   timestamp: string;
 }
 
-export default function AILibrarianAssistant({ books, onNavigate, onOpenPinjamModal }: AILibrarianAssistantProps) {
+export default function AILibrarianAssistant({ books, onNavigate }: AILibrarianAssistantProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [inputQuery, setInputQuery] = useState('');
   const [isListening, setIsListening] = useState(false);

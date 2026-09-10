@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Book, User, SystemLog, ViewType, Borrowing, UserRole, Category, LibrarySettings, Notification } from './types';
+import { Book, User, SystemLog, ViewType, Borrowing, UserRole, Category, LibrarySettings, Notification, DownloadedBook } from './types';
 import { INITIAL_BOOKS as _INITIAL_BOOKS } from './data/books';
 import { supabase, isSupabaseConfigured } from './lib/supabase';
 import { 
@@ -7,6 +7,7 @@ import {
   updateUserBadge, makeBorrowing, returnBorrowing, extendBorrowing, 
   saveFavorite, getSystemLogs, addSystemLog, getAllUsers
 } from './lib/db';
+import { resolveBookPdfUrl } from './utils/pdfResolver';
 
 // Components
 import LandingPage from './components/LandingPage';
@@ -24,7 +25,7 @@ import AILibrarianAssistant from './components/AILibrarianAssistant';
 // Lucide Icons for dashboard shell
 import { 
   BookOpen, LayoutDashboard, Layers, Clock, Heart, User as UserIcon, Shield, 
-  LogOut, Menu, X, Award, ChevronRight, HelpCircle, ArrowRight
+  LogOut, Menu, X, Award, ChevronRight, HelpCircle, ArrowRight, Download
 } from 'lucide-react';
 
 // Role-specific Dashboards
@@ -85,7 +86,7 @@ export default function App() {
     async function initData() {
       // Force refresh if cached books count does not match catalog or contains old structure
       const cacheVersion = localStorage.getItem('digital_library_version');
-      const CURRENT_VERSION = '2.0.0-catalog-111';
+      const CURRENT_VERSION = '3.0.0-catalog-updated';
       if (cacheVersion !== CURRENT_VERSION) {
         localStorage.removeItem('digital_library_books');
         localStorage.setItem('digital_library_version', CURRENT_VERSION);
@@ -615,20 +616,11 @@ export default function App() {
       return updatedUser;
     });
 
-    // Update Book stock (increment by 1)
-    const updatedBooksList = books.map(b => {
-      if (b.id === targetBorrow.bookId) {
-        return { ...b, stock: b.stock + 1 };
-      }
-      return b;
-    });
-
     // Save states
     setUsers(updatedUsersList);
-    setBooks(updatedBooksList);
+    // Note: Books tidak perlu diupdate karena tidak ada sistem stock
 
     localStorage.setItem('digital_library_users', JSON.stringify(updatedUsersList));
-    localStorage.setItem('digital_library_books', JSON.stringify(updatedBooksList));
 
     await pushLog(targetUser.email, targetUser.name, 'kembali', targetBorrow.bookTitle);
     addToast(`Buku "${targetBorrow.bookTitle}" berhasil dikembalikan!`, 'success');
@@ -709,7 +701,7 @@ export default function App() {
       coverColor: bookData.coverColor || 'from-blue-600 to-indigo-900',
       ...bookData,
       id: 'b_' + Math.random().toString(36).substr(2, 9),
-      status: bookData.status || (bookData.stock > 0 ? 'Tersedia' : 'Sedang Dipinjam')
+      status: 'Tersedia'
     };
 
     if (isSupabaseConfigured) {
@@ -852,17 +844,8 @@ export default function App() {
       return u;
     });
 
-    if (approve && targetBookId) {
-      const updatedBooks = books.map(bk => {
-        if (bk.id === targetBookId) {
-          return { ...bk, stock: Math.max(0, bk.stock - 1) };
-        }
-        return bk;
-      });
-      setBooks(updatedBooks);
-      localStorage.setItem('digital_library_books', JSON.stringify(updatedBooks));
-    }
-
+    // Note: Books tidak perlu diupdate karena tidak ada sistem stock
+    
     setUsers(updatedUsers);
     localStorage.setItem('digital_library_users', JSON.stringify(updatedUsers));
 
@@ -960,14 +943,7 @@ export default function App() {
     });
 
     if (targetBookId) {
-      const updatedBooks = books.map(bk => {
-        if (bk.id === targetBookId) {
-          return { ...bk, stock: bk.stock + 1 };
-        }
-        return bk;
-      });
-      setBooks(updatedBooks);
-      localStorage.setItem('digital_library_books', JSON.stringify(updatedBooks));
+      // Note: Books tidak perlu diupdate karena tidak ada sistem stock
     }
 
     setUsers(updatedUsers);
@@ -1022,6 +998,78 @@ export default function App() {
     }
   };
 
+  // HANDLER: DOWNLOAD BUKU (Hanya bisa didownload jika sudah login)
+  const handleDownloadBook = (book: Book) => {
+    if (!currentUser) {
+      addToast('Silakan login terlebih dahulu untuk mengunduh buku digital (PDF)!', 'info');
+      handleNavigate('login');
+      return;
+    }
+
+    const pdfUrl = book.pdfUrl || resolveBookPdfUrl(book);
+    if (!pdfUrl) {
+      addToast('Maaf, file PDF untuk buku ini belum tersedia.', 'error');
+      return;
+    }
+
+    const downloadItem: DownloadedBook = {
+      id: 'dl_' + Date.now(),
+      bookId: book.id,
+      bookTitle: book.title,
+      author: book.author,
+      category: book.category,
+      coverUrl: book.coverUrl,
+      coverColor: book.coverColor,
+      downloadDate: new Date().toLocaleDateString('id-ID', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric'
+      }),
+      pdfUrl: pdfUrl
+    };
+
+    const existingDownloads = currentUser.downloads || [];
+    const filteredDownloads = existingDownloads.filter(d => d.bookId !== book.id);
+    const updatedDownloads = [downloadItem, ...filteredDownloads];
+
+    const updatedUser: User = {
+      ...currentUser,
+      downloads: updatedDownloads
+    };
+
+    setCurrentUser(updatedUser);
+    localStorage.setItem('digital_library_current_user', JSON.stringify(updatedUser));
+    localStorage.setItem('digital_library_active_user_data', JSON.stringify(updatedUser));
+
+    // Update global users list in memory & localStorage
+    const updatedUsers = users.map(u => u.id === updatedUser.id ? updatedUser : u);
+    setUsers(updatedUsers);
+    localStorage.setItem('digital_library_users', JSON.stringify(updatedUsers));
+
+    // Trigger file download to device
+    const link = document.createElement('a');
+    link.href = pdfUrl;
+    link.download = `${book.title.replace(/[/\\?%*:|"<>]/g, '_')}.pdf`;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    // Add log
+    try {
+      addSystemLog({
+        type: 'download' as any,
+        userName: currentUser.name,
+        userEmail: currentUser.email,
+        bookTitle: book.title,
+        date: new Date().toLocaleDateString('id-ID'),
+        details: `Mengunduh file PDF e-book "${book.title}"`
+      });
+    } catch (_e) {}
+
+    addToast(`Berhasil mengunduh "${book.title}"! File PDF telah disimpan di perangkat Anda.`, 'success');
+  };
 
   // RENDERING ENGINE
   const renderViewContent = () => {
@@ -1055,8 +1103,8 @@ export default function App() {
         if (!currentUser) {
           return <LoginPage onNavigate={handleNavigate} onLogin={handleLogin} addToast={addToast} />;
         }
-        // Route to role-specific dashboard — order matters: check privileged roles first
-        if (['admin', UserRole.ADMIN, 'staf', UserRole.PETUGAS].includes(currentUser.role as any)) {
+        // Route to role-specific dashboard: Admin vs User
+        if (currentUser.role === 'admin' || (currentUser.role as any) === UserRole.ADMIN) {
           return (
             <StaffDashboard
               currentUser={currentUser}
@@ -1112,10 +1160,11 @@ export default function App() {
             borrowings={(currentUser.borrowings || []).map(b => ({ ...b, studentId: currentUser.id }))}
             notifications={notifications}
             settings={settings}
-            onRequestBorrow={() => {}} // Feature disabled
+            onRequestBorrow={() => {}} // Feature replaced with downloads
             onRequestReturn={handleReturnBook}
             onUpdateProfile={(data) => handleUpdateProfile(data)}
             onMarkNotifRead={handleMarkNotifRead}
+            onDownloadBook={handleDownloadBook}
           />
         );
       case 'katalog':
@@ -1126,6 +1175,7 @@ export default function App() {
             favorites={favorites}
             onToggleFavorite={handleToggleFavorite}
             currentUser={currentUser}
+            onDownloadBook={handleDownloadBook}
           />
         );
       case 'detail-buku':
@@ -1137,6 +1187,7 @@ export default function App() {
             favorites={favorites}
             onToggleFavorite={handleToggleFavorite}
             currentUser={currentUser}
+            onDownloadBook={handleDownloadBook}
           />
         );
       case 'pinjaman':
@@ -1148,6 +1199,7 @@ export default function App() {
             onNavigate={handleNavigate} 
             onReturnBook={handleReturnBook}
             onExtendBook={handleExtendBook}
+            onDownloadBook={handleDownloadBook}
             addToast={addToast}
           />
         );
@@ -1302,11 +1354,15 @@ export default function App() {
   const isFullScreenDashboard = currentUser && currentView === 'dashboard';
 
   if (isFullScreenDashboard) {
+    const isAdmin = currentUser?.role === 'admin' || (currentUser?.role as any) === UserRole.ADMIN;
     return (
       <div className="relative h-screen overflow-hidden">
         {renderViewContent()}
         <ToastNotification toasts={toasts} onDismiss={handleDismissToast} />
-        <AILibrarianAssistant books={books} onNavigate={handleNavigate} />
+        {/* Chatbot DIHAPUS dari Dashboard Admin, HANYA tampil di Dashboard User */}
+        {!isAdmin && (
+          <AILibrarianAssistant books={books} onNavigate={handleNavigate} />
+        )}
       </div>
     );
   }
@@ -1314,7 +1370,7 @@ export default function App() {
   const sidebarLinks = [
     { id: 'dashboard', label: 'Ringkasan', icon: LayoutDashboard },
     { id: 'katalog', label: 'Katalog Buku', icon: Layers },
-    { id: 'pinjaman', label: 'Riwayat Pinjam', icon: Clock },
+    { id: 'pinjaman', label: 'Buku Diunduh', icon: Download },
     { id: 'favorit', label: 'Favorit Saya', icon: Heart },
     { id: 'profil', label: 'Profil Saya', icon: UserIcon }
   ];
@@ -1432,30 +1488,21 @@ export default function App() {
           </div>
         </div>
 
-        {/* Dynamic Limit Pinjaman Upgrade Card inside Sidebar */}
+        {/* Buku Diunduh (Offline) Card inside Sidebar */}
         <div className="space-y-6">
           {currentUser && (
-            <div className="p-5 bg-gradient-to-br from-blue-600 to-blue-700 rounded-[20px] text-white shadow-lg shadow-blue-100/50">
-              <p className="text-[10px] uppercase tracking-wider font-semibold opacity-80 mb-0.5">Limit Pinjaman</p>
+            <div className="p-5 bg-gradient-to-br from-emerald-600 to-teal-700 rounded-[20px] text-white shadow-lg shadow-emerald-100/50">
+              <p className="text-[10px] uppercase tracking-wider font-semibold opacity-80 mb-0.5">Buku Diunduh (Offline)</p>
               <h4 className="text-lg font-bold mb-3">
-                {(currentUser.borrowings || []).filter(b => b.status === 'Sedang Dipinjam').length} / {currentUser.badge === 'Premium' ? 5 : 3} Buku
+                {(currentUser.downloads || []).length} Koleksi Tersimpan
               </h4>
-              <div className="w-full bg-blue-400/30 h-1.5 rounded-full">
-                <div 
-                  className="bg-white h-full rounded-full shadow-[0_0_8px_rgba(255,255,255,0.5)] transition-all duration-500"
-                  style={{ 
-                    width: `${Math.min(100, (((currentUser.borrowings || []).filter(b => b.status === 'Sedang Dipinjam').length) / (currentUser.badge === 'Premium' ? 5 : 3)) * 100)}%` 
-                  }}
-                ></div>
-              </div>
-              {currentUser.badge !== 'Premium' && (
-                <button 
-                  onClick={() => handleNavigate('profil')}
-                  className="mt-4 w-full py-2 bg-white/20 hover:bg-white/30 backdrop-blur-xs rounded-xl text-[10px] font-bold transition-colors cursor-pointer"
-                >
-                  Upgrade Ke Premium
-                </button>
-              )}
+              <button 
+                onClick={() => handleNavigate('pinjaman')}
+                className="w-full py-2 bg-white/20 hover:bg-white/30 backdrop-blur-xs rounded-xl text-[10px] font-bold transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>Buka Unduhan Saya</span>
+              </button>
             </div>
           )}
 

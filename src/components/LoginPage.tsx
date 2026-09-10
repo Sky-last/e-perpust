@@ -32,7 +32,6 @@ export default function LoginPage({ onNavigate, onLogin, addToast }: LoginPagePr
     coverColor: 'from-blue-600 to-slate-900',
     rating: 4.9,
     year: 2026,
-    stock: 50,
     status: 'Tersedia',
     isbn: '978-602-LOGIN-SYS',
   };

@@ -111,9 +111,9 @@ export default function Library3DRoom({ books = [], onSelectBook }: Library3DRoo
               <span className="text-xs font-mono font-bold text-slate-200">{currentBook.isbn}</span>
             </div>
             <div className="p-3 bg-slate-950/60 rounded-xl border border-slate-800 space-y-0.5">
-              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Status Stok</span>
-              <span className={`text-xs font-bold ${currentBook.stock > 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-                {currentBook.stock > 0 ? `${currentBook.stock} Buku Tersedia` : 'Sedang Dipinjam'}
+              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Status</span>
+              <span className="text-xs font-bold text-emerald-400">
+                Tersedia Digital
               </span>
             </div>
           </div>

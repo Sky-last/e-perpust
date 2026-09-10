@@ -27,14 +27,15 @@ export default function EBookReader3D({ book, onClose, currentUser, initialMode 
 
   // Debug logging
   useEffect(() => {
-    console.log('📄 PDF Viewer Debug:', {
+    console.log('✅ EBookReader3D MOUNTED!', {
       bookId: book.id,
       bookTitle: book.title,
       resolvedPdfUrl: pdfUrl,
       bookPdfUrl: book.pdfUrl,
-      mode
+      mode,
+      initialMode
     });
-  }, [book, pdfUrl, mode]);
+  }, [book, pdfUrl, mode, initialMode]);
 
   // PDF Availability State — skip HEAD check, load iframe directly
   const [pdfStatus, setPdfStatus] = useState<'checking' | 'valid' | 'invalid'>('valid');
@@ -395,19 +396,28 @@ export default function EBookReader3D({ book, onClose, currentUser, initialMode 
               </>
             )}
 
-            {/* Download Button (Premium Members) */}
-            {currentUser?.badge === 'Premium' && (
-              <a
-                href={pdfUrl}
-                download
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hidden sm:flex p-2 bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/30 rounded-xl border border-emerald-500/30 transition-all cursor-pointer"
-                title="Unduh PDF — Khusus Member Premium"
-              >
-                <Download className="w-4 h-4" />
-              </a>
-            )}
+            {/* Download Button: requires login */}
+            <button
+              onClick={() => {
+                if (!currentUser) {
+                  alert('Silakan login terlebih dahulu untuk mengunduh file PDF buku ini ke perangkat Anda.');
+                } else {
+                  const link = document.createElement('a');
+                  link.href = pdfUrl;
+                  link.download = `${book.title.replace(/[/\\?%*:|"<>]/g, '_')}.pdf`;
+                  link.target = '_blank';
+                  link.rel = 'noopener noreferrer';
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                }
+              }}
+              className="flex p-2 bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/30 rounded-xl border border-emerald-500/30 transition-all cursor-pointer items-center gap-1.5 text-xs"
+              title={currentUser ? "Unduh File PDF Buku Ini" : "Silakan login terlebih dahulu untuk mengunduh PDF"}
+            >
+              <Download className="w-4 h-4" />
+              <span className="hidden sm:inline font-bold">Unduh PDF</span>
+            </button>
 
             <button
               onClick={toggleFullScreen}

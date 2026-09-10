@@ -34,7 +34,6 @@ export default function RegisterPage({ onNavigate, onRegister, addToast }: Regis
     coverColor: 'from-blue-600 to-indigo-900',
     rating: 5.0,
     year: 2026,
-    stock: 99,
     status: 'Tersedia',
     isbn: '978-602-REG-SYS',
   };

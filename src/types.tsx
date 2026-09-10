@@ -1,6 +1,5 @@
 export enum UserRole {
   ADMIN = 'admin',
-  PETUGAS = 'staf',
   USER = 'user'
 }
 
@@ -16,15 +15,25 @@ export interface Book {
   synopsis?: string;      // For StaffDashboard form
   year: number;
   rating: number;
-  status: 'Tersedia' | 'Sedang Dipinjam';
-  stock: number;
-  totalStock?: number;    // For StaffDashboard
+  status: 'Tersedia';
   coverColor: string;     // Gradient class or background hex
   coverUrl?: string;      // base64 or URL
   pdfUrl?: string;        // Path to PDF file for reading e-books
   pdfFile?: File | null;  // Temporary file object for upload
   isAiGenerated?: boolean;
   rackLocation?: string;  // For StaffDashboard
+}
+
+export interface DownloadedBook {
+  id: string;
+  bookId: string;
+  bookTitle: string;
+  author?: string;
+  category?: string;
+  coverUrl?: string;
+  coverColor?: string;
+  downloadDate: string;
+  pdfUrl?: string;
 }
 
 export interface Borrowing {
@@ -69,12 +78,13 @@ export interface User {
   name: string;
   email: string;
   password?: string;
-  role: UserRole | 'admin' | 'staf' | 'user';
+  role: UserRole | 'admin' | 'user';
   badge?: 'Premium' | 'Reguler';
   avatar?: string;
   avatarUrl?: string;
   favorites: string[]; // Book IDs
   borrowings: Borrowing[];
+  downloads?: DownloadedBook[];
   phone?: string;
   class?: string;
   nisn?: string;
@@ -88,7 +98,7 @@ export interface User {
 
 export interface SystemLog {
   id: string;
-  type: 'pinjam' | 'kembali' | 'perpanjang' | 'register' | 'update_profile';
+  type: 'pinjam' | 'kembali' | 'perpanjang' | 'register' | 'update_profile' | 'download';
   userName: string;
   userEmail: string;
   bookTitle?: string;

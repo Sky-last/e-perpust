@@ -7,7 +7,6 @@ interface FavoritPageProps {
   books: Book[];
   favorites: string[];
   onToggleFavorite: (id: string) => void;
-  onOpenPinjamModal: (book: Book) => void;
   onNavigate: (view: ViewType, selectedId?: string) => void;
 }
 
@@ -16,7 +15,6 @@ export default function FavoritPage({
   books,
   favorites,
   onToggleFavorite,
-  onOpenPinjamModal,
   onNavigate
 }: FavoritPageProps) {
   // Filter books in favorites
@@ -32,7 +30,6 @@ export default function FavoritPage({
       {favBooks.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {favBooks.map(book => {
-            const isAvailable = book.stock > 0;
             return (
               <div 
                 key={book.id}
@@ -66,30 +63,11 @@ export default function FavoritPage({
                       {book.title}
                     </h3>
                     <p className="text-xs text-slate-500">Penulis: {book.author}</p>
-                    
-                    <div className="pt-1 flex items-center space-x-2 text-[10px] font-semibold">
-                      <span className={isAvailable ? 'text-emerald-600' : 'text-red-500'}>
-                        {isAvailable ? 'Tersedia' : 'Sedang Dipinjam'}
-                      </span>
-                      <span className="text-slate-300">•</span>
-                      <span className="text-slate-400">Stok: {book.stock} buku</span>
-                    </div>
                   </div>
                 </div>
 
                 {/* Actions Panel */}
                 <div className="flex flex-col sm:flex-row items-center gap-2">
-                  <button 
-                    onClick={() => onOpenPinjamModal(book)}
-                    disabled={!isAvailable}
-                    className={`px-4 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer w-full sm:w-auto ${
-                      isAvailable 
-                        ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm shadow-blue-100' 
-                        : 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                    }`}
-                  >
-                    Pinjam
-                  </button>
                   <button 
                     onClick={() => onToggleFavorite(book.id)}
                     className="p-2 border border-slate-100 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer"

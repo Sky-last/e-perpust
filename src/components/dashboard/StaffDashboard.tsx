@@ -72,12 +72,11 @@ export default function StaffDashboard({
   onDeleteUser,
   onUpdateSettings
 }: StaffDashboardProps) {
-  // Check admin dengan normalisasi role yang lebih robust
+  // Check admin dengan role admin
   const isAdmin = React.useMemo(() => {
     const role = currentUser.role;
     const normalizedRole = String(role).toLowerCase();
-    return ['admin', 'staf', 'petugas'].includes(normalizedRole) || 
-           [UserRole.ADMIN, UserRole.PETUGAS].includes(role as any);
+    return normalizedRole === 'admin' || role === UserRole.ADMIN;
   }, [currentUser.role]);
 
   const [activeMenu, setActiveMenu] = useState<'dashboard' | 'books' | 'categories' | 'transactions' | 'users' | 'reports' | 'settings'>('dashboard');
@@ -104,7 +103,6 @@ export default function StaffDashboard({
   const [bookYear, setBookYear] = useState(2026);
   const [bookCategoryId, setBookCategoryId] = useState('');
   const [bookRack, setBookRack] = useState('');
-  const [bookStock, setBookStock] = useState(1);
   const [bookSynopsis, setBookSynopsis] = useState('');
   const [bookCoverUrl, setBookCoverUrl] = useState('');
 
@@ -125,8 +123,8 @@ export default function StaffDashboard({
   const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'approved' | 'returned'>('all');
 
   // Stats
-  const totalBooks = books.reduce((sum, b) => sum + (b.totalStock ?? b.stock), 0);
-  const availableBooks = books.reduce((sum, b) => sum + b.stock, 0);
+  const totalBooks = books.length;
+  const availableBooks = books.length;
   const activeLoans = borrowings.filter(b => ['approved', 'Sedang Dipinjam', 'Dipinjam'].includes(b.status as string)).length;
   const pendingApprovals = borrowings.filter(b => ['pending', 'Menunggu'].includes(b.status as string)).length;
   const totalMembers = users.filter(u => [UserRole.USER, 'user'].includes(u.role as any)).length;
@@ -295,7 +293,6 @@ export default function StaffDashboard({
       setBookYear(book.year);
       setBookCategoryId(book.categoryId ?? '');
       setBookRack(book.rackLocation ?? '');
-      setBookStock(book.totalStock ?? book.stock);
       setBookSynopsis(book.synopsis ?? book.description ?? '');
       setBookCoverUrl(book.coverUrl ?? '');
     } else {
@@ -307,7 +304,6 @@ export default function StaffDashboard({
       setBookYear(2026);
       setBookCategoryId(categories[0]?.id || '');
       setBookRack('');
-      setBookStock(1);
       setBookSynopsis('');
       setBookCoverUrl('https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&q=80&w=400');
     }
@@ -326,8 +322,6 @@ export default function StaffDashboard({
         year: bookYear,
         categoryId: bookCategoryId,
         rackLocation: bookRack,
-        totalStock: bookStock,
-        stock: bookStock - ((editingBook.totalStock ?? bookStock) - (editingBook.stock ?? bookStock)),
         synopsis: bookSynopsis,
         coverUrl: bookCoverUrl
       });
@@ -346,8 +340,6 @@ export default function StaffDashboard({
         coverColor: 'from-blue-600 to-indigo-900',
         categoryId: bookCategoryId,
         rackLocation: bookRack,
-        stock: bookStock,
-        totalStock: bookStock,
         synopsis: bookSynopsis,
         coverUrl: bookCoverUrl
       });
@@ -390,9 +382,7 @@ export default function StaffDashboard({
     if (user) {
       setEditingUser(user);
       setUName(user.name);
-      setUEmail(user.email);
-      const normRole = ['staf', 'petugas', UserRole.PETUGAS].includes(user.role as any) ? 'staf' :
-                       ['admin', UserRole.ADMIN].includes(user.role as any) ? 'admin' : 'user';
+      const normRole = (user.role === 'admin' || (user.role as any) === UserRole.ADMIN) ? 'admin' : 'user';
       setURole(normRole);
       setUBadge(user.badge || 'Reguler');
       setUNisn(user.identityNumber || user.nisn || '');
@@ -484,7 +474,7 @@ export default function StaffDashboard({
               </div>
               <div className="min-w-0">
                 <h2 className="text-xs font-black text-white tracking-wider uppercase truncate flex items-center gap-1.5">
-                  Staff Panel <Sparkles className="w-3 h-3 text-cyan-400" />
+                  Admin Panel <Sparkles className="w-3 h-3 text-cyan-400" />
                 </h2>
                 <span className="text-[9px] text-cyan-400 font-extrabold uppercase tracking-widest">{currentUser.role}</span>
               </div>
@@ -563,7 +553,7 @@ export default function StaffDashboard({
                     <Shield className="w-5 h-5" />
                   </div>
                   <div>
-                    <h2 className="text-xs font-black text-white uppercase">Staff Panel</h2>
+                    <h2 className="text-xs font-black text-white uppercase">Admin Panel</h2>
                     <span className="text-[9px] text-cyan-400 font-bold uppercase">{currentUser.role}</span>
                   </div>
                 </div>
@@ -587,12 +577,12 @@ export default function StaffDashboard({
 
       {/* ── MAIN CANVAS ── */}
       <div className="flex-1 h-screen flex flex-col overflow-hidden">
-        <header className="bg-slate-900/80 backdrop-blur-xl border-b border-slate-800 px-4 lg:px-8 py-4 flex justify-between items-center sticky top-0 z-10 shrink-0">
+        <header className="h-16 lg:h-20 bg-slate-900/60 backdrop-blur-md border-b border-slate-800/80 px-4 lg:px-8 flex items-center justify-between z-10 shrink-0">
           <div className="flex items-center gap-4">
             <button onClick={() => setMobileMenuOpen(true)} className="lg:hidden p-2 bg-slate-800 rounded-xl text-slate-300"><Menu className="w-5 h-5" /></button>
             <div>
               <span className="text-[9px] bg-cyan-500/10 text-cyan-400 font-extrabold px-2.5 py-0.5 rounded-full uppercase border border-cyan-500/20">
-                Staff Admin • Perpustakaan Kita
+                Administrator • Perpustakaan Kita
               </span>
               <h1 className="text-sm lg:text-base font-black text-white mt-1 flex items-center gap-2">
                 {currentUser.name}
@@ -708,7 +698,7 @@ export default function StaffDashboard({
                 <div className="flex justify-between items-center gap-4">
                   <div>
                     <h2 className="text-base lg:text-lg font-black text-white">Kelola Koleksi Buku</h2>
-                    <p className="text-xs text-slate-400 font-medium">Tambah, edit, dan atur stok buku digital/fisik.</p>
+                    <p className="text-xs text-slate-400 font-medium">Tambah, edit, dan kelola buku digital.</p>
                   </div>
                   <button onClick={() => handleOpenBookModal(null)} className="px-4 py-2.5 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-bold text-xs rounded-xl shadow-lg flex items-center gap-2 cursor-pointer">
                     <Plus className="w-4 h-4" /> Tambah Buku
@@ -732,7 +722,7 @@ export default function StaffDashboard({
                       <div className="aspect-[3/4] bg-slate-950 rounded-xl flex items-center justify-center p-3 relative">
                         <Book3D book={book} size="sm" />
                         <span className="absolute top-2 right-2 text-[9px] bg-slate-900 text-slate-300 px-2 py-0.5 rounded font-bold">
-                          Stok: {book.stock}/{book.totalStock || book.stock}
+                          PDF
                         </span>
                       </div>
                       <div>
@@ -912,7 +902,7 @@ export default function StaffDashboard({
                       <Package className="w-5 h-5 text-blue-400" />
                     </div>
                     <h3 className="text-3xl font-black text-white">{books.length}</h3>
-                    <p className="text-[10px] text-slate-500">Total stok: {totalBooks} eksemplar</p>
+                    <p className="text-[10px] text-slate-500">Total koleksi digital</p>
                   </div>
                   
                   <div className="bg-slate-900 border border-cyan-500/30 rounded-2xl p-5 space-y-2">
@@ -1097,8 +1087,8 @@ export default function StaffDashboard({
               <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
-                    <h2 className="text-base font-black text-white">Kelola Anggota & Staff</h2>
-                    <p className="text-xs text-slate-400 font-medium">Atur hak akses role (Pemustaka, Petugas, Admin) dan status keanggotaan.</p>
+                    <h2 className="text-base font-black text-white">Kelola Pengguna</h2>
+                    <p className="text-xs text-slate-400 font-medium">Atur hak akses role (Admin & User) dan status keanggotaan.</p>
                   </div>
                   {isAdmin && (
                     <button onClick={() => handleOpenUserModal(null)} className="px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs rounded-xl shadow-lg flex items-center gap-2 cursor-pointer transition-all">
@@ -1132,12 +1122,8 @@ export default function StaffDashboard({
                       </thead>
                       <tbody className="divide-y divide-slate-800 text-slate-300">
                         {filteredUsers.map(u => {
-                          // Normalisasi role dengan defensive checking
                           const userRoleStr = String(u.role || 'user').toLowerCase();
-                          const normalizedRole = 
-                            ['staf', 'petugas', 'staff'].includes(userRoleStr) ? 'staf' :
-                            ['admin', 'administrator'].includes(userRoleStr) ? 'admin' : 
-                            'user';
+                          const normalizedRole = ['admin', 'administrator'].includes(userRoleStr) ? 'admin' : 'user';
                           
                           return (
                             <tr key={u.id} className="hover:bg-slate-800/40 transition-colors">
@@ -1164,17 +1150,15 @@ export default function StaffDashboard({
                                     onClick={(e) => e.stopPropagation()}
                                     className="bg-slate-950 border border-slate-800 text-cyan-300 text-[11px] font-extrabold rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-cyan-500 cursor-pointer"
                                   >
-                                    <option value="user">User / Pemustaka</option>
-                                    <option value="staf">Petugas / Staf</option>
-                                    <option value="admin">Administrator</option>
+                                    <option value="admin">Administrator (Admin)</option>
+                                    <option value="user">User (Pemustaka)</option>
                                   </select>
                                 ) : (
                                   <span className={`px-2.5 py-1 rounded-md text-[10px] font-extrabold uppercase border ${
                                     normalizedRole === 'admin' ? 'bg-purple-500/20 text-purple-300 border-purple-500/30' :
-                                    normalizedRole === 'staf' ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30' :
                                     'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
                                   }`}>
-                                    {normalizedRole === 'admin' ? 'Admin' : normalizedRole === 'staf' ? 'Petugas' : 'Pemustaka'}
+                                    {normalizedRole === 'admin' ? 'Admin' : 'User'}
                                   </span>
                                 )}
                               </td>
@@ -1262,7 +1246,7 @@ export default function StaffDashboard({
                   <select value={bookCategoryId} onChange={e => setBookCategoryId(e.target.value)} className="p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-bold">
                     {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                   </select>
-                  <input type="number" placeholder="Jumlah Stok" value={bookStock} onChange={e => setBookStock(Number(e.target.value))} className="p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-bold" />
+                  <input type="text" placeholder="Lokasi Rak" value={bookRack} onChange={e => setBookRack(e.target.value)} className="p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white" />
                 </div>
                 <textarea placeholder="Sinopsis..." value={bookSynopsis} onChange={e => setBookSynopsis(e.target.value)} rows={3} className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white" />
                 <div className="flex justify-end gap-2 pt-2">
@@ -1320,9 +1304,8 @@ export default function StaffDashboard({
                   <div>
                     <label className="block text-[10px] font-extrabold uppercase text-slate-400 mb-1">Role / Peran</label>
                     <select value={uRole} onChange={e => setURole(e.target.value as UserRole)} className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-bold focus:outline-none focus:border-cyan-500 cursor-pointer">
-                      <option value="user">User / Pemustaka</option>
-                      <option value="staf">Petugas / Staf</option>
-                      <option value="admin">Administrator</option>
+                      <option value="admin">Administrator (Admin)</option>
+                      <option value="user">User (Pemustaka)</option>
                     </select>
                   </div>
                   <div>
@@ -1333,7 +1316,7 @@ export default function StaffDashboard({
                     </select>
                   </div>
                 </div>
-                {(['user', 'siswa', UserRole.USER].includes(String(uRole).toLowerCase())) ? (
+                {(String(uRole).toLowerCase() === 'user' || uRole === UserRole.USER) ? (
                   <div className="grid grid-cols-2 gap-2">
                     <div>
                       <label className="block text-[10px] font-extrabold uppercase text-slate-400 mb-1">NIK / No. Identitas</label>
@@ -1346,7 +1329,7 @@ export default function StaffDashboard({
                   </div>
                 ) : (
                   <div>
-                    <label className="block text-[10px] font-extrabold uppercase text-slate-400 mb-1">NIP Petugas/Admin</label>
+                    <label className="block text-[10px] font-extrabold uppercase text-slate-400 mb-1">NIP / Identitas Admin</label>
                     <input type="text" placeholder="NIP" value={uNip} onChange={e => setUNip(e.target.value)} className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-semibold focus:outline-none focus:border-cyan-500" />
                   </div>
                 )}

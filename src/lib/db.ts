@@ -30,15 +30,11 @@ export async function getBooks(): Promise<Book[]> {
         .order('created_at', { ascending: false });
 
       if (!error && data && data.length > 0) {
-        // Merge Supabase updates (e.g. stock, status, or newly added custom books)
+        // Merge any Supabase updates for custom books
         catalogBooks = catalogBooks.map(initBook => {
           const remote = data.find(r => r.id === initBook.id);
           if (remote) {
-            return {
-              ...initBook,
-              stock: remote.stock !== undefined ? remote.stock : initBook.stock,
-              status: remote.status || initBook.status
-            };
+            return { ...initBook };
           }
           return initBook;
         });
@@ -56,8 +52,7 @@ export async function getBooks(): Promise<Book[]> {
             description: b.description,
             year: b.year,
             rating: Number(b.rating),
-            status: b.status as 'Tersedia' | 'Sedang Dipinjam',
-            stock: b.stock,
+            status: 'Tersedia' as 'Tersedia',
             coverColor: b.cover_color,
             coverUrl: b.cover_url || `/buku_sampul/cover_${b.id}.jpg`,
             pdfUrl: resolveBookPdfUrl(b),
@@ -72,7 +67,7 @@ export async function getBooks(): Promise<Book[]> {
     }
   }
 
-  // Also merge any local storage stock/status modifications
+  // Also merge any local storage modifications
   const stored = localStorage.getItem('digital_library_books');
   if (stored) {
     try {
@@ -81,11 +76,7 @@ export async function getBooks(): Promise<Book[]> {
         catalogBooks = catalogBooks.map(initBook => {
           const found = parsed.find(b => b.id === initBook.id);
           if (found) {
-            return {
-              ...initBook,
-              stock: found.stock !== undefined ? found.stock : initBook.stock,
-              status: found.status || initBook.status
-            };
+            return { ...initBook };
           }
           return initBook;
         });
@@ -107,7 +98,7 @@ export async function getBooks(): Promise<Book[]> {
 export async function saveBook(book: Omit<Book, 'status'>, isNew: boolean): Promise<Book> {
   const fullBook: Book = {
     ...book,
-    status: book.stock > 0 ? 'Tersedia' : 'Sedang Dipinjam'
+    status: 'Tersedia'
   };
 
   if (isSupabaseConfigured) {
@@ -123,7 +114,6 @@ export async function saveBook(book: Omit<Book, 'status'>, isNew: boolean): Prom
         year: fullBook.year,
         rating: fullBook.rating,
         status: fullBook.status,
-        stock: fullBook.stock,
         cover_color: fullBook.coverColor,
         cover_url: fullBook.pdfUrl || fullBook.coverUrl || null,
         is_ai_generated: fullBook.isAiGenerated || false
@@ -418,18 +408,7 @@ export async function makeBorrowing(
 
       if (error) throw error;
 
-      // 2. Decrement book stock in Supabase
-      const { data: bookData } = await supabase.from('books').select('stock').eq('id', bookId).single();
-      if (bookData) {
-        const newStock = Math.max(0, bookData.stock - 1);
-        await supabase
-          .from('books')
-          .update({ 
-            stock: newStock,
-            status: newStock > 0 ? 'Tersedia' : 'Sedang Dipinjam'
-          })
-          .eq('id', bookId);
-      }
+      // Stock management removed — digital library has no stock limits
 
       return {
         id: data.id,
@@ -462,18 +441,7 @@ export async function returnBorrowing(borrowingId: string, bookId: string): Prom
 
       if (error) throw error;
 
-      // 2. Increment book stock in Supabase
-      const { data: bookData } = await supabase.from('books').select('stock').eq('id', bookId).single();
-      if (bookData) {
-        const newStock = bookData.stock + 1;
-        await supabase
-          .from('books')
-          .update({ 
-            stock: newStock,
-            status: 'Tersedia'
-          })
-          .eq('id', bookId);
-      }
+      // Stock management removed — digital library has no stock limits
 
       return returnDate;
     } catch (e) {
