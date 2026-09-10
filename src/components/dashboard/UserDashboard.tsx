@@ -170,22 +170,23 @@ export default function UserDashboard({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const filteredBooks = books.filter((book) => {
-    const matchesSearch =
+    // Filter by search query (title, author, publisher, ISBN)
+    const matchesSearch = searchQuery === '' || 
       book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       book.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
       book.publisher.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      book.isbn.includes(searchQuery);
+      book.isbn.toLowerCase().includes(searchQuery.toLowerCase());
 
-    const bookCategory = categories.find(c => c.id === book.categoryId);
-    const categoryName = bookCategory ? bookCategory.name.toLowerCase() : '';
+    // Filter by category
     const matchesCategory = selectedCategory === 'all' || book.categoryId === selectedCategory;
 
-    return (matchesSearch || categoryName.includes(searchQuery.toLowerCase())) && matchesCategory;
+    // Both conditions must be true
+    return matchesSearch && matchesCategory;
   }).sort((a, b) => {
     if (sortBy === 'populer') return (b.rating || 0) - (a.rating || 0);
     if (sortBy === 'abjad') return a.title.localeCompare(b.title);
     if (sortBy === 'terbaru') return (b.year || 0) - (a.year || 0);
-    if (sortBy === 'tersedia') return b.rating - a.rating; // fallback to rating when no stock
+    if (sortBy === 'tersedia') return (b.rating || 0) - (a.rating || 0);
     return 0;
   });
 
@@ -706,6 +707,7 @@ export default function UserDashboard({
                                 description: `Buku digital "${userDownloads[0].bookTitle}".`,
                                 year: 2026,
                                 rating: 5,
+                                status: 'Tersedia',
                                 categoryId: '',
                                 rackLocation: 'Digital'
                               };
@@ -838,15 +840,24 @@ export default function UserDashboard({
                       >
                         Semua ({books.length})
                       </button>
-                      {categories.slice(0, 6).map((cat) => (
-                        <button
-                          key={cat.id}
-                          onClick={() => { setSelectedCategory(cat.id); setActiveTab('books'); }}
-                          className="px-3.5 py-1.5 bg-[#F6F1E7] hover:bg-[#EFE8D8] text-[#1F2A24]/60 hover:text-[#1F2A24] rounded-lg text-[10px] font-bold transition-colors shrink-0 cursor-pointer border border-[#1F2A24]/10"
-                        >
-                          {cat.name}
-                        </button>
-                      ))}
+                      {categories.slice(0, 6).map((cat) => {
+                        const count = books.filter(b => b.categoryId === cat.id).length;
+                        // Skip kategori kosong
+                        if (count === 0) return null;
+                        return (
+                          <button
+                            key={cat.id}
+                            onClick={() => { setSelectedCategory(cat.id); setActiveTab('books'); }}
+                            className={`px-3.5 py-1.5 rounded-lg text-[10px] font-bold transition-colors shrink-0 cursor-pointer border ${
+                              selectedCategory === cat.id
+                                ? 'bg-[#20301F] text-[#F6F1E7] border-[#20301F]'
+                                : 'bg-[#F6F1E7] text-[#1F2A24]/60 border-[#1F2A24]/10 hover:text-[#1F2A24]'
+                            }`}
+                          >
+                            {cat.name} ({count})
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
 
@@ -929,6 +940,8 @@ export default function UserDashboard({
                       </button>
                       {categories.map((cat) => {
                         const count = books.filter(b => b.categoryId === cat.id).length;
+                        // Skip kategori kosong
+                        if (count === 0) return null;
                         return (
                           <button
                             key={cat.id}

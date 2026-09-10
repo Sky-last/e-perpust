@@ -706,9 +706,17 @@ export default function AdminPage({
                     <tr key={user.id} className="hover:bg-slate-50/50">
                       <td className="p-3.5">
                         <div className="flex items-center space-x-2.5">
-                          <div className="w-8 h-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center font-bold text-sm uppercase">
-                            {user.name.substring(0, 2)}
-                          </div>
+                          {user.avatarUrl || user.avatar ? (
+                            <img 
+                              src={user.avatarUrl || user.avatar} 
+                              alt={user.name}
+                              className="w-8 h-8 rounded-lg object-cover border border-slate-200"
+                            />
+                          ) : (
+                            <div className="w-8 h-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center font-bold text-sm uppercase">
+                              {user.name.substring(0, 2)}
+                            </div>
+                          )}
                           <div>
                             <p className="font-bold text-slate-800">{user.name}</p>
                             <p className="text-[10px] text-slate-400 font-medium capitalize">Role: {user.role}</p>
