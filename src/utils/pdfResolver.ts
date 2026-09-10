@@ -1,3 +1,8 @@
+// 🌐 PDF BASE URL CONFIGURATION
+// Menggunakan VITE_PDF_BASE_URL jika diisi di .env (misal untuk hosting eksternal: Cloudinary, GitHub Pages, Supabase Storage)
+// Default string kosong '' agar menggunakan path lokal/relatif (/buku_digital/...)
+const PDF_BASE_URL = (import.meta.env.VITE_PDF_BASE_URL as string) || '';
+
 export const BOOK_PDF_MAP: Record<string, string> = {
   "buku-001": "/buku_digital/Bumi.pdf",
   "Bumi": "/buku_digital/Bumi.pdf",
@@ -269,6 +274,11 @@ export const sanitizePdfPath = (rawUrl: string): string => {
   try {
     clean = decodeURI(clean);
   } catch (e) {}
+
+  // 🌐 Apply external base URL if configured
+  if (PDF_BASE_URL) {
+    return encodeURI(PDF_BASE_URL.replace(/\/$/, '') + clean);
+  }
 
   return encodeURI(clean);
 };
