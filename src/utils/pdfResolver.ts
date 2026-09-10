@@ -275,9 +275,14 @@ export const sanitizePdfPath = (rawUrl: string): string => {
     clean = decodeURI(clean);
   } catch (e) {}
 
-  // 🌐 Apply external base URL if configured
+  // 🌐 Apply external base URL if configured (e.g. Supabase Storage, Cloudinary, etc.)
   if (PDF_BASE_URL) {
-    return encodeURI(PDF_BASE_URL.replace(/\/$/, '') + clean);
+    const base = PDF_BASE_URL.replace(/\/$/, '');
+    if (base.endsWith('/buku_digital')) {
+      const filename = clean.replace(/^\/buku_digital\//, '');
+      return encodeURI(`${base}/${filename}`);
+    }
+    return encodeURI(base + clean);
   }
 
   return encodeURI(clean);
