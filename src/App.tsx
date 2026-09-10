@@ -1241,7 +1241,7 @@ export default function App() {
           />
         );
       default:
-        return <LandingPage books={books} onNavigate={handleNavigate} favorites={favorites} onToggleFavorite={handleToggleFavorite} />;
+        return <LandingPage books={books} onNavigate={handleNavigate} favorites={favorites} onToggleFavorite={handleToggleFavorite} currentUser={currentUser} />;
     }
   };
 

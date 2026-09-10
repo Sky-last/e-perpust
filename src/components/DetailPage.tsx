@@ -211,6 +211,7 @@ export default function DetailPage({
           book={book}
           onClose={() => setShow3DReader(false)}
           currentUser={currentUser}
+          onNavigate={onNavigate}
         />
       )}
     </div>

@@ -227,6 +227,7 @@ export default function PinjamanPage({
           book={readingBook3D}
           onClose={() => setReadingBook3D(null)}
           currentUser={currentUser}
+          onNavigate={onNavigate}
         />
       )}
     </div>

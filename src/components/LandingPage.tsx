@@ -15,9 +15,10 @@ interface LandingPageProps {
   onNavigate: (view: ViewType, selectedId?: string) => void;
   onToggleFavorite: (id: string) => void;
   favorites: string[];
+  currentUser?: User | null;
 }
 
-export default function LandingPage({ books, onNavigate, onToggleFavorite, favorites }: LandingPageProps) {
+export default function LandingPage({ books, onNavigate, onToggleFavorite, favorites, currentUser }: LandingPageProps) {
   const [darkMode, setDarkMode] = useState(true);
   const [activeSection, setActiveSection] = useState<'home' | 'katalog' | 'tentang' | 'kontak'>('home');
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
@@ -714,6 +715,8 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
         <EBookReader3D
           book={readingBook3D}
           onClose={() => setReadingBook3D(null)}
+          currentUser={currentUser}
+          onNavigate={onNavigate}
         />
       )}
     </div>

@@ -15,12 +15,13 @@ interface EBookReader3DProps {
   onClose: () => void;
   currentUser?: User | null;
   initialMode?: 'read' | 'pdf';
+  onNavigate?: (view: any) => void;
 }
 
 type ReaderTheme = 'sepia' | 'dark' | 'light' | 'oled';
 type FontFamily = 'serif' | 'sans' | 'mono';
 
-export default function EBookReader3D({ book, onClose, currentUser, initialMode = 'pdf' }: EBookReader3DProps) {
+export default function EBookReader3D({ book, onClose, currentUser, initialMode = 'pdf', onNavigate }: EBookReader3DProps) {
   // Mode Switcher: 'read' (Interactive Kindle Reader) vs 'pdf' (PDF Viewer)
   const [mode, setMode] = useState<'read' | 'pdf'>(initialMode);
   const pdfUrl = resolveBookPdfUrl(book);
@@ -400,7 +401,10 @@ export default function EBookReader3D({ book, onClose, currentUser, initialMode 
             <button
               onClick={() => {
                 if (!currentUser) {
-                  alert('Silakan login terlebih dahulu untuk mengunduh file PDF buku ini ke perangkat Anda.');
+                  if (window.confirm('Untuk mengunduh file PDF buku ini ke perangkat Anda, silakan login terlebih dahulu.\n\nApakah Anda ingin membuka halaman login sekarang?')) {
+                    onClose();
+                    onNavigate?.('login');
+                  }
                 } else {
                   const link = document.createElement('a');
                   link.href = pdfUrl;
@@ -742,15 +746,23 @@ export default function EBookReader3D({ book, onClose, currentUser, initialMode 
                   <span className="truncate font-bold">📄 Dokumen PDF Resmi: <span className="text-white">{book.title}</span></span>
                 </div>
                 {pdfStatus === 'valid' && (
-                  <a
-                    href={pdfUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-3 py-1 bg-blue-600/30 hover:bg-blue-600/50 text-cyan-300 border border-blue-500/40 rounded-lg font-bold text-[11px] transition-all flex items-center gap-1 shrink-0"
+                  <button
+                    onClick={() => {
+                      if (!currentUser) {
+                        if (window.confirm('Untuk membuka atau mengunduh dokumen PDF di tab baru, silakan login terlebih dahulu.\n\nApakah Anda ingin membuka halaman login sekarang?')) {
+                          onClose();
+                          onNavigate?.('login');
+                        }
+                        return;
+                      }
+                      window.open(pdfUrl, '_blank', 'noopener,noreferrer');
+                    }}
+                    className="px-3 py-1 bg-blue-600/30 hover:bg-blue-600/50 text-cyan-300 border border-blue-500/40 rounded-lg font-bold text-[11px] transition-all flex items-center gap-1 shrink-0 cursor-pointer"
+                    title={currentUser ? "Buka Dokumen PDF di Tab Baru" : "Silakan login terlebih dahulu untuk membuka di tab baru"}
                   >
                     <span>Buka Tab Baru</span>
                     <span>↗</span>
-                  </a>
+                  </button>
                 )}
               </div>
 
@@ -799,7 +811,7 @@ export default function EBookReader3D({ book, onClose, currentUser, initialMode 
                 <div className="flex-1 relative w-full h-full min-h-0">
                   <iframe
                     ref={iframeRef}
-                    src={pdfUrl}
+                    src={`${pdfUrl}#toolbar=0&navpanes=0`}
                     className="w-full h-full bg-slate-900 border-none absolute inset-0"
                     title={book.title}
                     onLoad={() => {
