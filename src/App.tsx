@@ -81,6 +81,16 @@ export default function App() {
   // Interaction state
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [sidebarOpen, setSidebarOpen] = useState(false); // Mobile sidebar toggle
+  const [needsProfileCompletion, setNeedsProfileCompletion] = useState(false);
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
+
+  // Helper: periksa apakah data profil perpustakaan belum lengkap
+  const isProfileIncomplete = (user: User | null): boolean => {
+    if (!user) return false;
+    if (['admin', 'staf', UserRole.ADMIN].includes(user.role as any)) return false;
+    if (user.isProfileCompleted === true) return false;
+    return Boolean(!user.identityNumber || !user.phone || !user.memberCategory);
+  };
 
   // LOAD DATABASE ON MOUNT
   useEffect(() => {
@@ -134,6 +144,11 @@ export default function App() {
             setFavorites(profile.favorites || []);
             localStorage.setItem('digital_library_active_user', profile.email);
             localStorage.setItem('digital_library_active_user_data', JSON.stringify(profile));
+            if (isProfileIncomplete(profile)) {
+              setNeedsProfileCompletion(true);
+            } else {
+              setNeedsProfileCompletion(false);
+            }
             setCurrentView('dashboard');
             restored = true;
           }
@@ -152,6 +167,11 @@ export default function App() {
             const parsedUser = JSON.parse(activeUserData);
             setCurrentUser(parsedUser);
             setFavorites(parsedUser.favorites || []);
+            if (isProfileIncomplete(parsedUser)) {
+              setNeedsProfileCompletion(true);
+            } else {
+              setNeedsProfileCompletion(false);
+            }
             setCurrentView('dashboard');
             restored = true;
           } catch (e) {}
@@ -164,6 +184,11 @@ export default function App() {
           
           if (found) {
             setCurrentUser(found);
+            if (isProfileIncomplete(found)) {
+              setNeedsProfileCompletion(true);
+            } else {
+              setNeedsProfileCompletion(false);
+            }
             setCurrentView('dashboard');
             const userFavs = localStorage.getItem(`digital_library_favorites_${activeUserEmail}`);
             if (userFavs) {
@@ -188,67 +213,105 @@ export default function App() {
     loadAdminData();
   }, [currentUser]);
 
-  // EMAIL VERIFICATION CALLBACK HANDLER
+  // EMAIL VERIFICATION & GOOGLE OAUTH CALLBACK HANDLER
   useEffect(() => {
     if (!isSupabaseConfigured) return;
 
-    // Listen for auth state changes (email confirmation, etc.)
+    // Listen for auth state changes (email confirmation, Google login, etc.)
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth event:', event);
 
-      // Handle email verification success
+      // Handle email verification or Google OAuth success
       if (event === 'SIGNED_IN' && session?.user) {
-        // Check if this is from email verification
-        const isEmailVerified = session.user.email_confirmed_at;
+        // Check if this is from email verification or Google OAuth
+        const isEmailVerified = Boolean(
+          session.user.email_confirmed_at ||
+          session.user.user_metadata?.email_verified ||
+          session.user.app_metadata?.provider === 'google'
+        );
         
-        if (isEmailVerified) {
-          // Get or create user profile
-          let profile = await getUserProfile(session.user.id);
-          
-          if (!profile) {
-            // Create profile if doesn't exist
-            profile = {
-              id: session.user.id,
-              name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
-              email: session.user.email || '',
-              role: UserRole.USER,
-              badge: 'Reguler',
-              favorites: [],
-              borrowings: []
-            };
-
-            // Save to Supabase
-            try {
-              await supabase.from('profiles').upsert({
-                id: profile.id,
-                name: profile.name,
-                email: profile.email,
-                role: profile.role,
-                badge: profile.badge,
-              });
-            } catch (e) {
-              console.error('Failed to create profile:', e);
-            }
-          }
-
-          // Set current user
-          setCurrentUser(profile);
-          setFavorites(profile.favorites || []);
-          localStorage.setItem('digital_library_active_user', profile.email);
-          localStorage.setItem('digital_library_active_user_data', JSON.stringify(profile));
-          
-          // Clear pending verification email
-          localStorage.removeItem('pending_verification_email');
-          
-          // Show success message and redirect
-          addToast('✅ Email berhasil diverifikasi! Selamat datang di Perpustakaan Kita!', 'success');
-          setCurrentView('dashboard');
+        if (!isEmailVerified) {
+          addToast('📧 Email Anda belum diverifikasi. Silakan cek inbox dan klik link verifikasi.', 'error');
+          localStorage.setItem('pending_verification_email', session.user.email || '');
+          setCurrentView('email-verification');
+          await supabase.auth.signOut();
+          return;
         }
+
+        // Get or create user profile
+        let profile = await getUserProfile(session.user.id);
+        
+        if (!profile) {
+          // Create profile if doesn't exist (e.g. new Google user)
+          const googleAvatar = session.user.user_metadata?.avatar_url || session.user.user_metadata?.picture;
+          profile = {
+            id: session.user.id,
+            name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'Anggota Baru',
+            email: session.user.email || '',
+            role: UserRole.USER,
+            badge: 'Reguler',
+            avatar: googleAvatar,
+            avatarUrl: googleAvatar,
+            authProvider: session.user.app_metadata?.provider === 'google' ? 'google' : 'email',
+            memberCategory: '', // kosong -> wajib lengkapi profil
+            identityNumber: '',
+            phone: '',
+            institution: '',
+            isProfileCompleted: false,
+            favorites: [],
+            borrowings: [],
+            downloads: [],
+            readBooks: []
+          };
+
+          // Save to Supabase
+          try {
+            await supabase.from('profiles').upsert({
+              id: profile.id,
+              name: profile.name,
+              email: profile.email,
+              role: profile.role,
+              badge: profile.badge,
+              avatar: profile.avatarUrl,
+            });
+          } catch (e) {
+            console.error('Failed to create profile:', e);
+          }
+        } else {
+          if (session.user.user_metadata?.avatar_url && !profile.avatarUrl) {
+            profile.avatarUrl = session.user.user_metadata.avatar_url;
+            profile.avatar = session.user.user_metadata.avatar_url;
+          }
+          if (session.user.app_metadata?.provider === 'google') {
+            profile.authProvider = 'google';
+          }
+        }
+
+        // Set current user
+        setCurrentUser(profile);
+        setFavorites(profile.favorites || []);
+        localStorage.setItem('digital_library_active_user', profile.email);
+        localStorage.setItem('digital_library_active_user_data', JSON.stringify(profile));
+        
+        // Clear pending verification email
+        localStorage.removeItem('pending_verification_email');
+
+        // Check if mandatory profile data needs completion
+        if (isProfileIncomplete(profile)) {
+          setNeedsProfileCompletion(true);
+          addToast('👋 Akun Google berhasil masuk! Mohon lengkapi data profil keanggotaan Anda.', 'info');
+        } else {
+          setNeedsProfileCompletion(false);
+          addToast('✅ Berhasil masuk ke Perpustakaan Kita!', 'success');
+        }
+        
+        setCurrentView('dashboard');
       }
 
       // Handle sign out
       if (event === 'SIGNED_OUT') {
         setCurrentUser(null);
+        setNeedsProfileCompletion(false);
         setFavorites([]);
         localStorage.removeItem('digital_library_active_user');
         localStorage.removeItem('digital_library_active_user_data');
@@ -392,6 +455,11 @@ export default function App() {
           setFavorites(profile.favorites || []);
           localStorage.setItem('digital_library_active_user', profile.email);
           localStorage.setItem('digital_library_active_user_data', JSON.stringify(profile));
+          if (isProfileIncomplete(profile)) {
+            setNeedsProfileCompletion(true);
+          } else {
+            setNeedsProfileCompletion(false);
+          }
           addToast('Berhasil masuk ke Perpustakaan Kita!', 'success');
           setCurrentView('dashboard');
           return true;
@@ -409,6 +477,11 @@ export default function App() {
       setCurrentUser(foundUser);
       localStorage.setItem('digital_library_active_user', foundUser.email);
       localStorage.setItem('digital_library_active_user_data', JSON.stringify(foundUser));
+      if (isProfileIncomplete(foundUser)) {
+        setNeedsProfileCompletion(true);
+      } else {
+        setNeedsProfileCompletion(false);
+      }
       
       // Load favorites
       const userFavs = localStorage.getItem(`digital_library_favorites_${foundUser.email}`);
@@ -547,11 +620,158 @@ export default function App() {
       await supabase.auth.signOut();
     }
     setCurrentUser(null);
+    setNeedsProfileCompletion(false);
     setFavorites([]);
     localStorage.removeItem('digital_library_active_user');
     localStorage.removeItem('digital_library_active_user_data');
     setCurrentView('landing');
     addToast('Anda berhasil keluar dari sesi Perpustakaan Kita.', 'success');
+  };
+
+  // GOOGLE OAUTH AUTHENTICATION
+  const handleGoogleAuth = async () => {
+    if (isSupabaseConfigured) {
+      try {
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: `${window.location.origin}/`,
+            queryParams: {
+              access_type: 'offline',
+              prompt: 'consent',
+            },
+          },
+        });
+        if (error) {
+          console.warn('Supabase Google OAuth warning:', error);
+          if (
+            error.message.toLowerCase().includes('not enabled') || 
+            error.message.toLowerCase().includes('provider is not enabled') ||
+            error.message.toLowerCase().includes('unsupported provider')
+          ) {
+            addToast('ℹ️ Google OAuth belum diaktifkan di konsol Supabase. Membuka simulasi Akun Google Terverifikasi...', 'info');
+            simulateGoogleAuth();
+            return;
+          }
+          addToast(error.message, 'error');
+        }
+      } catch (err: any) {
+        console.error('Google OAuth exception:', err);
+        addToast('Menjalankan simulasi Google Auth...', 'info');
+        simulateGoogleAuth();
+      }
+    } else {
+      simulateGoogleAuth();
+    }
+  };
+
+  const simulateGoogleAuth = () => {
+    // Check if demo Google user already completed profile
+    const existingGoogleUserStr = localStorage.getItem('digital_library_google_user_demo');
+    if (existingGoogleUserStr) {
+      try {
+        const existingGoogleUser: User = JSON.parse(existingGoogleUserStr);
+        setCurrentUser(existingGoogleUser);
+        localStorage.setItem('digital_library_active_user', existingGoogleUser.email);
+        localStorage.setItem('digital_library_active_user_data', JSON.stringify(existingGoogleUser));
+        setFavorites(existingGoogleUser.favorites || []);
+        if (isProfileIncomplete(existingGoogleUser)) {
+          setNeedsProfileCompletion(true);
+        } else {
+          setNeedsProfileCompletion(false);
+          addToast(`Selamat datang kembali, ${existingGoogleUser.name}! (Akun Google Terverifikasi)`, 'success');
+        }
+        setCurrentView('dashboard');
+        return;
+      } catch (e) {}
+    }
+
+    // New Google student account (requires profile completion)
+    const newGoogleUser: User = {
+      id: 'google_user_' + Math.random().toString(36).substring(2, 9),
+      name: 'Rian Pratama (Google User)',
+      email: 'rian.pratama@mhs.ac.id',
+      role: UserRole.USER,
+      badge: 'Reguler',
+      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150',
+      avatarUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150',
+      authProvider: 'google',
+      emailVerified: true,
+      memberCategory: '', // Kosong agar memicu gerbang pengisian data profil wajib
+      identityNumber: '', // Kosong
+      phone: '',          // Kosong
+      institution: '',
+      isProfileCompleted: false,
+      favorites: [],
+      borrowings: [],
+      downloads: [],
+      readBooks: []
+    };
+
+    setCurrentUser(newGoogleUser);
+    setFavorites([]);
+    localStorage.setItem('digital_library_active_user', newGoogleUser.email);
+    localStorage.setItem('digital_library_active_user_data', JSON.stringify(newGoogleUser));
+    localStorage.setItem('digital_library_google_user_demo', JSON.stringify(newGoogleUser));
+    setNeedsProfileCompletion(true);
+    addToast('✅ Berhasil masuk dengan Akun Google (Email Terverifikasi)! Silakan lengkapi data profil Anda.', 'info');
+    setCurrentView('dashboard');
+  };
+
+  const handleSaveCompletedProfile = async (data: {
+    name: string;
+    memberCategory: string;
+    identityNumber: string;
+    phone: string;
+    institution: string;
+    address: string;
+  }) => {
+    if (!currentUser) return;
+    setIsSavingProfile(true);
+
+    const updatedUser: User = {
+      ...currentUser,
+      name: data.name,
+      memberCategory: data.memberCategory,
+      class: data.memberCategory,
+      identityNumber: data.identityNumber,
+      nisn: data.identityNumber,
+      phone: data.phone,
+      institution: data.institution,
+      address: data.address,
+      isProfileCompleted: true,
+    };
+
+    // Sync to Supabase if configured
+    if (isSupabaseConfigured) {
+      try {
+        await updateUserInDb(currentUser.id, updatedUser);
+      } catch (e) {
+        console.error('Failed to update Supabase profile:', e);
+      }
+    }
+
+    // Save to state and localStorage
+    setCurrentUser(updatedUser);
+    localStorage.setItem('digital_library_active_user', updatedUser.email);
+    localStorage.setItem('digital_library_active_user_data', JSON.stringify(updatedUser));
+    if (updatedUser.authProvider === 'google') {
+      localStorage.setItem('digital_library_google_user_demo', JSON.stringify(updatedUser));
+    }
+
+    // Update in local users list
+    setUsers(prev => {
+      const exists = prev.some(u => u.id === updatedUser.id || u.email.toLowerCase() === updatedUser.email.toLowerCase());
+      if (exists) {
+        return prev.map(u => (u.id === updatedUser.id || u.email.toLowerCase() === updatedUser.email.toLowerCase()) ? updatedUser : u);
+      }
+      return [...prev, updatedUser];
+    });
+
+    setIsSavingProfile(false);
+    setNeedsProfileCompletion(false);
+    addToast('🎉 Profil anggota berhasil dilengkapi! Selamat datang di Perpustakaan Kita.', 'success');
+    await pushLog(updatedUser.email, updatedUser.name, 'update_profile', 'Lengkapi profil onboarding Google');
   };
 
   // PROFILE UPDATES
@@ -1175,6 +1395,7 @@ export default function App() {
           <LoginPage 
             onNavigate={handleNavigate} 
             onLogin={handleLogin} 
+            onGoogleAuth={handleGoogleAuth}
             addToast={addToast}
           />
         );
@@ -1183,6 +1404,7 @@ export default function App() {
           <RegisterPage 
             onNavigate={handleNavigate} 
             onRegister={handleRegister} 
+            onGoogleAuth={handleGoogleAuth}
             addToast={addToast}
           />
         );
@@ -1195,7 +1417,7 @@ export default function App() {
         );
       case 'dashboard':
         if (!currentUser) {
-          return <LoginPage onNavigate={handleNavigate} onLogin={handleLogin} addToast={addToast} />;
+          return <LoginPage onNavigate={handleNavigate} onLogin={handleLogin} onGoogleAuth={handleGoogleAuth} addToast={addToast} />;
         }
         // Route to role-specific dashboard: Admin vs User
         if (currentUser.role === 'admin' || (currentUser.role as any) === UserRole.ADMIN) {
