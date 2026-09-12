@@ -328,6 +328,33 @@ export default function BookOpen3DModal({
                 </button>
               )}
 
+              {pdfUrl && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    soundFX.playClick();
+                    if (onDownload) {
+                      onDownload(book);
+                    } else if (onPinjam) {
+                      onPinjam(book);
+                    } else {
+                      const link = document.createElement('a');
+                      link.href = pdfUrl;
+                      link.download = `${book.title.replace(/[/\\?%*:|"<>]/g, '_')}.pdf`;
+                      link.target = '_blank';
+                      link.rel = 'noopener noreferrer';
+                      document.body.appendChild(link);
+                      link.click();
+                      document.body.removeChild(link);
+                    }
+                  }}
+                  className="w-full py-2.5 bg-blue-600/20 hover:bg-blue-600/30 text-cyan-300 hover:text-cyan-200 border border-blue-500/30 rounded-xl font-bold flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer text-xs active:scale-95"
+                >
+                  <Download className="w-4 h-4 text-cyan-400" />
+                  <span>Unduh E-Book (PDF)</span>
+                </button>
+              )}
+
               {onToggleFavorite && (
                 <button
                   onClick={() => {

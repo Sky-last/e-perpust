@@ -13,12 +13,13 @@ import { resolveBookPdfUrl } from './utils/pdfResolver';
 import LandingPage from './components/LandingPage';
 import LoginPage from './components/LoginPage';
 import RegisterPage from './components/RegisterPage';
+import EmailVerificationPage from './components/EmailVerificationPage';
 import KatalogPage from './components/KatalogPage';
 import DetailPage from './components/DetailPage';
-import PinjamanPage from './components/PinjamanPage';
 import FavoritPage from './components/FavoritPage';
 import ProfilPage from './components/ProfilPage';
 import AdminPage from './components/AdminPage';
+import CompleteProfileModal from './components/CompleteProfileModal';
 import ToastNotification, { Toast } from './components/ToastNotification';
 import AILibrarianAssistant from './components/AILibrarianAssistant';
 
@@ -179,13 +180,86 @@ export default function App() {
   // LOAD ALL USERS IF ADMIN OR STAF
   useEffect(() => {
     async function loadAdminData() {
-      if (currentUser && ['admin', 'staf', UserRole.ADMIN, UserRole.PETUGAS].includes(currentUser.role as any)) {
+      if (currentUser && ['admin', 'staf', UserRole.ADMIN].includes(currentUser.role as any)) {
         const usersList = await getAllUsers();
         setUsers(usersList);
       }
     }
     loadAdminData();
   }, [currentUser]);
+
+  // EMAIL VERIFICATION CALLBACK HANDLER
+  useEffect(() => {
+    if (!isSupabaseConfigured) return;
+
+    // Listen for auth state changes (email confirmation, etc.)
+    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth event:', event);
+
+      // Handle email verification success
+      if (event === 'SIGNED_IN' && session?.user) {
+        // Check if this is from email verification
+        const isEmailVerified = session.user.email_confirmed_at;
+        
+        if (isEmailVerified) {
+          // Get or create user profile
+          let profile = await getUserProfile(session.user.id);
+          
+          if (!profile) {
+            // Create profile if doesn't exist
+            profile = {
+              id: session.user.id,
+              name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
+              email: session.user.email || '',
+              role: UserRole.USER,
+              badge: 'Reguler',
+              favorites: [],
+              borrowings: []
+            };
+
+            // Save to Supabase
+            try {
+              await supabase.from('profiles').upsert({
+                id: profile.id,
+                name: profile.name,
+                email: profile.email,
+                role: profile.role,
+                badge: profile.badge,
+              });
+            } catch (e) {
+              console.error('Failed to create profile:', e);
+            }
+          }
+
+          // Set current user
+          setCurrentUser(profile);
+          setFavorites(profile.favorites || []);
+          localStorage.setItem('digital_library_active_user', profile.email);
+          localStorage.setItem('digital_library_active_user_data', JSON.stringify(profile));
+          
+          // Clear pending verification email
+          localStorage.removeItem('pending_verification_email');
+          
+          // Show success message and redirect
+          addToast('✅ Email berhasil diverifikasi! Selamat datang di Perpustakaan Kita!', 'success');
+          setCurrentView('dashboard');
+        }
+      }
+
+      // Handle sign out
+      if (event === 'SIGNED_OUT') {
+        setCurrentUser(null);
+        setFavorites([]);
+        localStorage.removeItem('digital_library_active_user');
+        localStorage.removeItem('digital_library_active_user_data');
+      }
+    });
+
+    // Cleanup listener
+    return () => {
+      authListener?.subscription.unsubscribe();
+    };
+  }, []);
 
   // TOAST WRAPPERS
   const addToast = (message: string, type: 'success' | 'error' | 'info') => {
@@ -208,8 +282,8 @@ export default function App() {
   };
 
   // SYSTEM LOG PUSHER
-  const pushLog = async (email: string, name: string, type: 'pinjam' | 'kembali' | 'perpanjang' | 'register' | 'update_profile' | 'reject', bookTitle: string) => {
-    const newLog = await addSystemLog(email, name, type as any, bookTitle);
+  const pushLog = async (email: string, name: string, type: 'pinjam' | 'kembali' | 'perpanjang' | 'register' | 'update_profile', bookTitle: string) => {
+    const newLog = await addSystemLog(email, name, type, bookTitle);
     setLogs(prev => [newLog, ...prev]);
   };
 
@@ -266,6 +340,15 @@ export default function App() {
         });
 
         if (error) {
+          // Check if error is due to unverified email
+          if (error.message.includes('Email not confirmed') || error.message.includes('email_not_confirmed')) {
+            addToast('📧 Email Anda belum diverifikasi. Silakan cek inbox dan klik link verifikasi.', 'error');
+            // Store email and redirect to verification page
+            localStorage.setItem('pending_verification_email', email);
+            setCurrentView('email-verification');
+            return false;
+          }
+
           // Check local fallback users for demo credentials (admin / staf / siswa)
           const localUser = users.find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === pass);
           if (localUser) {
@@ -282,6 +365,16 @@ export default function App() {
         }
 
         if (data.user) {
+          // Double check: verify email is confirmed
+          if (!data.user.email_confirmed_at) {
+            addToast('📧 Email Anda belum diverifikasi. Silakan cek inbox dan klik link verifikasi.', 'error');
+            localStorage.setItem('pending_verification_email', email);
+            setCurrentView('email-verification');
+            // Logout user
+            await supabase.auth.signOut();
+            return false;
+          }
+
           let profile = await getUserProfile(data.user.id);
           if (!profile) {
             // Fallback profile if Supabase profile row isn't found
@@ -376,10 +469,13 @@ export default function App() {
           // Jika session null -> Supabase memerlukan verifikasi email terlebih dahulu
           if (!data.session) {
             addToast(
-              `📧 Link verifikasi dikirim ke ${email}. Silakan cek inbox Anda untuk mengaktifkan akun.`,
+              `📧 Email verifikasi telah dikirim ke ${email}. Silakan cek inbox Anda (termasuk folder spam).`,
               'info'
             );
-            setCurrentView('login');
+            // Redirect to email verification page
+            setCurrentView('email-verification');
+            // Store email for verification page
+            localStorage.setItem('pending_verification_email', email);
             return true;
           }
 
@@ -464,35 +560,26 @@ export default function App() {
 
     const updatedUser = { ...currentUser, ...data };
 
-    if (isSupabaseConfigured) {
-      const success = await updateUserInDb(currentUser.id, data);
-      if (success) {
-        setCurrentUser(updatedUser);
-        localStorage.setItem('digital_library_active_user_data', JSON.stringify(updatedUser));
-        await pushLog(updatedUser.email, updatedUser.name, 'update_profile', '');
-        addToast('Informasi profil berhasil diperbarui!', 'success');
-      } else {
-        addToast('Gagal memperbarui profil.', 'error');
-      }
-      return;
-    }
-
-    // LocalStorage fallback — update semua field
-    const updatedUsers = users.map(u => {
-      if (u.id === currentUser.id) {
-        return updatedUser;
-      }
-      return u;
-    });
-
+    // Always update local state and localStorage immediately (optimistic update)
     setCurrentUser(updatedUser);
-    setUsers(updatedUsers);
-    localStorage.setItem('digital_library_users', JSON.stringify(updatedUsers));
-    localStorage.setItem('digital_library_active_user', updatedUser.email);
     localStorage.setItem('digital_library_active_user_data', JSON.stringify(updatedUser));
 
+    // Update users list in localStorage
+    const updatedUsers = users.map(u => u.id === currentUser.id ? updatedUser : u);
+    setUsers(updatedUsers);
+    localStorage.setItem('digital_library_users', JSON.stringify(updatedUsers));
+
+    if (isSupabaseConfigured) {
+      // Sync to Supabase in background (non-blocking for downloads/local fields)
+      updateUserInDb(currentUser.id, data).catch(e => console.warn('Supabase profile sync warning:', e));
+    }
+
     await pushLog(updatedUser.email, updatedUser.name, 'update_profile', '');
-    addToast('Informasi profil berhasil diperbarui!', 'success');
+    
+    // Only show toast for profile edits, not for silent updates (like downloads removal)
+    if (data.name || data.phone || data.memberCategory || data.identityNumber || data.avatarUrl || data.avatar) {
+      addToast('Informasi profil berhasil diperbarui!', 'success');
+    }
   };
 
   const handleChangePassword = async (password: string) => {
@@ -857,7 +944,7 @@ export default function App() {
       }
     }
 
-    await pushLog(currentUser?.email || 'admin', currentUser?.name || 'Admin', approve ? 'pinjam' : 'reject', `${bookTitle} (${borrowerName})`);
+    await pushLog(currentUser?.email || 'admin', currentUser?.name || 'Admin', approve ? 'pinjam' : 'update_profile', `${bookTitle} (${borrowerName})${approve ? '' : ' - Ditolak'}`);
     addToast(approve ? `Peminjaman "${bookTitle}" berhasil disetujui!` : `Peminjaman "${bookTitle}" ditolak.`, approve ? 'success' : 'info');
   };
 
@@ -999,7 +1086,7 @@ export default function App() {
   };
 
   // HANDLER: DOWNLOAD BUKU (Hanya bisa didownload jika sudah login)
-  const handleDownloadBook = (book: Book) => {
+  const handleDownloadBook = async (book: Book) => {
     if (!currentUser) {
       addToast('Silakan login terlebih dahulu untuk mengunduh buku digital (PDF)!', 'info');
       handleNavigate('login');
@@ -1058,14 +1145,12 @@ export default function App() {
 
     // Add log
     try {
-      addSystemLog({
-        type: 'download' as any,
-        userName: currentUser.name,
-        userEmail: currentUser.email,
-        bookTitle: book.title,
-        date: new Date().toLocaleDateString('id-ID'),
-        details: `Mengunduh file PDF e-book "${book.title}"`
-      });
+      await addSystemLog(
+        currentUser.email,
+        currentUser.name,
+        'update_profile', // use closest type since 'download' not available
+        book.title
+      );
     } catch (_e) {}
 
     addToast(`Berhasil mengunduh "${book.title}"! File PDF telah disimpan di perangkat Anda.`, 'success');
@@ -1081,6 +1166,8 @@ export default function App() {
             onNavigate={handleNavigate} 
             favorites={favorites}
             onToggleFavorite={handleToggleFavorite}
+            currentUser={currentUser}
+            onDownloadBook={handleDownloadBook}
           />
         );
       case 'login':
@@ -1096,6 +1183,13 @@ export default function App() {
           <RegisterPage 
             onNavigate={handleNavigate} 
             onRegister={handleRegister} 
+            addToast={addToast}
+          />
+        );
+      case 'email-verification':
+        return (
+          <EmailVerificationPage
+            onNavigate={handleNavigate}
             addToast={addToast}
           />
         );
@@ -1190,19 +1284,6 @@ export default function App() {
             onDownloadBook={handleDownloadBook}
           />
         );
-      case 'pinjaman':
-        if (!currentUser) return <LoginPage onNavigate={handleNavigate} onLogin={handleLogin} addToast={addToast} />;
-        return (
-          <PinjamanPage 
-            currentUser={currentUser} 
-            books={books}
-            onNavigate={handleNavigate} 
-            onReturnBook={handleReturnBook}
-            onExtendBook={handleExtendBook}
-            onDownloadBook={handleDownloadBook}
-            addToast={addToast}
-          />
-        );
       case 'favorit':
         if (!currentUser) return <LoginPage onNavigate={handleNavigate} onLogin={handleLogin} addToast={addToast} />;
         return (
@@ -1241,7 +1322,7 @@ export default function App() {
           />
         );
       default:
-        return <LandingPage books={books} onNavigate={handleNavigate} favorites={favorites} onToggleFavorite={handleToggleFavorite} currentUser={currentUser} />;
+        return <LandingPage books={books} onNavigate={handleNavigate} favorites={favorites} onToggleFavorite={handleToggleFavorite} currentUser={currentUser} onDownloadBook={handleDownloadBook} />;
     }
   };
 
@@ -1497,7 +1578,7 @@ export default function App() {
                 {(currentUser.downloads || []).length} Koleksi Tersimpan
               </h4>
               <button 
-                onClick={() => handleNavigate('pinjaman')}
+                onClick={() => handleNavigate('dashboard')}
                 className="w-full py-2 bg-white/20 hover:bg-white/30 backdrop-blur-xs rounded-xl text-[10px] font-bold transition-colors cursor-pointer flex items-center justify-center gap-1.5"
               >
                 <Download className="w-3.5 h-3.5" />

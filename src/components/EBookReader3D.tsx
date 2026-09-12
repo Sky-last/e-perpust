@@ -4,7 +4,7 @@ import {
   X, ChevronLeft, ChevronRight, Volume2, VolumeX, Maximize2, Minimize2, 
   Bookmark, Sparkles, FileText, Download, ZoomIn, ZoomOut, Mic, Play, 
   Square, CloudRain, Coffee, Waves, Lock, Moon, Sun, BookOpen, AlignLeft,
-  List, Settings, Check, AlertTriangle, RefreshCw
+  List, Settings, Check, AlertTriangle, RefreshCw, CheckCircle2, Trophy
 } from 'lucide-react';
 import { soundFX } from '../utils/audio';
 import { resolveBookPdfUrl, checkPdfAvailability } from '../utils/pdfResolver';
@@ -16,12 +16,14 @@ interface EBookReader3DProps {
   currentUser?: User | null;
   initialMode?: 'read' | 'pdf';
   onNavigate?: (view: any) => void;
+  onBookCompleted?: (bookId: string) => void;
+  onDownloadBook?: (book: Book) => void;
 }
 
 type ReaderTheme = 'sepia' | 'dark' | 'light' | 'oled';
 type FontFamily = 'serif' | 'sans' | 'mono';
 
-export default function EBookReader3D({ book, onClose, currentUser, initialMode = 'pdf', onNavigate }: EBookReader3DProps) {
+export default function EBookReader3D({ book, onClose, currentUser, initialMode = 'pdf', onNavigate, onBookCompleted, onDownloadBook }: EBookReader3DProps) {
   // Mode Switcher: 'read' (Interactive Kindle Reader) vs 'pdf' (PDF Viewer)
   const [mode, setMode] = useState<'read' | 'pdf'>(initialMode);
   const pdfUrl = resolveBookPdfUrl(book);
@@ -43,6 +45,29 @@ export default function EBookReader3D({ book, onClose, currentUser, initialMode 
   const [pdfErrorMessage, setPdfErrorMessage] = useState<string>('');
   const [pdfRetryCount, setPdfRetryCount] = useState<number>(0);
   const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  // Completed read state for monthly reading target
+  const [isCompletedLocally, setIsCompletedLocally] = useState(() => {
+    return (currentUser?.readBooks || []).includes(book.id);
+  });
+
+  const handleTriggerBookCompleted = () => {
+    setIsCompletedLocally(true);
+    if (onBookCompleted) {
+      onBookCompleted(book.id);
+    }
+    soundFX.playSuccess();
+  };
+
+  const handleReaderScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+    if (scrollTop + clientHeight >= scrollHeight - 50) {
+      if (!isCompletedLocally && onBookCompleted) {
+        setIsCompletedLocally(true);
+        onBookCompleted(book.id);
+      }
+    }
+  };
 
   // Reset to valid whenever the PDF URL or mode changes
   useEffect(() => {
@@ -179,8 +204,13 @@ export default function EBookReader3D({ book, onClose, currentUser, initialMode 
     setIsFlipping(true);
     if (soundEnabled) soundFX.playPageFlip();
     setTimeout(() => {
-      setCurrentPage((prev) => prev + 1);
+      const nextPage = currentPage + 1;
+      setCurrentPage(nextPage);
       setIsFlipping(false);
+      // Mark book as completed when reaching last page
+      if (nextPage >= totalPages && onBookCompleted) {
+        onBookCompleted(book.id);
+      }
     }, 300);
   };
 
@@ -477,14 +507,18 @@ export default function EBookReader3D({ book, onClose, currentUser, initialMode 
                     onNavigate?.('login');
                   }
                 } else {
-                  const link = document.createElement('a');
-                  link.href = pdfUrl;
-                  link.download = `${book.title.replace(/[/\\?%*:|"<>]/g, '_')}.pdf`;
-                  link.target = '_blank';
-                  link.rel = 'noopener noreferrer';
-                  document.body.appendChild(link);
-                  link.click();
-                  document.body.removeChild(link);
+                  if (onDownloadBook) {
+                    onDownloadBook(book);
+                  } else {
+                    const link = document.createElement('a');
+                    link.href = pdfUrl;
+                    link.download = `${book.title.replace(/[/\\?%*:|"<>]/g, '_')}.pdf`;
+                    link.target = '_blank';
+                    link.rel = 'noopener noreferrer';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                  }
                 }
               }}
               className="flex p-2 bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/30 rounded-xl border border-emerald-500/30 transition-all cursor-pointer items-center gap-1.5 text-xs"
@@ -730,7 +764,10 @@ export default function EBookReader3D({ book, onClose, currentUser, initialMode 
 
           {/* MAIN CANVAS */}
           {mode === 'read' ? (
-            <div className={`flex-1 w-full h-full ${themeStyles.bg} flex flex-col justify-between p-4 sm:p-10 transition-colors duration-300 overflow-y-auto relative`}>
+            <div 
+              onScroll={handleReaderScroll}
+              className={`flex-1 w-full h-full ${themeStyles.bg} flex flex-col justify-between p-4 sm:p-10 transition-colors duration-300 overflow-y-auto relative`}
+            >
               
               {/* PAGE CONTENT CONTAINER */}
               <div className="max-w-3xl mx-auto w-full flex-1 flex flex-col justify-between my-auto space-y-6">
@@ -779,6 +816,31 @@ export default function EBookReader3D({ book, onClose, currentUser, initialMode 
                   </div>
                   <span className="font-mono">{Math.round((currentPage / totalPages) * 100)}% Selesai</span>
                 </div>
+
+                {/* Completion Status & Action Card */}
+                <div className={`p-4 rounded-xl border ${isCompletedLocally ? 'border-emerald-500/40 bg-emerald-500/10' : 'border-indigo-500/30 bg-indigo-500/10'} flex flex-col sm:flex-row items-center justify-between gap-3 mt-4`}>
+                  <div className="flex items-center gap-2.5 text-xs">
+                    <CheckCircle2 className={`w-5 h-5 ${isCompletedLocally ? 'text-emerald-400' : 'text-indigo-400'} shrink-0`} />
+                    <span className={themeStyles.text}>
+                      {isCompletedLocally 
+                        ? '🎉 Buku ini telah tercatat selesai dibaca dan dihitung ke target membaca bulanan Anda!' 
+                        : 'Selesai membaca buku ini? Klik tombol untuk mencatat ke progres target bulanan.'}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleTriggerBookCompleted}
+                    disabled={isCompletedLocally}
+                    className={`px-4 py-2 font-bold rounded-lg text-xs shadow transition-all cursor-pointer flex items-center gap-1.5 active:scale-95 shrink-0 ${
+                      isCompletedLocally 
+                        ? 'bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 cursor-default' 
+                        : 'bg-emerald-600 hover:bg-emerald-500 text-white'
+                    }`}
+                  >
+                    <Trophy className="w-3.5 h-3.5 text-amber-300" />
+                    <span>{isCompletedLocally ? 'Selesai Dibaca ✓' : 'Tandai Selesai Dibaca'}</span>
+                  </button>
+                </div>
               </div>
 
               {/* PAGE NAVIGATION BUTTONS */}
@@ -816,25 +878,41 @@ export default function EBookReader3D({ book, onClose, currentUser, initialMode 
                   <span className={`w-2.5 h-2.5 rounded-full ${pdfStatus === 'valid' ? 'bg-emerald-400 animate-pulse' : pdfStatus === 'checking' ? 'bg-amber-400 animate-ping' : 'bg-rose-500'}`} />
                   <span className="truncate font-bold">📄 Dokumen PDF Resmi: <span className="text-white">{book.title}</span></span>
                 </div>
-                {pdfStatus === 'valid' && (
-                  <button
-                    onClick={() => {
-                      if (!currentUser) {
-                        if (window.confirm('Untuk membuka atau mengunduh dokumen PDF di tab baru, silakan login terlebih dahulu.\n\nApakah Anda ingin membuka halaman login sekarang?')) {
-                          onClose();
-                          onNavigate?.('login');
+                <div className="flex items-center gap-2 shrink-0">
+                  {onBookCompleted && (
+                    <button
+                      onClick={handleTriggerBookCompleted}
+                      className={`px-3 py-1 rounded-lg font-bold text-[11px] transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 ${
+                        isCompletedLocally
+                          ? 'bg-emerald-600/30 text-emerald-300 border border-emerald-500/40'
+                          : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow'
+                      }`}
+                      title="Tandai buku ini telah selesai dibaca untuk menambah progres target membaca bulanan"
+                    >
+                      <Trophy className="w-3 h-3 text-amber-300" />
+                      <span>{isCompletedLocally ? 'Selesai Dibaca ✓' : 'Tandai Selesai Dibaca'}</span>
+                    </button>
+                  )}
+                  {pdfStatus === 'valid' && (
+                    <button
+                      onClick={() => {
+                        if (!currentUser) {
+                          if (window.confirm('Untuk membuka atau mengunduh dokumen PDF di tab baru, silakan login terlebih dahulu.\n\nApakah Anda ingin membuka halaman login sekarang?')) {
+                            onClose();
+                            onNavigate?.('login');
+                          }
+                          return;
                         }
-                        return;
-                      }
-                      window.open(pdfUrl, '_blank', 'noopener,noreferrer');
-                    }}
-                    className="px-3 py-1 bg-blue-600/30 hover:bg-blue-600/50 text-cyan-300 border border-blue-500/40 rounded-lg font-bold text-[11px] transition-all flex items-center gap-1 shrink-0 cursor-pointer"
-                    title={currentUser ? "Buka Dokumen PDF di Tab Baru" : "Silakan login terlebih dahulu untuk membuka di tab baru"}
-                  >
-                    <span>Buka Tab Baru</span>
-                    <span>↗</span>
-                  </button>
-                )}
+                        window.open(pdfUrl, '_blank', 'noopener,noreferrer');
+                      }}
+                      className="px-3 py-1 bg-blue-600/30 hover:bg-blue-600/50 text-cyan-300 border border-blue-500/40 rounded-lg font-bold text-[11px] transition-all flex items-center gap-1 shrink-0 cursor-pointer"
+                      title={currentUser ? "Buka Dokumen PDF di Tab Baru" : "Silakan login terlebih dahulu untuk membuka di tab baru"}
+                    >
+                      <span>Buka Tab Baru</span>
+                      <span>↗</span>
+                    </button>
+                  )}
+                </div>
               </div>
 
               {pdfStatus === 'checking' ? (

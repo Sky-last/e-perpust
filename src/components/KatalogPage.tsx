@@ -6,7 +6,7 @@ import Book3D from './Book3D';
 import BookOpen3DModal from './BookOpen3DModal';
 import EBookReader3D from './EBookReader3D';
 import { soundFX } from '../utils/audio';
-import { BOOK_PDF_MAP } from '../utils/pdfResolver';
+
 
 interface KatalogPageProps {
   books: Book[];
@@ -57,9 +57,6 @@ export default function KatalogPage({
   // Handle filtering
   const filteredBooks = useMemo(() => {
     return books.filter(book => {
-      // FILTER: Hide books without pdfUrl mapping
-      if (!book.pdfUrl && !BOOK_PDF_MAP[book.id]) return false;
-      
       const matchesSearch =
         book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         book.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -561,6 +558,15 @@ export default function KatalogPage({
               onDownloadBook(b);
             }
           }}
+          onDownload={(b) => {
+            setSelectedBook3D(null);
+            if (!currentUser) {
+              alert('Silakan masuk (login) terlebih dahulu untuk mengunduh buku digital (PDF).');
+              onNavigate('login');
+            } else if (onDownloadBook) {
+              onDownloadBook(b);
+            }
+          }}
           onToggleFavorite={onToggleFavorite}
           isFavorite={favorites.includes(selectedBook3D.id)}
         />
@@ -572,6 +578,7 @@ export default function KatalogPage({
           onClose={() => setReadingBook3D(null)}
           currentUser={currentUser}
           onNavigate={onNavigate}
+          onDownloadBook={onDownloadBook}
         />
       )}
     </div>

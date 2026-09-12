@@ -34,12 +34,12 @@ export const InteractiveMascot: React.FC<InteractiveMascotProps> = ({
 
   // Hand position state
   const getLeftHandProps = () => {
-    if (isFocusPassword && !showPassword) {
-      // Cover eyes completely
-      return { x: 26, y: -48, rotate: 18, scale: 1.05 };
+    // When password is visible (user clicked eye icon) - COVER EYES!
+    if (showPassword) {
+      return { x: 26, y: -48, rotate: 18, scale: 1.08 };
     }
-    if (isFocusPassword && showPassword) {
-      // Peek through fingers
+    // When focusing on password field but hidden - peek
+    if (isFocusPassword && !showPassword) {
       return { x: 12, y: -28, rotate: 8, scale: 1.02 };
     }
     if (isSuccess) {
@@ -50,12 +50,12 @@ export const InteractiveMascot: React.FC<InteractiveMascotProps> = ({
   };
 
   const getRightHandProps = () => {
-    if (isFocusPassword && !showPassword) {
-      // Cover eyes completely
-      return { x: -26, y: -48, rotate: -18, scale: 1.05 };
+    // When password is visible (user clicked eye icon) - COVER EYES!
+    if (showPassword) {
+      return { x: -26, y: -48, rotate: -18, scale: 1.08 };
     }
-    if (isFocusPassword && showPassword) {
-      // Peek through fingers
+    // When focusing on password field but hidden - peek
+    if (isFocusPassword && !showPassword) {
       return { x: -12, y: -28, rotate: -8, scale: 1.02 };
     }
     if (isSuccess) {

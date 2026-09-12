@@ -9,9 +9,10 @@ interface RegisterPageProps {
   onNavigate: (view: ViewType) => void;
   onRegister: (name: string, email: string, pass: string, extraData?: { phone?: string }) => boolean | Promise<boolean>;
   addToast: (message: string, type: 'success' | 'error' | 'info') => void;
+  onGoogleAuth?: () => Promise<void>;
 }
 
-export default function RegisterPage({ onNavigate, onRegister, addToast }: RegisterPageProps) {
+export default function RegisterPage({ onNavigate, onRegister, addToast, onGoogleAuth }: RegisterPageProps) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -93,6 +94,22 @@ export default function RegisterPage({ onNavigate, onRegister, addToast }: Regis
     } catch (err: any) {
       setIsLoading(false);
       addToast(err.message || 'Registrasi gagal. Silakan coba lagi.', 'error');
+    }
+  };
+
+  const handleGoogleRegister = async () => {
+    soundFX.playClick();
+    setIsLoading(true);
+    try {
+      if (onGoogleAuth) {
+        await onGoogleAuth();
+      } else {
+        addToast('Otentikasi Google sedang dipersiapkan.', 'info');
+      }
+    } catch (err: any) {
+      addToast(err.message || 'Gagal mendaftar menggunakan Google!', 'error');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -356,6 +373,31 @@ export default function RegisterPage({ onNavigate, onRegister, addToast }: Regis
               </button>
             </div>
           </form>
+
+          {/* Social Google Register */}
+          <div className="mt-6 space-y-4">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-800" /></div>
+              <div className="relative flex justify-center text-[10px] uppercase tracking-wider font-bold">
+                <span className="px-3 bg-slate-900 text-slate-500">Atau Pilihan Lain</span>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              disabled={isLoading}
+              onClick={handleGoogleRegister}
+              className="w-full py-3 bg-slate-950 hover:bg-slate-900 border border-slate-800 rounded-xl text-xs font-bold text-slate-200 transition-all flex items-center justify-center gap-2 cursor-pointer hover:border-slate-700 disabled:opacity-50"
+            >
+              <svg className="w-4 h-4" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v3.92h6.61c-.28 1.5-.12 3.01-.97 4.13v3.44h3.83c2.24-2.07 3.53-5.11 3.53-8.68z" />
+                <path fill="#34A853" d="M12 24c3.24 0 5.97-1.08 7.96-2.91l-3.83-3.44c-1.07.72-2.45 1.15-4.13 1.15-3.18 0-5.87-2.15-6.83-5.06H1.18v3.56c2.01 4 6.13 6.7 10.82 6.7z" />
+                <path fill="#FBBC05" d="M5.17 14.74c-.25-.72-.39-1.49-.39-2.29s.14-1.57.39-2.29V6.6H1.18C.43 8.1.01 9.8.01 11.6c0 1.8.42 3.5 1.17 5l3.99-3.86z" />
+                <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.43-3.43C17.96 1.19 15.24 0 12 0 7.31 0 3.19 2.7 1.18 6.7l3.99 3.86c.96-2.91 3.65-5.06 6.83-5.06z" />
+              </svg>
+              <span>Daftar dengan Akun Google</span>
+            </button>
+          </div>
 
           <div className="mt-6 pt-4 border-t border-slate-800/80 text-center text-[10px] text-slate-500">
             Dengan mendaftar, Anda menyetujui Ketentuan Layanan & Kebijakan Privasi Perpustakaan Kita.

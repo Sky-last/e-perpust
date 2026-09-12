@@ -8,6 +8,7 @@ import Library3DRoom from './Library3DRoom';
 import BookOpen3DModal from './BookOpen3DModal';
 import EBookReader3D from './EBookReader3D';
 import VT3DImmersiveExperience from './VT3DImmersiveExperience';
+import { BearMascotIcon } from './AnimatedIcon';
 import { soundFX } from '../utils/audio';
 
 interface LandingPageProps {
@@ -16,9 +17,10 @@ interface LandingPageProps {
   onToggleFavorite: (id: string) => void;
   favorites: string[];
   currentUser?: User | null;
+  onDownloadBook?: (book: Book) => void;
 }
 
-export default function LandingPage({ books, onNavigate, onToggleFavorite, favorites, currentUser }: LandingPageProps) {
+export default function LandingPage({ books, onNavigate, onToggleFavorite, favorites, currentUser, onDownloadBook }: LandingPageProps) {
   const [darkMode, setDarkMode] = useState(true);
   const [activeSection, setActiveSection] = useState<'home' | 'katalog' | 'tentang' | 'kontak'>('home');
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
@@ -148,9 +150,7 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
       <nav className={`fixed top-0 left-0 right-0 z-50 border-b backdrop-blur-xl ${nav}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
           <div className="flex items-center gap-3 cursor-pointer group" onClick={() => { soundFX.playClick(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
-            <div className="w-9 h-9 bg-gradient-to-tr from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
-              <BookOpen className="w-5 h-5 text-white" />
-            </div>
+            <BearMascotIcon size={42} className="group-hover:scale-110 transition-transform" />
             <span className="text-base font-black tracking-tight">
               Perpustakaan <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Kita</span>
             </span>
@@ -688,9 +688,7 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
       <footer className={`border-t py-12 px-6 ${dk ? 'border-slate-800 bg-slate-900/50' : 'border-slate-200 bg-slate-50'}`}>
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-gradient-to-tr from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
-              <BookOpen className="w-5 h-5 text-white" />
-            </div>
+            <BearMascotIcon size={36} />
             <span className={`font-black text-base ${text}`}>Perpustakaan <span className="text-blue-400">Kita</span></span>
           </div>
           <p className={`text-xs ${sub}`}>© 2026 Perpustakaan Kita Indonesia</p>
@@ -706,6 +704,15 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
             setSelectedBook3D(null);
             setReadingBook3D(book);
           }}
+          onDownload={(book) => {
+            setSelectedBook3D(null);
+            if (!currentUser) {
+              alert('Silakan login terlebih dahulu untuk mengunduh dokumen PDF buku ini.');
+              onNavigate('login');
+            } else if (onDownloadBook) {
+              onDownloadBook(book);
+            }
+          }}
           onToggleFavorite={onToggleFavorite}
           isFavorite={favorites.includes(selectedBook3D.id)}
         />
@@ -717,6 +724,7 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
           onClose={() => setReadingBook3D(null)}
           currentUser={currentUser}
           onNavigate={onNavigate}
+          onDownloadBook={onDownloadBook}
         />
       )}
     </div>

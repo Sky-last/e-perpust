@@ -244,6 +244,21 @@ export async function getUserProfile(userId: string): Promise<User | null> {
         role: (profile.role || 'user') as 'admin' | 'staf' | 'user',
         badge: (profile.badge || 'Reguler') as 'Premium' | 'Reguler',
         avatar: profile.avatar || undefined,
+        avatarUrl: profile.avatar || undefined,
+        phone: profile.phone || undefined,
+        memberCategory: profile.member_category || profile.class || 'Masyarakat Umum',
+        class: profile.member_category || profile.class || 'Masyarakat Umum',
+        identityNumber: profile.identity_number || profile.nisn || undefined,
+        nisn: profile.identity_number || profile.nisn || undefined,
+        institution: profile.institution || undefined,
+        address: profile.address || undefined,
+        isProfileCompleted: Boolean(
+          (profile.identity_number || profile.nisn) &&
+          profile.phone &&
+          (profile.member_category || profile.class)
+        ),
+        downloads: profile.downloads || [],
+        readBooks: profile.read_books || [],
         favorites,
         borrowings
       };
@@ -280,6 +295,13 @@ export async function updateUserInDb(userId: string, updatedData: Partial<User>)
       if (updatedData.role !== undefined) payload.role = updatedData.role;
       if (updatedData.badge !== undefined) payload.badge = updatedData.badge;
       if (updatedData.avatarUrl !== undefined || updatedData.avatar !== undefined) payload.avatar = updatedData.avatarUrl || updatedData.avatar;
+      if (updatedData.phone !== undefined) payload.phone = updatedData.phone;
+      if (updatedData.memberCategory !== undefined) payload.member_category = updatedData.memberCategory;
+      if (updatedData.class !== undefined && !payload.member_category) payload.member_category = updatedData.class;
+      if (updatedData.identityNumber !== undefined) payload.identity_number = updatedData.identityNumber;
+      if (updatedData.nisn !== undefined && !payload.identity_number) payload.identity_number = updatedData.nisn;
+      if (updatedData.institution !== undefined) payload.institution = updatedData.institution;
+      if (updatedData.address !== undefined) payload.address = updatedData.address;
       
       const { error } = await supabase
         .from('profiles')
@@ -338,6 +360,14 @@ export async function getAllUsers(): Promise<User[]> {
           role: p.role as any,
           badge: p.badge as any,
           avatar: p.avatar || undefined,
+          avatarUrl: p.avatar || undefined,
+          phone: p.phone || undefined,
+          memberCategory: p.member_category || p.class || 'Masyarakat Umum',
+          class: p.member_category || p.class || 'Masyarakat Umum',
+          identityNumber: p.identity_number || p.nisn || undefined,
+          nisn: p.identity_number || p.nisn || undefined,
+          downloads: p.downloads || [],
+          readBooks: p.read_books || [],
           favorites: [],
           borrowings
         });

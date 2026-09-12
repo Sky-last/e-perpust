@@ -117,6 +117,7 @@ export default function StaffDashboard({
   const [uNip, setUNip] = useState('');
   const [uClass, setUClass] = useState('Umum');
   const [uPhone, setUPhone] = useState('');
+  const [uAvatarUrl, setUAvatarUrl] = useState('');
 
   const [localMaxBooks, setLocalMaxBooks] = useState(settings.maxBorrowBooks);
 
@@ -389,6 +390,7 @@ export default function StaffDashboard({
       setUNip(user.nip || '');
       setUClass(user.memberCategory || user.class || 'Masyarakat Umum');
       setUPhone(user.phone || '');
+      setUAvatarUrl(user.avatarUrl || user.avatar || '');
     } else {
       setEditingUser(null);
       setUName('');
@@ -399,6 +401,7 @@ export default function StaffDashboard({
       setUNip('');
       setUClass('Masyarakat Umum');
       setUPhone('');
+      setUAvatarUrl('');
     }
     setIsUserModalOpen(true);
   };
@@ -412,6 +415,8 @@ export default function StaffDashboard({
         email: uEmail,
         role: uRole as UserRole,
         badge: uBadge,
+        avatarUrl: uAvatarUrl || undefined,
+        avatar: uAvatarUrl || undefined,
         identityNumber: isUserRole ? uNisn : undefined,
         nisn: isUserRole ? uNisn : undefined,
         nip: !isUserRole ? uNip : undefined,
@@ -427,6 +432,10 @@ export default function StaffDashboard({
         password: 'password123', // Default password
         role: uRole as UserRole,
         badge: uBadge,
+        avatarUrl: uAvatarUrl || (isUserRole 
+          ? 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
+          : 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'),
+        avatar: uAvatarUrl || undefined,
         identityNumber: isUserRole ? uNisn : undefined,
         nisn: isUserRole ? uNisn : undefined,
         nip: !isUserRole ? uNip : undefined,
@@ -434,9 +443,6 @@ export default function StaffDashboard({
         class: isUserRole ? uClass : undefined,
         phone: uPhone,
         status: 'active',
-        avatarUrl: isUserRole 
-          ? 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
-          : 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
         favorites: [],
         borrowings: []
       });
@@ -1336,6 +1342,25 @@ export default function StaffDashboard({
                 <div>
                   <label className="block text-[10px] font-extrabold uppercase text-slate-400 mb-1">No. Telepon / WhatsApp</label>
                   <input type="text" placeholder="08xxxxxxxxxx" value={uPhone} onChange={e => setUPhone(e.target.value)} className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-semibold focus:outline-none focus:border-cyan-500" />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-extrabold uppercase text-slate-400 mb-1">Foto Profil / URL Avatar</label>
+                  <div className="flex items-center gap-3">
+                    {uAvatarUrl ? (
+                      <img src={uAvatarUrl} alt="Preview" className="w-10 h-10 rounded-xl object-cover ring-1 ring-cyan-500 shrink-0" />
+                    ) : (
+                      <div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-slate-400 font-bold shrink-0 text-[10px]">
+                        Foto
+                      </div>
+                    )}
+                    <input
+                      type="text"
+                      placeholder="URL foto / avatar (https://...)"
+                      value={uAvatarUrl}
+                      onChange={e => setUAvatarUrl(e.target.value)}
+                      className="flex-1 p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-semibold focus:outline-none focus:border-cyan-500 text-xs"
+                    />
+                  </div>
                 </div>
                 <div className="flex justify-end gap-2 pt-3 border-t border-slate-800">
                   <button type="button" onClick={() => setIsUserModalOpen(false)} className="px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-xl text-xs font-bold transition-all cursor-pointer">Batal</button>

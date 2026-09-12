@@ -85,6 +85,7 @@ export interface User {
   favorites: string[]; // Book IDs
   borrowings: Borrowing[];
   downloads?: DownloadedBook[];
+  readBooks?: string[];  // Book IDs that user has fully read
   phone?: string;
   class?: string;
   nisn?: string;
@@ -93,6 +94,10 @@ export interface User {
   identityNumber?: string;  // NIK / KTP / No Identitas
   occupation?: string;      // Pekerjaan
   address?: string;         // Alamat
+  institution?: string;     // Jurusan / Fakultas / Sekolah / Instansi
+  isProfileCompleted?: boolean; // True jika profil sudah lengkap
+  authProvider?: 'google' | 'email' | 'demo';
+  emailVerified?: boolean;
   status?: string;
 }
 
@@ -110,10 +115,10 @@ export type ViewType =
   | 'landing'
   | 'login'
   | 'register'
+  | 'email-verification'
   | 'dashboard'
   | 'katalog'
   | 'detail-buku'
-  | 'pinjaman'
   | 'favorit'
   | 'profil'
   | 'admin';

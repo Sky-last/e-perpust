@@ -40,13 +40,18 @@ import {
   Feather,
   Stamp,
   Download,
-  Trash2
+  Trash2,
+  Play,
+  Pause,
+  RotateCcw,
+  Plus
 } from 'lucide-react';
 import { User, Book, Category, Borrowing, LibrarySettings, Notification, DownloadedBook } from '../../types';
 import { uploadAvatar } from '../../lib/db';
 import Book3D from '../Book3D';
 import BookOpen3DModal from '../BookOpen3DModal';
 import EBookReader3D from '../EBookReader3D';
+import { BearMascotIcon } from '../AnimatedIcon';
 import { resolveBookPdfUrl } from '../../utils/pdfResolver';
 
 interface UserDashboardProps {
@@ -165,9 +170,113 @@ export default function UserDashboard({
   const [editMemberCategory, setEditMemberCategory] = useState(currentUser.memberCategory || 'Masyarakat Umum');
   const [editIdentityNumber, setEditIdentityNumber] = useState(currentUser.identityNumber || currentUser.nisn || '');
 
+  // Sync edit state when currentUser changes from parent (e.g. after save or avatar update)
+  React.useEffect(() => {
+    if (!isEditingProfile) {
+      setEditName(currentUser.name);
+      setEditPhone(currentUser.phone || '');
+      setEditMemberCategory(currentUser.memberCategory || 'Masyarakat Umum');
+      setEditIdentityNumber(currentUser.identityNumber || currentUser.nisn || '');
+    }
+  }, [currentUser, isEditingProfile]);
+
   const [showNotifications, setShowNotifications] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Reading notes for Almanak Baca
+  const [readingNote, setReadingNote] = useState('');
+  const [selectedNoteBook, setSelectedNoteBook] = useState('');
+  const [savedNotes, setSavedNotes] = useState<{id: string; text: string; date: string; bookTitle?: string}[]>(() => {
+    const stored = localStorage.getItem(`reading_notes_${currentUser.id}`);
+    return stored ? JSON.parse(stored) : [];
+  });
+
+  const handleSaveNote = () => {
+    if (!readingNote.trim()) return;
+    const newNote = {
+      id: Date.now().toString(),
+      text: readingNote.trim(),
+      date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }),
+      bookTitle: selectedNoteBook || undefined
+    };
+    const updated = [newNote, ...savedNotes].slice(0, 30);
+    setSavedNotes(updated);
+    localStorage.setItem(`reading_notes_${currentUser.id}`, JSON.stringify(updated));
+    setReadingNote('');
+  };
+
+  const handleDeleteNote = (id: string) => {
+    const updated = savedNotes.filter(n => n.id !== id);
+    setSavedNotes(updated);
+    localStorage.setItem(`reading_notes_${currentUser.id}`, JSON.stringify(updated));
+  };
+
+  // Reading focus session timer
+  const [timerSeconds, setTimerSeconds] = useState(0);
+  const [isTimerRunning, setIsTimerRunning] = useState(false);
+  const [extraReadingMinutes, setExtraReadingMinutes] = useState<number>(() => {
+    const saved = localStorage.getItem(`reading_mins_${currentUser.id}`);
+    return saved ? parseInt(saved, 10) : 0;
+  });
+
+  React.useEffect(() => {
+    let interval: any = null;
+    if (isTimerRunning) {
+      interval = setInterval(() => {
+        setTimerSeconds(s => s + 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isTimerRunning]);
+
+  const handleFinishTimer = () => {
+    setIsTimerRunning(false);
+    const addedMins = Math.max(1, Math.round(timerSeconds / 60));
+    const newTotal = extraReadingMinutes + addedMins;
+    setExtraReadingMinutes(newTotal);
+    localStorage.setItem(`reading_mins_${currentUser.id}`, String(newTotal));
+    setTimerSeconds(0);
+  };
+
+  // Daily reading streak
+  const [readingStreak, setReadingStreak] = useState<number>(() => {
+    const stored = localStorage.getItem(`reading_streak_${currentUser.id}`);
+    return stored ? parseInt(stored, 10) : 3;
+  });
+  const [hasMarkedTodayStreak, setHasMarkedTodayStreak] = useState<boolean>(() => {
+    const lastDate = localStorage.getItem(`reading_streak_date_${currentUser.id}`);
+    return lastDate === new Date().toDateString();
+  });
+
+  const handleMarkTodayStreak = () => {
+    if (hasMarkedTodayStreak) return;
+    const newStreak = readingStreak + 1;
+    setReadingStreak(newStreak);
+    setHasMarkedTodayStreak(true);
+    localStorage.setItem(`reading_streak_${currentUser.id}`, String(newStreak));
+    localStorage.setItem(`reading_streak_date_${currentUser.id}`, new Date().toDateString());
+  };
+
+  // Flexible category matcher: matches categoryId or name (e.g. Teknologi, Novel, etc.)
+  const isBookInCategory = (book: Book, catId: string) => {
+    if (catId === 'all') return true;
+    if (book.categoryId === catId) return true;
+    const cat = categories.find(c => c.id === catId);
+    if (!cat) return false;
+    const catName = cat.name.toLowerCase();
+    const bookCat = (book.category || '').toLowerCase();
+    if (bookCat.includes(catName) || catName.includes(bookCat)) return true;
+    if (catName.includes('teknologi') && (bookCat.includes('komputer') || bookCat.includes('teknologi'))) return true;
+    if (catName.includes('komputer') && (bookCat.includes('komputer') || bookCat.includes('teknologi'))) return true;
+    if (catName.includes('novel') && (bookCat.includes('novel') || bookCat.includes('sastra') || bookCat.includes('komik'))) return true;
+    if (catName.includes('pendidikan') && (bookCat.includes('pendidikan') || bookCat.includes('pengembangan diri'))) return true;
+    if (catName.includes('bisnis') && (bookCat.includes('bisnis') || bookCat.includes('keuangan'))) return true;
+    if (catName.includes('sejarah') && (bookCat.includes('sejarah') || bookCat.includes('budaya'))) return true;
+    if (catName.includes('agama') && bookCat.includes('agama')) return true;
+    if (catName.includes('sains') && (bookCat.includes('sains') || bookCat.includes('matematika'))) return true;
+    return false;
+  };
 
   const filteredBooks = books.filter((book) => {
     // Filter by search query (title, author, publisher, ISBN)
@@ -177,8 +286,8 @@ export default function UserDashboard({
       book.publisher.toLowerCase().includes(searchQuery.toLowerCase()) ||
       book.isbn.toLowerCase().includes(searchQuery.toLowerCase());
 
-    // Filter by category
-    const matchesCategory = selectedCategory === 'all' || book.categoryId === selectedCategory;
+    // Filter by category using smart matcher
+    const matchesCategory = selectedCategory === 'all' || isBookInCategory(book, selectedCategory);
 
     // Both conditions must be true
     return matchesSearch && matchesCategory;
@@ -202,10 +311,29 @@ export default function UserDashboard({
     onUpdateProfile({ downloads: updated });
   };
 
+  // Handle marking a book as completed (called from EBookReader when last page is reached)
+  const handleBookCompleted = (bookId: string) => {
+    const readBooks = currentUser.readBooks || [];
+    if (!readBooks.includes(bookId)) {
+      const updated = [...readBooks, bookId];
+      onUpdateProfile({ readBooks: updated });
+      const activeData = localStorage.getItem('digital_library_active_user_data');
+      if (activeData) {
+        try {
+          const parsed = JSON.parse(activeData);
+          parsed.readBooks = updated;
+          localStorage.setItem('digital_library_active_user_data', JSON.stringify(parsed));
+        } catch(_e) {}
+      }
+    }
+  };
+
   const myBorrowings = borrowings.filter((b) => !b.studentId || b.studentId === currentUser.id || b.userId === currentUser.id);
   const myUnreadNotifications = notifications.filter(n => (!n.userId || n.userId === currentUser.id) && !n.read);
 
-  const completedCount = userDownloads.length;
+  // Count completed reads: union of downloads + readBooks (books fully read in reader)
+  const readBooksSet = new Set([...userDownloads.map(d => d.bookId), ...(currentUser.readBooks || [])]);
+  const completedCount = readBooksSet.size;
   const goalTarget = settings?.maxBorrowBooks ?? 5;
   const progressGoalPercent = Math.min(Math.round((completedCount / goalTarget) * 100), 100);
 
@@ -218,11 +346,11 @@ export default function UserDashboard({
     : 100;
 
   const estimatedTotalPagesRead = completedCount * 280 + activeBorrowedCount * 95;
-  const estimatedReadingHours = Math.round(estimatedTotalPagesRead / 45);
+  const estimatedReadingHours = Math.round((estimatedTotalPagesRead / 45) + (extraReadingMinutes / 60));
 
   const categoryBreakdown = categories.map(cat => {
-    const catBookIds = books.filter(b => b.categoryId === cat.id).map(b => b.id);
-    const count = myBorrowings.filter(b => catBookIds.includes(b.bookId)).length;
+    const catBookIds = books.filter(b => isBookInCategory(b, cat.id)).map(b => b.id);
+    const count = userDownloads.filter(d => catBookIds.includes(d.bookId)).length;
     return {
       id: cat.id,
       name: cat.name,
@@ -270,7 +398,7 @@ export default function UserDashboard({
     onUpdateProfile({
       name: editName,
       phone: editPhone,
-      class: editClass,
+      class: editMemberCategory,
       memberCategory: editMemberCategory,
       identityNumber: editIdentityNumber
     });
@@ -310,9 +438,7 @@ export default function UserDashboard({
               animate={{ opacity: 1, x: 0 }}
               className="flex items-center gap-3 flex-1"
             >
-              <div className="w-10 h-10 rounded-md bg-[#C08B34] flex items-center justify-center shadow-md shrink-0">
-                <Feather className="w-5 h-5 text-[#20301F]" />
-              </div>
+              <BearMascotIcon size={40} className="shrink-0" />
               <div className="min-w-0">
                 <h2 className="font-display text-base font-semibold text-[#F6F1E7] tracking-tight truncate">
                   Perpustakaan Kita
@@ -323,9 +449,7 @@ export default function UserDashboard({
               </div>
             </motion.div>
           ) : (
-            <div className="w-10 h-10 rounded-md bg-[#C08B34] flex items-center justify-center shadow-md mx-auto">
-              <Feather className="w-5 h-5 text-[#20301F]" />
-            </div>
+            <BearMascotIcon size={40} className="mx-auto" />
           )}
 
           <button
@@ -454,9 +578,7 @@ export default function UserDashboard({
             >
               <div className="p-5 border-b border-white/10 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-md bg-[#C08B34] flex items-center justify-center shadow-md">
-                    <Feather className="w-5 h-5 text-[#20301F]" />
-                  </div>
+                  <BearMascotIcon size={36} />
                   <div>
                     <h2 className="font-display text-sm font-semibold text-[#F6F1E7]">Perpustakaan Kita</h2>
                     <span className="font-mono-lib text-[9px] text-[#C08B34] uppercase tracking-widest">Ruang Baca Publik</span>
@@ -841,7 +963,7 @@ export default function UserDashboard({
                         Semua ({books.length})
                       </button>
                       {categories.slice(0, 6).map((cat) => {
-                        const count = books.filter(b => b.categoryId === cat.id).length;
+                        const count = books.filter(b => isBookInCategory(b, cat.id)).length;
                         // Skip kategori kosong
                         if (count === 0) return null;
                         return (
@@ -939,7 +1061,7 @@ export default function UserDashboard({
                         Semua Kategori ({books.length})
                       </button>
                       {categories.map((cat) => {
-                        const count = books.filter(b => b.categoryId === cat.id).length;
+                        const count = books.filter(b => isBookInCategory(b, cat.id)).length;
                         // Skip kategori kosong
                         if (count === 0) return null;
                         return (
@@ -1137,31 +1259,31 @@ export default function UserDashboard({
                     <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                       <div className="space-y-2">
                         <span className="font-mono-lib inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-[#C08B34] border border-[#C08B34]/40 px-3 py-1 rounded-full">
-                          Almanak Baca
+                          Almanak Literasi
                         </span>
                         <h2 className="font-display text-xl lg:text-2xl font-semibold">
                           Kebiasaan membacamu, dalam angka.
                         </h2>
                         <p className="text-xs text-[#CBD5C9] max-w-xl font-medium leading-relaxed">
-                          Kategori favorit, ketepatan pengembalian, estimasi jam membaca, dan rentetan keaktifanmu.
+                          Kategori favorit, estimasi jam membaca, target literasi bulanan, dan rentetan kebiasaan membacamu.
                         </p>
                       </div>
                       <div className="bg-white/5 border border-white/10 p-3.5 rounded-xl text-center shrink-0">
                         <div className="flex items-center justify-center gap-1.5 text-[#C08B34] font-mono-lib font-semibold text-lg">
                           <Flame className="w-5 h-5" />
-                          <span>{Math.min(completedCount + 3, 7)} hari</span>
+                          <span>{readingStreak} hari</span>
                         </div>
-                        <span className="text-[9px] text-[#CBD5C9] uppercase font-bold tracking-wide block mt-0.5">Rentetan aktif</span>
+                        <span className="text-[9px] text-[#CBD5C9] uppercase font-bold tracking-wide block mt-0.5">Rentetan Aktif</span>
                       </div>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                     {[
-                      { label: 'Buku Selesai', val: `${completedCount}`, unit: `/ ${totalBorrowedCount}`, sub: `${totalBorrowedCount > 0 ? Math.round((completedCount / totalBorrowedCount) * 100) : 0}% tingkat tamat`, accent: '#5F7A63', Icon: BookCheck },
+                      { label: 'Buku Dituntaskan', val: `${completedCount}`, unit: 'buku', sub: `${progressGoalPercent}% dari target`, accent: '#5F7A63', Icon: BookCheck },
                       { label: 'Waktu Membaca', val: `~${estimatedReadingHours}`, unit: 'jam', sub: `≈ ${estimatedTotalPagesRead.toLocaleString('id-ID')} halaman`, accent: '#20301F', Icon: Activity },
-                      { label: 'Ketepatan Waktu', val: `${onTimePercentage}%`, unit: '', sub: overdueCount > 0 ? `${overdueCount} terlambat` : 'Bebas denda', accent: '#C08B34', Icon: ShieldCheck },
-                      { label: 'Poin Keanggotaan', val: `${completedCount * 120 + 50}`, unit: 'pts', sub: `Tingkat ${completedCount >= 5 ? 'Legenda' : completedCount >= 3 ? 'Explorer' : 'Novice'}`, accent: '#B4573F', Icon: Trophy }
+                      { label: 'Target Membaca', val: `${progressGoalPercent}%`, unit: '', sub: `${completedCount} dari ${goalTarget} selesai`, accent: '#C08B34', Icon: Target },
+                      { label: 'Poin Literasi', val: `${completedCount * 120 + 50}`, unit: 'pts', sub: `Tingkat ${completedCount >= 5 ? 'Legenda' : completedCount >= 3 ? 'Penjelajah' : 'Pemula'}`, accent: '#B4573F', Icon: Trophy }
                     ].map((stat, i) => (
                       <div key={i} className="bg-white border border-[#1F2A24]/10 p-5 rounded-xl shadow-sm flex items-center justify-between" style={{ borderTop: `3px solid ${stat.accent}` }}>
                         <div>
@@ -1178,7 +1300,7 @@ export default function UserDashboard({
                     <div className="bg-white border border-[#1F2A24]/10 rounded-2xl p-6 shadow-sm space-y-4">
                       <div className="flex items-center justify-between">
                         <h3 className="text-xs lg:text-sm font-bold text-[#1F2A24] flex items-center gap-2">
-                          <PieChart className="w-4.5 h-4.5 text-[#C08B34]" /> Distribusi Kategori
+                          <PieChart className="w-4.5 h-4.5 text-[#C08B34]" /> Distribusi Minat Topik
                         </h3>
                         <span className="text-[10px] text-[#1F2A24]/50 font-bold bg-[#F6F1E7] px-2.5 py-1 rounded-lg border border-[#1F2A24]/10">
                           {categoryBreakdown.filter(c => c.count > 0).length} kategori
@@ -1218,7 +1340,7 @@ export default function UserDashboard({
                     <div className="bg-white border border-[#1F2A24]/10 rounded-2xl p-6 shadow-sm space-y-4 flex flex-col justify-between">
                       <div className="flex items-center justify-between">
                         <h3 className="text-xs lg:text-sm font-bold text-[#1F2A24] flex items-center gap-2">
-                          <BarChart3 className="w-4.5 h-4.5 text-[#C08B34]" /> Tren Peminjaman Bulanan
+                          <BarChart3 className="w-4.5 h-4.5 text-[#C08B34]" /> Tren Membaca Digital Bulanan
                         </h3>
                         <span className="font-mono-lib text-[10px] text-[#8A5F22] font-bold bg-[#C08B34]/10 px-2.5 py-1 rounded-lg border border-[#C08B34]/20">
                           2026
@@ -1246,8 +1368,8 @@ export default function UserDashboard({
                       </div>
 
                       <div className="flex justify-between items-center text-[10px] text-[#1F2A24]/50 font-semibold pt-1">
-                        <span>Aktivitas peminjaman</span>
-                        <span>Rata-rata: <strong className="text-[#1F2A24]">2 buku / bulan</strong></span>
+                        <span>Aktivitas membaca digital</span>
+                        <span>Rata-rata: <strong className="text-[#1F2A24]">2–3 buku / bulan</strong></span>
                       </div>
                     </div>
                   </div>
@@ -1263,8 +1385,8 @@ export default function UserDashboard({
                     <div className="flex items-center gap-3 p-3 bg-[#F6F1E7] rounded-xl">
                       <Calendar className="w-5 h-5 text-[#C08B34] shrink-0" />
                       <div>
-                        <span className="text-[9px] text-[#1F2A24]/50 uppercase font-bold tracking-wide block">Rata-rata Pinjam</span>
-                        <h4 className="text-xs font-bold text-[#1F2A24] mt-0.5">5.4 hari per buku</h4>
+                        <span className="text-[9px] text-[#1F2A24]/50 uppercase font-bold tracking-wide block">Rata-rata Sesi</span>
+                        <h4 className="text-xs font-bold text-[#1F2A24] mt-0.5">~45 menit per sesi</h4>
                       </div>
                     </div>
                     <div className="flex items-center gap-3 p-3 bg-[#F6F1E7] rounded-xl">
@@ -1275,6 +1397,222 @@ export default function UserDashboard({
                       </div>
                     </div>
                   </div>
+
+                  {/* ── AKTIVITAS ALMANAK: SESI FOKUS & KOMITMEN MEMBACA ── */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Activity 1: Reading Focus Timer */}
+                    <div className="bg-white border border-[#1F2A24]/10 rounded-2xl p-6 shadow-sm space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2.5">
+                          <div className="p-2.5 bg-[#C08B34]/15 text-[#C08B34] rounded-xl">
+                            <AlarmClock className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <h3 className="text-xs lg:text-sm font-bold text-[#1F2A24]">Sesi Membaca Terfokus</h3>
+                            <p className="text-[10px] text-[#1F2A24]/50 font-medium">Ukur waktu dan fokus membaca Anda hari ini</p>
+                          </div>
+                        </div>
+                        <span className="font-mono-lib text-xs font-bold px-2.5 py-1 bg-[#20301F] text-[#C08B34] rounded-lg">
+                          +{extraReadingMinutes} mnt total
+                        </span>
+                      </div>
+
+                      {/* Timer Display */}
+                      <div className="p-5 bg-[#20301F] rounded-xl text-center text-[#F6F1E7] space-y-3">
+                        <div className="font-mono-lib text-3xl lg:text-4xl font-semibold tracking-wider text-[#C08B34]">
+                          {String(Math.floor(timerSeconds / 60)).padStart(2, '0')}:{String(timerSeconds % 60).padStart(2, '0')}
+                        </div>
+                        <p className="text-[10px] text-[#CBD5C9] font-medium">
+                          {isTimerRunning ? '📖 Sesi membaca sedang berlangsung... Pertahankan fokus!' : 'Mulai timer saat Anda membuka e-book.'}
+                        </p>
+                        <div className="flex items-center justify-center gap-2 pt-1">
+                          {!isTimerRunning ? (
+                            <button
+                              onClick={() => setIsTimerRunning(true)}
+                              className="px-4 py-2 bg-[#C08B34] hover:bg-[#D19A42] text-[#20301F] rounded-lg text-xs font-bold flex items-center gap-1.5 transition-transform active:scale-95 cursor-pointer shadow-md"
+                            >
+                              <Play className="w-3.5 h-3.5 fill-current" /> Mulai Sesi
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => setIsTimerRunning(false)}
+                              className="px-4 py-2 bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-transform active:scale-95 cursor-pointer"
+                            >
+                              <Pause className="w-3.5 h-3.5 fill-current" /> Jeda
+                            </button>
+                          )}
+
+                          {timerSeconds > 0 && (
+                            <>
+                              <button
+                                onClick={handleFinishTimer}
+                                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 transition-transform active:scale-95 cursor-pointer shadow-md"
+                              >
+                                <CheckCircle2 className="w-3.5 h-3.5" /> Selesaikan & Catat
+                              </button>
+                              <button
+                                onClick={() => { setIsTimerRunning(false); setTimerSeconds(0); }}
+                                className="p-2 bg-white/10 hover:bg-white/20 text-[#CBD5C9] rounded-lg transition-colors cursor-pointer"
+                                title="Reset Timer"
+                              >
+                                <RotateCcw className="w-4 h-4" />
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Presets */}
+                      <div className="flex items-center gap-2 pt-1">
+                        <span className="text-[10px] text-[#1F2A24]/50 font-bold uppercase">Atur Target:</span>
+                        {[15, 25, 45].map((mins) => (
+                          <button
+                            key={mins}
+                            onClick={() => {
+                              setIsTimerRunning(false);
+                              setTimerSeconds(mins * 60);
+                            }}
+                            className="px-2.5 py-1 bg-[#F6F1E7] hover:bg-[#EFE8D8] text-[#1F2A24] border border-[#1F2A24]/10 rounded-md text-[10px] font-bold transition-colors cursor-pointer"
+                          >
+                            {mins} Menit
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Activity 2: Daily Reading Streak & Check-in */}
+                    <div className="bg-white border border-[#1F2A24]/10 rounded-2xl p-6 shadow-sm space-y-4 flex flex-col justify-between">
+                      <div>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2.5">
+                            <div className="p-2.5 bg-[#B4573F]/15 text-[#B4573F] rounded-xl">
+                              <Flame className="w-5 h-5" />
+                            </div>
+                            <div>
+                              <h3 className="text-xs lg:text-sm font-bold text-[#1F2A24]">Rentetan Membaca Harian</h3>
+                              <p className="text-[10px] text-[#1F2A24]/50 font-medium">Pertahankan kebiasaan literasi setiap hari</p>
+                            </div>
+                          </div>
+                          <span className="font-mono-lib text-lg font-bold text-[#B4573F]">{readingStreak} Hari 🔥</span>
+                        </div>
+
+                        <div className="mt-4 p-4 bg-[#F6F1E7] rounded-xl border border-[#1F2A24]/10 space-y-2">
+                          <div className="flex justify-between items-center text-xs font-bold">
+                            <span className="text-[#1F2A24]">Komitmen Membaca Hari Ini</span>
+                            <span className={hasMarkedTodayStreak ? 'text-[#5F7A63]' : 'text-[#C08B34]'}>
+                              {hasMarkedTodayStreak ? 'Sudah Tercatat ✓' : 'Belum Ditandai'}
+                            </span>
+                          </div>
+                          <p className="text-[10px] text-[#1F2A24]/60">
+                            Cukup luangkan minimal 10 menit membaca buku apa pun di perpustakaan digital hari ini.
+                          </p>
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={handleMarkTodayStreak}
+                        disabled={hasMarkedTodayStreak}
+                        className={`w-full py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-95 shadow-sm ${
+                          hasMarkedTodayStreak
+                            ? 'bg-[#5F7A63]/15 text-[#5F7A63] border border-[#5F7A63]/30 cursor-default'
+                            : 'bg-[#B4573F] hover:bg-[#C8644A] text-white shadow-[#B4573F]/20'
+                        }`}
+                      >
+                        <Flame className={`w-4 h-4 ${hasMarkedTodayStreak ? 'fill-current' : ''}`} />
+                        <span>{hasMarkedTodayStreak ? 'Aktivitas Hari Ini Selesai (+1 Streak)' : 'Tandai Saya Sudah Membaca Hari Ini! 🔥'}</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Activity 3: Jurnal & Catatan Refleksi Membaca */}
+                  <div className="bg-white border border-[#1F2A24]/10 rounded-2xl p-6 shadow-sm space-y-5">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2.5">
+                        <div className="p-2.5 bg-[#5F7A63]/15 text-[#5F7A63] rounded-xl">
+                          <BookOpen className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <h3 className="text-xs lg:text-sm font-bold text-[#1F2A24]">Jurnal & Catatan Refleksi Bacaan</h3>
+                          <p className="text-[10px] text-[#1F2A24]/50 font-medium">Tulis kutipan menarik, rangkuman ide, atau kesan pribadi dari buku yang Anda baca</p>
+                        </div>
+                      </div>
+                      <span className="font-mono-lib text-xs font-bold text-[#5F7A63] bg-[#5F7A63]/10 px-2.5 py-1 rounded-lg">
+                        {savedNotes.length} Catatan Tersimpan
+                      </span>
+                    </div>
+
+                    {/* Note Input Form */}
+                    <div className="p-4 bg-[#F6F1E7] rounded-xl border border-[#1F2A24]/10 space-y-3">
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div className="sm:col-span-1">
+                          <label className="block text-[10px] font-bold uppercase text-[#1F2A24]/50 mb-1">Pilih Buku Terkait</label>
+                          <select
+                            value={selectedNoteBook}
+                            onChange={(e) => setSelectedNoteBook(e.target.value)}
+                            className="w-full p-2.5 bg-white border border-[#1F2A24]/10 rounded-lg text-xs font-bold text-[#1F2A24] focus:outline-none focus:border-[#C08B34]"
+                          >
+                            <option value="">(Umum / Catatan Bebas)</option>
+                            {books.slice(0, 15).map(b => (
+                              <option key={b.id} value={b.title}>{b.title}</option>
+                            ))}
+                          </select>
+                        </div>
+                        <div className="sm:col-span-2">
+                          <label className="block text-[10px] font-bold uppercase text-[#1F2A24]/50 mb-1">Isi Catatan / Kutipan Penting</label>
+                          <div className="flex gap-2">
+                            <input
+                              type="text"
+                              value={readingNote}
+                              onChange={(e) => setReadingNote(e.target.value)}
+                              placeholder="Misal: 'Pelajaran berharga dari bab 3 tentang konsistensi...'"
+                              onKeyDown={(e) => { if (e.key === 'Enter') handleSaveNote(); }}
+                              className="flex-1 px-3 py-2 bg-white border border-[#1F2A24]/10 rounded-lg text-xs font-medium text-[#1F2A24] focus:outline-none focus:border-[#C08B34]"
+                            />
+                            <button
+                              onClick={handleSaveNote}
+                              disabled={!readingNote.trim()}
+                              className="px-4 py-2 bg-[#20301F] hover:bg-[#2A3F27] text-[#F6F1E7] rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors disabled:opacity-40 cursor-pointer shrink-0"
+                            >
+                              <Plus className="w-3.5 h-3.5" /> Simpan
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Saved Notes List */}
+                    {savedNotes.length > 0 && (
+                      <div className="space-y-2 pt-2">
+                        <h4 className="text-[11px] font-bold uppercase tracking-wider text-[#1F2A24]/50">Catatan Refleksi Terakhir</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-72 overflow-y-auto pr-1">
+                          {savedNotes.map((note) => (
+                            <div key={note.id} className="p-3.5 bg-white border border-[#1F2A24]/10 rounded-xl shadow-xs flex flex-col justify-between space-y-2">
+                              <div>
+                                {note.bookTitle && (
+                                  <span className="font-mono-lib text-[9px] uppercase tracking-wide bg-[#C08B34]/15 text-[#8A5F22] font-bold px-2 py-0.5 rounded inline-block mb-1.5">
+                                    📖 {note.bookTitle}
+                                  </span>
+                                )}
+                                <p className="text-xs text-[#1F2A24] font-medium leading-relaxed italic">
+                                  "{note.text}"
+                                </p>
+                              </div>
+                              <div className="flex items-center justify-between pt-2 border-t border-[#1F2A24]/5 text-[10px] text-[#1F2A24]/40">
+                                <span>{note.date}</span>
+                                <button
+                                  onClick={() => handleDeleteNote(note.id)}
+                                  className="text-rose-500 hover:text-rose-700 p-1 transition-colors cursor-pointer"
+                                  title="Hapus Catatan"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </motion.div>
               )}
 
@@ -1284,8 +1622,8 @@ export default function UserDashboard({
 
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     <div className="bg-white border border-[#1F2A24]/10 p-4 rounded-xl text-center shadow-sm">
-                      <span className="text-[9px] text-[#1F2A24]/50 font-bold uppercase tracking-wide">Total Dipinjam</span>
-                      <h3 className="font-mono-lib text-xl font-semibold text-[#1F2A24] mt-1">{myBorrowings.length}</h3>
+                      <span className="text-[9px] text-[#1F2A24]/50 font-bold uppercase tracking-wide">Koleksi Diunduh</span>
+                      <h3 className="font-mono-lib text-xl font-semibold text-[#1F2A24] mt-1">{userDownloads.length}</h3>
                     </div>
                     <div className="bg-white border border-[#1F2A24]/10 p-4 rounded-xl text-center shadow-sm">
                       <span className="text-[9px] text-[#1F2A24]/50 font-bold uppercase tracking-wide">Selesai Dibaca</span>
@@ -1438,7 +1776,9 @@ export default function UserDashboard({
                             className="w-full px-4 py-3 bg-[#F6F1E7] border border-[#1F2A24]/10 rounded-lg text-xs text-[#1F2A24] disabled:opacity-60 focus:outline-none focus:border-[#C08B34] font-bold"
                           >
                             <option value="Masyarakat Umum">Masyarakat Umum</option>
+                            <option value="Mahasiswa">Mahasiswa</option>
                             <option value="Pelajar / Mahasiswa">Pelajar / Mahasiswa</option>
+                            <option value="Pelajar / Siswa">Pelajar / Siswa</option>
                             <option value="Profesional / Pekerja">Profesional / Pekerja</option>
                             <option value="Lainnya">Lainnya</option>
                           </select>
@@ -1488,11 +1828,23 @@ export default function UserDashboard({
               setSelectedBook(null);
             }
           }}
+          onDownload={(b) => {
+            if (onDownloadBook) {
+              onDownloadBook(b);
+              setSelectedBook(null);
+            }
+          }}
         />
       )}
 
       {readingBook3D && (
-        <EBookReader3D book={readingBook3D} onClose={() => setReadingBook3D(null)} currentUser={currentUser} />
+        <EBookReader3D
+          book={readingBook3D}
+          onClose={() => setReadingBook3D(null)}
+          currentUser={currentUser}
+          onBookCompleted={handleBookCompleted}
+          onDownloadBook={onDownloadBook}
+        />
       )}
 
       <AnimatePresence>
