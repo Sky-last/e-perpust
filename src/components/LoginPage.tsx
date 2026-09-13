@@ -100,16 +100,16 @@ export default function LoginPage({ onNavigate, onLogin, addToast, onGoogleAuth 
   };
 
   return (
-    <div className="h-screen bg-slate-950 text-white flex items-center justify-center p-4 sm:p-6 lg:p-8 font-sans relative overflow-hidden select-none">
+    <div className="h-screen bg-slate-950 text-white flex items-center justify-center p-2 sm:p-4 lg:p-8 font-sans relative overflow-hidden select-none">
       {/* Ambient glows */}
       <div className="absolute top-1/3 left-1/3 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-1/3 right-1/3 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
 
       {/* Main Split Screen Container */}
-      <div className="w-full max-w-5xl bg-slate-900/80 border border-slate-800 rounded-3xl shadow-2xl backdrop-blur-xl grid grid-cols-1 lg:grid-cols-12 overflow-hidden z-10">
+      <div className="w-full max-w-5xl bg-slate-900/80 border border-slate-800 rounded-2xl sm:rounded-3xl shadow-2xl backdrop-blur-xl grid grid-cols-1 lg:grid-cols-12 overflow-hidden z-10 my-2 sm:my-6 max-h-[98vh]">
 
         {/* LEFT PANEL: 3D Showcase */}
-        <div className="lg:col-span-5 bg-gradient-to-br from-slate-900 via-blue-950 to-slate-950 p-8 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-slate-800/80 relative">
+        <div className="hidden lg:flex lg:col-span-5 bg-gradient-to-br from-slate-900 via-blue-950 to-slate-950 p-8 flex-col justify-between border-b lg:border-b-0 lg:border-r border-slate-800/80 relative">
           <div>
             <button
               onClick={() => {

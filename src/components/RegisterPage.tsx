@@ -122,16 +122,16 @@ export default function RegisterPage({ onNavigate, onRegister, addToast, onGoogl
   };
 
   return (
-    <div className="h-screen bg-slate-950 text-white flex items-center justify-center p-4 sm:p-6 lg:p-8 font-sans relative overflow-hidden select-none">
+    <div className="h-screen bg-slate-950 text-white flex items-center justify-center p-2 sm:p-4 lg:p-8 font-sans relative overflow-hidden select-none">
       {/* Ambient background glows */}
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl pointer-events-none" />
 
       {/* Main Split Screen Container */}
-      <div className="w-full max-w-5xl bg-slate-900/80 border border-slate-800 rounded-3xl shadow-2xl backdrop-blur-xl grid grid-cols-1 lg:grid-cols-12 overflow-hidden z-10 my-6">
+      <div className="w-full max-w-5xl bg-slate-900/80 border border-slate-800 rounded-2xl sm:rounded-3xl shadow-2xl backdrop-blur-xl grid grid-cols-1 lg:grid-cols-12 overflow-hidden z-10 my-2 sm:my-6 max-h-[98vh]">
 
         {/* LEFT PANEL: 3D Showcase & Benefits */}
-        <div className="lg:col-span-5 bg-gradient-to-br from-slate-900 via-blue-950 to-slate-950 p-8 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-slate-800/80 relative">
+        <div className="hidden lg:flex lg:col-span-5 bg-gradient-to-br from-slate-900 via-blue-950 to-slate-950 p-8 flex-col justify-between border-b lg:border-b-0 lg:border-r border-slate-800/80 relative">
           <div>
             {/* Back Button */}
             <button
@@ -214,10 +214,10 @@ export default function RegisterPage({ onNavigate, onRegister, addToast, onGoogl
         </div>
 
         {/* RIGHT PANEL: Modern Registration Form */}
-        <div className="lg:col-span-7 p-6 sm:p-10 flex flex-col justify-center relative max-h-screen overflow-y-auto scrollbar-thin scrollbar-thumb-slate-800 scrollbar-track-slate-950">
+        <div className="lg:col-span-7 p-4 sm:p-6 md:p-10 flex flex-col justify-start relative h-full lg:h-screen overflow-y-auto scrollbar-thin scrollbar-thumb-slate-800 scrollbar-track-slate-950">
           
           {/* Interactive Mascot Reacting to Form Inputs */}
-          <div className="mb-2">
+          <div className="mb-2 hidden sm:block">
             <InteractiveMascot
               isFocusEmail={isFocusEmail}
               isFocusPassword={isFocusPassword}
@@ -227,8 +227,8 @@ export default function RegisterPage({ onNavigate, onRegister, addToast, onGoogl
             />
           </div>
 
-          <div className="space-y-1 mb-5 text-center sm:text-left">
-            <h3 className="text-2xl font-black text-white">Pendaftaran Anggota Umum</h3>
+          <div className="space-y-1 mb-4 sm:mb-5 text-center sm:text-left">
+            <h3 className="text-xl sm:text-2xl font-black text-white">Pendaftaran Anggota Umum</h3>
             <p className="text-xs text-slate-400 font-medium">
               Sudah memiliki akun?{' '}
               <button
