@@ -14,7 +14,8 @@ export interface Book {
   description: string;
   synopsis?: string;      // For StaffDashboard form
   year: number;
-  rating: number;
+  rating?: number;        // Average rating (calculated from ratings table)
+  ratingCount?: number;   // Number of ratings
   status: 'Tersedia';
   coverColor: string;     // Gradient class or background hex
   coverUrl?: string;      // base64 or URL
@@ -22,6 +23,16 @@ export interface Book {
   pdfFile?: File | null;  // Temporary file object for upload
   isAiGenerated?: boolean;
   rackLocation?: string;  // For StaffDashboard
+}
+
+export interface Rating {
+  id: string;
+  userId: string;
+  bookId: string;
+  rating: number;         // 1.0 to 5.0
+  review?: string;        // Optional text review
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface DownloadedBook {

@@ -211,25 +211,7 @@ export async function getUserProfile(userId: string): Promise<User | null> {
 
       if (!profile) return null;
 
-      // Fetch borrowings
-      const { data: borrowingsData } = await supabase
-        .from('borrowings')
-        .select('*')
-        .eq('user_id', userId);
-
-      const borrowings: Borrowing[] = (borrowingsData || []).map(b => ({
-        id: b.id,
-        bookId: b.book_id,
-        bookTitle: b.book_title,
-        coverColor: b.cover_color,
-        coverUrl: b.cover_url || undefined,
-        borrowDate: b.borrow_date,
-        dueDate: b.due_date,
-        returnDate: b.return_date || undefined,
-        status: b.status as any
-      }));
-
-      // Fetch favorites
+      // Fetch favorites from favorites table
       const { data: favsData } = await supabase
         .from('favorites')
         .select('book_id')
@@ -260,7 +242,7 @@ export async function getUserProfile(userId: string): Promise<User | null> {
         downloads: profile.downloads || [],
         readBooks: profile.read_books || [],
         favorites,
-        borrowings
+        borrowings: [] // No more borrowings system
       };
     } catch (e) {
       console.error('Supabase error loading user profile:', e);
