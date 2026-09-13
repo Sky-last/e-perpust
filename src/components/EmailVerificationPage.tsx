@@ -17,6 +17,9 @@ export default function EmailVerificationPage({ onNavigate, addToast }: EmailVer
   const [canResend, setCanResend] = useState(false);
 
   useEffect(() => {
+    // Disable body scroll
+    document.body.style.overflow = 'hidden';
+    
     // Get pending email from localStorage
     const pendingEmail = localStorage.getItem('pending_verification_email');
     if (pendingEmail) {
@@ -30,6 +33,10 @@ export default function EmailVerificationPage({ onNavigate, addToast }: EmailVer
     } else if (countdown === 0) {
       setCanResend(true);
     }
+
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
   }, [countdown, canResend]);
 
   const handleResendEmail = async () => {
@@ -57,7 +64,7 @@ export default function EmailVerificationPage({ onNavigate, addToast }: EmailVer
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 flex items-center justify-center p-4 relative overflow-hidden">
       {/* Animated Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute w-96 h-96 bg-blue-500/20 rounded-full blur-3xl -top-48 -left-48 animate-pulse" />

@@ -223,14 +223,31 @@ export default function App() {
 
       // Handle email verification or Google OAuth success
       if (event === 'SIGNED_IN' && session?.user) {
-        // Check if this is from email verification or Google OAuth
+        const isGoogleProvider = session.user.app_metadata?.provider === 'google';
+        
+        // Check if email is verified
         const isEmailVerified = Boolean(
           session.user.email_confirmed_at ||
-          session.user.user_metadata?.email_verified ||
-          session.user.app_metadata?.provider === 'google'
+          session.user.user_metadata?.email_verified
         );
         
-        if (!isEmailVerified) {
+        // For Google users: check if email is verified by Google
+        const isGoogleEmailVerified = isGoogleProvider && session.user.user_metadata?.email_verified;
+        
+        if (!isEmailVerified && !isGoogleEmailVerified) {
+          // If Google user with unverified email, send verification email
+          if (isGoogleProvider) {
+            try {
+              await supabase.auth.resend({
+                type: 'signup',
+                email: session.user.email || ''
+              });
+              addToast('📧 Email verifikasi telah dikirim. Silakan cek inbox Anda untuk mengaktifkan akun.', 'info');
+            } catch (e) {
+              console.error('Failed to send verification email:', e);
+            }
+          }
+          
           addToast('📧 Email Anda belum diverifikasi. Silakan cek inbox dan klik link verifikasi.', 'error');
           localStorage.setItem('pending_verification_email', session.user.email || '');
           setCurrentView('email-verification');

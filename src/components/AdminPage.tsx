@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Book, User, SystemLog } from '../types';
-import { Plus, Trash, Edit, Sparkles, BookOpen, Layers, Users, History, Award, Save, X, RefreshCw, LogOut } from 'lucide-react';
+import { Plus, Trash, Edit, Sparkles, BookOpen, Layers, Users, History, Save, X, RefreshCw, LogOut } from 'lucide-react';
 
 interface AdminPageProps {
   books: Book[];
@@ -62,9 +62,6 @@ export default function AdminPage({
 
   // Stats
   const totalBooksCount = books.length;
-  const activeBorrowingsCount = users.reduce((acc, u) => {
-    return acc + u.borrowings.filter(b => b.status === 'Sedang Dipinjam').length;
-  }, 0);
 
   // Handle book submitting (Add/Edit)
   const handleSubmitBook = (e: React.FormEvent) => {
@@ -283,16 +280,6 @@ export default function AdminPage({
                 <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider font-mono">Anggota Terdaftar</p>
               </div>
             </div>
-
-            <div className="bg-white p-5 rounded-[20px] border border-slate-100 flex items-center space-x-4 shadow-xs">
-              <div className="p-3 bg-amber-50 text-amber-600 rounded-xl">
-                <Award className="w-5 h-5" />
-              </div>
-              <div>
-                <p className="text-2xl font-extrabold text-slate-800">{activeBorrowingsCount}</p>
-                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider font-mono">Peminjaman Aktif</p>
-              </div>
-            </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -325,7 +312,7 @@ export default function AdminPage({
             <div className="bg-white border border-slate-200/60 rounded-3xl p-6 flex flex-col justify-between">
               <div>
                 <h3 className="font-extrabold text-slate-800 text-base">Sistem Log Global</h3>
-                <p className="text-slate-400 text-xs">Monitoring aktivitas sirkulasi perpus siber real-time.</p>
+                <p className="text-slate-400 text-xs">Monitoring aktivitas sistem perpustakaan digital real-time.</p>
               </div>
 
               <div className="space-y-3 mt-4 flex-1">
@@ -694,14 +681,12 @@ export default function AdminPage({
                 <tr className="border-b border-slate-100 bg-slate-50">
                   <th className="p-3.5 font-bold text-slate-400 font-mono">Anggota</th>
                   <th className="p-3.5 font-bold text-slate-400 font-mono">Alamat Email</th>
-                  <th className="p-3.5 font-bold text-slate-400 font-mono text-center">Buku Dipinjam</th>
                   <th className="p-3.5 font-bold text-slate-400 font-mono text-center">Badge Level</th>
                   <th className="p-3.5 font-bold text-slate-400 font-mono text-right">Ubah Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {users.map((user) => {
-                  const activeBorrows = user.borrowings.filter(b => b.status === 'Sedang Dipinjam').length;
                   return (
                     <tr key={user.id} className="hover:bg-slate-50/50">
                       <td className="p-3.5">
@@ -724,7 +709,6 @@ export default function AdminPage({
                         </div>
                       </td>
                       <td className="p-3.5 text-slate-600 font-medium font-mono">{user.email}</td>
-                      <td className="p-3.5 text-center text-slate-700 font-bold">{activeBorrows} buku</td>
                       <td className="p-3.5 text-center">
                         <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
                           user.badge === 'Premium' ? 'bg-blue-50 text-blue-600 border border-blue-100' : 'bg-slate-100 text-slate-500'
@@ -773,8 +757,8 @@ export default function AdminPage({
       {activeTab === 'history' && (
         <div className="bg-white border border-slate-200/60 rounded-3xl p-6 space-y-4 shadow-sm">
           <div>
-            <h3 className="font-extrabold text-slate-800 text-base">Laporan Riwayat Peminjaman Lengkap</h3>
-            <p className="text-slate-400 text-xs">Merekam audit trail log sistem dari semua transaksi pengguna Perpustakaan Kita.</p>
+            <h3 className="font-extrabold text-slate-800 text-base">Riwayat Aktivitas Sistem</h3>
+            <p className="text-slate-400 text-xs">Merekam audit trail log sistem dari semua aktivitas pengguna Perpustakaan Kita.</p>
           </div>
 
           <div className="overflow-x-auto">

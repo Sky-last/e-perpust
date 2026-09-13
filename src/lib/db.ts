@@ -95,11 +95,11 @@ export async function getBooks(): Promise<Book[]> {
   return catalogBooks;
 }
 
-export async function saveBook(book: Omit<Book, 'status'>, isNew: boolean): Promise<Book> {
+export async function saveBook(book: Partial<Book>, isNew: boolean): Promise<Book> {
   const fullBook: Book = {
     ...book,
-    status: 'Tersedia'
-  };
+    status: book.status || 'Tersedia'
+  } as Book;
 
   if (isSupabaseConfigured) {
     try {
@@ -241,7 +241,7 @@ export async function getUserProfile(userId: string): Promise<User | null> {
         id: profile.id,
         name: profile.name,
         email: profile.email,
-        role: (profile.role || 'user') as 'admin' | 'staf' | 'user',
+        role: (profile.role || 'user') as 'admin' | 'user',
         badge: (profile.badge || 'Reguler') as 'Premium' | 'Reguler',
         avatar: profile.avatar || undefined,
         avatarUrl: profile.avatar || undefined,

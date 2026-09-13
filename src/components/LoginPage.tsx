@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BookOpen, Eye, EyeOff, Mail, Lock, ArrowLeft, Shield, Sparkles, CheckCircle2 } from 'lucide-react';
 import { ViewType, Book } from '../types';
 import Book3D from './Book3D';
@@ -21,6 +21,14 @@ export default function LoginPage({ onNavigate, onLogin, addToast, onGoogleAuth 
   const [isFocusEmail, setIsFocusEmail] = useState(false);
   const [isFocusPassword, setIsFocusPassword] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+
+  // Disable body scroll when component mounts
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, []);
 
   // Showcase Book for Split Screen
   const showcaseBook: Book = {
@@ -92,7 +100,7 @@ export default function LoginPage({ onNavigate, onLogin, addToast, onGoogleAuth 
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center p-4 sm:p-6 lg:p-8 font-sans relative overflow-hidden select-none">
+    <div className="h-screen bg-slate-950 text-white flex items-center justify-center p-4 sm:p-6 lg:p-8 font-sans relative overflow-hidden select-none">
       {/* Ambient glows */}
       <div className="absolute top-1/3 left-1/3 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-1/3 right-1/3 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
