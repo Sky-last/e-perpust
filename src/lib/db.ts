@@ -51,11 +51,11 @@ export async function getBooks(): Promise<Book[]> {
             isbn: b.isbn,
             description: b.description,
             year: b.year,
-            rating: Number(b.rating),
-            status: 'Tersedia' as 'Tersedia',
+            rating: Number(b.rating || 4.5),
+            status: 'Tersedia' as const,
             coverColor: b.cover_color,
             coverUrl: b.cover_url || `/buku_sampul/cover_${b.id}.jpg`,
-            pdfUrl: resolveBookPdfUrl(b),
+            pdfUrl: b.pdf_url || resolveBookPdfUrl(b),
             isAiGenerated: b.is_ai_generated,
             isActive: true
           }));
@@ -98,7 +98,7 @@ export async function getBooks(): Promise<Book[]> {
 export async function saveBook(book: Partial<Book>, isNew: boolean): Promise<Book> {
   const fullBook: Book = {
     ...book,
-    status: book.status || 'Tersedia'
+    status: 'Tersedia' // Default status for Book type compatibility
   } as Book;
 
   if (isSupabaseConfigured) {
@@ -113,9 +113,9 @@ export async function saveBook(book: Partial<Book>, isNew: boolean): Promise<Boo
         description: fullBook.description,
         year: fullBook.year,
         rating: fullBook.rating,
-        status: fullBook.status,
         cover_color: fullBook.coverColor,
-        cover_url: fullBook.pdfUrl || fullBook.coverUrl || null,
+        cover_url: fullBook.coverUrl || null,
+        pdf_url: fullBook.pdfUrl || null,
         is_ai_generated: fullBook.isAiGenerated || false
       };
 
@@ -284,6 +284,8 @@ export async function updateUserInDb(userId: string, updatedData: Partial<User>)
       if (updatedData.nisn !== undefined && !payload.identity_number) payload.identity_number = updatedData.nisn;
       if (updatedData.institution !== undefined) payload.institution = updatedData.institution;
       if (updatedData.address !== undefined) payload.address = updatedData.address;
+      if (updatedData.downloads !== undefined) payload.downloads = updatedData.downloads;
+      if (updatedData.readBooks !== undefined) payload.read_books = updatedData.readBooks;
       
       const { error } = await supabase
         .from('profiles')
@@ -316,24 +318,6 @@ export async function getAllUsers(): Promise<User[]> {
 
       const userList: User[] = [];
       for (const p of profiles || []) {
-        // Fetch borrowings
-        const { data: borrowingsData } = await supabase
-          .from('borrowings')
-          .select('*')
-          .eq('user_id', p.id);
-
-        const borrowings: Borrowing[] = (borrowingsData || []).map(b => ({
-          id: b.id,
-          bookId: b.book_id,
-          bookTitle: b.book_title,
-          coverColor: b.cover_color,
-          coverUrl: b.cover_url || undefined,
-          borrowDate: b.borrow_date,
-          dueDate: b.due_date,
-          returnDate: b.return_date || undefined,
-          status: b.status as any
-        }));
-
         userList.push({
           id: p.id,
           name: p.name,
@@ -351,7 +335,7 @@ export async function getAllUsers(): Promise<User[]> {
           downloads: p.downloads || [],
           readBooks: p.read_books || [],
           favorites: [],
-          borrowings
+          borrowings: [] // No more borrowings system
         });
       }
       return userList;
@@ -383,9 +367,10 @@ export async function updateUserBadge(userId: string, badge: 'Premium' | 'Regule
 }
 
 // ==========================================
-// 3. BORROWINGS APIS
+// 3. BORROWINGS APIS (DEPRECATED - No longer used)
 // ==========================================
 
+// System peminjaman sudah dihapus - semua buku digital gratis tanpa peminjaman
 export async function makeBorrowing(
   userId: string, 
   bookId: string, 
@@ -394,93 +379,17 @@ export async function makeBorrowing(
   coverUrl: string | undefined, 
   durationDays: number
 ): Promise<Borrowing | null> {
-  const now = new Date();
-  const borrowDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-  const due = new Date();
-  due.setDate(now.getDate() + durationDays);
-  const dueDate = `${due.getFullYear()}-${String(due.getMonth() + 1).padStart(2, '0')}-${String(due.getDate()).padStart(2, '0')}`;
-
-  if (isSupabaseConfigured) {
-    try {
-      // 1. Insert borrowing
-      const { data, error } = await supabase
-        .from('borrowings')
-        .insert({
-          user_id: userId,
-          book_id: bookId,
-          book_title: bookTitle,
-          cover_color: coverColor,
-          cover_url: coverUrl || null,
-          borrow_date: borrowDate,
-          due_date: dueDate,
-          status: 'pending'
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      // Stock management removed — digital library has no stock limits
-
-      return {
-        id: data.id,
-        bookId: data.book_id,
-        bookTitle: data.book_title,
-        coverColor: data.cover_color,
-        coverUrl: data.cover_url || undefined,
-        borrowDate: data.borrow_date,
-        dueDate: data.due_date,
-        status: (data.status || 'pending') as any
-      };
-    } catch (e) {
-      console.error('Supabase error borrowing book:', e);
-    }
-  }
+  console.warn('makeBorrowing: Borrowing system deprecated');
   return null;
 }
 
 export async function returnBorrowing(borrowingId: string, bookId: string): Promise<string | null> {
-  const now = new Date();
-  const returnDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-
-  if (isSupabaseConfigured) {
-    try {
-      // 1. Update status
-      const { error } = await supabase
-        .from('borrowings')
-        .update({ status: 'Dikembalikan', return_date: returnDate })
-        .eq('id', borrowingId);
-
-      if (error) throw error;
-
-      // Stock management removed — digital library has no stock limits
-
-      return returnDate;
-    } catch (e) {
-      console.error('Supabase error returning book:', e);
-    }
-  }
+  console.warn('returnBorrowing: Borrowing system deprecated');
   return null;
 }
 
 export async function extendBorrowing(borrowingId: string, currentDueDate: string): Promise<string | null> {
-  const dateObj = new Date(currentDueDate);
-  dateObj.setDate(dateObj.getDate() + 7); // extend 7 days
-  const newDueDate = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
-
-  if (isSupabaseConfigured) {
-    try {
-      const { error } = await supabase
-        .from('borrowings')
-        .update({ due_date: newDueDate })
-        .eq('id', borrowingId);
-
-      if (error) throw error;
-      return newDueDate;
-    } catch (e) {
-      console.error('Supabase error extending borrowing:', e);
-    }
-  }
+  console.warn('extendBorrowing: Borrowing system deprecated');
   return null;
 }
 
@@ -679,3 +588,183 @@ export async function uploadEbook(bookId: string, file: File): Promise<string | 
   });
 }
 
+
+// ==========================================
+// 8. NOTIFICATIONS APIS
+// ==========================================
+
+export interface Notification {
+  id: string;
+  userId: string;
+  type: 'admin_new_book' | 'user_review' | 'user_download' | 'system';
+  title: string;
+  message: string;
+  bookId?: string;
+  bookTitle?: string;
+  fromUserName?: string;
+  fromUserEmail?: string;
+  isRead: boolean;
+  createdAt: string;
+}
+
+export async function getNotifications(userId: string): Promise<Notification[]> {
+  if (isSupabaseConfigured) {
+    try {
+      const { data, error } = await supabase
+        .from('notifications')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(50);
+
+      if (error) throw error;
+
+      return (data || []).map(n => ({
+        id: n.id,
+        userId: n.user_id,
+        type: n.type,
+        title: n.title,
+        message: n.message,
+        bookId: n.book_id,
+        bookTitle: n.book_title,
+        fromUserName: n.from_user_name,
+        fromUserEmail: n.from_user_email,
+        isRead: n.is_read,
+        createdAt: n.created_at
+      }));
+    } catch (e) {
+      console.error('Supabase error fetching notifications:', e);
+    }
+  }
+  return [];
+}
+
+export async function createNotification(
+  userId: string,
+  type: 'admin_new_book' | 'user_review' | 'user_download' | 'system',
+  title: string,
+  message: string,
+  bookId?: string,
+  bookTitle?: string,
+  fromUserName?: string,
+  fromUserEmail?: string
+): Promise<boolean> {
+  if (isSupabaseConfigured) {
+    try {
+      const { error } = await supabase
+        .from('notifications')
+        .insert({
+          user_id: userId,
+          type,
+          title,
+          message,
+          book_id: bookId || null,
+          book_title: bookTitle || null,
+          from_user_name: fromUserName || null,
+          from_user_email: fromUserEmail || null,
+          is_read: false
+        });
+
+      if (error) throw error;
+      return true;
+    } catch (e) {
+      console.error('Supabase error creating notification:', e);
+    }
+  }
+  return false;
+}
+
+export async function markNotificationAsRead(notificationId: string): Promise<boolean> {
+  if (isSupabaseConfigured) {
+    try {
+      const { error } = await supabase
+        .from('notifications')
+        .update({ is_read: true })
+        .eq('id', notificationId);
+
+      if (error) throw error;
+      return true;
+    } catch (e) {
+      console.error('Supabase error marking notification as read:', e);
+    }
+  }
+  return false;
+}
+
+export async function markAllNotificationsAsRead(userId: string): Promise<boolean> {
+  if (isSupabaseConfigured) {
+    try {
+      const { error } = await supabase
+        .from('notifications')
+        .update({ is_read: true })
+        .eq('user_id', userId)
+        .eq('is_read', false);
+
+      if (error) throw error;
+      return true;
+    } catch (e) {
+      console.error('Supabase error marking all notifications as read:', e);
+    }
+  }
+  return false;
+}
+
+// Helper: Notify all users when admin adds new book
+export async function notifyAllUsersNewBook(bookTitle: string, bookId: string): Promise<void> {
+  if (isSupabaseConfigured) {
+    try {
+      // Get all non-admin users
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id')
+        .neq('role', 'admin');
+
+      if (profiles && profiles.length > 0) {
+        const notifications = profiles.map(p => ({
+          user_id: p.id,
+          type: 'admin_new_book',
+          title: '📚 Buku Baru Tersedia!',
+          message: `"${bookTitle}" baru saja ditambahkan ke perpustakaan digital.`,
+          book_id: bookId,
+          book_title: bookTitle,
+          is_read: false
+        }));
+
+        await supabase.from('notifications').insert(notifications);
+      }
+    } catch (e) {
+      console.error('Failed to notify users about new book:', e);
+    }
+  }
+}
+
+// Helper: Notify admin when user downloads book
+export async function notifyAdminUserDownload(userName: string, userEmail: string, bookTitle: string, bookId: string): Promise<void> {
+  if (isSupabaseConfigured) {
+    try {
+      // Get all admin users
+      const { data: admins } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('role', 'admin');
+
+      if (admins && admins.length > 0) {
+        const notifications = admins.map(admin => ({
+          user_id: admin.id,
+          type: 'user_download',
+          title: '⬇️ Buku Diunduh',
+          message: `${userName} mengunduh "${bookTitle}"`,
+          book_id: bookId,
+          book_title: bookTitle,
+          from_user_name: userName,
+          from_user_email: userEmail,
+          is_read: false
+        }));
+
+        await supabase.from('notifications').insert(notifications);
+      }
+    } catch (e) {
+      console.error('Failed to notify admin about download:', e);
+    }
+  }
+}

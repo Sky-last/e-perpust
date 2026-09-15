@@ -5,7 +5,8 @@ import { supabase, isSupabaseConfigured } from './lib/supabase';
 import { 
   getBooks, saveBook, removeBook, getUserProfile, updateUserInDb,
   updateUserBadge, makeBorrowing, returnBorrowing, extendBorrowing, 
-  saveFavorite, getSystemLogs, addSystemLog, getAllUsers
+  saveFavorite, getSystemLogs, addSystemLog, getAllUsers,
+  notifyAllUsersNewBook, notifyAdminUserDownload
 } from './lib/db';
 import { resolveBookPdfUrl } from './utils/pdfResolver';
 
@@ -165,16 +166,39 @@ export default function App() {
         if (activeUserData) {
           try {
             const parsedUser = JSON.parse(activeUserData);
-            setCurrentUser(parsedUser);
-            setFavorites(parsedUser.favorites || []);
-            if (isProfileIncomplete(parsedUser)) {
-              setNeedsProfileCompletion(true);
-            } else {
-              setNeedsProfileCompletion(false);
+            
+            // If Supabase configured, try to refresh profile from server to get latest avatar
+            if (isSupabaseConfigured && parsedUser.id) {
+              const freshProfile = await getUserProfile(parsedUser.id);
+              if (freshProfile) {
+                setCurrentUser(freshProfile);
+                setFavorites(freshProfile.favorites || []);
+                localStorage.setItem('digital_library_active_user_data', JSON.stringify(freshProfile));
+                if (isProfileIncomplete(freshProfile)) {
+                  setNeedsProfileCompletion(true);
+                } else {
+                  setNeedsProfileCompletion(false);
+                }
+                setCurrentView('dashboard');
+                restored = true;
+              }
             }
-            setCurrentView('dashboard');
-            restored = true;
-          } catch (e) {}
+            
+            // Fallback to cached data if server refresh fails
+            if (!restored) {
+              setCurrentUser(parsedUser);
+              setFavorites(parsedUser.favorites || []);
+              if (isProfileIncomplete(parsedUser)) {
+                setNeedsProfileCompletion(true);
+              } else {
+                setNeedsProfileCompletion(false);
+              }
+              setCurrentView('dashboard');
+              restored = true;
+            }
+          } catch (e) {
+            console.error('Failed to parse cached user:', e);
+          }
         }
 
         if (!restored && activeUserEmail) {
@@ -1033,6 +1057,14 @@ export default function App() {
       const booksList = await getBooks();
       setBooks(booksList);
       addToast(`Buku "${newBook.title}" berhasil ditambahkan ke database!`, 'success');
+      
+      // Notify all users about new book
+      try {
+        await notifyAllUsersNewBook(newBook.title, newBook.id);
+      } catch (e) {
+        console.warn('Failed to send notifications:', e);
+      }
+      
       return;
     }
 
@@ -1336,6 +1368,20 @@ export default function App() {
       return;
     }
 
+    try {
+      // Validate PDF exists before download
+      const response = await fetch(pdfUrl, { method: 'HEAD' });
+      if (!response.ok) {
+        addToast(`File PDF tidak ditemukan. Status: ${response.status}`, 'error');
+        console.error('PDF not found:', pdfUrl, response.status);
+        return;
+      }
+    } catch (err) {
+      console.error('Failed to validate PDF:', err);
+      addToast('Gagal memvalidasi file PDF. Coba lagi nanti.', 'error');
+      return;
+    }
+
     const downloadItem: DownloadedBook = {
       id: 'dl_' + Date.now(),
       bookId: book.id,
@@ -1365,20 +1411,36 @@ export default function App() {
     localStorage.setItem('digital_library_current_user', JSON.stringify(updatedUser));
     localStorage.setItem('digital_library_active_user_data', JSON.stringify(updatedUser));
 
+    // Update Supabase if configured
+    try {
+      await updateUserInDb(currentUser.id, { downloads: updatedDownloads });
+    } catch (e) {
+      console.warn('Failed to sync downloads to Supabase:', e);
+    }
+
     // Update global users list in memory & localStorage
     const updatedUsers = users.map(u => u.id === updatedUser.id ? updatedUser : u);
     setUsers(updatedUsers);
     localStorage.setItem('digital_library_users', JSON.stringify(updatedUsers));
 
     // Trigger file download to device
-    const link = document.createElement('a');
-    link.href = pdfUrl;
-    link.download = `${book.title.replace(/[/\\?%*:|"<>]/g, '_')}.pdf`;
-    link.target = '_blank';
-    link.rel = 'noopener noreferrer';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    try {
+      const link = document.createElement('a');
+      link.href = pdfUrl;
+      link.download = `${book.title.replace(/[/\\?%*:|"<>]/g, '_')}.pdf`;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      addToast(`Berhasil mengunduh "${book.title}"! File PDF telah disimpan di perangkat Anda.`, 'success');
+    } catch (err) {
+      console.error('Download failed:', err);
+      addToast('Gagal mengunduh file. Coba buka di tab baru.', 'error');
+      // Fallback: open in new tab
+      window.open(pdfUrl, '_blank');
+    }
 
     // Add log
     try {
@@ -1388,9 +1450,12 @@ export default function App() {
         'update_profile', // use closest type since 'download' not available
         book.title
       );
-    } catch (_e) {}
-
-    addToast(`Berhasil mengunduh "${book.title}"! File PDF telah disimpan di perangkat Anda.`, 'success');
+      
+      // Notify admin about download
+      await notifyAdminUserDownload(currentUser.name, currentUser.email, book.title, book.id);
+    } catch (_e) {
+      console.warn('Failed to log download or notify admin:', _e);
+    }
   };
 
   // RENDERING ENGINE
@@ -1557,7 +1622,6 @@ export default function App() {
             onDeleteBook={handleDeleteBook}
             onUpdateUserRole={handleUpdateUserRole}
             addToast={addToast}
-            onLogout={handleLogout}
           />
         );
       default:

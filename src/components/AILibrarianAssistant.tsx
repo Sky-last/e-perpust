@@ -116,8 +116,8 @@ export default function AILibrarianAssistant({ books, onNavigate }: AILibrarianA
       replyText = 'Berikut pilihan novel & fiksi yang seru untuk mengisi waktu luang Anda:';
       matchedBooks = bookList.filter(b => b.category?.toLowerCase().includes('fiksi') || b.category?.toLowerCase().includes('novel')).slice(0, 3);
       if (matchedBooks.length === 0) matchedBooks = bookList.slice(0, 2);
-    } else if (q.includes('pinjam') || q.includes('cara')) {
-      replyText = 'Untuk meminjam buku, Anda cukup memilih buku dari Katalog, lalu klik tombol **"Pinjam Sekarang"**. Masa peminjaman standar adalah 7 - 14 hari!';
+    } else if (q.includes('pinjam') || q.includes('cara') || q.includes('download') || q.includes('unduh')) {
+      replyText = 'Semua buku di perpustakaan digital kami **gratis dan bisa diunduh langsung!** Cukup pilih buku dari Katalog, lalu klik tombol **"Buka Reader"** untuk membaca online atau **"Download PDF"** untuk simpan offline. Tidak ada sistem peminjaman atau batas waktu!';
     } else if (q.includes('3d') || q.includes('ruang') || q.includes('tour')) {
       replyText = 'Anda bisa menikmati pengalaman membaca interaktif dan mengunjungi Ruang Perpustakaan Imersif melalui menu Katalog & Fitur!';
     } else {
@@ -284,11 +284,11 @@ export default function AILibrarianAssistant({ books, onNavigate }: AILibrarianA
               <span>Teknologi</span>
             </button>
             <button
-              onClick={() => handleSend('Bagaimana cara meminjam buku?')}
+              onClick={() => handleSend('Bagaimana cara download buku?')}
               className="flex-shrink-0 text-xs px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 hover:text-white hover:bg-blue-600/40 border border-slate-700 transition-colors flex items-center space-x-1"
             >
               <ThumbsUp className="w-3 h-3 text-emerald-400" />
-              <span>Cara Pinjam</span>
+              <span>Cara Download</span>
             </button>
           </div>
 

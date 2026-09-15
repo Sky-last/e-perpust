@@ -407,7 +407,7 @@ export default function UserDashboard({
 
   const navItems = [
     { id: 'home', label: 'Beranda', desc: 'Ringkasan & aktivitas', icon: Home },
-    { id: 'books', label: 'Katalog', desc: 'Jelajah koleksi 3D', icon: BookMarked },
+    { id: 'books', label: 'Katalog', desc: 'Jelajah koleksi buku', icon: BookMarked },
     { id: 'history', label: 'Buku Diunduh', desc: 'Daftar buku offline', icon: Download },
     { id: 'stats', label: 'Almanak Baca', desc: 'Statistik & capaian', icon: TrendingUp },
     { id: 'profile', label: 'Kartu Anggota', desc: 'Profil & pengaturan', icon: UserIcon }
@@ -752,7 +752,7 @@ export default function UserDashboard({
                         </h2>
 
                         <p className="text-xs lg:text-sm text-[#CBD5C9] leading-relaxed">
-                          Baca e-book dengan simulasi halaman 3D, ajukan peminjaman buku fisik, dan pantau kebiasaan membacamu — semua dari satu dasbor.
+                          Baca e-book dengan simulasi halaman interaktif, ajukan peminjaman buku fisik, dan pantau kebiasaan membacamu — semua dari satu dasbor.
                         </p>
 
                         <div className="pt-2 flex flex-wrap items-center gap-3 text-[11px] font-bold">
@@ -1641,7 +1641,7 @@ export default function UserDashboard({
 
                   {/* The library card, signature element */}
                   <div className="bg-[#20301F] rounded-2xl p-6 lg:p-7 shadow-xl relative overflow-hidden text-[#F6F1E7]">
-                    <div className="absolute top-4 right-4 font-mono-lib text-[9px] uppercase tracking-[0.2em] text-[#C08B34] border border-[#C08B34]/40 px-2.5 py-1 rounded-full">
+                    <div className="absolute top-4 right-4 font-mono-lib text-[9px] uppercase tracking-[0.2em] text-[#C08B34] border border-[#C08B34]/40 px-2.5 py-1 rounded-full z-10">
                       Kartu Anggota Digital
                     </div>
                     <div className="flex flex-col md:flex-row items-center gap-6 relative z-10">
@@ -1658,7 +1658,7 @@ export default function UserDashboard({
                           </div>
                         )}
                         <label
-                          className="absolute inset-0 flex flex-col items-center justify-center bg-black/70 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer text-[#F6F1E7] z-10"
+                          className="absolute inset-0 flex flex-col items-center justify-center bg-black/70 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer text-[#F6F1E7] z-[15]"
                           title="Klik untuk memilih foto profil baru"
                         >
                           {isUploadingAvatar ? (
@@ -1981,7 +1981,7 @@ function BookCard({
             {categoryName}
           </span>
           <span className="w-full py-2 bg-[#C08B34] text-[#20301F] text-[10px] font-bold rounded-lg text-center flex items-center justify-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5" /> Buka Reader 3D
+            <Sparkles className="w-3.5 h-3.5" /> Buka Reader
           </span>
         </div>
       </div>

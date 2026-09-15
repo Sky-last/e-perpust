@@ -22,6 +22,7 @@ export interface Book {
   pdfUrl?: string;        // Path to PDF file for reading e-books
   pdfFile?: File | null;  // Temporary file object for upload
   isAiGenerated?: boolean;
+  isActive?: boolean;     // For filtering deleted books
   rackLocation?: string;  // For StaffDashboard
 }
 
