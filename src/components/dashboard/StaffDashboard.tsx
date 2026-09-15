@@ -23,7 +23,12 @@ import {
   BarChart3,
   Package,
   Sparkles,
-  Menu
+  Menu,
+  Upload,
+  FileText,
+  Image as ImageIcon,
+  Trash2,
+  Link as LinkIcon
 } from 'lucide-react';
 import { User, Book, Category, Borrowing, LibrarySettings, UserRole } from '../../types';
 import Book3D from '../Book3D';
@@ -36,7 +41,7 @@ interface StaffDashboardProps {
   borrowings?: Borrowing[];
   users: User[];
   settings: LibrarySettings;
-  onAddBook: (book: Omit<Book, 'status' | 'category' | 'description' | 'rating' | 'coverColor'> & { status?: Book['status'], category?: string, description?: string, rating?: number, coverColor?: string }) => void;
+  onAddBook: (book: Omit<Book, 'status' | 'category' | 'description' | 'rating' | 'coverColor'> & { status?: Book['status'], category?: string, description?: string, rating?: number, coverColor?: string, coverUrl?: string, pdfUrl?: string }) => void;
   onUpdateBook: (book: Book) => void;
   onDeleteBook: (id: string) => void;
   onAddCategory: (category: Category) => void;
@@ -104,6 +109,8 @@ export default function StaffDashboard({
   const [bookRack, setBookRack] = useState('');
   const [bookSynopsis, setBookSynopsis] = useState('');
   const [bookCoverUrl, setBookCoverUrl] = useState('');
+  const [bookPdfUrl, setBookPdfUrl] = useState('');
+  const [pdfFileName, setPdfFileName] = useState('');
 
   const [catName, setCatName] = useState('');
   const [catDesc, setCatDesc] = useState('');
@@ -336,18 +343,51 @@ export default function StaffDashboard({
     return users.find(u => u.id === uid)?.name || 'Pemustaka';
   };
 
+  const handleCoverUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (!file.type.startsWith('image/')) {
+        alert('Mohon pilih file gambar (.jpg, .png, .webp)');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setBookCoverUrl(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handlePdfUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+        alert('Mohon pilih file dokumen dengan ekstensi .pdf');
+        return;
+      }
+      setPdfFileName(file.name);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setBookPdfUrl(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleOpenBookModal = (book: Book | null = null) => {
     if (book) {
       setEditingBook(book);
       setBookTitle(book.title);
       setBookAuthor(book.author);
-      setBookPublisher(book.publisher);
-      setBookIsbn(book.isbn);
-      setBookYear(book.year);
-      setBookCategoryId(book.categoryId ?? '');
+      setBookPublisher(book.publisher || '');
+      setBookIsbn(book.isbn || '');
+      setBookYear(book.year || 2026);
+      setBookCategoryId(book.categoryId ?? (categories.find(c => c.name === book.category)?.id || ''));
       setBookRack(book.rackLocation ?? '');
       setBookSynopsis(book.synopsis ?? book.description ?? '');
       setBookCoverUrl(book.coverUrl ?? '');
+      setBookPdfUrl(book.pdfUrl ?? '');
+      setPdfFileName(book.pdfUrl ? book.pdfUrl.split('/').pop() || 'File PDF Terlampir' : '');
     } else {
       setEditingBook(null);
       setBookTitle('');
@@ -358,7 +398,9 @@ export default function StaffDashboard({
       setBookCategoryId(categories[0]?.id || '');
       setBookRack('');
       setBookSynopsis('');
-      setBookCoverUrl('https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&q=80&w=400');
+      setBookCoverUrl('');
+      setBookPdfUrl('');
+      setPdfFileName('');
     }
     setIsBookModalOpen(true);
   };
@@ -374,16 +416,19 @@ export default function StaffDashboard({
         isbn: bookIsbn,
         year: bookYear,
         categoryId: bookCategoryId,
+        category: categories.find(c => c.id === bookCategoryId)?.name || editingBook.category,
         rackLocation: bookRack,
         synopsis: bookSynopsis,
-        coverUrl: bookCoverUrl
+        description: bookSynopsis,
+        coverUrl: bookCoverUrl || undefined,
+        pdfUrl: bookPdfUrl || undefined
       });
     } else {
       onAddBook({
         id: `book-${Date.now()}`,
         title: bookTitle,
         author: bookAuthor,
-        category: categories.find(c => c.id === bookCategoryId)?.name || '',
+        category: categories.find(c => c.id === bookCategoryId)?.name || 'Umum',
         description: bookSynopsis,
         publisher: bookPublisher,
         isbn: bookIsbn,
@@ -394,7 +439,8 @@ export default function StaffDashboard({
         categoryId: bookCategoryId,
         rackLocation: bookRack,
         synopsis: bookSynopsis,
-        coverUrl: bookCoverUrl
+        coverUrl: bookCoverUrl || undefined,
+        pdfUrl: bookPdfUrl || undefined
       });
     }
     setIsBookModalOpen(false);
@@ -620,6 +666,25 @@ export default function StaffDashboard({
                   );
                 })}
               </div>
+
+              <div className="p-4 border-t border-slate-800 shrink-0 space-y-3 bg-slate-900/40">
+                <div className="flex items-center gap-3 p-2.5 bg-slate-800/50 rounded-xl border border-slate-750/50">
+                  <div className="w-9 h-9 rounded-lg bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center font-black text-white text-xs ring-2 ring-cyan-500/30">
+                    {currentUser.name.substring(0, 2).toUpperCase()}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h4 className="text-[11px] font-bold text-white truncate">{currentUser.name}</h4>
+                    <p className="text-[9px] text-cyan-400 font-semibold truncate mt-0.5">{currentUser.role}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => { setMobileMenuOpen(false); onLogout(); }}
+                  className="w-full flex items-center justify-center gap-2 py-2.5 bg-rose-500/15 hover:bg-rose-500/25 text-rose-400 hover:text-rose-300 border border-rose-500/30 rounded-xl transition-all cursor-pointer text-xs font-bold"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span>Keluar Akun</span>
+                </button>
+              </div>
             </motion.aside>
           </>
         )}
@@ -629,7 +694,7 @@ export default function StaffDashboard({
       <div className="flex-1 h-screen flex flex-col overflow-hidden">
         <header className="h-16 lg:h-20 bg-slate-900/60 backdrop-blur-md border-b border-slate-800/80 px-4 lg:px-8 flex items-center justify-between z-10 shrink-0">
           <div className="flex items-center gap-4">
-            <button onClick={() => setMobileMenuOpen(true)} className="lg:hidden p-2 bg-slate-800 rounded-xl text-slate-300"><Menu className="w-5 h-5" /></button>
+            <button onClick={() => setMobileMenuOpen(true)} className="lg:hidden p-2 bg-slate-800 rounded-xl text-slate-300 cursor-pointer hover:bg-slate-700 transition-colors"><Menu className="w-5 h-5" /></button>
             <div>
               <span className="text-[9px] bg-cyan-500/10 text-cyan-400 font-extrabold px-2.5 py-0.5 rounded-full uppercase border border-cyan-500/20">
                 Administrator • Perpustakaan Kita
@@ -638,6 +703,18 @@ export default function StaffDashboard({
                 {currentUser.name}
               </h1>
             </div>
+          </div>
+
+          {/* Tombol Logout Mobile di Navbar */}
+          <div className="lg:hidden flex items-center gap-2">
+            <button
+              onClick={onLogout}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-rose-500/15 hover:bg-rose-500/25 text-rose-400 hover:text-rose-300 border border-rose-500/30 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-sm active:scale-95"
+              title="Keluar Akun"
+            >
+              <LogOut className="w-4 h-4" />
+              <span>Keluar</span>
+            </button>
           </div>
         </header>
 
@@ -1324,27 +1401,271 @@ export default function StaffDashboard({
       {/* MODALS */}
       <AnimatePresence>
         {isBookModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 text-white space-y-4 relative">
-              <button onClick={() => setIsBookModalOpen(false)} className="absolute top-4 right-4 text-slate-400"><X className="w-5 h-5" /></button>
-              <h3 className="text-base font-black">{editingBook ? 'Edit Data Buku' : 'Tambah Buku Baru'}</h3>
-              <form onSubmit={handleSaveBookSubmit} className="space-y-3 text-xs">
-                <input type="text" placeholder="Judul Buku" value={bookTitle} onChange={e => setBookTitle(e.target.value)} required className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-semibold" />
-                <input type="text" placeholder="Penulis" value={bookAuthor} onChange={e => setBookAuthor(e.target.value)} required className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-semibold" />
-                <div className="grid grid-cols-2 gap-2">
-                  <input type="text" placeholder="Penerbit" value={bookPublisher} onChange={e => setBookPublisher(e.target.value)} className="p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white" />
-                  <input type="text" placeholder="ISBN" value={bookIsbn} onChange={e => setBookIsbn(e.target.value)} className="p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white" />
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md overflow-y-auto">
+            <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full p-6 text-white space-y-4 relative shadow-2xl my-auto max-h-[92vh] flex flex-col">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-800 shrink-0">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center">
+                    <BookOpen className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-black">{editingBook ? 'Edit Data Buku' : 'Tambah Buku Baru'}</h3>
+                    <p className="text-[10px] text-slate-400">Lengkapi data informasi, file dokumen PDF, dan cover buku digital.</p>
+                  </div>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <select value={bookCategoryId} onChange={e => setBookCategoryId(e.target.value)} className="p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-bold">
-                    {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                  </select>
-                  <input type="text" placeholder="Lokasi Rak" value={bookRack} onChange={e => setBookRack(e.target.value)} className="p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white" />
+                <button onClick={() => setIsBookModalOpen(false)} className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <form onSubmit={handleSaveBookSubmit} className="space-y-4 text-xs overflow-y-auto pr-1 flex-1 scrollbar-thin scrollbar-thumb-slate-800">
+                {/* Informasi Utama */}
+                <div className="space-y-3">
+                  <span className="text-[10px] font-black uppercase text-cyan-400 tracking-wider flex items-center gap-1.5">
+                    <Sparkles className="w-3 h-3" /> Informasi Utama Buku
+                  </span>
+                  
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-300 mb-1">Judul Buku *</label>
+                    <input 
+                      type="text" 
+                      placeholder="Contoh: Bumi, Filosofi Teras..." 
+                      value={bookTitle} 
+                      onChange={e => setBookTitle(e.target.value)} 
+                      required 
+                      className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-semibold focus:outline-none focus:border-cyan-500 transition-colors" 
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-300 mb-1">Penulis *</label>
+                      <input 
+                        type="text" 
+                        placeholder="Contoh: Tere Liye, Henry Manampiring..." 
+                        value={bookAuthor} 
+                        onChange={e => setBookAuthor(e.target.value)} 
+                        required 
+                        className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-semibold focus:outline-none focus:border-cyan-500 transition-colors" 
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-300 mb-1">Penerbit</label>
+                      <input 
+                        type="text" 
+                        placeholder="Contoh: Gramedia Pustaka Utama..." 
+                        value={bookPublisher} 
+                        onChange={e => setBookPublisher(e.target.value)} 
+                        className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-cyan-500 transition-colors" 
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-300 mb-1">Kategori Genre *</label>
+                      <select 
+                        value={bookCategoryId} 
+                        onChange={e => setBookCategoryId(e.target.value)} 
+                        className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-bold focus:outline-none focus:border-cyan-500 transition-colors cursor-pointer"
+                      >
+                        {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-300 mb-1">Tahun Terbit</label>
+                      <input 
+                        type="number" 
+                        placeholder="2026" 
+                        value={bookYear} 
+                        onChange={e => setBookYear(Number(e.target.value))} 
+                        className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-cyan-500 transition-colors" 
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-300 mb-1">Nomor ISBN</label>
+                      <input 
+                        type="text" 
+                        placeholder="978-602-..." 
+                        value={bookIsbn} 
+                        onChange={e => setBookIsbn(e.target.value)} 
+                        className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-mono focus:outline-none focus:border-cyan-500 transition-colors" 
+                      />
+                    </div>
+                  </div>
                 </div>
-                <textarea placeholder="Sinopsis..." value={bookSynopsis} onChange={e => setBookSynopsis(e.target.value)} rows={3} className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white" />
-                <div className="flex justify-end gap-2 pt-2">
-                  <button type="button" onClick={() => setIsBookModalOpen(false)} className="px-4 py-2 bg-slate-800 rounded-xl">Batal</button>
-                  <button type="submit" className="px-5 py-2 bg-blue-600 text-white font-bold rounded-xl">Simpan</button>
+
+                {/* Section Cover Buku */}
+                <div className="p-3.5 bg-slate-950/60 rounded-xl border border-slate-800/80 space-y-3">
+                  <span className="text-[10px] font-black uppercase text-amber-400 tracking-wider flex items-center gap-1.5">
+                    <ImageIcon className="w-3.5 h-3.5" /> Sampul Buku (Cover Image)
+                  </span>
+                  
+                  <div className="flex flex-col sm:flex-row gap-3.5 items-start">
+                    {/* Preview Box */}
+                    <div className="w-20 aspect-[3/4] bg-slate-900 rounded-lg border border-slate-800 overflow-hidden flex items-center justify-center shrink-0 relative shadow-md">
+                      {bookCoverUrl ? (
+                        <img 
+                          src={bookCoverUrl} 
+                          alt="Cover Preview" 
+                          className="w-full h-full object-cover" 
+                          onError={(e) => {
+                            (e.target as HTMLElement).style.display = 'none';
+                          }}
+                        />
+                      ) : (
+                        <div className="flex flex-col items-center justify-center p-2 text-center text-slate-500">
+                          <ImageIcon className="w-6 h-6 mb-1 text-slate-600" />
+                          <span className="text-[8px] font-bold">Tanpa Sampul</span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex-1 space-y-2.5 w-full">
+                      {/* Upload File Gambar */}
+                      <div>
+                        <label className="block text-[10px] font-bold text-slate-400 mb-1">
+                          Upload File Gambar (.jpg, .png, .webp)
+                        </label>
+                        <input 
+                          type="file" 
+                          accept="image/*" 
+                          onChange={handleCoverUpload} 
+                          className="block w-full text-[11px] text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:bg-blue-600 file:text-white hover:file:bg-blue-500 cursor-pointer file:cursor-pointer transition-all"
+                        />
+                      </div>
+
+                      {/* Atau Masukkan URL Cover */}
+                      <div>
+                        <label className="block text-[10px] font-bold text-slate-400 mb-1">
+                          Atau Tautan URL Cover Gambar
+                        </label>
+                        <div className="relative">
+                          <LinkIcon className="absolute left-3 top-2.5 w-3.5 h-3.5 text-slate-500" />
+                          <input 
+                            type="text" 
+                            placeholder="https://... atau /buku_sampul/cover.jpg" 
+                            value={bookCoverUrl} 
+                            onChange={e => setBookCoverUrl(e.target.value)} 
+                            className="w-full pl-8 pr-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white text-[11px] focus:outline-none focus:border-amber-500 transition-colors"
+                          />
+                        </div>
+                      </div>
+
+                      {bookCoverUrl && (
+                        <button
+                          type="button"
+                          onClick={() => setBookCoverUrl('')}
+                          className="px-2.5 py-1 text-[10px] text-rose-400 hover:text-rose-300 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 rounded-lg flex items-center gap-1 font-bold transition-colors cursor-pointer"
+                        >
+                          <Trash2 className="w-3 h-3" /> Hapus Sampul
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Section File Dokumen PDF */}
+                <div className="p-3.5 bg-slate-950/60 rounded-xl border border-slate-800/80 space-y-3">
+                  <span className="text-[10px] font-black uppercase text-emerald-400 tracking-wider flex items-center gap-1.5">
+                    <FileText className="w-3.5 h-3.5" /> File Dokumen E-Book (PDF) *
+                  </span>
+
+                  <div className="space-y-2.5">
+                    {/* Upload File PDF */}
+                    <div>
+                      <label className="block text-[10px] font-bold text-slate-400 mb-1">
+                        Upload File PDF Buku Langsung
+                      </label>
+                      <input 
+                        type="file" 
+                        accept=".pdf,application/pdf" 
+                        onChange={handlePdfUpload} 
+                        className="block w-full text-[11px] text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:bg-emerald-600 file:text-white hover:file:bg-emerald-500 cursor-pointer file:cursor-pointer transition-all"
+                      />
+                    </div>
+
+                    {/* Atau Masukkan URL/Path PDF */}
+                    <div>
+                      <label className="block text-[10px] font-bold text-slate-400 mb-1">
+                        Atau Masukkan Jalur / URL File PDF
+                      </label>
+                      <div className="relative">
+                        <LinkIcon className="absolute left-3 top-2.5 w-3.5 h-3.5 text-slate-500" />
+                        <input 
+                          type="text" 
+                          placeholder="Contoh: /buku_digital/Bumi.pdf atau https://domain.com/buku.pdf" 
+                          value={bookPdfUrl} 
+                          onChange={e => {
+                            setBookPdfUrl(e.target.value);
+                            setPdfFileName(e.target.value.split('/').pop() || '');
+                          }} 
+                          className="w-full pl-8 pr-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white text-[11px] focus:outline-none focus:border-emerald-500 transition-colors font-mono"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Status PDF Attached */}
+                    {bookPdfUrl && (
+                      <div className="flex items-center justify-between p-2 bg-emerald-500/10 border border-emerald-500/25 rounded-lg">
+                        <div className="flex items-center gap-2 text-emerald-400 text-[11px] font-bold truncate">
+                          <FileText className="w-4 h-4 shrink-0" />
+                          <span className="truncate">{pdfFileName || 'Dokumen PDF Terpasang'}</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setBookPdfUrl('');
+                            setPdfFileName('');
+                          }}
+                          className="p-1 text-rose-400 hover:text-rose-300 hover:bg-rose-500/20 rounded transition-colors cursor-pointer"
+                          title="Hapus file PDF"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Sinopsis */}
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-300 mb-1">Sinopsis / Ringkasan Buku</label>
+                  <textarea 
+                    placeholder="Tuliskan sinopsis singkat mengenai alur cerita atau isi buku..." 
+                    value={bookSynopsis} 
+                    onChange={e => setBookSynopsis(e.target.value)} 
+                    rows={3} 
+                    className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-cyan-500 transition-colors" 
+                  />
+                </div>
+
+                {/* Lokasi Rak (Opsional) */}
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-300 mb-1">Lokasi Rak / Label Koleksi (Opsional)</label>
+                  <input 
+                    type="text" 
+                    placeholder="Contoh: Rak Digital A-1, Koleksi E-Book Utama..." 
+                    value={bookRack} 
+                    onChange={e => setBookRack(e.target.value)} 
+                    className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-cyan-500 transition-colors" 
+                  />
+                </div>
+
+                <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-800">
+                  <button 
+                    type="button" 
+                    onClick={() => setIsBookModalOpen(false)} 
+                    className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl transition-colors cursor-pointer"
+                  >
+                    Batal
+                  </button>
+                  <button 
+                    type="submit" 
+                    className="px-6 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-bold rounded-xl shadow-lg transition-all cursor-pointer flex items-center gap-1.5"
+                  >
+                    <BookOpen className="w-4 h-4" /> Simpan Buku
+                  </button>
                 </div>
               </form>
             </div>

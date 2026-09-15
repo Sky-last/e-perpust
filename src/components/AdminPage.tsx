@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Book, User, SystemLog } from '../types';
-import { Plus, Trash, Edit, Sparkles, BookOpen, Layers, Users, History, Save, X, RefreshCw, LogOut, Home, Download, Award } from 'lucide-react';
+import { Plus, Trash, Edit, Sparkles, BookOpen, Layers, Users, History, Save, X, RefreshCw, LogOut, Home, Download, Award, FileText, Link as LinkIcon } from 'lucide-react';
 
 interface AdminPageProps {
   books: Book[];
@@ -53,6 +53,8 @@ export default function AdminPage({
   const [rating, setRating] = useState<number>(4.5);
   const [coverColor, setCoverColor] = useState(COLOR_PRESETS[0]);
   const [coverUrl, setCoverUrl] = useState('');
+  const [pdfUrl, setPdfUrl] = useState('');
+  const [pdfFileName, setPdfFileName] = useState('');
 
   // AI Cover Generation states
   const [aiPrompt, setAiPrompt] = useState('');
@@ -86,7 +88,8 @@ export default function AdminPage({
         rating: Number(rating),
         status: 'Tersedia',
         coverColor,
-        coverUrl: coverUrl || undefined
+        coverUrl: coverUrl || undefined,
+        pdfUrl: pdfUrl || undefined
       };
       onEditBook(bookToUpdate);
       addToast(`Buku "${title}" berhasil diperbarui!`, 'success');
@@ -102,7 +105,8 @@ export default function AdminPage({
         year: Number(year),
         rating: Number(rating),
         coverColor,
-        coverUrl: coverUrl || undefined
+        coverUrl: coverUrl || undefined,
+        pdfUrl: pdfUrl || undefined
       };
       onAddBook(newBook);
       addToast(`Buku "${title}" berhasil ditambahkan ke katalog!`, 'success');
@@ -123,6 +127,8 @@ export default function AdminPage({
     setRating(book.rating);
     setCoverColor(book.coverColor);
     setCoverUrl(book.coverUrl || '');
+    setPdfUrl(book.pdfUrl || '');
+    setPdfFileName(book.pdfUrl ? book.pdfUrl.split('/').pop() || 'File PDF Terlampir' : '');
     // Scroll form into view
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -135,6 +141,24 @@ export default function AdminPage({
       reader.onloadend = () => {
         setCoverUrl(reader.result as string);
         addToast('Gambar sampul berhasil diunggah!', 'success');
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Handle local PDF document upload via FileReader
+  const handlePdfUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+        addToast('Mohon pilih file dokumen dengan format .pdf', 'error');
+        return;
+      }
+      setPdfFileName(file.name);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPdfUrl(reader.result as string);
+        addToast(`File PDF "${file.name}" berhasil diunggah!`, 'success');
       };
       reader.readAsDataURL(file);
     }
@@ -153,6 +177,8 @@ export default function AdminPage({
     setRating(4.5);
     setCoverColor(COLOR_PRESETS[0]);
     setCoverUrl('');
+    setPdfUrl('');
+    setPdfFileName('');
     setAiPrompt('');
   };
 
@@ -428,13 +454,27 @@ export default function AdminPage({
                   {/* Local image file upload */}
                   <div className="space-y-1.5 pt-2">
                     <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-                      📁 Upload File Gambar (.jpg, .png)
+                      📁 Upload File Cover Gambar (.jpg, .png)
                     </label>
                     <input
                       type="file"
                       accept="image/*"
                       onChange={handleFileUpload}
                       className="block w-full text-[11px] text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-[10px] file:font-bold file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100 cursor-pointer"
+                    />
+                  </div>
+
+                  {/* Input URL Cover Gambar */}
+                  <div className="space-y-1 pt-1">
+                    <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                      Atau Tautan URL Cover Gambar
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="https://... atau /buku_sampul/cover.jpg"
+                      value={coverUrl}
+                      onChange={(e) => setCoverUrl(e.target.value)}
+                      className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs outline-none focus:border-blue-600 font-mono text-[11px]"
                     />
                   </div>
 
@@ -582,6 +622,63 @@ export default function AdminPage({
                   />
                 </div>
 
+                {/* File Dokumen E-Book (PDF) */}
+                <div className="sm:col-span-2 p-4 bg-emerald-50/60 rounded-2xl border border-emerald-100/90 space-y-3">
+                  <div className="flex items-center space-x-1.5 text-emerald-800">
+                    <FileText className="w-4 h-4 text-emerald-600" />
+                    <span className="text-[11px] font-extrabold uppercase tracking-wider">File Dokumen E-Book (PDF)</span>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-1">
+                        Upload File PDF Buku Langsung
+                      </label>
+                      <input
+                        type="file"
+                        accept=".pdf,application/pdf"
+                        onChange={handlePdfUpload}
+                        className="block w-full text-[11px] text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-[10px] file:font-bold file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 cursor-pointer"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-1">
+                        Atau Masukkan Jalur / URL File PDF
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Contoh: /buku_digital/Bumi.pdf atau https://..."
+                        value={pdfUrl}
+                        onChange={(e) => {
+                          setPdfUrl(e.target.value);
+                          setPdfFileName(e.target.value.split('/').pop() || '');
+                        }}
+                        className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs outline-none focus:border-emerald-600 font-mono text-[11px]"
+                      />
+                    </div>
+                  </div>
+
+                  {pdfUrl && (
+                    <div className="flex items-center justify-between p-2.5 bg-white border border-emerald-200 rounded-xl text-xs text-emerald-700 font-semibold shadow-xs">
+                      <div className="flex items-center gap-2 truncate">
+                        <FileText className="w-4 h-4 shrink-0 text-emerald-600" />
+                        <span className="truncate">{pdfFileName || 'Dokumen PDF Terpasang'}</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setPdfUrl('');
+                          setPdfFileName('');
+                        }}
+                        className="p-1 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg text-xs transition-colors cursor-pointer"
+                        title="Hapus file PDF"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+
                 <div className="sm:col-span-2 flex justify-end space-x-2 pt-2">
                   <button
                     type="button"
@@ -649,13 +746,24 @@ export default function AdminPage({
                     <tr key={book.id} className="hover:bg-slate-50/50">
                       <td className="p-3">
                         <div className="flex items-center space-x-2.5">
-                          <div className={`w-7 h-9 rounded bg-gradient-to-tr ${book.coverColor} p-0.5 text-white flex flex-col justify-between shadow-sm flex-shrink-0`}>
-                            <span className="text-[4px] uppercase font-bold opacity-60 leading-none">{book.category}</span>
-                            <span className="text-[5px] font-extrabold leading-none line-clamp-2">{book.title}</span>
+                          <div className={`w-8 h-11 rounded-md overflow-hidden bg-gradient-to-tr ${book.coverColor} p-0.5 text-white flex flex-col justify-between shadow-xs flex-shrink-0 border border-slate-200/50`}>
+                            {book.coverUrl ? (
+                              <img src={book.coverUrl} alt={book.title} className="w-full h-full object-cover" />
+                            ) : (
+                              <>
+                                <span className="text-[5px] uppercase font-bold opacity-60 leading-none">{book.category}</span>
+                                <span className="text-[6px] font-extrabold leading-none line-clamp-2">{book.title}</span>
+                              </>
+                            )}
                           </div>
                           <div>
                             <p className="font-bold text-slate-800 line-clamp-1">{book.title}</p>
-                            <p className="text-[10px] text-slate-400">{book.author} • <span className="font-semibold text-slate-500">{book.category}</span></p>
+                            <div className="flex items-center gap-1.5 mt-0.5">
+                              <span className="text-[10px] text-slate-400">{book.author} • <span className="font-semibold text-slate-500">{book.category}</span></span>
+                              {book.pdfUrl && (
+                                <span className="px-1.5 py-0.2 bg-emerald-100 text-emerald-700 rounded text-[9px] font-extrabold">PDF</span>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </td>
@@ -665,6 +773,18 @@ export default function AdminPage({
                       <td className="p-3 text-center text-amber-500 font-bold">{book.rating}</td>
                       <td className="p-3 text-right whitespace-nowrap">
                         <div className="flex items-center justify-end space-x-1.5">
+                          {book.pdfUrl && (
+                            <a
+                              href={book.pdfUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              download={`${book.title}.pdf`}
+                              className="p-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-600 rounded-lg cursor-pointer transition-colors"
+                              title="Unduh Dokumen PDF"
+                            >
+                              <Download className="w-3.5 h-3.5" />
+                            </a>
+                          )}
                           <button
                             onClick={() => handleEditTrigger(book)}
                             className="p-1.5 bg-slate-100 hover:bg-blue-50 text-slate-500 hover:text-blue-600 rounded-lg cursor-pointer"

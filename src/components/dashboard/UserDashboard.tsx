@@ -662,7 +662,7 @@ export default function UserDashboard({
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <button
               onClick={() => setActiveTab('books')}
               className="hidden sm:flex items-center gap-2 px-4 py-2 bg-[#20301F] hover:bg-[#2A3F27] text-[#F6F1E7] rounded-lg text-xs font-bold transition-colors cursor-pointer active:scale-95"
@@ -727,6 +727,16 @@ export default function UserDashboard({
                 )}
               </AnimatePresence>
             </div>
+
+            {/* Mobile Logout Button in Navbar */}
+            <button
+              onClick={onLogout}
+              className="lg:hidden flex items-center gap-1.5 px-3 py-2 bg-[#B4573F]/15 hover:bg-[#B4573F]/25 text-[#B4573F] border border-[#B4573F]/30 rounded-lg text-xs font-bold transition-all cursor-pointer shadow-xs active:scale-95"
+              title="Keluar Akun"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span>Keluar</span>
+            </button>
           </div>
         </header>
 
