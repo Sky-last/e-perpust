@@ -12,7 +12,6 @@ import {
   ArrowLeftRight, 
   Users, 
   TrendingUp, 
-  Settings, 
   LogOut, 
   Plus, 
   Search, 
@@ -34,7 +33,7 @@ interface StaffDashboardProps {
   onLogout: () => void;
   books: Book[];
   categories: Category[];
-  borrowings: Borrowing[];
+  borrowings?: Borrowing[];
   users: User[];
   settings: LibrarySettings;
   onAddBook: (book: Omit<Book, 'status' | 'category' | 'description' | 'rating' | 'coverColor'> & { status?: Book['status'], category?: string, description?: string, rating?: number, coverColor?: string }) => void;
@@ -43,12 +42,12 @@ interface StaffDashboardProps {
   onAddCategory: (category: Category) => void;
   onUpdateCategory: (category: Category) => void;
   onDeleteCategory: (id: string) => void;
-  onVerifyBorrow: (borrowingId: string, approve: boolean) => void;
-  onVerifyReturn: (borrowingId: string, approve: boolean) => void;
+  onVerifyBorrow?: (borrowingId: string, approve: boolean) => void;
+  onVerifyReturn?: (borrowingId: string, approve: boolean) => void;
   onUpdateUser: (userId: string, updatedData: Partial<User>) => void;
   onAddUser: (newUser: User) => void;
   onDeleteUser: (userId: string) => void;
-  onUpdateSettings: (newSettings: LibrarySettings) => void;
+  onUpdateSettings?: (newSettings: LibrarySettings) => void;
 }
 
 export default function StaffDashboard({
@@ -56,7 +55,7 @@ export default function StaffDashboard({
   onLogout,
   books,
   categories,
-  borrowings,
+  borrowings = [],
   users,
   settings,
   onAddBook,
@@ -79,7 +78,7 @@ export default function StaffDashboard({
     return normalizedRole === 'admin' || role === UserRole.ADMIN;
   }, [currentUser.role]);
 
-  const [activeMenu, setActiveMenu] = useState<'dashboard' | 'books' | 'categories' | 'transactions' | 'users' | 'reports' | 'settings'>('dashboard');
+  const [activeMenu, setActiveMenu] = useState<'dashboard' | 'books' | 'categories' | 'transactions' | 'users' | 'reports'>('dashboard');
   const [searchQuery, setSearchQuery] = useState('');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -119,18 +118,71 @@ export default function StaffDashboard({
   const [uPhone, setUPhone] = useState('');
   const [uAvatarUrl, setUAvatarUrl] = useState('');
 
-  const [localMaxBooks, setLocalMaxBooks] = useState(settings.maxBorrowBooks);
-
   const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'approved' | 'returned'>('all');
+
+  // Kumpulkan seluruh data riwayat unduhan buku dari seluruh anggota
+  const allDownloads = React.useMemo(() => {
+    const list: Array<{
+      id: string;
+      bookId: string;
+      bookTitle: string;
+      author?: string;
+      category?: string;
+      coverUrl?: string;
+      coverColor?: string;
+      downloadDate: string;
+      pdfUrl?: string;
+      userId: string;
+      userName: string;
+      userEmail: string;
+      identityNumber?: string;
+    }> = [];
+
+    users.forEach(u => {
+      if (u.downloads && Array.isArray(u.downloads)) {
+        u.downloads.forEach(d => {
+          list.push({
+            ...d,
+            userId: u.id,
+            userName: u.name,
+            userEmail: u.email,
+            identityNumber: u.identityNumber || u.nisn || u.nip || '-'
+          });
+        });
+      }
+    });
+
+    // Jika belum ada record unduhan di user, mapping data sirkulasi lama sebagai riwayat unduhan
+    if (list.length === 0 && borrowings && borrowings.length > 0) {
+      borrowings.forEach(b => {
+        const u = users.find(x => x.id === (b.studentId || b.userId));
+        const bk = books.find(x => x.id === b.bookId);
+        list.push({
+          id: b.id,
+          bookId: b.bookId,
+          bookTitle: bk?.title || b.bookTitle || 'Buku Digital',
+          author: bk?.author || 'Penulis',
+          category: bk?.category || 'Umum',
+          coverUrl: bk?.coverUrl || b.coverUrl,
+          coverColor: bk?.coverColor || b.coverColor,
+          downloadDate: b.borrowDate,
+          pdfUrl: bk?.pdfUrl,
+          userId: u?.id || b.studentId || 'u-unknown',
+          userName: u?.name || 'Pemustaka',
+          userEmail: u?.email || 'pemustaka@perpustakaan.id',
+          identityNumber: u?.identityNumber || u?.nisn || u?.nip || '-'
+        });
+      });
+    }
+
+    return list;
+  }, [users, borrowings, books]);
 
   // Stats
   const totalBooks = books.length;
   const availableBooks = books.length;
-  const activeLoans = borrowings.filter(b => ['approved', 'Sedang Dipinjam', 'Dipinjam'].includes(b.status as string)).length;
-  const pendingApprovals = borrowings.filter(b => ['pending', 'Menunggu'].includes(b.status as string)).length;
+  const totalDownloads = allDownloads.length;
   const totalMembers = users.filter(u => [UserRole.USER, 'user'].includes(u.role as any)).length;
-  const returnedBooks = borrowings.filter(b => ['returned', 'Dikembalikan'].includes(b.status as string)).length;
-  const rejectedRequests = borrowings.filter(b => ['rejected', 'Ditolak'].includes(b.status as string)).length;
 
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
@@ -155,10 +207,10 @@ export default function StaffDashboard({
     ctx.clearRect(0, 0, containerWidth, 240);
 
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul'];
-    const borrowData = [45, 52, 48, 65, 58, 72, activeLoans];
-    const returnData = [42, 49, 51, 60, 55, 68, returnedBooks];
+    const downloadData = [24, 38, 45, 52, 60, 75, totalDownloads > 0 ? totalDownloads : 80];
+    const readerData = [15, 22, 28, 35, 40, 58, totalMembers > 0 ? totalMembers : 62];
     
-    const maxValue = Math.max(...borrowData, ...returnData) + 15;
+    const maxValue = Math.max(...downloadData, ...readerData) + 15;
     const padding = 45;
     const chartHeight = 240 - padding * 2;
     const chartWidth = containerWidth - padding * 2;
@@ -190,8 +242,8 @@ export default function StaffDashboard({
       }));
     };
 
-    const borrowPoints = getCoordinates(borrowData);
-    const returnPoints = getCoordinates(returnData);
+    const downloadPoints = getCoordinates(downloadData);
+    const readerPoints = getCoordinates(readerData);
 
     const drawAreaCurve = (
       points: { x: number; y: number }[],
@@ -250,8 +302,8 @@ export default function StaffDashboard({
       });
     };
 
-    drawAreaCurve(borrowPoints, '#38bdf8', 'rgba(56, 189, 248, 0.25)', 'rgba(56, 189, 248, 0.01)');
-    drawAreaCurve(returnPoints, '#34d399', 'rgba(52, 211, 153, 0.25)', 'rgba(52, 211, 153, 0.01)');
+    drawAreaCurve(downloadPoints, '#38bdf8', 'rgba(56, 189, 248, 0.25)', 'rgba(56, 189, 248, 0.01)');
+    drawAreaCurve(readerPoints, '#a855f7', 'rgba(168, 85, 247, 0.25)', 'rgba(168, 85, 247, 0.01)');
 
     ctx.fillStyle = '#94A3B8';
     ctx.font = '600 11px Inter, sans-serif';
@@ -260,7 +312,7 @@ export default function StaffDashboard({
       const x = padding + stepX * idx;
       ctx.fillText(month, x, 240 - padding + 22);
     });
-  }, [activeLoans, returnedBooks, windowWidth, sidebarCollapsed, activeMenu]);
+  }, [totalDownloads, totalMembers, windowWidth, sidebarCollapsed, activeMenu]);
 
   const filteredBooks = books.filter(b => 
     b.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -450,21 +502,13 @@ export default function StaffDashboard({
     setIsUserModalOpen(false);
   };
 
-  const handleSaveSettings = () => {
-    onUpdateSettings({
-      maxBorrowBooks: localMaxBooks
-    });
-    alert('Pengaturan perpustakaan diperbarui!');
-  };
-
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard Utama', icon: LayoutDashboard },
     { id: 'books', label: 'Koleksi Buku', icon: BookOpen },
     { id: 'categories', label: 'Kategori Genre', icon: FolderClosed },
-    { id: 'transactions', label: 'Sirkulasi Transaksi', icon: ArrowLeftRight },
+    { id: 'transactions', label: 'Sirkulasi Unduhan', icon: Download },
     { id: 'users', label: 'Kelola Anggota', icon: Users },
     { id: 'reports', label: 'Laporan & Rekap', icon: FileSpreadsheet },
-    { id: 'settings', label: 'Aturan System', icon: Settings },
   ];
 
   return (
@@ -595,14 +639,6 @@ export default function StaffDashboard({
               </h1>
             </div>
           </div>
-          <button
-            onClick={onLogout}
-            className="px-4 py-2 bg-rose-500/15 hover:bg-rose-500/25 text-rose-400 border border-rose-500/30 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer shadow-md"
-            title="Keluar dari Akun"
-          >
-            <LogOut className="w-4 h-4" />
-            <span className="hidden sm:inline">Keluar / Logout</span>
-          </button>
         </header>
 
         <main className="flex-1 overflow-y-auto p-4 lg:p-8 scrollbar-thin scrollbar-thumb-slate-800">
@@ -616,8 +652,8 @@ export default function StaffDashboard({
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                   {[
                     { label: 'Total Buku', val: totalBooks, sub: `${availableBooks} Tersedia`, icon: Package, border: 'border-blue-500/30', color: 'text-blue-400 bg-blue-500/10' },
-                    { label: 'Pinjaman Aktif', val: activeLoans, sub: 'Buku Sedang Dipinjam', icon: ArrowLeftRight, border: 'border-cyan-500/30', color: 'text-cyan-400 bg-cyan-500/10' },
-                    { label: 'Menunggu Approval', val: pendingApprovals, sub: pendingApprovals > 0 ? 'Perlu Respon' : 'Selesai', icon: Clock, border: 'border-amber-500/30', color: 'text-amber-400 bg-amber-500/10' },
+                    { label: 'Total Unduhan', val: totalDownloads, sub: `${totalDownloads} File Diunduh`, icon: Download, border: 'border-cyan-500/30', color: 'text-cyan-400 bg-cyan-500/10' },
+                    { label: 'Kategori Genre', val: categories.length, sub: 'Klasifikasi Buku', icon: FolderClosed, border: 'border-amber-500/30', color: 'text-amber-400 bg-amber-500/10' },
                     { label: 'Total Pemustaka', val: totalMembers, sub: 'Anggota Terdaftar', icon: Users, border: 'border-indigo-500/30', color: 'text-indigo-400 bg-indigo-500/10' }
                   ].map((c, i) => {
                     const Icon = c.icon;
@@ -636,12 +672,20 @@ export default function StaffDashboard({
 
                 {/* Chart Section */}
                 <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
-                  <div className="flex justify-between items-center mb-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
                     <div>
                       <h3 className="text-sm font-black text-white flex items-center gap-2">
-                        <BarChart3 className="w-4 h-4 text-cyan-400" /> Tren Peminjaman & Pengembalian
+                        <BarChart3 className="w-4 h-4 text-cyan-400" /> Tren Unduhan & Aktivitas Pemustaka
                       </h3>
-                      <p className="text-xs text-slate-500 mt-0.5">Kumulatif data 7 bulan terakhir</p>
+                      <p className="text-xs text-slate-500 mt-0.5">Kumulatif data unduhan buku 7 bulan terakhir</p>
+                    </div>
+                    <div className="flex items-center gap-4 text-xs font-bold">
+                      <span className="flex items-center gap-1.5 text-cyan-400">
+                        <span className="w-2.5 h-2.5 rounded-full bg-cyan-400"></span> Unduhan PDF
+                      </span>
+                      <span className="flex items-center gap-1.5 text-purple-400">
+                        <span className="w-2.5 h-2.5 rounded-full bg-purple-400"></span> Pemustaka Aktif
+                      </span>
                     </div>
                   </div>
                   <div className="bg-slate-950 rounded-xl p-2">
@@ -649,47 +693,66 @@ export default function StaffDashboard({
                   </div>
                 </div>
 
-                {/* Recent Borrowings Table */}
+                {/* Recent Downloads Table */}
                 <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
                   <div className="p-5 border-b border-slate-800 flex justify-between items-center">
-                    <h3 className="text-xs font-black text-white uppercase tracking-wider">Aktivitas Sirkulasi Terkini</h3>
-                    <button onClick={() => setActiveMenu('transactions')} className="text-xs text-cyan-400 hover:text-cyan-300 font-bold">Kelola Semua →</button>
+                    <div>
+                      <h3 className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-2">
+                        <Download className="w-4 h-4 text-cyan-400" /> Aktivitas Unduhan Terkini
+                      </h3>
+                      <p className="text-[11px] text-slate-500 mt-0.5">Daftar pemustaka yang baru saja mengunduh e-book</p>
+                    </div>
+                    <button onClick={() => setActiveMenu('transactions')} className="text-xs text-cyan-400 hover:text-cyan-300 font-bold cursor-pointer">
+                      Lihat Semua Unduhan →
+                    </button>
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full text-xs text-left">
                       <thead className="bg-slate-950 text-slate-400 border-b border-slate-800 uppercase font-extrabold">
                         <tr>
                           <th className="py-3 px-5">Pemustaka</th>
-                          <th className="py-3 px-5">Buku</th>
-                          <th className="py-3 px-5">Tgl Pinjam</th>
-                          <th className="py-3 px-5">Jatuh Tempo</th>
-                          <th className="py-3 px-5">Status</th>
-                          <th className="py-3 px-5 text-right">Aksi</th>
+                          <th className="py-3 px-5">Judul Buku</th>
+                          <th className="py-3 px-5">Kategori</th>
+                          <th className="py-3 px-5">Tanggal Unduh</th>
+                          <th className="py-3 px-5 text-center">Format</th>
+                          <th className="py-3 px-5 text-right">Status</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-800 text-slate-300">
-                        {borrowings.filter(b => ['approved', 'overdue', 'Sedang Dipinjam', 'Dipinjam', 'Terlambat'].includes(b.status)).slice(0, 5).map(b => {
-                          const studentName = getUserName(b.studentId ?? '');
-                          const bookObj = books.find(x => x.id === b.bookId);
-                          return (
-                            <tr key={b.id} className="hover:bg-slate-800/50">
-                              <td className="py-3.5 px-5 font-bold text-white">{studentName}</td>
-                              <td className="py-3.5 px-5 font-medium">{bookObj?.title || b.bookTitle || 'Buku'}</td>
-                              <td className="py-3.5 px-5 text-slate-400">{b.borrowDate}</td>
-                              <td className="py-3.5 px-5 text-slate-400">{b.dueDate}</td>
-                              <td className="py-3.5 px-5">
-                                <span className={`px-2 py-0.5 rounded font-extrabold text-[9px] uppercase ${['overdue', 'Terlambat'].includes(b.status) ? 'bg-rose-500/20 text-rose-400' : 'bg-emerald-500/20 text-emerald-400'}`}>
-                                  {['overdue', 'Terlambat'].includes(b.status) ? 'Terlambat' : 'Aktif'}
+                        {allDownloads.length === 0 ? (
+                          <tr>
+                            <td colSpan={6} className="py-8 text-center text-slate-500">
+                              Belum ada aktivitas unduhan buku digital.
+                            </td>
+                          </tr>
+                        ) : (
+                          allDownloads.slice(0, 5).map((dl, idx) => (
+                            <tr key={dl.id || idx} className="hover:bg-slate-800/50">
+                              <td className="py-3.5 px-5 font-bold text-white">
+                                <div>{dl.userName}</div>
+                                <div className="text-[10px] text-slate-400 font-normal">{dl.userEmail}</div>
+                              </td>
+                              <td className="py-3.5 px-5 font-medium text-white">{dl.bookTitle}</td>
+                              <td className="py-3.5 px-5 text-slate-400">
+                                <span className="px-2 py-0.5 bg-slate-800 text-cyan-300 rounded text-[10px] font-bold">
+                                  {dl.category || 'Umum'}
+                                </span>
+                              </td>
+                              <td className="py-3.5 px-5 text-slate-400">{dl.downloadDate}</td>
+                              <td className="py-3.5 px-5 text-center">
+                                <span className="px-2 py-0.5 rounded font-extrabold text-[9px] bg-red-500/20 text-red-400 border border-red-500/30">
+                                  PDF
                                 </span>
                               </td>
                               <td className="py-3.5 px-5 text-right">
-                                <button onClick={() => onVerifyReturn(b.id, true)} className="px-3 py-1 bg-cyan-600 hover:bg-cyan-500 text-white rounded font-bold">
-                                  Kembalikan
-                                </button>
+                                <span className="px-2.5 py-1 rounded-md font-extrabold text-[10px] uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 inline-flex items-center gap-1">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                  Berhasil Diunduh
+                                </span>
                               </td>
                             </tr>
-                          );
-                        })}
+                          ))
+                        )}
                       </tbody>
                     </table>
                   </div>
@@ -782,13 +845,15 @@ export default function StaffDashboard({
               </motion.div>
             )}
 
-            {/* ── TRANSACTIONS TAB ── */}
+            {/* ── TRANSACTIONS (UNDUHAN) TAB ── */}
             {activeMenu === 'transactions' && (
               <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
-                    <h2 className="text-base font-black text-white">Sirkulasi Transaksi & Laporan Peminjaman</h2>
-                    <p className="text-xs text-slate-400 mt-0.5 font-bold">Kelola dan unduh rekapitulasi transaksi sirkulasi buku sekolah.</p>
+                    <h2 className="text-base font-black text-white flex items-center gap-2">
+                      <Download className="w-5 h-5 text-cyan-400" /> Sirkulasi & Riwayat Unduhan Buku
+                    </h2>
+                    <p className="text-xs text-slate-400 mt-0.5 font-medium">Rekapitulasi dan log pemustaka yang telah mengunduh koleksi buku digital.</p>
                   </div>
                   <div className="flex items-center gap-2">
                     <button 
@@ -799,17 +864,15 @@ export default function StaffDashboard({
                     </button>
                     <button 
                       onClick={() => {
-                        const headers = ['ID,Nama Pemustaka,Judul Buku,Tanggal Pinjam,Status'];
-                        const rows = borrowings.map(b => {
-                          const u = users.find(x => x.id === b.studentId);
-                          const bk = books.find(x => x.id === b.bookId);
-                          return `"${b.id}","${u?.name || ''}","${bk?.title || ''}","${b.borrowDate}","${b.status}"`;
+                        const headers = ['ID,Nama Pemustaka,Email,No Identitas,Judul Buku,Kategori,Tanggal Unduh,Status'];
+                        const rows = allDownloads.map(dl => {
+                          return `"${dl.id}","${dl.userName}","${dl.userEmail}","${dl.identityNumber || '-'}","${dl.bookTitle}","${dl.category || '-'}","${dl.downloadDate}","Berhasil Diunduh"`;
                         });
-                        const csvContent = 'data:text/csv;charset=utf-8,' + [headers, ...rows].join('\n');
+                        const csvContent = 'data:text/csv;charset=utf-8,\uFEFF' + [headers, ...rows].join('\n');
                         const encodedUri = encodeURI(csvContent);
                         const link = document.createElement('a');
                         link.setAttribute('href', encodedUri);
-                        link.setAttribute('download', `laporan_pustaka_${new Date().toISOString().slice(0, 10)}.csv`);
+                        link.setAttribute('download', `laporan_unduhan_buku_${new Date().toISOString().slice(0, 10)}.csv`);
                         document.body.appendChild(link);
                         link.click();
                         document.body.removeChild(link);
@@ -820,72 +883,112 @@ export default function StaffDashboard({
                     </button>
                   </div>
                 </div>
-                <div className="flex gap-2 overflow-x-auto pb-1">
-                  {[
-                    { key: 'all', label: 'Semua' },
-                    { key: 'pending', label: 'Menunggu' },
-                    { key: 'approved', label: 'Dipinjam' },
-                    { key: 'returned', label: 'Dikembalikan' },
-                  ].map(({ key, label }) => (
+
+                {/* Filter and Search */}
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3.5 top-3 w-4 h-4 text-slate-500" />
+                    <input
+                      type="text"
+                      placeholder="Cari pemustaka, email, atau judul buku yang diunduh..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500"
+                    />
+                  </div>
+                  <div className="flex gap-2 overflow-x-auto pb-1">
                     <button
-                      key={key}
-                      onClick={() => setFilterStatus(key as any)}
-                      className={`px-4 py-2 rounded-xl text-xs font-bold uppercase ${filterStatus === key ? 'bg-blue-600 text-white' : 'bg-slate-900 text-slate-400'}`}
+                      onClick={() => setFilterStatus('all')}
+                      className={`px-4 py-2 rounded-xl text-xs font-bold uppercase cursor-pointer ${filterStatus === 'all' ? 'bg-blue-600 text-white shadow-md' : 'bg-slate-900 text-slate-400 hover:text-white'}`}
                     >
-                      {label}
+                      Semua Unduhan ({allDownloads.length})
                     </button>
-                  ))}
+                  </div>
                 </div>
+
+                {/* Table */}
                 <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
-                  <table className="w-full text-xs text-left">
-                    <thead className="bg-slate-950 text-slate-400 font-extrabold uppercase border-b border-slate-800">
-                      <tr>
-                        <th className="p-4">Anggota</th>
-                        <th className="p-4">Buku</th>
-                        <th className="p-4">Tgl Pinjam</th>
-                        <th className="p-4">Jatuh Tempo</th>
-                        <th className="p-4">Status</th>
-                        <th className="p-4 text-right">Aksi</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-800 text-slate-300">
-                      {borrowings.filter(b => {
-                        const statusStr = b.status as string;
-                        if (filterStatus === 'all') return true;
-                        if (filterStatus === 'pending') return ['pending', 'Menunggu'].includes(statusStr);
-                        if (filterStatus === 'approved') return ['approved', 'Sedang Dipinjam', 'Dipinjam'].includes(statusStr);
-                        if (filterStatus === 'returned') return ['returned', 'Dikembalikan'].includes(statusStr);
-                        return statusStr === filterStatus;
-                      }).map(b => {
-                        const statusStr = b.status as string;
-                        return (
-                          <tr key={b.id} className="hover:bg-slate-800/40">
-                            <td className="p-4 font-bold text-white">{getUserName(b.studentId ?? '')}</td>
-                            <td className="p-4">{books.find(bk => bk.id === b.bookId)?.title || b.bookTitle || 'Buku'}</td>
-                            <td className="p-4 text-slate-400">{b.borrowDate}</td>
-                            <td className="p-4 text-slate-400">{b.dueDate}</td>
-                            <td className="p-4 font-extrabold uppercase text-cyan-300">
-                              {statusStr === 'returned' || statusStr === 'Dikembalikan' ? 'Dikembalikan' :
-                               statusStr === 'approved' || statusStr === 'Sedang Dipinjam' || statusStr === 'Dipinjam' ? 'Sedang Dipinjam' :
-                               statusStr === 'pending' || statusStr === 'Menunggu' ? 'Menunggu' :
-                               statusStr === 'overdue' || statusStr === 'Terlambat' ? 'Terlambat' : statusStr}
-                            </td>
-                            <td className="p-4 text-right">
-                              {['pending', 'Menunggu'].includes(statusStr) && (
-                                <div className="flex justify-end gap-1">
-                                  <button onClick={() => onVerifyBorrow(b.id, true)} className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded font-bold transition-all cursor-pointer">Setujui</button>
-                                  <button onClick={() => onVerifyBorrow(b.id, false)} className="px-2.5 py-1 bg-rose-600 hover:bg-rose-500 text-white rounded font-bold transition-all cursor-pointer">Tolak</button>
-                                </div>
-                              )}
-                              {['approved', 'overdue', 'Dipinjam', 'Sedang Dipinjam', 'Terlambat'].includes(statusStr) && (
-                                <button onClick={() => onVerifyReturn(b.id, true)} className="px-3 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded font-bold transition-all cursor-pointer">Kembalikan</button>
-                              )}
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-xs text-left">
+                      <thead className="bg-slate-950 text-slate-400 font-extrabold uppercase border-b border-slate-800">
+                        <tr>
+                          <th className="p-4">Pemustaka</th>
+                          <th className="p-4">No. Identitas</th>
+                          <th className="p-4">Judul Buku</th>
+                          <th className="p-4">Kategori</th>
+                          <th className="p-4">Tanggal Unduh</th>
+                          <th className="p-4 text-center">Format</th>
+                          <th className="p-4 text-center">Status</th>
+                          <th className="p-4 text-right">Aksi</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-800 text-slate-300">
+                        {allDownloads.length === 0 ? (
+                          <tr>
+                            <td colSpan={8} className="py-12 text-center text-slate-500">
+                              <div className="flex flex-col items-center justify-center gap-2">
+                                <Download className="w-8 h-8 text-slate-600" />
+                                <p className="font-bold text-slate-400">Belum ada data unduhan buku</p>
+                                <p className="text-[11px] text-slate-600">Ketika pemustaka mengunduh file PDF dari katalog atau detail buku, log unduhan otomatis muncul di sini.</p>
+                              </div>
                             </td>
                           </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
+                        ) : (
+                          allDownloads.filter(dl => {
+                            if (!searchQuery) return true;
+                            const q = searchQuery.toLowerCase();
+                            return (
+                              dl.userName.toLowerCase().includes(q) ||
+                              dl.userEmail.toLowerCase().includes(q) ||
+                              dl.bookTitle.toLowerCase().includes(q) ||
+                              (dl.category && dl.category.toLowerCase().includes(q)) ||
+                              (dl.identityNumber && dl.identityNumber.toLowerCase().includes(q))
+                            );
+                          }).map(dl => (
+                            <tr key={dl.id} className="hover:bg-slate-800/40">
+                              <td className="p-4">
+                                <div className="font-bold text-white">{dl.userName}</div>
+                                <div className="text-[10px] text-slate-400">{dl.userEmail}</div>
+                              </td>
+                              <td className="p-4 font-mono text-slate-400">{dl.identityNumber || '-'}</td>
+                              <td className="p-4 font-semibold text-white">{dl.bookTitle}</td>
+                              <td className="p-4 text-slate-400">
+                                <span className="px-2 py-0.5 bg-slate-800 text-cyan-300 rounded text-[10px] font-bold">
+                                  {dl.category || 'Umum'}
+                                </span>
+                              </td>
+                              <td className="p-4 text-slate-400">{dl.downloadDate}</td>
+                              <td className="p-4 text-center">
+                                <span className="px-2 py-0.5 rounded font-extrabold text-[9px] bg-red-500/20 text-red-400 border border-red-500/30">
+                                  PDF
+                                </span>
+                              </td>
+                              <td className="p-4 text-center">
+                                <span className="px-2.5 py-1 rounded-md font-extrabold text-[10px] uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 inline-flex items-center gap-1">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                                  Berhasil Diunduh
+                                </span>
+                              </td>
+                              <td className="p-4 text-right">
+                                {dl.pdfUrl ? (
+                                  <a
+                                    href={dl.pdfUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="px-3 py-1 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg font-bold transition-all inline-flex items-center gap-1 cursor-pointer text-[10px]"
+                                  >
+                                    <Download className="w-3 h-3" /> Unduh
+                                  </a>
+                                ) : (
+                                  <span className="text-slate-500 text-[10px]">Tersimpan</span>
+                                )}
+                              </td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </motion.div>
             )}
@@ -908,61 +1011,63 @@ export default function StaffDashboard({
                       <Package className="w-5 h-5 text-blue-400" />
                     </div>
                     <h3 className="text-3xl font-black text-white">{books.length}</h3>
-                    <p className="text-[10px] text-slate-500">Total koleksi digital</p>
+                    <p className="text-[10px] text-slate-500">Total koleksi buku digital</p>
                   </div>
                   
                   <div className="bg-slate-900 border border-cyan-500/30 rounded-2xl p-5 space-y-2">
                     <div className="flex justify-between items-center">
-                      <span className="text-[10px] text-slate-400 font-extrabold uppercase">Total Peminjaman</span>
-                      <ArrowLeftRight className="w-5 h-5 text-cyan-400" />
+                      <span className="text-[10px] text-slate-400 font-extrabold uppercase">Total Unduhan Buku</span>
+                      <Download className="w-5 h-5 text-cyan-400" />
                     </div>
-                    <h3 className="text-3xl font-black text-white">{borrowings.length}</h3>
-                    <p className="text-[10px] text-slate-500">Aktif: {activeLoans} pinjaman</p>
+                    <h3 className="text-3xl font-black text-white">{totalDownloads}</h3>
+                    <p className="text-[10px] text-slate-500">File e-book berhasil diunduh</p>
                   </div>
                   
                   <div className="bg-slate-900 border border-emerald-500/30 rounded-2xl p-5 space-y-2">
                     <div className="flex justify-between items-center">
-                      <span className="text-[10px] text-slate-400 font-extrabold uppercase">Total Anggota</span>
+                      <span className="text-[10px] text-slate-400 font-extrabold uppercase">Total Pemustaka</span>
                       <Users className="w-5 h-5 text-emerald-400" />
                     </div>
                     <h3 className="text-3xl font-black text-white">{users.length}</h3>
-                    <p className="text-[10px] text-slate-500">Pemustaka: {totalMembers} orang</p>
+                    <p className="text-[10px] text-slate-500">Pemustaka terdaftar ({totalMembers} anggota)</p>
                   </div>
                 </div>
 
                 {/* Detailed Statistics */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {/* Borrowing Statistics */}
+                  {/* Download Statistics */}
                   <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
-                    <h3 className="text-sm font-black text-white">Status Peminjaman</h3>
+                    <h3 className="text-sm font-black text-white flex items-center gap-2">
+                      <Download className="w-4 h-4 text-cyan-400" /> Statistik Aktivitas Koleksi & Unduhan
+                    </h3>
                     <div className="space-y-3">
                       <div className="flex justify-between items-center p-3 bg-slate-950 rounded-xl">
                         <div className="flex items-center gap-3">
                           <div className="w-2 h-2 rounded-full bg-cyan-400"></div>
-                          <span className="text-xs font-bold text-slate-300">Sedang Dipinjam</span>
+                          <span className="text-xs font-bold text-slate-300">Total Judul Buku Tersedia</span>
                         </div>
-                        <span className="text-sm font-black text-cyan-400">{activeLoans}</span>
-                      </div>
-                      <div className="flex justify-between items-center p-3 bg-slate-950 rounded-xl">
-                        <div className="flex items-center gap-3">
-                          <div className="w-2 h-2 rounded-full bg-amber-400"></div>
-                          <span className="text-xs font-bold text-slate-300">Menunggu Approval</span>
-                        </div>
-                        <span className="text-sm font-black text-amber-400">{pendingApprovals}</span>
+                        <span className="text-sm font-black text-cyan-400">{totalBooks}</span>
                       </div>
                       <div className="flex justify-between items-center p-3 bg-slate-950 rounded-xl">
                         <div className="flex items-center gap-3">
                           <div className="w-2 h-2 rounded-full bg-emerald-400"></div>
-                          <span className="text-xs font-bold text-slate-300">Sudah Dikembalikan</span>
+                          <span className="text-xs font-bold text-slate-300">Total File Diunduh Selesai</span>
                         </div>
-                        <span className="text-sm font-black text-emerald-400">{returnedBooks}</span>
+                        <span className="text-sm font-black text-emerald-400">{totalDownloads}</span>
                       </div>
                       <div className="flex justify-between items-center p-3 bg-slate-950 rounded-xl">
                         <div className="flex items-center gap-3">
-                          <div className="w-2 h-2 rounded-full bg-rose-400"></div>
-                          <span className="text-xs font-bold text-slate-300">Ditolak</span>
+                          <div className="w-2 h-2 rounded-full bg-purple-400"></div>
+                          <span className="text-xs font-bold text-slate-300">Total Pemustaka Aktif</span>
                         </div>
-                        <span className="text-sm font-black text-rose-400">{rejectedRequests}</span>
+                        <span className="text-sm font-black text-purple-400">{totalMembers}</span>
+                      </div>
+                      <div className="flex justify-between items-center p-3 bg-slate-950 rounded-xl">
+                        <div className="flex items-center gap-3">
+                          <div className="w-2 h-2 rounded-full bg-amber-400"></div>
+                          <span className="text-xs font-bold text-slate-300">Kategori Genre Tersedia</span>
+                        </div>
+                        <span className="text-sm font-black text-amber-400">{categories.length}</span>
                       </div>
                     </div>
                   </div>
@@ -992,11 +1097,11 @@ export default function StaffDashboard({
                   </div>
                 </div>
 
-                {/* Top Borrowed Books */}
+                {/* Top Downloaded Books */}
                 <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
                   <div className="p-5 border-b border-slate-800 flex justify-between items-center">
                     <h3 className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-2">
-                      <TrendingUp className="w-4 h-4 text-cyan-400" /> Buku Paling Populer
+                      <TrendingUp className="w-4 h-4 text-cyan-400" /> Buku Paling Populer (Banyak Diunduh)
                     </h3>
                   </div>
                   <div className="overflow-x-auto">
@@ -1007,17 +1112,17 @@ export default function StaffDashboard({
                           <th className="py-3 px-5">Judul Buku</th>
                           <th className="py-3 px-5">Penulis</th>
                           <th className="py-3 px-5">Kategori</th>
-                          <th className="py-3 px-5 text-right">Jumlah Peminjaman</th>
+                          <th className="py-3 px-5 text-right">Jumlah Unduhan</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-800 text-slate-300">
                         {(() => {
-                          const bookBorrowCount = books.map(book => ({
+                          const bookDownloadCount = books.map(book => ({
                             ...book,
-                            borrowCount: borrowings.filter(b => b.bookId === book.id).length
-                          })).sort((a, b) => b.borrowCount - a.borrowCount).slice(0, 10);
+                            downloadCount: allDownloads.filter(d => d.bookId === book.id).length
+                          })).sort((a, b) => b.downloadCount - a.downloadCount).slice(0, 10);
                           
-                          return bookBorrowCount.map((book, idx) => (
+                          return bookDownloadCount.map((book, idx) => (
                             <tr key={book.id} className="hover:bg-slate-800/50">
                               <td className="py-3.5 px-5">
                                 <span className={`inline-flex items-center justify-center w-7 h-7 rounded-full font-black text-[10px] ${
@@ -1036,7 +1141,7 @@ export default function StaffDashboard({
                                   {getCategoryName(book.categoryId)}
                                 </span>
                               </td>
-                              <td className="py-3.5 px-5 text-right font-black text-cyan-400">{book.borrowCount}x</td>
+                              <td className="py-3.5 px-5 text-right font-black text-cyan-400">{book.downloadCount}x</td>
                             </tr>
                           ));
                         })()}
@@ -1050,24 +1155,22 @@ export default function StaffDashboard({
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
                       <h3 className="text-sm font-black text-white flex items-center gap-2">
-                        <Download className="w-4 h-4 text-cyan-400" /> Export Data Laporan
+                        <Download className="w-4 h-4 text-cyan-400" /> Export Data Laporan Unduhan
                       </h3>
-                      <p className="text-xs text-slate-400 mt-1">Unduh laporan lengkap dalam berbagai format untuk analisis lanjutan.</p>
+                      <p className="text-xs text-slate-400 mt-1">Unduh laporan rekapitulasi unduhan buku dalam berbagai format.</p>
                     </div>
                     <div className="flex flex-wrap gap-2">
                       <button 
                         onClick={() => {
-                          const headers = ['ID,Nama Pemustaka,Judul Buku,Tanggal Pinjam,Jatuh Tempo,Status'];
-                          const rows = borrowings.map(b => {
-                            const u = users.find(x => x.id === b.studentId);
-                            const bk = books.find(x => x.id === b.bookId);
-                            return `"${b.id}","${u?.name || ''}","${bk?.title || ''}","${b.borrowDate}","${b.dueDate}","${b.status}"`;
+                          const headers = ['ID,Nama Pemustaka,Email,No Identitas,Judul Buku,Kategori,Tanggal Unduh,Status'];
+                          const rows = allDownloads.map(dl => {
+                            return `"${dl.id}","${dl.userName}","${dl.userEmail}","${dl.identityNumber || '-'}","${dl.bookTitle}","${dl.category || '-'}","${dl.downloadDate}","Berhasil Diunduh"`;
                           });
                           const csvContent = 'data:text/csv;charset=utf-8,\uFEFF' + [headers, ...rows].join('\n');
                           const encodedUri = encodeURI(csvContent);
                           const link = document.createElement('a');
                           link.setAttribute('href', encodedUri);
-                          link.setAttribute('download', `laporan_pustaka_${new Date().toISOString().slice(0, 10)}.csv`);
+                          link.setAttribute('download', `laporan_unduhan_buku_${new Date().toISOString().slice(0, 10)}.csv`);
                           document.body.appendChild(link);
                           link.click();
                           document.body.removeChild(link);
@@ -1210,22 +1313,6 @@ export default function StaffDashboard({
                       </tbody>
                     </table>
                   </div>
-                </div>
-              </motion.div>
-            )}
-
-            {/* ── SETTINGS TAB ── */}
-            {activeMenu === 'settings' && (
-              <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
-                <h2 className="text-base font-black text-white">Aturan System Perpustakaan</h2>
-                <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4 max-w-xl">
-                  <div>
-                    <label className="block text-xs font-bold text-slate-400 mb-1">Maks Kuota Pinjam Buku Per Pemustaka</label>
-                    <input type="number" value={localMaxBooks} onChange={e => setLocalMaxBooks(Number(e.target.value))} className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-white font-bold" />
-                  </div>
-                  <button onClick={handleSaveSettings} className="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-xs cursor-pointer shadow-lg">
-                    Simpan Pengaturan
-                  </button>
                 </div>
               </motion.div>
             )}
