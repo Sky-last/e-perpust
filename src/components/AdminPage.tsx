@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Book, User, SystemLog } from '../types';
-import { Plus, Trash, Edit, Sparkles, BookOpen, Layers, Users, History, Save, X, RefreshCw, LogOut, Home } from 'lucide-react';
+import { Plus, Trash, Edit, Sparkles, BookOpen, Layers, Users, History, Save, X, RefreshCw, LogOut, Home, Download, Award } from 'lucide-react';
 
 interface AdminPageProps {
   books: Book[];
@@ -278,22 +278,34 @@ export default function AdminPage({
             </div>
 
             <div className="bg-white p-5 rounded-[20px] border border-slate-100 flex items-center space-x-4 shadow-xs">
-              <div className="p-3 bg-indigo-50 text-indigo-600 rounded-xl">
-                <BookOpen className="w-5 h-5" />
-              </div>
-              <div>
-                <p className="text-2xl font-extrabold text-slate-800">{totalBooksCount}</p>
-                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider font-mono">Total Koleksi Buku</p>
-              </div>
-            </div>
-
-            <div className="bg-white p-5 rounded-[20px] border border-slate-100 flex items-center space-x-4 shadow-xs">
               <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl">
                 <Users className="w-5 h-5" />
               </div>
               <div>
                 <p className="text-2xl font-extrabold text-slate-800">{users.length}</p>
                 <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider font-mono">Anggota Terdaftar</p>
+              </div>
+            </div>
+
+            <div className="bg-white p-5 rounded-[20px] border border-slate-100 flex items-center space-x-4 shadow-xs">
+              <div className="p-3 bg-purple-50 text-purple-600 rounded-xl">
+                <Download className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-2xl font-extrabold text-slate-800">
+                  {users.reduce((total, user) => total + (user.downloads?.length || 0), 0)}
+                </p>
+                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider font-mono">Total Unduhan</p>
+              </div>
+            </div>
+
+            <div className="bg-white p-5 rounded-[20px] border border-slate-100 flex items-center space-x-4 shadow-xs">
+              <div className="p-3 bg-amber-50 text-amber-600 rounded-xl">
+                <History className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-2xl font-extrabold text-slate-800">{logs.length}</p>
+                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider font-mono">Aktivitas Log</p>
               </div>
             </div>
           </div>
@@ -318,8 +330,8 @@ export default function AdminPage({
                   className="p-4 bg-slate-50 hover:bg-emerald-50 border border-slate-200/40 rounded-2xl text-left space-y-2 cursor-pointer group transition-all"
                 >
                   <Award className="w-6 h-6 text-emerald-600 group-hover:scale-110 transition-transform" />
-                  <h4 className="font-bold text-slate-800 text-sm">Updgrade Keanggotaan</h4>
-                  <p className="text-slate-400 text-[10px]">Ubah level atau status jatah kuota pinjam user.</p>
+                  <h4 className="font-bold text-slate-800 text-sm">Upgrade Keanggotaan</h4>
+                  <p className="text-slate-400 text-[10px]">Ubah level badge member (Reguler/Premium).</p>
                 </button>
               </div>
             </div>
@@ -337,11 +349,11 @@ export default function AdminPage({
                     <span className="text-slate-400 font-mono text-[9px] mt-0.5 whitespace-nowrap">{log.date.split('T')[0] || log.date}</span>
                     <p className="text-slate-600 flex-1">
                       <span className="font-bold text-slate-800">{log.userName}</span>{' '}
-                      {log.type === 'pinjam' && `meminjam buku "${log.bookTitle}"`}
-                      {log.type === 'kembali' && `mengembalikan buku "${log.bookTitle}"`}
-                      {log.type === 'perpanjang' && `memperpanjang durasi "${log.bookTitle}"`}
+                      {log.type === 'pinjam' && `mengunduh buku "${log.bookTitle}"`}
+                      {log.type === 'kembali' && `menyelesaikan baca "${log.bookTitle}"`}
+                      {log.type === 'perpanjang' && `membaca ulang "${log.bookTitle}"`}
                       {log.type === 'register' && `mendaftar ke platform`}
-                      {log.type === 'update_profile' && `memperbarui profil`}
+                      {log.type === 'update_profile' && `memperbarui profil atau mengunduh buku`}
                     </p>
                   </div>
                 ))}
@@ -803,13 +815,16 @@ export default function AdminPage({
                         log.type === 'kembali' ? 'bg-emerald-50 text-emerald-600' :
                         log.type === 'perpanjang' ? 'bg-purple-50 text-purple-600' : 'bg-slate-100 text-slate-600'
                       }`}>
-                        {log.type}
+                        {log.type === 'pinjam' ? 'Download' : 
+                         log.type === 'kembali' ? 'Selesai Baca' : 
+                         log.type === 'perpanjang' ? 'Baca Ulang' :
+                         log.type}
                       </span>
                     </td>
                     <td className="p-3.5 text-slate-600 font-medium">
-                      {log.type === 'pinjam' && `Berhasil meminjam buku "${log.bookTitle}"`}
-                      {log.type === 'kembali' && `Berhasil mengembalikan buku "${log.bookTitle}"`}
-                      {log.type === 'perpanjang' && `Memperpanjang tenggat waktu buku "${log.bookTitle}"`}
+                      {log.type === 'pinjam' && `Mengunduh buku "${log.bookTitle}"`}
+                      {log.type === 'kembali' && `Menyelesaikan baca "${log.bookTitle}"`}
+                      {log.type === 'perpanjang' && `Membaca ulang "${log.bookTitle}"`}
                       {log.type === 'register' && `Mendaftar ke sistem Perpustakaan Kita`}
                       {log.type === 'update_profile' && `Memperbarui detail profil pribadi`}
                     </td>
