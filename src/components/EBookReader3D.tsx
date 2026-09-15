@@ -28,7 +28,9 @@ export default function EBookReader3D({ book, onClose, currentUser, initialMode 
   const [mode, setMode] = useState<'read' | 'pdf'>(initialMode);
   const pdfUrl = resolveBookPdfUrl(book);
 
-  // Debug logging
+  // Debug logging + Track book as downloaded/read when reader opens
+  const hasTrackedDownload = useRef(false);
+  
   useEffect(() => {
     console.log('✅ EBookReader3D MOUNTED!', {
       bookId: book.id,
@@ -38,7 +40,18 @@ export default function EBookReader3D({ book, onClose, currentUser, initialMode 
       mode,
       initialMode
     });
-  }, [book, pdfUrl, mode, initialMode]);
+
+    // Auto-track as downloaded when user opens reader (especially for mobile auto-download)
+    if (currentUser && onDownloadBook && !hasTrackedDownload.current) {
+      // Check if not already downloaded
+      const alreadyDownloaded = (currentUser.downloads || []).some(d => d.bookId === book.id);
+      if (!alreadyDownloaded) {
+        console.log('📥 Auto-tracking book as downloaded (reader opened):', book.title);
+        hasTrackedDownload.current = true;
+        onDownloadBook(book);
+      }
+    }
+  }, [book.id, currentUser, onDownloadBook]); // Safe dependencies with ref guard
 
   // PDF Availability State — skip HEAD check, load iframe directly
   const [pdfStatus, setPdfStatus] = useState<'checking' | 'valid' | 'invalid'>('valid');

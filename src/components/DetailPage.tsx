@@ -212,6 +212,7 @@ export default function DetailPage({
           onClose={() => setShow3DReader(false)}
           currentUser={currentUser}
           onNavigate={onNavigate}
+          onDownloadBook={onDownloadBook}
         />
       )}
     </div>
