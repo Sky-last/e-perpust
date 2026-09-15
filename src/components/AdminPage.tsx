@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Book, User, SystemLog } from '../types';
-import { Plus, Trash, Edit, Sparkles, BookOpen, Layers, Users, History, Save, X, RefreshCw } from 'lucide-react';
+import { Plus, Trash, Edit, Sparkles, BookOpen, Layers, Users, History, Save, X, RefreshCw, LogOut, Home } from 'lucide-react';
 
 interface AdminPageProps {
   books: Book[];
@@ -11,6 +11,8 @@ interface AdminPageProps {
   onDeleteBook: (id: string) => void;
   onUpdateUserRole: (email: string, badge: 'Premium' | 'Reguler') => void;
   addToast: (message: string, type: 'success' | 'error' | 'info') => void;
+  onLogout?: () => void;
+  onNavigate?: (view: any) => void;
 }
 
 const COLOR_PRESETS = [
@@ -32,7 +34,9 @@ export default function AdminPage({
   onEditBook,
   onDeleteBook,
   onUpdateUserRole,
-  addToast
+  addToast,
+  onLogout,
+  onNavigate
 }: AdminPageProps) {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'crud' | 'users' | 'history'>('dashboard');
 
@@ -199,15 +203,40 @@ export default function AdminPage({
 
   return (
     <div className="space-y-6">
-      {/* Header and top tab buttons */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">Admin Control Panel</h1>
-          <p className="text-slate-400 text-xs md:text-sm">Kelola katalog buku, kustomisasi cover AI, monitoring keanggotaan user, dan log sistem.</p>
+      {/* Header with Navigation & Logout */}
+      <div className="flex flex-col gap-4">
+        {/* Top Bar: Logo, Title, Logout */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            {onNavigate && (
+              <button
+                onClick={() => onNavigate('landing')}
+                className="p-2 hover:bg-slate-100 rounded-xl text-slate-600 cursor-pointer transition-colors"
+                title="Kembali ke Home"
+              >
+                <Home className="w-5 h-5" />
+              </button>
+            )}
+            <div>
+              <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">Admin Control Panel</h1>
+              <p className="text-slate-400 text-xs md:text-sm">Kelola katalog buku, kustomisasi cover AI, monitoring keanggotaan user, dan log sistem.</p>
+            </div>
+          </div>
+          
+          {onLogout && (
+            <button
+              onClick={onLogout}
+              className="flex items-center gap-2 px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200/60 rounded-xl text-xs font-bold cursor-pointer transition-all"
+              title="Keluar dari Akun Admin"
+            >
+              <LogOut className="w-4 h-4" />
+              <span className="hidden sm:inline">Keluar</span>
+            </button>
+          )}
         </div>
 
-        {/* Tab navigations & Logout */}
-        <div className="flex items-center space-x-2">
+        {/* Tab navigations */}
+        <div className="flex items-center space-x-2 overflow-x-auto pb-2">
           <div className="flex bg-slate-50 p-1 rounded-2xl border border-slate-100 space-x-1">
             {[
               { id: 'dashboard', label: 'Ringkasan', icon: BookOpen },
@@ -220,7 +249,7 @@ export default function AdminPage({
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as any)}
-                  className={`px-3.5 py-2 rounded-xl text-xs font-bold flex items-center space-x-1.5 cursor-pointer transition-all ${
+                  className={`px-3.5 py-2 rounded-xl text-xs font-bold flex items-center space-x-1.5 cursor-pointer transition-all whitespace-nowrap ${
                     activeTab === tab.id ? 'bg-white text-blue-600 shadow-xs border border-slate-100' : 'text-slate-500 hover:text-slate-700'
                   }`}
                 >

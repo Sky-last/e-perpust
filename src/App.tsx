@@ -1622,6 +1622,8 @@ export default function App() {
             onDeleteBook={handleDeleteBook}
             onUpdateUserRole={handleUpdateUserRole}
             addToast={addToast}
+            onLogout={handleLogout}
+            onNavigate={handleNavigate}
           />
         );
       default:
