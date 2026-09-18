@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Sparkles, MessageSquare, X, Send, Bot, Mic, MicOff, BookOpen, Search, ThumbsUp, Volume2, ArrowRight } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { Sparkles, X, Send, Bot, Mic, MicOff, BookOpen, Search, ThumbsUp } from 'lucide-react';
 import { Book } from '../types';
 import { soundFX } from '../utils/audio';
 
@@ -106,7 +106,7 @@ export default function AILibrarianAssistant({ books, onNavigate }: AILibrarianA
 
     if (q.includes('rekomendasi') || q.includes('saran') || q.includes('bagus') || q.includes('populer')) {
       replyText = 'Berikut adalah beberapa buku populer & sangat direkomendasikan untuk Anda baca:';
-      matchedBooks = bookList.filter(b => b.rating >= 4.5).slice(0, 3);
+      matchedBooks = bookList.filter(b => (b.rating ?? 0) >= 4.5).slice(0, 3);
       if (matchedBooks.length === 0) matchedBooks = bookList.slice(0, 3);
     } else if (q.includes('teknologi') || q.includes('coding') || q.includes('komputer') || q.includes('ai') || q.includes('pemrograman')) {
       replyText = 'Berikut buku seputar Teknologi & Pemrograman di perpustakaan kita:';

@@ -704,18 +704,6 @@ export default function StaffDashboard({
               </h1>
             </div>
           </div>
-
-          {/* Tombol Logout Mobile di Navbar */}
-          <div className="lg:hidden flex items-center gap-2">
-            <button
-              onClick={onLogout}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-rose-500/15 hover:bg-rose-500/25 text-rose-400 hover:text-rose-300 border border-rose-500/30 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-sm active:scale-95"
-              title="Keluar Akun"
-            >
-              <LogOut className="w-4 h-4" />
-              <span>Keluar</span>
-            </button>
-          </div>
         </header>
 
         <main className="flex-1 overflow-y-auto p-4 lg:p-8 scrollbar-thin scrollbar-thumb-slate-800">

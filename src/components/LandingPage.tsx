@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { BookOpen, Star, Heart, ArrowRight, Users, BookMarked, CheckCircle, Sun, Moon, Sparkles, Mail, Phone, MapPin, Clock, Send, MessageSquare, Menu, X, ChevronDown } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Star, Heart, ArrowRight, Users, BookMarked, CheckCircle, Sun, Moon, Sparkles, Mail, Phone, MapPin, Clock, Send, MessageSquare, Menu, X, ChevronDown } from 'lucide-react';
 import { Book, ViewType, User } from '../types';
 import Book3D from './Book3D';
 import BookShelf3D from './BookShelf3D';
@@ -7,7 +7,6 @@ import FloatingParticles from './FloatingParticles';
 import Library3DRoom from './Library3DRoom';
 import BookOpen3DModal from './BookOpen3DModal';
 import EBookReader3D from './EBookReader3D';
-import VT3DImmersiveExperience from './VT3DImmersiveExperience';
 import { BearMascotIcon } from './AnimatedIcon';
 import { soundFX } from '../utils/audio';
 
@@ -32,7 +31,6 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
   // Interactive 3D Modals State
   const [selectedBook3D, setSelectedBook3D] = useState<Book | null>(null);
   const [readingBook3D, setReadingBook3D] = useState<Book | null>(null);
-  const [showVTMode, setShowVTMode] = useState(false);
 
   // Contact Form State
   const [contactName, setContactName] = useState('');
@@ -41,7 +39,6 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
   const [contactSubmitted, setContactSubmitted] = useState(false);
 
   const heroRef = useRef<HTMLDivElement>(null);
-  const mainRef = useRef<HTMLDivElement>(null);
   const cursorGlowRef = useRef<HTMLDivElement>(null);
 
   // Typing effect for hero headline
@@ -105,11 +102,11 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const popularBooks = books.filter(b => b.rating >= 4.7).slice(0, 5);
+  const popularBooks = books.filter(b => (b.rating ?? 0) >= 4.7).slice(0, 5);
   // Fallback: jika tidak ada buku rating tinggi, ambil buku dengan rating tertinggi
   const sortedBooks = popularBooks.length > 0 
     ? popularBooks 
-    : [...books].sort((a, b) => b.rating - a.rating).slice(0, 5);
+    : [...books].sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0)).slice(0, 5);
   
   // Prioritaskan buku bks-1 di posisi pertama
   const topBook = books.find(b => b.id === 'bks-1');
@@ -118,7 +115,6 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
   
   const shelfBooks = books.slice(0, 18);
   const totalUniqueBooks = books.length;
-  const featuredBook = books.find(b => b.id === 'bks-4') || books[0];
 
   const handleOpen3DBook = (id: string) => {
     const b = books.find(item => item.id === id);

@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import * as React from 'react';
 import { Book, User, ViewType } from '../types';
-import { Search, SlidersHorizontal, Heart, Star, BookOpen, RefreshCw, Sun, Moon, Sparkles, Menu, X, Download } from 'lucide-react';
+import { Search, SlidersHorizontal, Heart, Star, BookOpen, RefreshCw, Sun, Moon, Sparkles, Menu, X } from 'lucide-react';
 import Book3D from './Book3D';
 import BookOpen3DModal from './BookOpen3DModal';
 import EBookReader3D from './EBookReader3D';
@@ -34,7 +34,6 @@ export default function KatalogPage({
   const [selectedYear, setSelectedYear] = useState('Semua');
   const [sortBy, setSortBy] = useState('Terpopuler');
   const [showFilters, setShowFilters] = useState(false);
-  const [activeSection, setActiveSection] = useState<'home' | 'katalog' | 'tentang' | 'kontak'>('katalog');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Interactive 3D Modals State
@@ -88,12 +87,12 @@ export default function KatalogPage({
       case 'Z-A':
         return list.sort((a, b) => b.title.localeCompare(a.title));
       case 'Terbaru':
-        return list.sort((a, b) => b.year - a.year);
+        return list.sort((a, b) => (b.year ?? 0) - (a.year ?? 0));
       case 'Terlama':
-        return list.sort((a, b) => a.year - b.year);
+        return list.sort((a, b) => (a.year ?? 0) - (b.year ?? 0));
       case 'Terpopuler':
       default:
-        return list.sort((a, b) => b.rating - a.rating);
+        return list.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
     }
   }, [filteredBooks, sortBy]);
 

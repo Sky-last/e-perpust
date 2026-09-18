@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Book } from '../types';
-import { resolveBookCover, getCachedCover, resolveBookCoverFallback } from '../utils/coverResolver';
+import { resolveBookCover, resolveBookCoverFallback } from '../utils/coverResolver';
 
 interface Book3DProps {
   book: Book;

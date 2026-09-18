@@ -1,13 +1,13 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Book, User } from '../types';
 import { 
   X, ChevronLeft, ChevronRight, Volume2, VolumeX, Maximize2, Minimize2, 
-  Bookmark, Sparkles, FileText, Download, ZoomIn, ZoomOut, Mic, Play, 
-  Square, CloudRain, Coffee, Waves, Lock, Moon, Sun, BookOpen, AlignLeft,
+  Bookmark, FileText, Download, Mic, 
+  Square, CloudRain, Coffee, Waves, Lock, BookOpen,
   List, Settings, Check, AlertTriangle, RefreshCw, CheckCircle2, Trophy
 } from 'lucide-react';
 import { soundFX } from '../utils/audio';
-import { resolveBookPdfUrl, checkPdfAvailability } from '../utils/pdfResolver';
+import { resolveBookPdfUrl } from '../utils/pdfResolver';
 import { getBookReadingPages, PageContent } from '../data/bookChaptersData';
 
 interface EBookReader3DProps {
@@ -56,7 +56,6 @@ export default function EBookReader3D({ book, onClose, currentUser, initialMode 
   // PDF Availability State — skip HEAD check, load iframe directly
   const [pdfStatus, setPdfStatus] = useState<'checking' | 'valid' | 'invalid'>('valid');
   const [pdfErrorMessage, setPdfErrorMessage] = useState<string>('');
-  const [pdfRetryCount, setPdfRetryCount] = useState<number>(0);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   // Completed read state for monthly reading target
@@ -88,13 +87,12 @@ export default function EBookReader3D({ book, onClose, currentUser, initialMode 
       setPdfStatus('valid');
       setPdfErrorMessage('');
     }
-  }, [mode, pdfUrl, pdfRetryCount]);
+  }, [mode, pdfUrl]);
 
   // Pages & Chapter Data
   const readingPages: PageContent[] = getBookReadingPages(book);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [isFlipping, setIsFlipping] = useState<boolean>(false);
-  const [flipDirection, setFlipDirection] = useState<'next' | 'prev'>('next');
   
   // Customization States
   const [theme, setTheme] = useState<ReaderTheme>('sepia');
@@ -213,7 +211,6 @@ export default function EBookReader3D({ book, onClose, currentUser, initialMode 
   const handleNextPage = () => {
     if (currentPage >= totalPages || isFlipping) return;
     stopSpeech();
-    setFlipDirection('next');
     setIsFlipping(true);
     if (soundEnabled) soundFX.playPageFlip();
     setTimeout(() => {
@@ -230,7 +227,6 @@ export default function EBookReader3D({ book, onClose, currentUser, initialMode 
   const handlePrevPage = () => {
     if (currentPage <= 1 || isFlipping) return;
     stopSpeech();
-    setFlipDirection('prev');
     setIsFlipping(true);
     if (soundEnabled) soundFX.playPageFlip();
     setTimeout(() => {
@@ -507,6 +503,16 @@ export default function EBookReader3D({ book, onClose, currentUser, initialMode 
                   title={bookmarkedPages.includes(currentPage) ? 'Hapus Penanda' : 'Tandai Halaman Ini'}
                 >
                   <Bookmark className={`w-4 h-4 ${bookmarkedPages.includes(currentPage) ? 'fill-amber-400' : ''}`} />
+                </button>
+
+                <button
+                  onClick={toggleSound}
+                  className={`p-2 rounded-xl border transition-all cursor-pointer ${
+                    soundEnabled ? 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700' : 'bg-slate-800/50 text-slate-500 border-slate-800'
+                  }`}
+                  title={soundEnabled ? 'Matikan Suara Efek' : 'Nyalakan Suara Efek'}
+                >
+                  {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
                 </button>
               </>
             )}

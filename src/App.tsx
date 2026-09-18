@@ -1688,17 +1688,7 @@ export default function App() {
                   <button onClick={() => handleNavigate('login')} className="px-3 py-1.5 text-sm font-semibold text-blue-600 border border-blue-200 rounded-lg">Masuk</button>
                 )}
                 {currentUser && (
-                  <>
-                    <button onClick={() => handleNavigate('dashboard')} className="px-3 py-1.5 text-xs font-bold bg-blue-600 text-white rounded-lg">Dashboard</button>
-                    <button 
-                      onClick={handleLogout} 
-                      className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200/80 rounded-lg transition-colors cursor-pointer"
-                      title="Keluar Akun"
-                    >
-                      <LogOut className="w-3.5 h-3.5" />
-                      <span>Keluar</span>
-                    </button>
-                  </>
+                  <button onClick={() => handleNavigate('dashboard')} className="px-3 py-1.5 text-xs font-bold bg-blue-600 text-white rounded-lg">Dashboard</button>
                 )}
                 <button
                   onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -1783,24 +1773,12 @@ export default function App() {
           <span className="font-extrabold text-slate-900 tracking-tight text-sm">Perpustakaan Kita</span>
         </div>
         
-        <div className="flex items-center space-x-2">
-          {currentUser && (
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200/80 rounded-xl transition-all cursor-pointer shadow-xs active:scale-95"
-              title="Keluar Akun"
-            >
-              <LogOut className="w-3.5 h-3.5" />
-              <span>Keluar</span>
-            </button>
-          )}
-          <button 
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-2 hover:bg-slate-50 rounded-xl border border-slate-200/50 text-slate-600 cursor-pointer"
-          >
-            {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
-        </div>
+        <button 
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          className="p-2 hover:bg-slate-50 rounded-xl border border-slate-200/50 text-slate-600 cursor-pointer"
+        >
+          {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+        </button>
       </div>
 
       {/* SIDEBAR NAVIGATION LAYER */}

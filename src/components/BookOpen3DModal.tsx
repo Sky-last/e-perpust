@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Book } from '../types';
-import { X, BookOpen, Star, Bookmark, Heart, Sparkles, MapPin, Layers, Download } from 'lucide-react';
+import { X, BookOpen, Star, Heart, Sparkles, MapPin, Layers, Download } from 'lucide-react';
 import { soundFX } from '../utils/audio';
 import { resolveBookPdfUrl } from '../utils/pdfResolver';
-import { resolveBookCover, getCachedCover } from '../utils/coverResolver';
+import { resolveBookCover } from '../utils/coverResolver';
 
 interface BookOpen3DModalProps {
   book: Book | null;

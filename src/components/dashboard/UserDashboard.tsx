@@ -727,16 +727,6 @@ export default function UserDashboard({
                 )}
               </AnimatePresence>
             </div>
-
-            {/* Mobile Logout Button in Navbar */}
-            <button
-              onClick={onLogout}
-              className="lg:hidden flex items-center gap-1.5 px-3 py-2 bg-[#B4573F]/15 hover:bg-[#B4573F]/25 text-[#B4573F] border border-[#B4573F]/30 rounded-lg text-xs font-bold transition-all cursor-pointer shadow-xs active:scale-95"
-              title="Keluar Akun"
-            >
-              <LogOut className="w-3.5 h-3.5" />
-              <span>Keluar</span>
-            </button>
           </div>
         </header>
 

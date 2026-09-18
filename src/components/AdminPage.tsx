@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Book, User, SystemLog } from '../types';
-import { Plus, Trash, Edit, Sparkles, BookOpen, Layers, Users, History, Save, X, RefreshCw, LogOut, Home, Download, Award, FileText, Link as LinkIcon } from 'lucide-react';
+import { Plus, Trash, Edit, Sparkles, BookOpen, Layers, Users, History, Save, X, RefreshCw, LogOut, Home, Download, Award, FileText } from 'lucide-react';
 
 interface AdminPageProps {
   books: Book[];
@@ -64,9 +64,6 @@ export default function AdminPage({
   const [adminSearch, setAdminSearch] = useState('');
   const [adminCategory, setAdminCategory] = useState('Semua');
 
-  // Stats
-  const totalBooksCount = books.length;
-
   // Handle book submitting (Add/Edit)
   const handleSubmitBook = (e: React.FormEvent) => {
     e.preventDefault();
@@ -123,8 +120,8 @@ export default function AdminPage({
     setIsbn(book.isbn);
     setDescription(book.description);
     setCategory(book.category);
-    setYear(book.year);
-    setRating(book.rating);
+    setYear(book.year ?? 2024);
+    setRating(book.rating ?? 4.5);
     setCoverColor(book.coverColor);
     setCoverUrl(book.coverUrl || '');
     setPdfUrl(book.pdfUrl || '');

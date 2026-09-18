@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 interface AnimatedIconProps {
   src: string;
@@ -18,7 +18,7 @@ export default function AnimatedIcon({
 }: AnimatedIconProps) {
   const [isHovered, setIsHovered] = useState(false);
 
-  const animations = {
+  const animations: Record<string, { initial: any; animate: any; hover: any }> = {
     bounce: {
       initial: { y: 0 },
       animate: {
