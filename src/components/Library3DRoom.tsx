@@ -7,9 +7,18 @@ import { soundFX } from '../utils/audio';
 interface Library3DRoomProps {
   books: Book[];
   onSelectBook: (id: string) => void;
+  badgeText?: string;
+  titleText?: string;
+  subtitleText?: string;
 }
 
-export default function Library3DRoom({ books = [], onSelectBook }: Library3DRoomProps) {
+export default function Library3DRoom({ 
+  books = [], 
+  onSelectBook,
+  badgeText,
+  titleText,
+  subtitleText
+}: Library3DRoomProps) {
   // Default featured showcase book to "Syifa dan Burung Kenari" (bks-1)
   const defaultBksIndex = books.findIndex(b => b.id === 'bks-1');
   const defaultIndex = defaultBksIndex !== -1 ? defaultBksIndex : 0;
@@ -39,13 +48,13 @@ export default function Library3DRoom({ books = [], onSelectBook }: Library3DRoo
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 relative z-10">
         <div>
           <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-500/10 border border-blue-500/20 rounded-full text-blue-400 text-[10px] font-black uppercase tracking-wider">
-            <Sparkles className="w-3 h-3" /> Panggung Visualisasi Buku
+            <Sparkles className="w-3 h-3" /> {badgeText || 'Panggung Visualisasi Buku'}
           </div>
           <h3 className="text-2xl md:text-3xl font-black text-white mt-2 tracking-tight">
-            Etalase Koleksi Unggulan
+            {titleText || 'Etalase Koleksi Unggulan'}
           </h3>
           <p className="text-xs text-slate-400 mt-1">
-            Sorotan buku digital interaktif dengan efek rotasi dan detail lengkap.
+            {subtitleText || 'Sorotan buku digital interaktif dengan efek rotasi dan detail lengkap.'}
           </p>
         </div>
 

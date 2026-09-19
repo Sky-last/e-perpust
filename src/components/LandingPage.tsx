@@ -358,13 +358,13 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
               className="btn-glow flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold rounded-2xl shadow-xl shadow-blue-500/25 hover:shadow-blue-500/40 hover:scale-105 transition-all cursor-pointer w-full sm:w-auto text-sm"
             >
               <Sparkles className="w-4 h-4" />
-              Jelajahi Katalog
+              {cfg.heroCtaExplore || 'Jelajahi Katalog'}
               <ArrowRight className="w-4 h-4" />
             </button>
             <button onClick={() => { soundFX.playClick(); onNavigate('register'); }}
               className={`flex items-center justify-center gap-2 px-8 py-4 font-extrabold rounded-2xl border-2 transition-all hover:scale-105 cursor-pointer w-full sm:w-auto text-sm ${dk ? 'border-slate-800 bg-slate-900/60 text-slate-200 hover:border-blue-500 hover:text-white' : 'border-slate-200 bg-white text-slate-800 hover:border-blue-500 hover:text-blue-600'}`}
             >
-              Daftar Gratis
+              {cfg.heroCtaRegister || 'Daftar Gratis'}
             </button>
           </div>
 
@@ -394,7 +394,7 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
         <div className="relative z-10 mt-16 px-0">
           <div className="max-w-7xl mx-auto px-6 mb-4">
             <p className={`text-xs font-bold uppercase tracking-widest ${sub}`}>
-              Drag rak buku untuk memilih koleksi
+              {cfg.bookshelfTitle || 'Drag rak buku untuk memilih koleksi'}
             </p>
           </div>
           <div className={`border-t border-b py-6 ${dk ? 'border-slate-800 bg-slate-900/50' : 'border-slate-200 bg-slate-100/50'}`}>
@@ -407,7 +407,13 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
 
       {/* 3D ROOM SHOWCASE SECTION */}
       <section className="py-20 px-6 max-w-7xl mx-auto">
-        <Library3DRoom books={books} onSelectBook={handleOpen3DBook} />
+        <Library3DRoom 
+          books={books} 
+          onSelectBook={handleOpen3DBook}
+          badgeText={cfg.showcaseBadge}
+          titleText={cfg.showcaseTitle}
+          subtitleText={cfg.showcaseSubtitle}
+        />
       </section>
 
       {/* STATS */}
@@ -415,9 +421,9 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
         <div className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-6">
           {[
             { icon: BookMarked, val: `${totalUniqueBooks}+`, label: 'Judul Buku', color: 'text-blue-400 bg-blue-950/50', delay: 'delay-100' },
-            { icon: Users, val: '12,480+', label: 'Anggota Aktif', color: 'text-emerald-400 bg-emerald-950/50', delay: 'delay-200' },
-            { icon: Star, val: '48,930+', label: 'Peminjaman', color: 'text-purple-400 bg-purple-950/50', delay: 'delay-300' },
-            { icon: CheckCircle, val: '4.9/5', label: 'Rating Platform', color: 'text-amber-400 bg-amber-950/50', delay: 'delay-400' },
+            { icon: Users, val: cfg.statsMembersCount || '12,480+', label: 'Anggota Aktif', color: 'text-emerald-400 bg-emerald-950/50', delay: 'delay-200' },
+            { icon: Star, val: cfg.statsBorrowCount || '48,930+', label: 'Peminjaman', color: 'text-purple-400 bg-purple-950/50', delay: 'delay-300' },
+            { icon: CheckCircle, val: cfg.statsRatingText || '4.9/5', label: 'Rating Platform', color: 'text-amber-400 bg-amber-950/50', delay: 'delay-400' },
           ].map((s, i) => (
             <div key={i} className={`reveal-scale ${s.delay} text-center space-y-3 group cursor-default`}>
               <div className={`w-14 h-14 ${s.color} rounded-2xl flex items-center justify-center mx-auto group-hover:scale-110 transition-transform duration-300`}>
@@ -435,8 +441,8 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
         <div className="max-w-7xl mx-auto">
           <div className="reveal flex items-end justify-between mb-12">
             <div className="space-y-2">
-              <span className="text-blue-400 text-xs font-bold uppercase tracking-widest">Koleksi Pilihan</span>
-              <h2 className={`text-3xl md:text-4xl font-black ${text}`}>Buku Terpopuler</h2>
+              <span className="text-blue-400 text-xs font-bold uppercase tracking-widest">{cfg.popularBadge || 'Koleksi Pilihan'}</span>
+              <h2 className={`text-3xl md:text-4xl font-black ${text}`}>{cfg.popularTitle || 'Buku Terpopuler'}</h2>
             </div>
             <button onClick={() => { soundFX.playClick(); onNavigate('katalog'); }}
               className="flex items-center gap-1.5 text-blue-400 hover:text-blue-300 text-sm font-bold transition-all hover:gap-2.5 cursor-pointer"
@@ -518,18 +524,27 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
       <section id="tentang" className={`py-20 px-6 border-t ${dk ? 'border-slate-800' : 'border-slate-200'}`}>
         <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
           <div className="reveal-left space-y-6">
-            <span className="text-blue-400 text-xs font-bold uppercase tracking-widest">Tentang Platform</span>
+            <span className="text-blue-400 text-xs font-bold uppercase tracking-widest">{cfg.aboutBadge || 'Tentang Platform'}</span>
             <h2 className={`text-3xl md:text-4xl font-black leading-tight ${text}`}>
-              Misi Kami: Literasi untuk Semua
+              {cfg.aboutTitle || 'Misi Kami: Literasi untuk Semua'}
             </h2>
             <p className={`text-sm leading-relaxed ${sub}`}>
-              Perpustakaan Kita adalah platform perpustakaan online modern. Dengan animasi buku interaktif, e-reader flipbook, serta efek suara futuristik.
+              {cfg.aboutDescription || 'Perpustakaan Kita adalah platform perpustakaan online modern. Dengan animasi buku interaktif, e-reader flipbook, serta efek suara futuristik.'}
             </p>
             <div className="space-y-4">
               {[
-                { t: 'Animasi Buku Terbuka', d: 'Visualisasi cover buku berputar dan membungkus halaman secara dinamis.' },
-                { t: 'E-Reader Page Flip', d: 'Membaca e-book PDF dengan efek membalik halaman dan suara kertas yang sintetis.' },
-                { t: 'Showcase Room', d: 'Putar kamera 360° untuk melihat panggung buku pada pedestal bercahaya.' },
+                { 
+                  t: cfg.aboutFeature1Title || 'Animasi Buku Terbuka', 
+                  d: cfg.aboutFeature1Desc || 'Visualisasi cover buku berputar dan membungkus halaman secara dinamis.' 
+                },
+                { 
+                  t: cfg.aboutFeature2Title || 'E-Reader Page Flip', 
+                  d: cfg.aboutFeature2Desc || 'Membaca e-book PDF dengan efek membalik halaman dan suara kertas yang sintetis.' 
+                },
+                { 
+                  t: cfg.aboutFeature3Title || 'Showcase Room', 
+                  d: cfg.aboutFeature3Desc || 'Putar kamera 360° untuk melihat panggung buku pada pedestal bercahaya.' 
+                },
               ].map((item, i) => {
                 const delays = ['delay-100', 'delay-300', 'delay-500'];
                 return (
@@ -554,13 +569,13 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
         <div className="max-w-7xl mx-auto space-y-12">
           <div className="reveal text-center max-w-2xl mx-auto space-y-3">
             <span className="text-blue-400 text-xs font-black uppercase tracking-widest px-3 py-1 bg-blue-500/10 rounded-full border border-blue-500/20">
-              Hubungi Kami
+              {cfg.contactBadge || 'Hubungi Kami'}
             </span>
             <h2 className={`text-3xl md:text-4xl font-black ${text}`}>
-              Layanan Informasi &amp; Layanan Anggota
+              {cfg.contactTitle || 'Layanan Informasi & Layanan Anggota'}
             </h2>
             <p className={`text-sm ${sub}`}>
-              Punya pertanyaan mengenai koleksi e-book, peminjaman fisik, atau akun keanggotaan? Tim pustakawan kami siap membantu Anda.
+              {cfg.contactSubtitle || 'Punya pertanyaan mengenai koleksi e-book, peminjaman fisik, atau akun keanggotaan? Tim pustakawan kami siap membantu Anda.'}
             </p>
           </div>
 

@@ -77,17 +77,55 @@ export interface LibrarySettings {
 }
 
 export interface SiteSettings {
+  // 1. Identitas & Hero
   libraryName: string;
   libraryTagline: string;
   heroBadge: string;
   heroSubtitle: string;
+  heroCtaExplore?: string;
+  heroCtaRegister?: string;
+
+  // 2. Angka Statistik Pencapaian (Stats Bar)
+  statsMembersCount?: string;
+  statsBorrowCount?: string;
+  statsRatingText?: string;
+
+  // 3. Rak Buku & Etalase 3D
+  bookshelfTitle?: string;
+  showcaseBadge?: string;
+  showcaseTitle?: string;
+  showcaseSubtitle?: string;
+
+  // 4. Koleksi Populer
+  popularBadge?: string;
+  popularTitle?: string;
+
+  // 5. Tentang Kami & 3 Fitur Unggulan
+  aboutBadge?: string;
+  aboutTitle?: string;
+  aboutDescription?: string;
+  aboutFeature1Title?: string;
+  aboutFeature1Desc?: string;
+  aboutFeature2Title?: string;
+  aboutFeature2Desc?: string;
+  aboutFeature3Title?: string;
+  aboutFeature3Desc?: string;
+
+  // 6. Kontak & Jam Layanan
+  contactBadge?: string;
+  contactTitle?: string;
+  contactSubtitle?: string;
   contactAddress: string;
   contactPhone: string;
   contactEmail: string;
   serviceHours: string;
+
+  // 7. Banner Pengumuman
   announcementEnabled: boolean;
   announcementText: string;
   announcementLink?: string;
+
+  // 8. Footer & Hak Cipta
   footerCopyright: string;
 }
 

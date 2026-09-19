@@ -142,35 +142,90 @@ export default function StaffDashboard({
 
   // CMS Web Settings States
   const initialCms = siteSettings || DEFAULT_SITE_SETTINGS;
+  // Section 1: Identitas & Hero
   const [cmsLibraryName, setCmsLibraryName] = useState(initialCms.libraryName);
   const [cmsLibraryTagline, setCmsLibraryTagline] = useState(initialCms.libraryTagline);
   const [cmsHeroBadge, setCmsHeroBadge] = useState(initialCms.heroBadge);
   const [cmsHeroSubtitle, setCmsHeroSubtitle] = useState(initialCms.heroSubtitle);
+  const [cmsHeroCtaExplore, setCmsHeroCtaExplore] = useState(initialCms.heroCtaExplore || DEFAULT_SITE_SETTINGS.heroCtaExplore || '');
+  const [cmsHeroCtaRegister, setCmsHeroCtaRegister] = useState(initialCms.heroCtaRegister || DEFAULT_SITE_SETTINGS.heroCtaRegister || '');
+  // Section 2: Stats Bar
+  const [cmsStatsMembersCount, setCmsStatsMembersCount] = useState(initialCms.statsMembersCount || DEFAULT_SITE_SETTINGS.statsMembersCount || '');
+  const [cmsStatsBorrowCount, setCmsStatsBorrowCount] = useState(initialCms.statsBorrowCount || DEFAULT_SITE_SETTINGS.statsBorrowCount || '');
+  const [cmsStatsRatingText, setCmsStatsRatingText] = useState(initialCms.statsRatingText || DEFAULT_SITE_SETTINGS.statsRatingText || '');
+  // Section 3: Rak & Etalase
+  const [cmsBookshelfTitle, setCmsBookshelfTitle] = useState(initialCms.bookshelfTitle || DEFAULT_SITE_SETTINGS.bookshelfTitle || '');
+  const [cmsShowcaseBadge, setCmsShowcaseBadge] = useState(initialCms.showcaseBadge || DEFAULT_SITE_SETTINGS.showcaseBadge || '');
+  const [cmsShowcaseTitle, setCmsShowcaseTitle] = useState(initialCms.showcaseTitle || DEFAULT_SITE_SETTINGS.showcaseTitle || '');
+  const [cmsShowcaseSubtitle, setCmsShowcaseSubtitle] = useState(initialCms.showcaseSubtitle || DEFAULT_SITE_SETTINGS.showcaseSubtitle || '');
+  // Section 4: Koleksi Populer
+  const [cmsPopularBadge, setCmsPopularBadge] = useState(initialCms.popularBadge || DEFAULT_SITE_SETTINGS.popularBadge || '');
+  const [cmsPopularTitle, setCmsPopularTitle] = useState(initialCms.popularTitle || DEFAULT_SITE_SETTINGS.popularTitle || '');
+  // Section 5: Tentang Kami
+  const [cmsAboutBadge, setCmsAboutBadge] = useState(initialCms.aboutBadge || DEFAULT_SITE_SETTINGS.aboutBadge || '');
+  const [cmsAboutTitle, setCmsAboutTitle] = useState(initialCms.aboutTitle || DEFAULT_SITE_SETTINGS.aboutTitle || '');
+  const [cmsAboutDescription, setCmsAboutDescription] = useState(initialCms.aboutDescription || DEFAULT_SITE_SETTINGS.aboutDescription || '');
+  const [cmsAboutFeature1Title, setCmsAboutFeature1Title] = useState(initialCms.aboutFeature1Title || DEFAULT_SITE_SETTINGS.aboutFeature1Title || '');
+  const [cmsAboutFeature1Desc, setCmsAboutFeature1Desc] = useState(initialCms.aboutFeature1Desc || DEFAULT_SITE_SETTINGS.aboutFeature1Desc || '');
+  const [cmsAboutFeature2Title, setCmsAboutFeature2Title] = useState(initialCms.aboutFeature2Title || DEFAULT_SITE_SETTINGS.aboutFeature2Title || '');
+  const [cmsAboutFeature2Desc, setCmsAboutFeature2Desc] = useState(initialCms.aboutFeature2Desc || DEFAULT_SITE_SETTINGS.aboutFeature2Desc || '');
+  const [cmsAboutFeature3Title, setCmsAboutFeature3Title] = useState(initialCms.aboutFeature3Title || DEFAULT_SITE_SETTINGS.aboutFeature3Title || '');
+  const [cmsAboutFeature3Desc, setCmsAboutFeature3Desc] = useState(initialCms.aboutFeature3Desc || DEFAULT_SITE_SETTINGS.aboutFeature3Desc || '');
+  // Section 6: Kontak
+  const [cmsContactBadge, setCmsContactBadge] = useState(initialCms.contactBadge || DEFAULT_SITE_SETTINGS.contactBadge || '');
+  const [cmsContactTitle, setCmsContactTitle] = useState(initialCms.contactTitle || DEFAULT_SITE_SETTINGS.contactTitle || '');
+  const [cmsContactSubtitle, setCmsContactSubtitle] = useState(initialCms.contactSubtitle || DEFAULT_SITE_SETTINGS.contactSubtitle || '');
   const [cmsContactAddress, setCmsContactAddress] = useState(initialCms.contactAddress);
   const [cmsContactPhone, setCmsContactPhone] = useState(initialCms.contactPhone);
   const [cmsContactEmail, setCmsContactEmail] = useState(initialCms.contactEmail);
   const [cmsServiceHours, setCmsServiceHours] = useState(initialCms.serviceHours);
+  // Section 7: Banner
   const [cmsAnnouncementEnabled, setCmsAnnouncementEnabled] = useState(Boolean(initialCms.announcementEnabled));
   const [cmsAnnouncementText, setCmsAnnouncementText] = useState(initialCms.announcementText);
   const [cmsAnnouncementLink, setCmsAnnouncementLink] = useState(initialCms.announcementLink || '');
+  // Section 8: Footer
   const [cmsFooterCopyright, setCmsFooterCopyright] = useState(initialCms.footerCopyright);
   const [isSavingCms, setIsSavingCms] = useState(false);
   const [cmsSaveSuccess, setCmsSaveSuccess] = useState(false);
 
   useEffect(() => {
     if (siteSettings) {
-      setCmsLibraryName(siteSettings.libraryName || DEFAULT_SITE_SETTINGS.libraryName);
-      setCmsLibraryTagline(siteSettings.libraryTagline || DEFAULT_SITE_SETTINGS.libraryTagline);
-      setCmsHeroBadge(siteSettings.heroBadge || DEFAULT_SITE_SETTINGS.heroBadge);
-      setCmsHeroSubtitle(siteSettings.heroSubtitle || DEFAULT_SITE_SETTINGS.heroSubtitle);
-      setCmsContactAddress(siteSettings.contactAddress || DEFAULT_SITE_SETTINGS.contactAddress);
-      setCmsContactPhone(siteSettings.contactPhone || DEFAULT_SITE_SETTINGS.contactPhone);
-      setCmsContactEmail(siteSettings.contactEmail || DEFAULT_SITE_SETTINGS.contactEmail);
-      setCmsServiceHours(siteSettings.serviceHours || DEFAULT_SITE_SETTINGS.serviceHours);
+      const d = DEFAULT_SITE_SETTINGS;
+      setCmsLibraryName(siteSettings.libraryName || d.libraryName);
+      setCmsLibraryTagline(siteSettings.libraryTagline || d.libraryTagline);
+      setCmsHeroBadge(siteSettings.heroBadge || d.heroBadge);
+      setCmsHeroSubtitle(siteSettings.heroSubtitle || d.heroSubtitle);
+      setCmsHeroCtaExplore(siteSettings.heroCtaExplore || d.heroCtaExplore || '');
+      setCmsHeroCtaRegister(siteSettings.heroCtaRegister || d.heroCtaRegister || '');
+      setCmsStatsMembersCount(siteSettings.statsMembersCount || d.statsMembersCount || '');
+      setCmsStatsBorrowCount(siteSettings.statsBorrowCount || d.statsBorrowCount || '');
+      setCmsStatsRatingText(siteSettings.statsRatingText || d.statsRatingText || '');
+      setCmsBookshelfTitle(siteSettings.bookshelfTitle || d.bookshelfTitle || '');
+      setCmsShowcaseBadge(siteSettings.showcaseBadge || d.showcaseBadge || '');
+      setCmsShowcaseTitle(siteSettings.showcaseTitle || d.showcaseTitle || '');
+      setCmsShowcaseSubtitle(siteSettings.showcaseSubtitle || d.showcaseSubtitle || '');
+      setCmsPopularBadge(siteSettings.popularBadge || d.popularBadge || '');
+      setCmsPopularTitle(siteSettings.popularTitle || d.popularTitle || '');
+      setCmsAboutBadge(siteSettings.aboutBadge || d.aboutBadge || '');
+      setCmsAboutTitle(siteSettings.aboutTitle || d.aboutTitle || '');
+      setCmsAboutDescription(siteSettings.aboutDescription || d.aboutDescription || '');
+      setCmsAboutFeature1Title(siteSettings.aboutFeature1Title || d.aboutFeature1Title || '');
+      setCmsAboutFeature1Desc(siteSettings.aboutFeature1Desc || d.aboutFeature1Desc || '');
+      setCmsAboutFeature2Title(siteSettings.aboutFeature2Title || d.aboutFeature2Title || '');
+      setCmsAboutFeature2Desc(siteSettings.aboutFeature2Desc || d.aboutFeature2Desc || '');
+      setCmsAboutFeature3Title(siteSettings.aboutFeature3Title || d.aboutFeature3Title || '');
+      setCmsAboutFeature3Desc(siteSettings.aboutFeature3Desc || d.aboutFeature3Desc || '');
+      setCmsContactBadge(siteSettings.contactBadge || d.contactBadge || '');
+      setCmsContactTitle(siteSettings.contactTitle || d.contactTitle || '');
+      setCmsContactSubtitle(siteSettings.contactSubtitle || d.contactSubtitle || '');
+      setCmsContactAddress(siteSettings.contactAddress || d.contactAddress);
+      setCmsContactPhone(siteSettings.contactPhone || d.contactPhone);
+      setCmsContactEmail(siteSettings.contactEmail || d.contactEmail);
+      setCmsServiceHours(siteSettings.serviceHours || d.serviceHours);
       setCmsAnnouncementEnabled(Boolean(siteSettings.announcementEnabled));
-      setCmsAnnouncementText(siteSettings.announcementText || DEFAULT_SITE_SETTINGS.announcementText);
+      setCmsAnnouncementText(siteSettings.announcementText || d.announcementText);
       setCmsAnnouncementLink(siteSettings.announcementLink || '');
-      setCmsFooterCopyright(siteSettings.footerCopyright || DEFAULT_SITE_SETTINGS.footerCopyright);
+      setCmsFooterCopyright(siteSettings.footerCopyright || d.footerCopyright);
     }
   }, [siteSettings]);
 
@@ -178,17 +233,48 @@ export default function StaffDashboard({
     e.preventDefault();
     setIsSavingCms(true);
     const updatedSettings: SiteSettings = {
+      // 1. Identitas & Hero
       libraryName: cmsLibraryName,
       libraryTagline: cmsLibraryTagline,
       heroBadge: cmsHeroBadge,
       heroSubtitle: cmsHeroSubtitle,
+      heroCtaExplore: cmsHeroCtaExplore,
+      heroCtaRegister: cmsHeroCtaRegister,
+      // 2. Stats
+      statsMembersCount: cmsStatsMembersCount,
+      statsBorrowCount: cmsStatsBorrowCount,
+      statsRatingText: cmsStatsRatingText,
+      // 3. Rak & Etalase
+      bookshelfTitle: cmsBookshelfTitle,
+      showcaseBadge: cmsShowcaseBadge,
+      showcaseTitle: cmsShowcaseTitle,
+      showcaseSubtitle: cmsShowcaseSubtitle,
+      // 4. Koleksi Populer
+      popularBadge: cmsPopularBadge,
+      popularTitle: cmsPopularTitle,
+      // 5. Tentang Kami
+      aboutBadge: cmsAboutBadge,
+      aboutTitle: cmsAboutTitle,
+      aboutDescription: cmsAboutDescription,
+      aboutFeature1Title: cmsAboutFeature1Title,
+      aboutFeature1Desc: cmsAboutFeature1Desc,
+      aboutFeature2Title: cmsAboutFeature2Title,
+      aboutFeature2Desc: cmsAboutFeature2Desc,
+      aboutFeature3Title: cmsAboutFeature3Title,
+      aboutFeature3Desc: cmsAboutFeature3Desc,
+      // 6. Kontak
+      contactBadge: cmsContactBadge,
+      contactTitle: cmsContactTitle,
+      contactSubtitle: cmsContactSubtitle,
       contactAddress: cmsContactAddress,
       contactPhone: cmsContactPhone,
       contactEmail: cmsContactEmail,
       serviceHours: cmsServiceHours,
+      // 7. Banner
       announcementEnabled: cmsAnnouncementEnabled,
       announcementText: cmsAnnouncementText,
       announcementLink: cmsAnnouncementLink,
+      // 8. Footer
       footerCopyright: cmsFooterCopyright,
     };
     if (onUpdateSiteSettings) {
