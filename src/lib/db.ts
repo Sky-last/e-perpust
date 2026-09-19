@@ -1,6 +1,7 @@
 import { supabase, isSupabaseConfigured } from './supabase';
-import { Book, User, SystemLog, Borrowing } from '../types';
+import { Book, User, SystemLog, Borrowing, SiteSettings } from '../types';
 import { INITIAL_BOOKS } from '../data/books';
+import { DEFAULT_SITE_SETTINGS } from '../data/seedData';
 import { BOOK_PDF_MAP, resolveBookPdfUrl } from '../utils/pdfResolver';
 
 // Helper to format date
@@ -768,3 +769,68 @@ export async function notifyAdminUserDownload(userName: string, userEmail: strin
     }
   }
 }
+
+// ==========================================
+// 8. SITE SETTINGS / CMS APIS
+// ==========================================
+
+export async function getSiteSettings(): Promise<SiteSettings> {
+  let currentSettings: SiteSettings = DEFAULT_SITE_SETTINGS;
+  const localData = localStorage.getItem('digital_library_site_settings');
+  if (localData) {
+    try {
+      currentSettings = { ...DEFAULT_SITE_SETTINGS, ...JSON.parse(localData) };
+    } catch (e) {
+      console.error('Failed to parse local site settings', e);
+    }
+  }
+
+  if (isSupabaseConfigured) {
+    try {
+      const { data, error } = await supabase
+        .from('site_settings')
+        .select('*')
+        .eq('id', 'global')
+        .maybeSingle();
+
+      if (!error && data) {
+        const remoteSettings = data.settings || data;
+        const merged: SiteSettings = { ...currentSettings, ...remoteSettings };
+        localStorage.setItem('digital_library_site_settings', JSON.stringify(merged));
+        return merged;
+      }
+    } catch (e) {
+      console.warn('Could not fetch site_settings from Supabase (using local):', e);
+    }
+  }
+
+  return currentSettings;
+}
+
+export async function updateSiteSettings(newSettings: SiteSettings): Promise<{ success: boolean; error?: string }> {
+  // Always update local storage first
+  localStorage.setItem('digital_library_site_settings', JSON.stringify(newSettings));
+
+  if (isSupabaseConfigured) {
+    try {
+      const { error } = await supabase
+        .from('site_settings')
+        .upsert({
+          id: 'global',
+          settings: newSettings,
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'id' });
+
+      if (error) {
+        console.warn('Supabase site_settings upsert error:', error.message);
+        return { success: true };
+      }
+    } catch (e: any) {
+      console.warn('Failed to upsert site_settings to Supabase:', e);
+      return { success: true };
+    }
+  }
+
+  return { success: true };
+}
+

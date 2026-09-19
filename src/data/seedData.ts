@@ -1,4 +1,4 @@
-import { Category, LibrarySettings, User, UserRole } from '../types';
+import { Category, LibrarySettings, SiteSettings, User, UserRole } from '../types';
 
 // Default categories for the library
 export const DEFAULT_CATEGORIES: Category[] = [
@@ -16,6 +16,22 @@ export const DEFAULT_CATEGORIES: Category[] = [
 export const DEFAULT_SETTINGS: LibrarySettings = {
   maxBorrowBooks: 5,
   maxBorrowDays: 7
+};
+
+// Default site settings (CMS Web)
+export const DEFAULT_SITE_SETTINGS: SiteSettings = {
+  libraryName: 'Perpustakaan Kita',
+  libraryTagline: 'Eksplorasi Dunia Lewat Buku',
+  heroBadge: 'Platform Literasi Digital Modern',
+  heroSubtitle: 'Akses koleksi buku dengan e-reader page flip interaktif serta ruang etalase koleksi unggulan.',
+  contactAddress: 'Jl. Pemuda No. 123, Kompleks Pendidikan Utama, Jakarta Pusat 10110',
+  contactPhone: '+62 812-3456-7890 / (021) 555-0192',
+  contactEmail: 'layanan@pustakadigital.sch.id / info@pustakadigital.id',
+  serviceHours: 'Senin - Jumat: 07.30 - 16.00 WIB | Sabtu: 08.00 - 13.00 WIB',
+  announcementEnabled: false,
+  announcementText: '🎉 Selamat datang di Perpustakaan Kita! Nikmati ratusan koleksi buku digital interaktif.',
+  announcementLink: '',
+  footerCopyright: '© 2026 Perpustakaan Kita Indonesia. Hak Cipta Dilindungi.'
 };
 
 // Default seed users (Admin & User demo accounts)

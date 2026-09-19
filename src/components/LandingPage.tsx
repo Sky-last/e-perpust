@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import { Star, Heart, ArrowRight, Users, BookMarked, CheckCircle, Sun, Moon, Sparkles, Mail, Phone, MapPin, Clock, Send, MessageSquare, Menu, X, ChevronDown } from 'lucide-react';
-import { Book, ViewType, User } from '../types';
+import { Star, Heart, ArrowRight, Users, BookMarked, CheckCircle, Sun, Moon, Sparkles, Mail, Phone, MapPin, Clock, Send, MessageSquare, Menu, X, ChevronDown, Megaphone } from 'lucide-react';
+import { Book, ViewType, User, SiteSettings } from '../types';
+import { DEFAULT_SITE_SETTINGS } from '../data/seedData';
 import Book3D from './Book3D';
 import BookShelf3D from './BookShelf3D';
 import FloatingParticles from './FloatingParticles';
@@ -17,9 +18,11 @@ interface LandingPageProps {
   favorites: string[];
   currentUser?: User | null;
   onDownloadBook?: (book: Book) => void;
+  siteSettings?: SiteSettings;
 }
 
-export default function LandingPage({ books, onNavigate, onToggleFavorite, favorites, currentUser, onDownloadBook }: LandingPageProps) {
+export default function LandingPage({ books, onNavigate, onToggleFavorite, favorites, currentUser, onDownloadBook, siteSettings }: LandingPageProps) {
+  const cfg = siteSettings || DEFAULT_SITE_SETTINGS;
   const [darkMode, setDarkMode] = useState(true);
   const [activeSection, setActiveSection] = useState<'home' | 'katalog' | 'tentang' | 'kontak'>('home');
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
@@ -42,7 +45,7 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
   const cursorGlowRef = useRef<HTMLDivElement>(null);
 
   // Typing effect for hero headline
-  const fullText = 'Perpustakaan Kita';
+  const fullText = cfg.libraryName || 'Perpustakaan Kita';
   useEffect(() => {
     let i = 0;
     setTypedText('');
@@ -56,7 +59,7 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
       }
     }, 90);
     return () => clearInterval(interval);
-  }, []);
+  }, [fullText]);
 
   // Scroll reveal observer
   useEffect(() => {
@@ -142,13 +145,26 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
         }}
       />
 
+      {/* === ANNOUNCEMENT BANNER IF ENABLED === */}
+      {cfg.announcementEnabled && cfg.announcementText && (
+        <div className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white py-1.5 px-4 text-xs font-bold shadow-md flex items-center justify-center gap-2">
+          <Megaphone className="w-3.5 h-3.5 text-amber-300 animate-bounce shrink-0" />
+          <span className="truncate">{cfg.announcementText}</span>
+          {cfg.announcementLink && (
+            <a href={cfg.announcementLink} target="_blank" rel="noreferrer" className="underline text-blue-200 hover:text-white shrink-0 ml-1">
+              Buka →
+            </a>
+          )}
+        </div>
+      )}
+
       {/* NAVBAR */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 border-b backdrop-blur-xl ${nav}`}>
+      <nav className={`fixed ${cfg.announcementEnabled && cfg.announcementText ? 'top-7 sm:top-8' : 'top-0'} left-0 right-0 z-40 border-b backdrop-blur-xl ${nav}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
           <div className="flex items-center gap-3 cursor-pointer group" onClick={() => { soundFX.playClick(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
             <BearMascotIcon size={42} className="group-hover:scale-110 transition-transform" />
             <span className="text-base font-black tracking-tight">
-              Perpustakaan <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Kita</span>
+              {cfg.libraryName || 'Perpustakaan Kita'}
             </span>
           </div>
 
@@ -316,11 +332,11 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
         <div className="max-w-4xl mx-auto px-4 sm:px-6 relative z-10 text-center space-y-6 sm:space-y-8">
           <div className="animate-badge-pop inline-flex items-center px-4 py-1.5 rounded-full text-xs font-bold border border-blue-500/30 bg-blue-500/10 text-blue-400 mx-auto gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-ping" />
-            Platform Literasi Digital Modern
+            {cfg.heroBadge || 'Platform Literasi Digital Modern'}
           </div>
 
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-[1.05] tracking-tight">
-            Eksplorasi Dunia Lewat{' '}
+            {(cfg.libraryTagline || 'Eksplorasi Dunia Lewat')}{' '}
             <span className="animate-gradient-text">
               {typedText}
             </span>
@@ -328,7 +344,13 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
           </h1>
 
           <p className={`text-base sm:text-lg leading-relaxed max-w-2xl mx-auto ${sub}`}>
-            Akses <span className="font-bold text-blue-400">{totalUniqueBooks}+ judul</span> buku dengan e-reader page flip interaktif serta ruang etalase koleksi unggulan.
+            {cfg.heroSubtitle ? (
+              cfg.heroSubtitle.includes('{total}') 
+                ? cfg.heroSubtitle.replace('{total}', `${totalUniqueBooks}+`)
+                : cfg.heroSubtitle
+            ) : (
+              <>Akses <span className="font-bold text-blue-400">{totalUniqueBooks}+ judul</span> buku dengan e-reader page flip interaktif serta ruang etalase koleksi unggulan.</>
+            )}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center">
@@ -549,25 +571,25 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
                 {
                   icon: MapPin,
                   title: 'Alamat Perpustakaan',
-                  desc: 'Jl. Pemuda No. 123, Kompleks Pendidikan Utama, Jakarta Pusat 10110',
+                  desc: cfg.contactAddress || 'Jl. Pemuda No. 123, Kompleks Pendidikan Utama, Jakarta Pusat 10110',
                   color: 'text-blue-400 bg-blue-500/10 border-blue-500/20',
                 },
                 {
                   icon: Phone,
                   title: 'Telepon & WhatsApp',
-                  desc: '+62 812-3456-7890 / (021) 555-0192',
+                  desc: cfg.contactPhone || '+62 812-3456-7890 / (021) 555-0192',
                   color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
                 },
                 {
                   icon: Mail,
                   title: 'Email Resmi',
-                  desc: 'layanan@pustakadigital.sch.id / info@pustakadigital.id',
+                  desc: cfg.contactEmail || 'layanan@pustakadigital.sch.id / info@pustakadigital.id',
                   color: 'text-purple-400 bg-purple-500/10 border-purple-500/20',
                 },
                 {
                   icon: Clock,
                   title: 'Jam Layanan Operasional',
-                  desc: 'Senin - Jumat: 07.30 - 16.00 WIB | Sabtu: 08.00 - 13.00 WIB',
+                  desc: cfg.serviceHours || 'Senin - Jumat: 07.30 - 16.00 WIB | Sabtu: 08.00 - 13.00 WIB',
                   color: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
                 },
               ].map((c, i) => (
@@ -598,7 +620,7 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
                     </div>
                     <h4 className={`text-xl font-bold ${text}`}>Pesan Anda Berhasil Terkirim!</h4>
                     <p className={`text-xs max-w-md mx-auto ${sub}`}>
-                      Tanggapan akan dikirimkan ke email Anda dalam waktu 1x24 jam kerja. Terima kasih telah menghubungi Perpustakaan Kita.
+                      Tanggapan akan dikirimkan ke email Anda dalam waktu 1x24 jam kerja. Terima kasih telah menghubungi {cfg.libraryName || 'Perpustakaan Kita'}.
                     </p>
                     <button
                       onClick={() => {
@@ -685,9 +707,9 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">
             <BearMascotIcon size={36} />
-            <span className={`font-black text-base ${text}`}>Perpustakaan <span className="text-blue-400">Kita</span></span>
+            <span className={`font-black text-base ${text}`}>{cfg.libraryName || 'Perpustakaan Kita'}</span>
           </div>
-          <p className={`text-xs ${sub}`}>© 2026 Perpustakaan Kita Indonesia</p>
+          <p className={`text-xs ${sub}`}>{cfg.footerCopyright || '© 2026 Perpustakaan Kita Indonesia'}</p>
         </div>
       </footer>
 

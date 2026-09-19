@@ -157,3 +157,21 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 CREATE OR REPLACE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+-- 7. Tabel Pengaturan Website (CMS / Site Settings)
+CREATE TABLE IF NOT EXISTS public.site_settings (
+  id TEXT PRIMARY KEY DEFAULT 'global',
+  settings JSONB NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
+);
+
+ALTER TABLE public.site_settings ENABLE ROW LEVEL SECURITY;
+
+-- Publik dapat membaca pengaturan website
+CREATE POLICY "Semua orang bisa melihat site_settings" ON public.site_settings
+  FOR SELECT USING (true);
+
+-- Admin dan aplikasi dapat mengubah pengaturan website
+CREATE POLICY "Pengaturan website dapat diubah" ON public.site_settings
+  FOR ALL USING (true) WITH CHECK (true);
+

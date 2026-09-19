@@ -76,6 +76,21 @@ export interface LibrarySettings {
   finePerDay?: number;
 }
 
+export interface SiteSettings {
+  libraryName: string;
+  libraryTagline: string;
+  heroBadge: string;
+  heroSubtitle: string;
+  contactAddress: string;
+  contactPhone: string;
+  contactEmail: string;
+  serviceHours: string;
+  announcementEnabled: boolean;
+  announcementText: string;
+  announcementLink?: string;
+  footerCopyright: string;
+}
+
 export interface Notification {
   id: string;
   userId: string;

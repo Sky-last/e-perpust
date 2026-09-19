@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
-import { Book, User, SystemLog, ViewType, Borrowing, UserRole, Category, LibrarySettings, Notification, DownloadedBook } from './types';
+import { Book, User, SystemLog, ViewType, Borrowing, UserRole, Category, LibrarySettings, SiteSettings, Notification, DownloadedBook } from './types';
 import { INITIAL_BOOKS as _INITIAL_BOOKS } from './data/books';
 import { supabase, isSupabaseConfigured } from './lib/supabase';
 import { 
   getBooks, saveBook, removeBook, getUserProfile, updateUserInDb,
   updateUserBadge, makeBorrowing, returnBorrowing, extendBorrowing, 
   saveFavorite, getSystemLogs, addSystemLog, getAllUsers,
-  notifyAllUsersNewBook, notifyAdminUserDownload
+  notifyAllUsersNewBook, notifyAdminUserDownload,
+  getSiteSettings, updateSiteSettings
 } from './lib/db';
 import { resolveBookPdfUrl } from './utils/pdfResolver';
 
@@ -34,7 +35,7 @@ import {
 import UserDashboard from './components/dashboard/UserDashboard';
 import StaffDashboard from './components/dashboard/StaffDashboard';
 
-import { DEFAULT_CATEGORIES, DEFAULT_SETTINGS, DEFAULT_USERS } from './data/seedData';
+import { DEFAULT_CATEGORIES, DEFAULT_SETTINGS, DEFAULT_SITE_SETTINGS, DEFAULT_USERS } from './data/seedData';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function App() {
@@ -64,6 +65,10 @@ export default function App() {
   const [settings, setSettings] = useState<LibrarySettings>(() => {
     const stored = localStorage.getItem('digital_library_settings');
     return stored ? JSON.parse(stored) : DEFAULT_SETTINGS;
+  });
+  const [siteSettings, setSiteSettings] = useState<SiteSettings>(() => {
+    const stored = localStorage.getItem('digital_library_site_settings');
+    return stored ? { ...DEFAULT_SITE_SETTINGS, ...JSON.parse(stored) } : DEFAULT_SITE_SETTINGS;
   });
   const [notifications, setNotifications] = useState<Notification[]>(() => {
     const stored = localStorage.getItem('digital_library_notifications');
@@ -121,6 +126,16 @@ export default function App() {
           setUsers(DEFAULT_USERS);
           localStorage.setItem('digital_library_users', JSON.stringify(DEFAULT_USERS));
         }
+      }
+
+      // 4. Site Settings (CMS Web) Initialization
+      try {
+        const loadedSiteSettings = await getSiteSettings();
+        if (loadedSiteSettings) {
+          setSiteSettings(loadedSiteSettings);
+        }
+      } catch (e) {
+        console.warn('Failed to load site settings:', e);
       }
 
       // 4. Session restoration check
@@ -397,15 +412,53 @@ export default function App() {
     setToasts(prev => prev.filter(t => t.id !== id));
   };
 
-  // NAVIGATION WRAPPER
+  // NAVIGATION WRAPPER WITH BROWSER & MOBILE HARDWARE BACK SUPPORT
   const handleNavigate = (view: ViewType, selectedId?: string) => {
+    try {
+      if (typeof window !== 'undefined') {
+        window.history.pushState({ view, selectedId }, '', window.location.pathname);
+      }
+    } catch (e) {
+      console.warn('history.pushState error', e);
+    }
     setCurrentView(view);
     if (selectedId) {
       setSelectedBookId(selectedId);
+    } else {
+      setSelectedBookId(null);
     }
     setSidebarOpen(false); // Close mobile panel on navigate
     window.scrollTo(0, 0); // Reset scroll to top
   };
+
+  // HANDLE MOBILE & BROWSER BACK BUTTON (POPSTATE)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    // Set initial history state if empty
+    if (!window.history.state || !window.history.state.view) {
+      window.history.replaceState({ view: 'landing' }, '', window.location.pathname);
+    }
+
+    const handlePopState = (event: PopStateEvent) => {
+      if (event.state && event.state.view) {
+        setCurrentView(event.state.view);
+        if (event.state.selectedId) {
+          setSelectedBookId(event.state.selectedId);
+        } else {
+          setSelectedBookId(null);
+        }
+      } else {
+        // Fallback: stay on landing page instead of closing the web app
+        setCurrentView('landing');
+        setSelectedBookId(null);
+      }
+      setSidebarOpen(false);
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   // SYSTEM LOG PUSHER
   const pushLog = async (email: string, name: string, type: 'pinjam' | 'kembali' | 'perpanjang' | 'register' | 'update_profile', bookTitle: string) => {
@@ -588,7 +641,11 @@ export default function App() {
             setCurrentView('email-verification');
             return false;
           }
-          addToast(error.message, 'error');
+          if (error.message === '{}' || (error as any).status === 500 || error.name === 'AuthRetryableFetchError') {
+            addToast('⚠️ Konfigurasi SMTP di Supabase belum tepat (Error 500). Pastikan menggunakan Sandi Aplikasi (App Password) 16 huruf dari Google, bukan password akun biasa.', 'error');
+            return false;
+          }
+          addToast(error.message || 'Terjadi kesalahan saat registrasi', 'error');
           return false;
         }
 
@@ -1527,6 +1584,17 @@ export default function App() {
     }
   };
 
+  // Handler for CMS Web settings update
+  const handleUpdateSiteSettings = async (newSettings: SiteSettings) => {
+    setSiteSettings(newSettings);
+    const res = await updateSiteSettings(newSettings);
+    if (res.success) {
+      addToast('Pengaturan website berhasil diperbarui & disimpan!', 'success');
+    } else {
+      addToast('Pengaturan website disimpan secara lokal.', 'info');
+    }
+  };
+
   // RENDERING ENGINE
   const renderViewContent = () => {
     switch (currentView) {
@@ -1539,6 +1607,7 @@ export default function App() {
             onToggleFavorite={handleToggleFavorite}
             currentUser={currentUser}
             onDownloadBook={handleDownloadBook}
+            siteSettings={siteSettings}
           />
         );
       case 'login':
@@ -1582,6 +1651,8 @@ export default function App() {
               borrowings={users.flatMap(u => (u.borrowings || []).map(b => ({ ...b, studentId: u.id })))}
               users={users}
               settings={settings}
+              siteSettings={siteSettings}
+              onUpdateSiteSettings={handleUpdateSiteSettings}
               onAddBook={handleAddBook}
               onUpdateBook={handleEditBook}
               onDeleteBook={handleDeleteBook}

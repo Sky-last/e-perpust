@@ -101,7 +101,10 @@ export default function RegisterPage({ onNavigate, onRegister, addToast, onGoogl
       }
     } catch (err: any) {
       setIsLoading(false);
-      addToast(err.message || 'Registrasi gagal. Silakan coba lagi.', 'error');
+      const errorMsg = (err?.message === '{}' || !err?.message) 
+        ? 'Terjadi kesalahan saat registrasi. Periksa koneksi atau setelan SMTP Supabase.' 
+        : err.message;
+      addToast(errorMsg, 'error');
     }
   };
 

@@ -28,9 +28,18 @@ import {
   FileText,
   Image as ImageIcon,
   Trash2,
-  Link as LinkIcon
+  Link as LinkIcon,
+  Globe,
+  Save,
+  Megaphone,
+  MapPin,
+  Phone,
+  Mail,
+  CheckCircle,
+  HelpCircle
 } from 'lucide-react';
-import { User, Book, Category, Borrowing, LibrarySettings, UserRole } from '../../types';
+import { User, Book, Category, Borrowing, LibrarySettings, SiteSettings, UserRole } from '../../types';
+import { DEFAULT_SITE_SETTINGS } from '../../data/seedData';
 import Book3D from '../Book3D';
 
 interface StaffDashboardProps {
@@ -41,6 +50,8 @@ interface StaffDashboardProps {
   borrowings?: Borrowing[];
   users: User[];
   settings: LibrarySettings;
+  siteSettings?: SiteSettings;
+  onUpdateSiteSettings?: (newSettings: SiteSettings) => Promise<void> | void;
   onAddBook: (book: Omit<Book, 'status' | 'category' | 'description' | 'rating' | 'coverColor'> & { status?: Book['status'], category?: string, description?: string, rating?: number, coverColor?: string, coverUrl?: string, pdfUrl?: string }) => void;
   onUpdateBook: (book: Book) => void;
   onDeleteBook: (id: string) => void;
@@ -63,6 +74,8 @@ export default function StaffDashboard({
   borrowings = [],
   users,
   settings,
+  siteSettings,
+  onUpdateSiteSettings,
   onAddBook,
   onUpdateBook,
   onDeleteBook,
@@ -83,7 +96,7 @@ export default function StaffDashboard({
     return normalizedRole === 'admin' || role === UserRole.ADMIN;
   }, [currentUser.role]);
 
-  const [activeMenu, setActiveMenu] = useState<'dashboard' | 'books' | 'categories' | 'transactions' | 'users' | 'reports'>('dashboard');
+  const [activeMenu, setActiveMenu] = useState<'dashboard' | 'books' | 'categories' | 'transactions' | 'users' | 'reports' | 'cms'>('dashboard');
   const [searchQuery, setSearchQuery] = useState('');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -126,6 +139,65 @@ export default function StaffDashboard({
   const [uAvatarUrl, setUAvatarUrl] = useState('');
 
   const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'approved' | 'returned'>('all');
+
+  // CMS Web Settings States
+  const initialCms = siteSettings || DEFAULT_SITE_SETTINGS;
+  const [cmsLibraryName, setCmsLibraryName] = useState(initialCms.libraryName);
+  const [cmsLibraryTagline, setCmsLibraryTagline] = useState(initialCms.libraryTagline);
+  const [cmsHeroBadge, setCmsHeroBadge] = useState(initialCms.heroBadge);
+  const [cmsHeroSubtitle, setCmsHeroSubtitle] = useState(initialCms.heroSubtitle);
+  const [cmsContactAddress, setCmsContactAddress] = useState(initialCms.contactAddress);
+  const [cmsContactPhone, setCmsContactPhone] = useState(initialCms.contactPhone);
+  const [cmsContactEmail, setCmsContactEmail] = useState(initialCms.contactEmail);
+  const [cmsServiceHours, setCmsServiceHours] = useState(initialCms.serviceHours);
+  const [cmsAnnouncementEnabled, setCmsAnnouncementEnabled] = useState(Boolean(initialCms.announcementEnabled));
+  const [cmsAnnouncementText, setCmsAnnouncementText] = useState(initialCms.announcementText);
+  const [cmsAnnouncementLink, setCmsAnnouncementLink] = useState(initialCms.announcementLink || '');
+  const [cmsFooterCopyright, setCmsFooterCopyright] = useState(initialCms.footerCopyright);
+  const [isSavingCms, setIsSavingCms] = useState(false);
+  const [cmsSaveSuccess, setCmsSaveSuccess] = useState(false);
+
+  useEffect(() => {
+    if (siteSettings) {
+      setCmsLibraryName(siteSettings.libraryName || DEFAULT_SITE_SETTINGS.libraryName);
+      setCmsLibraryTagline(siteSettings.libraryTagline || DEFAULT_SITE_SETTINGS.libraryTagline);
+      setCmsHeroBadge(siteSettings.heroBadge || DEFAULT_SITE_SETTINGS.heroBadge);
+      setCmsHeroSubtitle(siteSettings.heroSubtitle || DEFAULT_SITE_SETTINGS.heroSubtitle);
+      setCmsContactAddress(siteSettings.contactAddress || DEFAULT_SITE_SETTINGS.contactAddress);
+      setCmsContactPhone(siteSettings.contactPhone || DEFAULT_SITE_SETTINGS.contactPhone);
+      setCmsContactEmail(siteSettings.contactEmail || DEFAULT_SITE_SETTINGS.contactEmail);
+      setCmsServiceHours(siteSettings.serviceHours || DEFAULT_SITE_SETTINGS.serviceHours);
+      setCmsAnnouncementEnabled(Boolean(siteSettings.announcementEnabled));
+      setCmsAnnouncementText(siteSettings.announcementText || DEFAULT_SITE_SETTINGS.announcementText);
+      setCmsAnnouncementLink(siteSettings.announcementLink || '');
+      setCmsFooterCopyright(siteSettings.footerCopyright || DEFAULT_SITE_SETTINGS.footerCopyright);
+    }
+  }, [siteSettings]);
+
+  const handleSaveCmsSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSavingCms(true);
+    const updatedSettings: SiteSettings = {
+      libraryName: cmsLibraryName,
+      libraryTagline: cmsLibraryTagline,
+      heroBadge: cmsHeroBadge,
+      heroSubtitle: cmsHeroSubtitle,
+      contactAddress: cmsContactAddress,
+      contactPhone: cmsContactPhone,
+      contactEmail: cmsContactEmail,
+      serviceHours: cmsServiceHours,
+      announcementEnabled: cmsAnnouncementEnabled,
+      announcementText: cmsAnnouncementText,
+      announcementLink: cmsAnnouncementLink,
+      footerCopyright: cmsFooterCopyright,
+    };
+    if (onUpdateSiteSettings) {
+      await onUpdateSiteSettings(updatedSettings);
+    }
+    setIsSavingCms(false);
+    setCmsSaveSuccess(true);
+    setTimeout(() => setCmsSaveSuccess(false), 4000);
+  };
 
   // Kumpulkan seluruh data riwayat unduhan buku dari seluruh anggota
   const allDownloads = React.useMemo(() => {
@@ -554,6 +626,7 @@ export default function StaffDashboard({
     { id: 'categories', label: 'Kategori Genre', icon: FolderClosed },
     { id: 'transactions', label: 'Sirkulasi Unduhan', icon: Download },
     { id: 'users', label: 'Kelola Anggota', icon: Users },
+    { id: 'cms', label: 'Pengaturan Web (CMS)', icon: Globe },
     { id: 'reports', label: 'Laporan & Rekap', icon: FileSpreadsheet },
   ];
 
@@ -1379,6 +1452,310 @@ export default function StaffDashboard({
                     </table>
                   </div>
                 </div>
+              </motion.div>
+            )}
+
+            {/* ── CMS / PENGATURAN WEBSITE TAB ── */}
+            {activeMenu === 'cms' && (
+              <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+                
+                {/* Header CMS */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-r from-blue-900/40 via-indigo-900/30 to-purple-900/40 border border-blue-500/30 rounded-2xl p-6 shadow-xl relative overflow-hidden">
+                  <div className="relative z-10">
+                    <span className="text-[10px] bg-blue-500/20 text-blue-400 font-extrabold px-3 py-1 rounded-full uppercase border border-blue-500/30 inline-flex items-center gap-1.5">
+                      <Globe className="w-3 h-3" /> Content Management System
+                    </span>
+                    <h2 className="text-lg lg:text-xl font-black text-white mt-2 flex items-center gap-2">
+                      Pengaturan Konten &amp; Tampilan Website
+                    </h2>
+                    <p className="text-xs text-slate-300 max-w-2xl mt-1 leading-relaxed">
+                      Ubah nama perpustakaan, teks slogan hero, alamat, kontak, jam operasional, hingga banner pengumuman.
+                      Semua perubahan tersimpan di database dan langsung aktif di halaman depan tanpa perlu ubah kode atau deploy ulang!
+                    </p>
+                  </div>
+                  
+                  {/* Action Save Button in Header */}
+                  <div className="relative z-10 shrink-0 flex items-center gap-3">
+                    {cmsSaveSuccess && (
+                      <span className="text-xs text-emerald-400 font-bold flex items-center gap-1.5 bg-emerald-500/15 border border-emerald-500/30 px-3 py-2 rounded-xl animate-fadeIn">
+                        <CheckCircle className="w-4 h-4" /> Berhasil Disimpan!
+                      </span>
+                    )}
+                    <button
+                      type="button"
+                      onClick={handleSaveCmsSubmit}
+                      disabled={isSavingCms}
+                      className="px-5 py-3 bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-extrabold text-xs rounded-xl shadow-lg shadow-blue-500/25 flex items-center gap-2 transition-all cursor-pointer hover:scale-105 disabled:opacity-50"
+                    >
+                      {isSavingCms ? (
+                        <>
+                          <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          Menyimpan...
+                        </>
+                      ) : (
+                        <>
+                          <Save className="w-4 h-4" /> Simpan Semua Perubahan
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Form Container */}
+                <form onSubmit={handleSaveCmsSubmit} className="space-y-6">
+                  
+                  {/* Section 1: Identitas & Hero Section */}
+                  <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-5">
+                    <div className="flex items-center gap-3 pb-3 border-b border-slate-800">
+                      <div className="w-9 h-9 rounded-xl bg-blue-500/15 border border-blue-500/30 text-blue-400 flex items-center justify-center">
+                        <Sparkles className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-black text-white">1. Identitas &amp; Tampilan Utama (Hero Section)</h3>
+                        <p className="text-[11px] text-slate-400">Atur nama perpustakaan, teks slogan pembuka, dan deskripsi utama website.</p>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                      <div>
+                        <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
+                          Nama Perpustakaan (Branding Utama)
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={cmsLibraryName}
+                          onChange={(e) => setCmsLibraryName(e.target.value)}
+                          placeholder="Contoh: Perpustakaan Kita"
+                          className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500 font-bold"
+                        />
+                        <p className="text-[10px] text-slate-500 mt-1">Ditampilkan di judul halaman, navbar, hero, dan footer.</p>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
+                          Badge Teks di Atas Judul Hero
+                        </label>
+                        <input
+                          type="text"
+                          value={cmsHeroBadge}
+                          onChange={(e) => setCmsHeroBadge(e.target.value)}
+                          placeholder="Contoh: Platform Literasi Digital Modern"
+                          className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500"
+                        />
+                        <p className="text-[10px] text-slate-500 mt-1">Badge kecil bercahaya di atas judul utama.</p>
+                      </div>
+
+                      <div className="md:col-span-2">
+                        <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
+                          Kalimat Tagline / Pembuka Judul Hero
+                        </label>
+                        <input
+                          type="text"
+                          value={cmsLibraryTagline}
+                          onChange={(e) => setCmsLibraryTagline(e.target.value)}
+                          placeholder="Contoh: Eksplorasi Dunia Lewat"
+                          className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500"
+                        />
+                        <p className="text-[10px] text-slate-500 mt-1">
+                          Akan dirangkai dengan efek animasi ketik nama perpustakaan (misal: "Eksplorasi Dunia Lewat Perpustakaan Kita").
+                        </p>
+                      </div>
+
+                      <div className="md:col-span-2">
+                        <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
+                          Deskripsi / Subtitle Hero
+                        </label>
+                        <textarea
+                          rows={2}
+                          value={cmsHeroSubtitle}
+                          onChange={(e) => setCmsHeroSubtitle(e.target.value)}
+                          placeholder="Contoh: Akses koleksi buku dengan e-reader page flip interaktif serta ruang etalase koleksi unggulan."
+                          className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500 leading-relaxed"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Section 2: Banner Pengumuman */}
+                  <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-5">
+                    <div className="flex items-center gap-3 pb-3 border-b border-slate-800">
+                      <div className="w-9 h-9 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-400 flex items-center justify-center">
+                        <Megaphone className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-black text-white">2. Banner Pengumuman (Header Announcement)</h3>
+                        <p className="text-[11px] text-slate-400">Pita pengumuman yang tampil di bagian paling atas halaman utama website.</p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-3 p-3.5 bg-slate-950/80 rounded-xl border border-slate-800">
+                        <input
+                          type="checkbox"
+                          id="announcement-toggle"
+                          checked={cmsAnnouncementEnabled}
+                          onChange={(e) => setCmsAnnouncementEnabled(e.target.checked)}
+                          className="w-4 h-4 rounded text-blue-600 bg-slate-900 border-slate-700 focus:ring-blue-500 cursor-pointer"
+                        />
+                        <label htmlFor="announcement-toggle" className="text-xs font-bold text-white cursor-pointer select-none">
+                          Aktifkan Banner Pengumuman di Atas Website
+                        </label>
+                        <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full ml-auto ${cmsAnnouncementEnabled ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-slate-800 text-slate-500'}`}>
+                          {cmsAnnouncementEnabled ? 'AKTIF' : 'NONAKTIF'}
+                        </span>
+                      </div>
+
+                      {cmsAnnouncementEnabled && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-fadeIn">
+                          <div className="md:col-span-2">
+                            <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
+                              Teks Isi Pengumuman
+                            </label>
+                            <input
+                              type="text"
+                              value={cmsAnnouncementText}
+                              onChange={(e) => setCmsAnnouncementText(e.target.value)}
+                              placeholder="Contoh: 🎉 Selamat datang di Perpustakaan Kita! Ratusan e-book baru siap dibaca secara gratis."
+                              className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-amber-500"
+                            />
+                          </div>
+                          <div className="md:col-span-2">
+                            <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
+                              Link Tautan Tujuan (Opsional)
+                            </label>
+                            <input
+                              type="text"
+                              value={cmsAnnouncementLink}
+                              onChange={(e) => setCmsAnnouncementLink(e.target.value)}
+                              placeholder="https://... atau biarkan kosong jika tidak ada tautan"
+                              className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-amber-500"
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Section 3: Kontak & Jam Operasional */}
+                  <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-5">
+                    <div className="flex items-center gap-3 pb-3 border-b border-slate-800">
+                      <div className="w-9 h-9 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-400 flex items-center justify-center">
+                        <MapPin className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-black text-white">3. Informasi Kontak &amp; Jam Layanan Operasional</h3>
+                        <p className="text-[11px] text-slate-400">Kontak yang tampil pada section "Hubungi Kami" di halaman Landing Page.</p>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                      <div className="md:col-span-2">
+                        <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
+                          Alamat Lengkap Perpustakaan
+                        </label>
+                        <input
+                          type="text"
+                          value={cmsContactAddress}
+                          onChange={(e) => setCmsContactAddress(e.target.value)}
+                          placeholder="Contoh: Jl. Pemuda No. 123, Kompleks Pendidikan Utama, Jakarta Pusat"
+                          className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
+                          Nomor Telepon &amp; WhatsApp
+                        </label>
+                        <input
+                          type="text"
+                          value={cmsContactPhone}
+                          onChange={(e) => setCmsContactPhone(e.target.value)}
+                          placeholder="Contoh: +62 812-3456-7890 / (021) 555-0192"
+                          className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
+                          Email Resmi Perpustakaan
+                        </label>
+                        <input
+                          type="text"
+                          value={cmsContactEmail}
+                          onChange={(e) => setCmsContactEmail(e.target.value)}
+                          placeholder="Contoh: layanan@pustakadigital.sch.id / info@pustakadigital.id"
+                          className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500"
+                        />
+                      </div>
+
+                      <div className="md:col-span-2">
+                        <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
+                          Jam Layanan Operasional
+                        </label>
+                        <input
+                          type="text"
+                          value={cmsServiceHours}
+                          onChange={(e) => setCmsServiceHours(e.target.value)}
+                          placeholder="Contoh: Senin - Jumat: 07.30 - 16.00 WIB | Sabtu: 08.00 - 13.00 WIB"
+                          className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Section 4: Footer Copyright */}
+                  <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-5">
+                    <div className="flex items-center gap-3 pb-3 border-b border-slate-800">
+                      <div className="w-9 h-9 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-400 flex items-center justify-center">
+                        <FileText className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-black text-white">4. Footer &amp; Hak Cipta</h3>
+                        <p className="text-[11px] text-slate-400">Teks hak cipta yang tertera di bagian paling bawah website.</p>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
+                        Teks Hak Cipta (Footer Copyright)
+                      </label>
+                      <input
+                        type="text"
+                        value={cmsFooterCopyright}
+                        onChange={(e) => setCmsFooterCopyright(e.target.value)}
+                        placeholder="Contoh: © 2026 Perpustakaan Kita Indonesia. Hak Cipta Dilindungi."
+                        className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-purple-500"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Bottom Action Button */}
+                  <div className="flex items-center justify-end gap-3 p-4 bg-slate-900/80 border border-slate-800 rounded-2xl">
+                    {cmsSaveSuccess && (
+                      <span className="text-xs text-emerald-400 font-bold flex items-center gap-1.5 mr-auto">
+                        <CheckCircle className="w-4 h-4" /> Pengaturan berhasil disimpan dan langsung diterapkan!
+                      </span>
+                    )}
+                    <button
+                      type="submit"
+                      disabled={isSavingCms}
+                      className="px-6 py-3.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-extrabold text-xs rounded-xl shadow-xl shadow-blue-500/25 flex items-center gap-2 transition-all cursor-pointer hover:scale-105 disabled:opacity-50"
+                    >
+                      {isSavingCms ? (
+                        <>
+                          <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          Menyimpan Perubahan...
+                        </>
+                      ) : (
+                        <>
+                          <Save className="w-4 h-4" /> Simpan Pengaturan Website
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </form>
+
               </motion.div>
             )}
 
