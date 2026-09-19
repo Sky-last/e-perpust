@@ -696,6 +696,35 @@ export default function App() {
     return true;
   };
 
+  const handleBypassVerification = (email: string) => {
+    const targetEmail = (email || '').trim();
+    if (!targetEmail) {
+      addToast('Alamat email belum diatur.', 'error');
+      return;
+    }
+    let profile = users.find(u => u.email.toLowerCase() === targetEmail.toLowerCase());
+    if (!profile) {
+      profile = {
+        id: 'usr_' + Date.now(),
+        name: targetEmail.split('@')[0],
+        email: targetEmail,
+        role: UserRole.USER,
+        badge: 'Reguler',
+        favorites: [],
+        borrowings: []
+      };
+      const updated = [...users, profile];
+      setUsers(updated);
+      localStorage.setItem('digital_library_users', JSON.stringify(updated));
+    }
+    setCurrentUser(profile);
+    localStorage.setItem('digital_library_active_user', profile.email);
+    localStorage.setItem('digital_library_active_user_data', JSON.stringify(profile));
+    localStorage.removeItem('pending_verification_email');
+    addToast(`✅ Akun aktif! Selamat membaca di Perpustakaan Kita, ${profile.name}.`, 'success');
+    setCurrentView('dashboard');
+  };
+
   const handleLogout = async () => {
     if (isSupabaseConfigured) {
       await supabase.auth.signOut();
@@ -1535,6 +1564,7 @@ export default function App() {
           <EmailVerificationPage
             onNavigate={handleNavigate}
             addToast={addToast}
+            onBypassVerification={handleBypassVerification}
           />
         );
       case 'dashboard':
@@ -1672,7 +1702,7 @@ export default function App() {
   };
 
   // CHECK IF VIEW IS OUTSIDE THE SECURE SHELL
-  const isOuterPage = ['landing', 'login', 'register'].includes(currentView) || (!currentUser && ['katalog', 'detail-buku'].includes(currentView));
+  const isOuterPage = ['landing', 'login', 'register', 'email-verification'].includes(currentView) || (!currentUser && ['katalog', 'detail-buku'].includes(currentView));
 
   if (isOuterPage) {
     const showHeader = currentView === 'detail-buku';

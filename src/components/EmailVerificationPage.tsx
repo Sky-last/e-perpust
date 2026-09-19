@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { 
   Mail, 
   CheckCircle2, 
   RefreshCw, 
   ArrowLeft, 
   Clock, 
-  ShieldAlert, 
   Sparkles, 
   ExternalLink,
   Edit2,
   Check,
   X,
-  AlertTriangle
+  AlertTriangle,
+  Zap,
+  ShieldCheck
 } from 'lucide-react';
 import { ViewType } from '../types';
 import { supabase } from '../lib/supabase';
@@ -21,9 +22,10 @@ import { soundFX } from '../utils/audio';
 interface EmailVerificationPageProps {
   onNavigate: (view: ViewType) => void;
   addToast: (message: string, type: 'success' | 'error' | 'info') => void;
+  onBypassVerification?: (email: string) => void;
 }
 
-export default function EmailVerificationPage({ onNavigate, addToast }: EmailVerificationPageProps) {
+export default function EmailVerificationPage({ onNavigate, addToast, onBypassVerification }: EmailVerificationPageProps) {
   const [email, setEmail] = useState('');
   const [isResending, setIsResending] = useState(false);
   const [isCheckingStatus, setIsCheckingStatus] = useState(false);
@@ -106,9 +108,8 @@ export default function EmailVerificationPage({ onNavigate, addToast }: EmailVer
       });
 
       if (error) {
-        // Terjemahkan pesan error agar ramah dan informatif bagi pengguna
         if (error.message.includes('rate limit') || (error as any).code === 'over_email_send_rate_limit') {
-          addToast('⏳ Batas pengiriman email tercapai (kebijakan keamanan). Mohon tunggu beberapa saat sebelum mencoba lagi atau periksa folder Spam.', 'error');
+          addToast('⏳ Kuota pengiriman email Supabase tercapai (3 email/jam). Mohon periksa folder SPAM atau gunakan tombol Masuk Langsung di bawah.', 'error');
           setCountdown(120);
         } else if (error.message.includes('already confirmed') || error.message.includes('already registered')) {
           addToast('✅ Email ini sudah terverifikasi sebelumnya! Anda dapat langsung login.', 'success');
@@ -116,7 +117,7 @@ export default function EmailVerificationPage({ onNavigate, addToast }: EmailVer
           addToast('Gagal mengirim ulang email: ' + error.message, 'error');
         }
       } else {
-        addToast('✅ Email verifikasi berhasil dikirim ulang! Cek inbox atau folder Spam Anda.', 'success');
+        addToast('✅ Email verifikasi telah dikirim ulang! Buka folder SPAM jika tidak ada di Inbox.', 'success');
         setCountdown(60);
       }
     } catch (err: any) {
@@ -138,7 +139,7 @@ export default function EmailVerificationPage({ onNavigate, addToast }: EmailVer
         localStorage.removeItem('pending_verification_email');
         setTimeout(() => {
           onNavigate('dashboard');
-        }, 1200);
+        }, 1000);
         return;
       }
 
@@ -146,8 +147,7 @@ export default function EmailVerificationPage({ onNavigate, addToast }: EmailVer
         console.log('Verification check status note:', error.message);
       }
 
-      // Jika session lokal belum diperbarui, beri panduan untuk login langsung
-      addToast('Status: Menunggu konfirmasi email. Pastikan Anda telah mengklik link yang dikirim ke email, atau coba Login sekarang.', 'info');
+      addToast('Status: Belum terverifikasi. Pastikan Anda telah mengklik link di dalam email (cek folder Spam), atau gunakan tombol Masuk Langsung di bawah.', 'info');
     } catch (err: any) {
       addToast('Gagal memeriksa status: ' + err.message, 'error');
     } finally {
@@ -155,64 +155,66 @@ export default function EmailVerificationPage({ onNavigate, addToast }: EmailVer
     }
   };
 
+  const isGmail = email.toLowerCase().includes('@gmail.com');
+
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 flex flex-col items-center justify-center p-4 sm:p-6 py-12 relative overflow-y-auto font-sans selection:bg-blue-500 selection:text-white">
-      {/* Animated Background Orbs */}
+    <div className="min-h-screen w-full bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 flex flex-col items-center justify-center p-4 sm:p-6 py-10 relative overflow-y-auto font-sans selection:bg-blue-500 selection:text-white">
+      {/* Ambient glowing background blobs */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-        <div className="absolute w-96 h-96 bg-blue-600/20 rounded-full blur-3xl -top-32 -left-32 animate-pulse" />
-        <div className="absolute w-96 h-96 bg-purple-600/20 rounded-full blur-3xl -bottom-32 -right-32 animate-pulse" style={{ animationDelay: '1.5s' }} />
+        <div className="absolute w-[500px] h-[500px] bg-blue-600/15 rounded-full blur-3xl -top-32 -left-32 animate-pulse" />
+        <div className="absolute w-[500px] h-[500px] bg-purple-600/15 rounded-full blur-3xl -bottom-32 -right-32 animate-pulse" style={{ animationDelay: '1.5s' }} />
       </div>
 
-      {/* Top Bar / Back Button */}
-      <div className="w-full max-w-xl mb-4 flex items-center justify-between">
-        <button
-          onClick={() => {
-            soundFX.playClick();
-            onNavigate('login');
-          }}
-          className="inline-flex items-center gap-2 px-3.5 py-2 bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white rounded-xl backdrop-blur-md border border-slate-700/60 transition-all text-xs font-semibold cursor-pointer shadow-sm hover:scale-[1.02]"
-        >
-          <ArrowLeft className="w-3.5 h-3.5 text-blue-400" />
-          <span>Kembali ke Halaman Login</span>
-        </button>
-
-        <span className="text-[11px] font-bold text-slate-400 hidden sm:inline-block">
-          Perpustakaan Kita Digital
-        </span>
-      </div>
-
-      {/* Main Content Card */}
+      {/* Main Content Card Container */}
       <motion.div
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="w-full max-w-xl relative z-10"
+        transition={{ duration: 0.35 }}
+        className="w-full max-w-lg relative z-10"
       >
-        <div className="bg-slate-900/90 backdrop-blur-2xl border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
-          {/* Decorative Glow Stripe */}
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500" />
+        {/* Navigation back bar */}
+        <div className="mb-4 flex items-center justify-between">
+          <button
+            onClick={() => {
+              soundFX.playClick();
+              onNavigate('login');
+            }}
+            className="inline-flex items-center gap-2 px-3.5 py-2 bg-slate-900/90 hover:bg-slate-800 text-slate-300 hover:text-white rounded-xl backdrop-blur-md border border-slate-700/60 transition-all text-xs font-semibold cursor-pointer shadow-sm hover:scale-[1.02]"
+          >
+            <ArrowLeft className="w-3.5 h-3.5 text-blue-400" />
+            <span>Kembali ke Halaman Login</span>
+          </button>
 
-          {/* Icon Header */}
+          <span className="text-[11px] font-bold text-slate-400">
+            Perpustakaan Kita Digital
+          </span>
+        </div>
+
+        <div className="bg-slate-900/95 backdrop-blur-2xl border border-slate-800/90 rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+          {/* Decorative Gradient Top Header */}
+          <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500" />
+
+          {/* Mail Animated Icon */}
           <motion.div
             initial={{ scale: 0.8 }}
             animate={{ scale: 1 }}
-            transition={{ duration: 0.4, type: 'spring' }}
-            className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-5 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center relative shadow-lg shadow-blue-500/25"
+            transition={{ duration: 0.35, type: 'spring' }}
+            className="w-16 h-16 mx-auto mb-4 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center relative shadow-lg shadow-blue-500/25"
           >
-            <Mail className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
+            <Mail className="w-8 h-8 text-white" />
             <div className="absolute inset-0 bg-blue-500 rounded-2xl blur-xl -z-10 opacity-60 animate-pulse" />
           </motion.div>
 
-          {/* Title */}
+          {/* Header Title */}
           <h1 className="text-xl sm:text-2xl font-black text-white text-center mb-1.5 tracking-tight">
             Verifikasi Email Anda
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400 text-center mb-6 max-w-md mx-auto leading-relaxed">
-            Link aktivasi telah dikirimkan. Silakan periksa kotak masuk email Anda untuk mengaktifkan akun.
+          <p className="text-xs sm:text-sm text-slate-400 text-center mb-5 max-w-sm mx-auto leading-relaxed">
+            Link aktivasi telah dikirimkan ke alamat email Anda.
           </p>
 
-          {/* Email Box with Edit Capability */}
-          <div className="bg-slate-950/70 border border-slate-800 rounded-2xl p-4 mb-5 shadow-inner">
+          {/* Registered Email Display Box */}
+          <div className="bg-slate-950/80 border border-slate-800 rounded-2xl p-3.5 mb-5 shadow-inner">
             <div className="flex items-center justify-between mb-1">
               <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
@@ -237,13 +239,13 @@ export default function EmailVerificationPage({ onNavigate, addToast }: EmailVer
                   value={editEmailValue}
                   onChange={(e) => setEditEmailValue(e.target.value)}
                   placeholder="Masukkan email yang benar..."
-                  className="flex-1 px-3 py-2 bg-slate-900 border border-blue-500/50 rounded-xl text-xs text-white placeholder-slate-500 outline-none focus:ring-1 focus:ring-blue-500"
+                  className="flex-1 px-3 py-2 bg-slate-900 border border-blue-500/60 rounded-xl text-xs text-white placeholder-slate-500 outline-none focus:ring-1 focus:ring-blue-500 font-medium"
                   autoFocus
                 />
                 <button
                   type="button"
                   onClick={handleSaveEditedEmail}
-                  className="px-3 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer"
+                  className="px-3 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer shadow"
                   title="Simpan"
                 >
                   <Check className="w-3.5 h-3.5" />
@@ -262,38 +264,53 @@ export default function EmailVerificationPage({ onNavigate, addToast }: EmailVer
               </div>
             ) : (
               <p className="text-sm sm:text-base text-white font-bold tracking-wide break-all mt-0.5">
-                {email || <span className="text-amber-400 font-normal italic text-xs">Belum ada email yang ditentukan. Klik 'Ubah' untuk mengisi.</span>}
+                {email || <span className="text-amber-400 font-normal italic text-xs">Belum ada email. Klik 'Ubah' untuk mengisi.</span>}
               </p>
             )}
           </div>
 
-          {/* Critical Warning: Check Spam / Junk */}
-          <div className="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-4 mb-5 flex items-start gap-3">
-            <div className="w-8 h-8 rounded-xl bg-amber-500/20 flex items-center justify-center shrink-0 mt-0.5">
-              <AlertTriangle className="w-4 h-4 text-amber-400" />
+          {/* SPAM / JUNK CRITICAL ALERT */}
+          <div className="bg-amber-500/10 border border-amber-500/35 rounded-2xl p-4 mb-4">
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-xl bg-amber-500/20 flex items-center justify-center shrink-0 mt-0.5">
+                <AlertTriangle className="w-4 h-4 text-amber-400" />
+              </div>
+              <div className="text-xs text-amber-200/90 leading-relaxed">
+                <p className="font-bold text-amber-300 text-xs mb-1">
+                  Email tidak ada di Inbox utama?
+                </p>
+                <p>
+                  Sistem otomatis dari Supabase sering kali masuk ke folder <strong className="text-amber-200 underline font-black">SPAM</strong> atau <strong className="text-amber-200 underline font-black">JUNK</strong>.
+                </p>
+              </div>
             </div>
-            <div className="text-xs text-amber-200/90 leading-relaxed">
-              <p className="font-bold text-amber-300 text-xs mb-0.5">
-                Email verifikasi belum masuk ke Inbox?
-              </p>
-              <p>
-                Sistem otomatis sering dialihkan ke folder <strong className="text-amber-300 underline font-extrabold">Spam</strong>, <strong className="text-amber-300 underline font-extrabold">Junk</strong>, atau <strong className="text-amber-300 font-extrabold">Promosi</strong>. Silakan periksa folder tersebut dan klik <em>"Bukan Spam"</em>.
-              </p>
-            </div>
+
+            {/* Direct Open Spam Button for Gmail */}
+            {isGmail && (
+              <a
+                href="https://mail.google.com/mail/u/0/#spam"
+                target="_blank"
+                rel="noreferrer"
+                className="mt-3 w-full py-2.5 px-3 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 rounded-xl text-xs font-bold text-amber-200 flex items-center justify-center gap-2 transition-all cursor-pointer"
+              >
+                <span>Buka Folder Spam Gmail Sekarang</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </a>
+            )}
           </div>
 
-          {/* Quick Webmail Shortcuts */}
+          {/* Webmail Shortcuts Grid */}
           <div className="mb-5">
-            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
               <Sparkles className="w-3 h-3 text-blue-400" />
-              Buka Penyedia Email Anda:
+              Buka Penyedia Email:
             </p>
             <div className="grid grid-cols-3 gap-2">
               <a
                 href="https://mail.google.com"
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center justify-center gap-1.5 py-2.5 px-2 bg-slate-950/80 hover:bg-slate-800 border border-slate-800 hover:border-blue-500/40 rounded-xl text-xs font-semibold text-slate-200 transition-all group"
+                className="flex items-center justify-center gap-1.5 py-2 px-2 bg-slate-950/80 hover:bg-slate-800 border border-slate-800 hover:border-blue-500/40 rounded-xl text-xs font-semibold text-slate-200 transition-all group"
               >
                 <span>Gmail</span>
                 <ExternalLink className="w-3 h-3 text-slate-500 group-hover:text-blue-400 transition-colors" />
@@ -302,7 +319,7 @@ export default function EmailVerificationPage({ onNavigate, addToast }: EmailVer
                 href="https://mail.yahoo.com"
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center justify-center gap-1.5 py-2.5 px-2 bg-slate-950/80 hover:bg-slate-800 border border-slate-800 hover:border-purple-500/40 rounded-xl text-xs font-semibold text-slate-200 transition-all group"
+                className="flex items-center justify-center gap-1.5 py-2 px-2 bg-slate-950/80 hover:bg-slate-800 border border-slate-800 hover:border-purple-500/40 rounded-xl text-xs font-semibold text-slate-200 transition-all group"
               >
                 <span>Yahoo</span>
                 <ExternalLink className="w-3 h-3 text-slate-500 group-hover:text-purple-400 transition-colors" />
@@ -311,7 +328,7 @@ export default function EmailVerificationPage({ onNavigate, addToast }: EmailVer
                 href="https://outlook.live.com"
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center justify-center gap-1.5 py-2.5 px-2 bg-slate-950/80 hover:bg-slate-800 border border-slate-800 hover:border-cyan-500/40 rounded-xl text-xs font-semibold text-slate-200 transition-all group"
+                className="flex items-center justify-center gap-1.5 py-2 px-2 bg-slate-950/80 hover:bg-slate-800 border border-slate-800 hover:border-cyan-500/40 rounded-xl text-xs font-semibold text-slate-200 transition-all group"
               >
                 <span>Outlook</span>
                 <ExternalLink className="w-3 h-3 text-slate-500 group-hover:text-cyan-400 transition-colors" />
@@ -319,42 +336,14 @@ export default function EmailVerificationPage({ onNavigate, addToast }: EmailVer
             </div>
           </div>
 
-          {/* Step Instructions */}
-          <div className="space-y-2.5 mb-6 bg-slate-950/40 border border-slate-800/80 rounded-2xl p-4">
-            <div className="flex items-start gap-2.5">
-              <div className="w-5 h-5 bg-emerald-500/20 rounded-full flex items-center justify-center shrink-0 mt-0.5">
-                <CheckCircle2 className="w-3 h-3 text-emerald-400" />
-              </div>
-              <p className="text-xs text-slate-300">
-                <strong className="text-white">Langkah 1:</strong> Buka email konfirmasi dari sistem perpustakaan.
-              </p>
-            </div>
-            <div className="flex items-start gap-2.5">
-              <div className="w-5 h-5 bg-blue-500/20 rounded-full flex items-center justify-center shrink-0 mt-0.5">
-                <CheckCircle2 className="w-3 h-3 text-blue-400" />
-              </div>
-              <p className="text-xs text-slate-300">
-                <strong className="text-white">Langkah 2:</strong> Klik tombol atau tautan <em>"Confirm your email"</em> di dalamnya.
-              </p>
-            </div>
-            <div className="flex items-start gap-2.5">
-              <div className="w-5 h-5 bg-purple-500/20 rounded-full flex items-center justify-center shrink-0 mt-0.5">
-                <CheckCircle2 className="w-3 h-3 text-purple-400" />
-              </div>
-              <p className="text-xs text-slate-300">
-                <strong className="text-white">Langkah 3:</strong> Akun Anda akan langsung aktif dan otomatis siap digunakan membaca buku!
-              </p>
-            </div>
-          </div>
-
           {/* Action Buttons */}
-          <div className="space-y-3">
+          <div className="space-y-2.5 mb-5">
             {/* Cek Status Button */}
             <button
               type="button"
               onClick={handleCheckStatus}
               disabled={isCheckingStatus}
-              className="w-full py-3 bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white rounded-xl font-bold text-xs sm:text-sm shadow-lg shadow-blue-500/20 hover:shadow-blue-500/35 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+              className="w-full py-3 bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white rounded-xl font-bold text-xs sm:text-sm shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
             >
               <RefreshCw className={`w-4 h-4 ${isCheckingStatus ? 'animate-spin' : ''}`} />
               <span>{isCheckingStatus ? 'Memeriksa Status Akun...' : 'Saya Sudah Klik Link (Cek Status)'}</span>
@@ -365,10 +354,10 @@ export default function EmailVerificationPage({ onNavigate, addToast }: EmailVer
               type="button"
               onClick={handleResendEmail}
               disabled={!canResend || isResending}
-              className={`w-full py-3 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 border ${
+              className={`w-full py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 border ${
                 canResend && !isResending
                   ? 'bg-slate-900 hover:bg-slate-800 text-white border-slate-700 hover:border-slate-600 cursor-pointer shadow-md'
-                  : 'bg-slate-950 text-slate-500 border-slate-800 cursor-not-allowed'
+                  : 'bg-slate-950/80 text-slate-500 border-slate-800/80 cursor-not-allowed'
               }`}
             >
               {isResending ? (
@@ -384,15 +373,37 @@ export default function EmailVerificationPage({ onNavigate, addToast }: EmailVer
               ) : (
                 <>
                   <Clock className="w-4 h-4 text-amber-400/80" />
-                  <span>Kirim ulang tersedia dalam {countdown} detik</span>
+                  <span>Kirim ulang tersedia dalam {countdown}s</span>
                 </>
               )}
             </button>
           </div>
 
+          {/* BYPASS / FALLBACK OPTION IF SUPABASE SMTP FAILS */}
+          {onBypassVerification && (
+            <div className="pt-3 border-t border-slate-800/90 text-center">
+              <div className="bg-blue-950/40 border border-blue-800/40 rounded-xl p-3 mb-2">
+                <p className="text-[11px] text-blue-200 mb-2 leading-relaxed">
+                  Email tetap tidak kunjung masuk karena batas server email Supabase?
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    soundFX.playClick();
+                    onBypassVerification(email || 'user@pustaka.com');
+                  }}
+                  className="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-md shadow-emerald-900/30 transition-all cursor-pointer"
+                >
+                  <Zap className="w-3.5 h-3.5" />
+                  <span>Aktifkan Akun & Masuk Sekarang</span>
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Footer Note & Direct Login */}
-          <div className="mt-6 pt-4 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-400">
-            <span>Sudah melakukan verifikasi?</span>
+          <div className="mt-4 pt-3 border-t border-slate-800/60 flex items-center justify-between text-xs text-slate-400">
+            <span>Sudah pernah verifikasi?</span>
             <button
               type="button"
               onClick={() => {
@@ -401,7 +412,7 @@ export default function EmailVerificationPage({ onNavigate, addToast }: EmailVer
               }}
               className="text-blue-400 hover:text-blue-300 font-extrabold cursor-pointer hover:underline flex items-center gap-1"
             >
-              <span>Masuk ke Akun Anda &rarr;</span>
+              <span>Masuk ke Akun &rarr;</span>
             </button>
           </div>
         </div>
