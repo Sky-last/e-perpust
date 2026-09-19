@@ -241,12 +241,34 @@ export default function App() {
   useEffect(() => {
     if (!isSupabaseConfigured) return;
 
+    // Periksa apakah ada error di URL hash (misal token verifikasi kadaluwarsa)
+    if (typeof window !== 'undefined' && window.location.hash) {
+      const hash = window.location.hash;
+      if (hash.includes('error=')) {
+        const params = new URLSearchParams(hash.substring(1));
+        const errorDesc = params.get('error_description');
+        const errorCode = params.get('error_code');
+        if (errorCode === 'otp_expired' || errorDesc?.toLowerCase().includes('expired')) {
+          addToast('⚠️ Tautan verifikasi email telah kedaluwarsa atau sudah digunakan. Silakan kirim ulang verifikasi.', 'error');
+        } else if (errorDesc) {
+          addToast(`Gagal verifikasi email: ${decodeURIComponent(errorDesc.replace(/\+/g, ' '))}`, 'error');
+        }
+        setCurrentView('email-verification');
+        window.history.replaceState(null, '', window.location.pathname);
+      }
+    }
+
     // Listen for auth state changes (email confirmation, Google login, etc.)
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth event:', event);
 
       // Handle email verification or Google OAuth success
-      if (event === 'SIGNED_IN' && session?.user) {
+      if ((event === 'SIGNED_IN' || event === 'USER_UPDATED') && session?.user) {
+        // Bersihkan hash dari URL jika ada
+        if (typeof window !== 'undefined' && window.location.hash) {
+          window.history.replaceState(null, '', window.location.pathname);
+        }
+
         const isGoogleProvider = session.user.app_metadata?.provider === 'google';
         
         // Check if email is verified
@@ -554,16 +576,34 @@ export default function App() {
           email,
           password: pass,
           options: {
+            emailRedirectTo: `${window.location.origin}/`,
             data: { name, phone, memberCategory, identityNumber }
           }
         });
 
         if (error) {
+          if (error.message.includes('rate limit') || (error as any).code === 'over_email_send_rate_limit') {
+            addToast('⏳ Kuota pengiriman email verifikasi tercapai. Mohon tunggu beberapa menit atau cek folder Spam jika sebelumnya sudah mendaftar.', 'error');
+            localStorage.setItem('pending_verification_email', email);
+            setCurrentView('email-verification');
+            return false;
+          }
           addToast(error.message, 'error');
           return false;
         }
 
         if (data.user) {
+          // Jika user sudah pernah terdaftar, Supabase mengembalikan identities kosong dan tidak mengirim email baru
+          if (data.user.identities && data.user.identities.length === 0) {
+            addToast(
+              `⚠️ Akun dengan email ${email} sudah pernah terdaftar. Silakan langsung login atau kirim ulang tautan verifikasi.`,
+              'info'
+            );
+            localStorage.setItem('pending_verification_email', email);
+            setCurrentView('email-verification');
+            return true;
+          }
+
           // Create profile row in Supabase
           try {
             await supabase.from('profiles').upsert({

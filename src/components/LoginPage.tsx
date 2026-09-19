@@ -22,6 +22,14 @@ export default function LoginPage({ onNavigate, onLogin, addToast, onGoogleAuth 
   const [isFocusPassword, setIsFocusPassword] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
+  // Pre-fill email from pending verification or previous login
+  useEffect(() => {
+    const pendingEmail = localStorage.getItem('pending_verification_email') || localStorage.getItem('digital_library_active_user') || '';
+    if (pendingEmail) {
+      setEmail(pendingEmail);
+    }
+  }, []);
+
   // Disable body scroll when component mounts
   useEffect(() => {
     document.body.style.overflow = 'hidden';
