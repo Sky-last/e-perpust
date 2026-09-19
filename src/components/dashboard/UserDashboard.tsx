@@ -1640,20 +1640,36 @@ export default function UserDashboard({
                   </div>
 
                   {/* The library card, signature element */}
-                  <div className="bg-[#20301F] rounded-2xl p-6 lg:p-7 shadow-xl relative overflow-hidden text-[#F6F1E7]">
-                    <div className="absolute top-4 right-4 font-mono-lib text-[9px] uppercase tracking-[0.2em] text-[#C08B34] border border-[#C08B34]/40 px-2.5 py-1 rounded-full z-10">
-                      Kartu Anggota Digital
+                  <div className="bg-[#20301F] rounded-2xl p-5 sm:p-6 lg:p-7 shadow-xl relative overflow-hidden text-[#F6F1E7]">
+                    {/* Decorative circles */}
+                    <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-[#C08B34]/5 pointer-events-none" />
+                    <div className="absolute -bottom-8 -left-8 w-32 h-32 rounded-full bg-white/5 pointer-events-none" />
+
+                    {/* Header row */}
+                    <div className="flex items-center justify-between mb-4 relative z-10">
+                      <div className="flex items-center gap-2">
+                        <div className="w-1 h-5 bg-[#C08B34] rounded-full" />
+                        <span className="font-mono-lib text-[9px] uppercase tracking-[0.18em] text-[#C08B34] font-bold">
+                          Kartu Anggota Digital
+                        </span>
+                      </div>
+                      <span className="hidden sm:inline-block font-mono-lib text-[9px] uppercase tracking-[0.15em] text-[#CBD5C9] border border-white/10 px-2.5 py-1 rounded-full">
+                        Perpustakaan Kita
+                      </span>
                     </div>
-                    <div className="flex flex-col md:flex-row items-center gap-6 relative z-10">
+
+                    {/* Card body */}
+                    <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 relative z-10">
+                      {/* Avatar */}
                       <div className="relative group shrink-0">
                         {currentUser.avatarUrl || currentUser.avatar ? (
                           <img
                             src={currentUser.avatarUrl || currentUser.avatar}
                             alt={currentUser.name}
-                            className="w-24 h-24 rounded-xl object-cover ring-2 ring-[#C08B34]/50"
+                            className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl object-cover ring-2 ring-[#C08B34]/50"
                           />
                         ) : (
-                          <div className="w-24 h-24 rounded-xl ring-2 ring-[#C08B34]/50 bg-[#C08B34] text-[#20301F] font-bold text-2xl flex items-center justify-center uppercase">
+                          <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl ring-2 ring-[#C08B34]/50 bg-[#C08B34] text-[#20301F] font-bold text-xl sm:text-2xl flex items-center justify-center uppercase">
                             {getInitials(currentUser.name)}
                           </div>
                         )}
@@ -1678,10 +1694,10 @@ export default function UserDashboard({
                           />
                         </label>
                         <label
-                          className="absolute -bottom-1 -right-1 p-2 bg-[#C08B34] hover:bg-[#D19A42] text-[#20301F] rounded-lg shadow-md border-2 border-[#20301F] cursor-pointer transition-transform hover:scale-110 active:scale-95 z-20 flex items-center justify-center"
+                          className="absolute -bottom-1 -right-1 p-1.5 sm:p-2 bg-[#C08B34] hover:bg-[#D19A42] text-[#20301F] rounded-lg shadow-md border-2 border-[#20301F] cursor-pointer transition-transform hover:scale-110 active:scale-95 z-20 flex items-center justify-center"
                           title="Unggah foto profil"
                         >
-                          <Camera className="w-3.5 h-3.5" />
+                          <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                           <input
                             type="file"
                             accept="image/png, image/jpeg, image/jpg, image/webp, image/gif, image/*"
@@ -1692,21 +1708,38 @@ export default function UserDashboard({
                         </label>
                       </div>
 
-                      <div className="text-center md:text-left flex-1 space-y-1.5">
-                        <h3 className="font-display text-xl lg:text-2xl font-semibold">{currentUser.name}</h3>
-                        <p className="font-mono-lib text-[11px] text-[#CBD5C9]">No. ID: {currentUser.identityNumber || currentUser.nisn || '—'}</p>
-                        <p className="text-xs text-[#C08B34] font-bold">{currentUser.memberCategory || currentUser.class || 'Masyarakat Umum'}</p>
-                        <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 pt-2">
-                          <span className="px-3 py-1 text-[10px] font-bold bg-white/10 text-[#CBD5C9] rounded-lg flex items-center gap-1">
-                            <CheckCircle2 className="w-3.5 h-3.5 text-[#5F7A63]" /> Terverifikasi
+                      {/* Info */}
+                      <div className="text-center sm:text-left flex-1 min-w-0 space-y-1.5">
+                        <h3 className="font-display text-lg sm:text-xl lg:text-2xl font-semibold leading-tight truncate">
+                          {currentUser.name}
+                        </h3>
+                        <p className="font-mono-lib text-[10px] sm:text-[11px] text-[#CBD5C9] truncate">
+                          No. ID: {currentUser.identityNumber || currentUser.nisn || '—'}
+                        </p>
+                        <p className="text-[11px] sm:text-xs text-[#C08B34] font-bold">
+                          {currentUser.memberCategory || currentUser.class || 'Masyarakat Umum'}
+                        </p>
+                        <div className="flex flex-wrap items-center justify-center sm:justify-start gap-1.5 sm:gap-2 pt-1.5">
+                          <span className="px-2.5 py-1 text-[9px] sm:text-[10px] font-bold bg-white/10 text-[#CBD5C9] rounded-lg flex items-center gap-1">
+                            <CheckCircle2 className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#5F7A63]" /> Terverifikasi
                           </span>
-                          <span className="px-3 py-1 text-[10px] font-bold bg-white/10 text-[#CBD5C9] rounded-lg flex items-center gap-1">
-                            <Star className="w-3.5 h-3.5 text-[#C08B34]" /> Member {currentUser.badge || 'Reguler'}
+                          <span className="px-2.5 py-1 text-[9px] sm:text-[10px] font-bold bg-white/10 text-[#CBD5C9] rounded-lg flex items-center gap-1">
+                            <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#C08B34]" /> Member {currentUser.badge || 'Reguler'}
                           </span>
                         </div>
                       </div>
 
-                      <Stamp className="hidden lg:block w-10 h-10 text-[#C08B34]/30 shrink-0" />
+                      <Stamp className="hidden lg:block w-10 h-10 text-[#C08B34]/30 shrink-0 self-center" />
+                    </div>
+
+                    {/* Footer */}
+                    <div className="mt-5 pt-4 border-t border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1.5 relative z-10">
+                      <span className="font-mono-lib text-[9px] text-[#CBD5C9]/60 uppercase tracking-widest truncate max-w-[220px] sm:max-w-none">
+                        {currentUser.email}
+                      </span>
+                      <span className="font-mono-lib text-[9px] text-[#CBD5C9]/40 uppercase tracking-widest truncate">
+                        {currentUser.institution || currentUser.address || 'Perpustakaan Kita'}
+                      </span>
                     </div>
                   </div>
 
