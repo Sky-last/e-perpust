@@ -1638,11 +1638,7 @@ export default function StaffDashboard({
                       <tbody className="divide-y divide-slate-800 text-slate-300">
                         {filteredUsers.map(u => {
                           const userRoleStr = String(u.role || 'user').toLowerCase();
-                          const normalizedRole = ['admin', 'administrator'].includes(userRoleStr)
-                            ? 'admin'
-                            : ['staf', 'staff'].includes(userRoleStr)
-                            ? 'staf'
-                            : 'user';
+                          const normalizedRole = ['admin', 'administrator'].includes(userRoleStr) ? 'admin' : 'user';
                           
                           return (
                             <tr key={u.id} className="hover:bg-slate-800/40 transition-colors">
@@ -1670,16 +1666,14 @@ export default function StaffDashboard({
                                     className="bg-slate-950 border border-slate-800 text-cyan-300 text-[11px] font-extrabold rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-cyan-500 cursor-pointer"
                                   >
                                     <option value="admin">Administrator (Admin)</option>
-                                    <option value="staf">Staf Perpustakaan</option>
                                     <option value="user">User (Pemustaka)</option>
                                   </select>
                                 ) : (
                                   <span className={`px-2.5 py-1 rounded-md text-[10px] font-extrabold uppercase border ${
                                     normalizedRole === 'admin' ? 'bg-purple-500/20 text-purple-300 border-purple-500/30' :
-                                    normalizedRole === 'staf' ? 'bg-amber-500/20 text-amber-300 border-amber-500/30' :
                                     'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
                                   }`}>
-                                    {normalizedRole === 'admin' ? 'Admin' : normalizedRole === 'staf' ? 'Staf' : 'User'}
+                                    {normalizedRole === 'admin' ? 'Admin' : 'User'}
                                   </span>
                                 )}
                               </td>
@@ -2737,7 +2731,6 @@ export default function StaffDashboard({
                     <label className="block text-[10px] font-extrabold uppercase text-slate-400 mb-1">Role / Peran</label>
                     <select value={uRole} onChange={e => setURole(e.target.value as UserRole)} className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-bold focus:outline-none focus:border-cyan-500 cursor-pointer">
                       <option value="admin">Administrator (Admin)</option>
-                      <option value="staf">Staf Perpustakaan</option>
                       <option value="user">User (Pemustaka)</option>
                     </select>
                   </div>
