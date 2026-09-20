@@ -1710,10 +1710,10 @@ export default function StaffDashboard({
                         <p className="text-[10px] text-slate-500 mt-1">Label: Anggota Aktif</p>
                       </div>
                       <div>
-                        <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Jumlah Peminjaman</label>
+                        <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Jumlah Unduhan</label>
                         <input type="text" value={cmsStatsBorrowCount} onChange={(e) => setCmsStatsBorrowCount(e.target.value)}
                           placeholder="Contoh: 48,930+" className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-purple-500" />
-                        <p className="text-[10px] text-slate-500 mt-1">Label: Peminjaman</p>
+                        <p className="text-[10px] text-slate-500 mt-1">Label: Jumlah Unduhan</p>
                       </div>
                       <div>
                         <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Teks Rating Platform</label>
@@ -1945,7 +1945,7 @@ export default function StaffDashboard({
                       <div className="md:col-span-2">
                         <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Subtitle / Kalimat Pembuka Kontak</label>
                         <textarea rows={2} value={cmsContactSubtitle} onChange={(e) => setCmsContactSubtitle(e.target.value)}
-                          placeholder="Contoh: Punya pertanyaan mengenai koleksi e-book, peminjaman fisik, atau akun keanggotaan?..." className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500 leading-relaxed" />
+                          placeholder="Contoh: Punya pertanyaan mengenai koleksi e-book, unduhan buku digital, atau akun keanggotaan?..." className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500 leading-relaxed" />
                       </div>
                       <div className="md:col-span-2">
                         <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">

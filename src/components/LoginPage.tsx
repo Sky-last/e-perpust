@@ -138,7 +138,7 @@ export default function LoginPage({ onNavigate, onLogin, addToast, onGoogleAuth 
                 Selamat Datang Kembali di Perpustakaan Kita
               </h2>
               <p className="text-xs text-slate-400 leading-relaxed font-medium">
-                Masuk ke akun Anda untuk melanjutkan riwayat bacaan dan peminjaman buku.
+                Masuk ke akun Anda untuk melanjutkan riwayat bacaan dan unduhan buku.
               </p>
             </div>
 

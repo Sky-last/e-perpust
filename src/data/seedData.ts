@@ -57,7 +57,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   // 6. Kontak & Jam Layanan
   contactBadge: 'Hubungi Kami',
   contactTitle: 'Layanan Informasi & Layanan Anggota',
-  contactSubtitle: 'Punya pertanyaan mengenai koleksi e-book, peminjaman fisik, atau akun keanggotaan? Tim pustakawan kami siap membantu Anda.',
+  contactSubtitle: 'Punya pertanyaan mengenai koleksi e-book, unduhan buku digital, atau akun keanggotaan? Tim pustakawan kami siap membantu Anda.',
   contactAddress: 'Jl. Pemuda No. 123, Kompleks Pendidikan Utama, Jakarta Pusat 10110',
   contactPhone: '+62 812-3456-7890 / (021) 555-0192',
   contactEmail: 'layanan@pustakadigital.sch.id / info@pustakadigital.id',

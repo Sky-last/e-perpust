@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Star, Heart, ArrowRight, Users, BookMarked, CheckCircle, Sun, Moon, Sparkles, Mail, Phone, MapPin, Clock, Send, MessageSquare, Menu, X, ChevronDown, Megaphone } from 'lucide-react';
+import { Star, Heart, ArrowRight, Users, BookMarked, CheckCircle, Sun, Moon, Sparkles, Mail, Phone, MapPin, Clock, Send, MessageSquare, Menu, X, ChevronDown, Megaphone, Download } from 'lucide-react';
 import { Book, ViewType, User, SiteSettings } from '../types';
 import { DEFAULT_SITE_SETTINGS } from '../data/seedData';
 import Book3D from './Book3D';
@@ -422,7 +422,7 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
           {[
             { icon: BookMarked, val: `${totalUniqueBooks}+`, label: 'Judul Buku', color: 'text-blue-400 bg-blue-950/50', delay: 'delay-100' },
             { icon: Users, val: cfg.statsMembersCount || '12,480+', label: 'Anggota Aktif', color: 'text-emerald-400 bg-emerald-950/50', delay: 'delay-200' },
-            { icon: Star, val: cfg.statsBorrowCount || '48,930+', label: 'Peminjaman', color: 'text-purple-400 bg-purple-950/50', delay: 'delay-300' },
+            { icon: Download, val: cfg.statsBorrowCount || '48,930+', label: 'Jumlah Unduhan', color: 'text-purple-400 bg-purple-950/50', delay: 'delay-300' },
             { icon: CheckCircle, val: cfg.statsRatingText || '4.9/5', label: 'Rating Platform', color: 'text-amber-400 bg-amber-950/50', delay: 'delay-400' },
           ].map((s, i) => (
             <div key={i} className={`reveal-scale ${s.delay} text-center space-y-3 group cursor-default`}>
@@ -575,7 +575,7 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
               {cfg.contactTitle || 'Layanan Informasi & Layanan Anggota'}
             </h2>
             <p className={`text-sm ${sub}`}>
-              {cfg.contactSubtitle || 'Punya pertanyaan mengenai koleksi e-book, peminjaman fisik, atau akun keanggotaan? Tim pustakawan kami siap membantu Anda.'}
+              {cfg.contactSubtitle || 'Punya pertanyaan mengenai koleksi e-book, unduhan buku digital, atau akun keanggotaan? Tim pustakawan kami siap membantu Anda.'}
             </p>
           </div>
 
@@ -693,7 +693,7 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
                       <textarea
                         rows={4}
                         required
-                        placeholder="Tuliskan pertanyaan atau kendala peminjaman Anda di sini..."
+                        placeholder="Tuliskan pertanyaan atau kendala unduhan buku Anda di sini..."
                         value={contactMessage}
                         onChange={(e) => setContactMessage(e.target.value)}
                         className={`w-full px-4 py-3 rounded-xl border text-xs outline-none font-medium transition-all leading-relaxed ${
