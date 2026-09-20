@@ -89,7 +89,7 @@ export async function getBooks(): Promise<Book[]> {
         );
         catalogBooks = [...catalogBooks, ...customLocal];
       }
-    } catch (e) {}
+    } catch (e) { }
   }
 
   localStorage.setItem('digital_library_books', JSON.stringify(catalogBooks));
@@ -192,7 +192,7 @@ export async function getUserProfile(userId: string): Promise<User | null> {
           if (user && user.id === userId) {
             const userName = user.user_metadata?.name || user.email?.split('@')[0] || 'Anggota';
             const userRole = user.user_metadata?.role || 'user';
-            
+
             const newProfile = {
               id: userId,
               name: userName,
@@ -287,16 +287,16 @@ export async function updateUserInDb(userId: string, updatedData: Partial<User>)
       if (updatedData.address !== undefined) payload.address = updatedData.address;
       if (updatedData.downloads !== undefined) payload.downloads = updatedData.downloads;
       if (updatedData.readBooks !== undefined) payload.read_books = updatedData.readBooks;
-      
+
       const { error } = await supabase
         .from('profiles')
         .update(payload)
         .eq('id', userId);
-        
+
       if (error) {
         console.error('Supabase error updating user profile:', error);
         // Fallback for role constraint (if DB constraint uses 'siswa' instead of 'user' or vice versa)
-        if (updatedData.role === 'user' || updatedData.role === 'siswa') {
+        if (updatedData.role === 'user') {
           const altRole = updatedData.role === 'user' ? 'siswa' : 'user';
           const { error: err2 } = await supabase
             .from('profiles')
@@ -382,11 +382,11 @@ export async function updateUserBadge(userId: string, badge: 'Premium' | 'Regule
 
 // System peminjaman sudah dihapus - semua buku digital gratis tanpa peminjaman
 export async function makeBorrowing(
-  userId: string, 
-  bookId: string, 
-  bookTitle: string, 
-  coverColor: string, 
-  coverUrl: string | undefined, 
+  userId: string,
+  bookId: string,
+  bookTitle: string,
+  coverColor: string,
+  coverUrl: string | undefined,
   durationDays: number
 ): Promise<Borrowing | null> {
   console.warn('makeBorrowing: Borrowing system deprecated');
@@ -465,9 +465,9 @@ export async function getSystemLogs(): Promise<SystemLog[]> {
 }
 
 export async function addSystemLog(
-  email: string, 
-  name: string, 
-  type: 'pinjam' | 'kembali' | 'perpanjang' | 'register' | 'update_profile', 
+  email: string,
+  name: string,
+  type: 'pinjam' | 'kembali' | 'perpanjang' | 'register' | 'update_profile',
   bookTitle: string
 ): Promise<SystemLog> {
   const formattedDate = getFormattedDate();

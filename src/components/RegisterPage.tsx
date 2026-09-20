@@ -411,7 +411,16 @@ export default function RegisterPage({ onNavigate, onRegister, addToast, onGoogl
           </div>
 
           <div className="mt-6 pt-4 border-t border-slate-800/80 text-center text-[10px] text-slate-500">
-            Dengan mendaftar, Anda menyetujui Ketentuan Layanan & Kebijakan Privasi Perpustakaan Kita.
+            Dengan mendaftar, Anda menyetujui Ketentuan Layanan &amp;{' '}
+            <a
+              href="/privacy-policy.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-indigo-400 hover:text-indigo-300 hover:underline transition-colors"
+            >
+              Kebijakan Privasi
+            </a>{' '}
+            Perpustakaan Kita.
           </div>
         </div>
       </div>

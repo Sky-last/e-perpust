@@ -757,14 +757,23 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
         </div>
       </section>
 
-      {/* FOOTER */}
       <footer className={`border-t py-12 px-6 ${dk ? 'border-slate-800 bg-slate-900/50' : 'border-slate-200 bg-slate-50'}`}>
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">
             <BearMascotIcon size={36} />
             <span className={`font-black text-base ${text}`}>{cfg.libraryName || 'Perpustakaan Kita'}</span>
           </div>
-          <p className={`text-xs ${sub}`}>{cfg.footerCopyright || '© 2026 Perpustakaan Kita Indonesia'}</p>
+          <div className="flex flex-col md:flex-row items-center gap-3 md:gap-6">
+            <p className={`text-xs ${sub}`}>{cfg.footerCopyright || '© 2026 Perpustakaan Kita Indonesia'}</p>
+            <a
+              href="/privacy-policy.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`text-xs font-medium transition-colors hover:underline ${dk ? 'text-indigo-400 hover:text-indigo-300' : 'text-indigo-600 hover:text-indigo-700'}`}
+            >
+              Kebijakan Privasi
+            </a>
+          </div>
         </div>
       </footer>
 
