@@ -24,12 +24,13 @@ import AdminPage from './components/AdminPage';
 import CompleteProfileModal from './components/CompleteProfileModal';
 import ToastNotification, { Toast } from './components/ToastNotification';
 import AILibrarianAssistant from './components/AILibrarianAssistant';
+import LiveChatWidget from './components/LiveChatWidget';
 import { downloadPdfFile } from './utils/downloadHelper';
 
 // Lucide Icons for dashboard shell
 import { 
   BookOpen, LayoutDashboard, Layers, Clock, Heart, User as UserIcon, Shield, 
-  LogOut, Menu, X, Award, ChevronRight, HelpCircle, ArrowRight, Download
+  LogOut, Menu, X, Award, ChevronRight, HelpCircle, ArrowRight, ArrowLeft, Download
 } from 'lucide-react';
 
 // Role-specific Dashboards
@@ -453,43 +454,58 @@ export default function App() {
 
     // Set initial history state if empty & push root guard
     try {
-      if (!window.history.state || !window.history.state.view) {
+      if (!window.history.state || (!window.history.state.view && !window.history.state.modal)) {
         window.history.replaceState({ view: 'root_guard' }, '', window.location.pathname);
         window.history.pushState({ view: currentView }, '', window.location.pathname);
       }
     } catch (e) {}
 
     const handlePopState = (event: PopStateEvent) => {
-      // 1. Close global top-level modals first
-      if (selectedBookId) {
+      setSidebarOpen(false);
+
+      const state = event.state;
+
+      // 1. Abaikan jika popstate berasal dari penutupan modal lokal / sub-komponen
+      if (state?.modal || state?.userDashboardModal || state?.dashboardModal) {
+        return;
+      }
+
+      // 2. Navigasi view normal berdasarkan riwayat history
+      if (state && state.view && state.view !== 'root_guard') {
+        setCurrentView(state.view);
+        if (state.selectedId) {
+          setSelectedBookId(state.selectedId);
+        } else {
+          setSelectedBookId(null);
+        }
+        return;
+      }
+
+      // 3. Penanganan khusus jika sedang di detail-buku: kembali ke katalog
+      if (currentView === 'detail-buku') {
+        setCurrentView('katalog');
         setSelectedBookId(null);
         return;
       }
 
-      // 2. Handle view navigation
-      if (event.state && event.state.view && event.state.view !== 'root_guard') {
-        setCurrentView(event.state.view);
-        if (event.state.selectedId) {
-          setSelectedBookId(event.state.selectedId);
-        } else {
-          setSelectedBookId(null);
-        }
-      } else {
-        // Fallback: stay on landing page instead of closing the web app
-        if (currentView !== 'landing') {
-          setCurrentView('landing');
-        }
+      // 4. Jika sedang di dashboard pengguna, jangan paksa keluar ke landing
+      if (currentView === 'dashboard') {
+        return;
+      }
+
+      // 5. Fallback ke landing jika mencapai root_guard atau history kosong
+      if (currentView !== 'landing') {
+        setCurrentView('landing');
         setSelectedBookId(null);
         try {
           window.history.pushState({ view: 'landing' }, '', window.location.pathname);
         } catch (e) {}
       }
-      setSidebarOpen(false);
     };
 
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
-  }, [selectedBookId, currentView]);
+  }, [currentView]);
 
 
   // SYSTEM LOG PUSHER
@@ -1944,11 +1960,31 @@ export default function App() {
       
       {/* MOBILE HEADER (Always visible on mobile) */}
       <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white/95 backdrop-blur-md border-b border-slate-200 z-30 flex items-center justify-between px-4 shadow-sm">
-        <div className="flex items-center space-x-2.5">
+        <div className="flex items-center space-x-2">
+          {currentView !== 'landing' && currentView !== 'dashboard' && (
+            <button
+              onClick={() => {
+                if (currentView === 'detail-buku') {
+                  handleNavigate('katalog');
+                } else if (currentUser) {
+                  handleNavigate('dashboard');
+                } else {
+                  handleNavigate('landing');
+                }
+              }}
+              className="p-2 hover:bg-slate-100 rounded-xl border border-slate-200/60 text-slate-700 cursor-pointer flex items-center justify-center active:scale-95 transition-all mr-0.5"
+              title="Kembali"
+              aria-label="Kembali"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </button>
+          )}
           <div className="p-2 bg-blue-600 text-white rounded-xl shadow-md shadow-blue-100">
             <BookOpen className="w-5 h-5" />
           </div>
-          <span className="font-extrabold text-slate-900 tracking-tight text-sm">Perpustakaan Kita</span>
+          <span className="font-extrabold text-slate-900 tracking-tight text-sm">
+            {currentView === 'detail-buku' ? 'Detail Buku' : 'Perpustakaan Kita'}
+          </span>
         </div>
         
         <button 
@@ -2130,6 +2166,12 @@ export default function App() {
       <AILibrarianAssistant
         books={books}
         onNavigate={handleNavigate}
+      />
+
+      {/* Live Chat Admin Widget */}
+      <LiveChatWidget
+        currentUser={currentUser}
+        onRequestLogin={() => setCurrentView('login')}
       />
 
       {/* Gerbang Lengkapi Profil (Wajib untuk akun Google/pendaftar baru sebelum akses fitur) */}

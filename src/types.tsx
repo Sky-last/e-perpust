@@ -203,3 +203,28 @@ export interface UserFeedback {
   isRead: boolean;
 }
 
+// ==========================================
+// LIVE CHAT TYPES
+// ==========================================
+export interface ChatMessage {
+  id: string;
+  sessionId: string;     // userId (satu sesi per user)
+  senderId: string;      // userId atau 'admin'
+  senderName: string;
+  senderRole: 'user' | 'admin';
+  text: string;
+  timestamp: string;     // ISO string
+  isRead: boolean;
+}
+
+export interface ChatSession {
+  id: string;            // same as userId
+  userId: string;
+  userName: string;
+  userEmail: string;
+  lastMessage: string;
+  lastMessageAt: string;
+  unreadByAdmin: number;
+  unreadByUser: number;
+  isActive: boolean;
+}

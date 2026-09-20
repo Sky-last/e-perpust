@@ -175,3 +175,24 @@ CREATE POLICY "Semua orang bisa melihat site_settings" ON public.site_settings
 CREATE POLICY "Pengaturan website dapat diubah" ON public.site_settings
   FOR ALL USING (true) WITH CHECK (true);
 
+-- 8. Tabel Live Chat (Chat Messages User <-> Admin)
+CREATE TABLE IF NOT EXISTS public.chat_messages (
+  id TEXT PRIMARY KEY,
+  session_id TEXT NOT NULL,
+  sender_id TEXT NOT NULL,
+  sender_name TEXT NOT NULL,
+  sender_role TEXT NOT NULL CHECK (sender_role IN ('user', 'admin')),
+  text TEXT NOT NULL,
+  timestamp TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+  is_read BOOLEAN DEFAULT false
+);
+
+ALTER TABLE public.chat_messages ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Semua orang bisa melihat dan mengirim chat_messages" ON public.chat_messages
+  FOR ALL USING (true) WITH CHECK (true);
+
+-- Aktifkan Supabase Realtime untuk tabel chat_messages
+ALTER PUBLICATION supabase_realtime ADD TABLE public.chat_messages;
+
+

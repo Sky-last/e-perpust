@@ -134,6 +134,32 @@ export default function EBookReader3D({ book, onClose, currentUser, initialMode 
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [currentPage, mode, isFlipping]);
 
+  // Mobile Hardware Back & popstate handler for EBookReader3D
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    let closedViaPopstate = false;
+
+    try {
+      window.history.pushState({ modal: 'reader3d' }, '');
+    } catch (e) {}
+
+    const handlePopState = () => {
+      closedViaPopstate = true;
+      stopSpeech();
+      onClose();
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+      if (!closedViaPopstate && window.history.state?.modal === 'reader3d') {
+        try {
+          window.history.back();
+        } catch (e) {}
+      }
+    };
+  }, [onClose]);
+
   // Clean TTS voice on page change
   useEffect(() => {
     return () => {

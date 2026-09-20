@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Book, User, SystemLog } from '../types';
-import { Plus, Trash, Edit, Sparkles, BookOpen, Layers, Users, History, Save, X, RefreshCw, LogOut, Home, Download, Award, FileText } from 'lucide-react';
+import { Plus, Trash, Edit, Sparkles, BookOpen, Layers, Users, History, Save, X, RefreshCw, LogOut, Home, Download, Award, FileText, MessageCircle } from 'lucide-react';
+import AdminChatPanel from './AdminChatPanel';
 
 interface AdminPageProps {
   books: Book[];
@@ -38,7 +39,7 @@ export default function AdminPage({
   onLogout,
   onNavigate
 }: AdminPageProps) {
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'crud' | 'users' | 'history'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'crud' | 'users' | 'history' | 'chat'>('dashboard');
 
   // CRUD specific states
   const [isEditing, setIsEditing] = useState(false);
@@ -265,7 +266,8 @@ export default function AdminPage({
               { id: 'dashboard', label: 'Ringkasan', icon: BookOpen },
               { id: 'crud', label: 'Kelola Buku', icon: Layers },
               { id: 'users', label: 'Anggota', icon: Users },
-              { id: 'history', label: 'Riwayat Log', icon: History }
+              { id: 'history', label: 'Riwayat Log', icon: History },
+              { id: 'chat', label: 'Live Chat Desk', icon: MessageCircle }
             ].map(tab => {
               const Icon = tab.icon;
               return (
@@ -951,6 +953,11 @@ export default function AdminPage({
             </table>
           </div>
         </div>
+      )}
+
+      {/* VIEW: LIVE CHAT DESK */}
+      {activeTab === 'chat' && (
+        <AdminChatPanel addToast={addToast} />
       )}
     </div>
   );

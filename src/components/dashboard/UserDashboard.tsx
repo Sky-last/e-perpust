@@ -48,7 +48,8 @@ import {
   Printer,
   CreditCard,
   Lock,
-  AlertCircle
+  AlertCircle,
+  ArrowLeft
 } from 'lucide-react';
 import { User, Book, Category, Borrowing, LibrarySettings, Notification, DownloadedBook } from '../../types';
 import { uploadAvatar } from '../../lib/db';
@@ -147,18 +148,18 @@ export default function UserDashboard({
   // Push history state saat modal di UserDashboard terbuka agar tombol back HP menutup modal terlebih dahulu
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    if (selectedBook || readingBook3D || isBorrowingModalOpen || showMemberCard) {
+    if (selectedBook || isBorrowingModalOpen || showMemberCard) {
       try {
-        window.history.pushState({ userDashboardModal: true }, '');
+        window.history.pushState({ view: 'dashboard', userDashboardModal: true }, '');
       } catch (e) {}
     }
-  }, [selectedBook, readingBook3D, isBorrowingModalOpen, showMemberCard]);
+  }, [selectedBook, isBorrowingModalOpen, showMemberCard]);
 
   // Handler tombol Back fisik HP (Hardware Back / Popstate) untuk UserDashboard
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    const handlePopState = () => {
+    const handlePopState = (e: PopStateEvent) => {
       // 1. Tutup modal aktif terlebih dahulu jika ada
       if (readingBook3D) {
         setReadingBook3D(null);
@@ -177,7 +178,13 @@ export default function UserDashboard({
         return;
       }
 
-      // 2. Kembali ke tab utama ('home') jika sedang berada di sub-tab lain
+      // 2. Sinkronkan tab jika event state memiliki info tab
+      if (e.state?.dashboardTab) {
+        setActiveTab(e.state.dashboardTab);
+        return;
+      }
+
+      // 3. Kembali ke tab utama ('home') jika sedang berada di sub-tab lain
       if (activeTab !== 'home' && !isProfileIncomplete) {
         setActiveTab('home');
         return;
@@ -196,7 +203,7 @@ export default function UserDashboard({
     }
     if (typeof window !== 'undefined' && tabId !== activeTab) {
       try {
-        window.history.pushState({ dashboardTab: tabId }, '');
+        window.history.pushState({ view: 'dashboard', dashboardTab: tabId }, '');
       } catch (e) {}
     }
     setActiveTab(tabId);
@@ -727,13 +734,26 @@ export default function UserDashboard({
       <div className="flex-1 h-screen flex flex-col overflow-hidden paper-grain">
 
         <header className="bg-[#F6F1E7]/95 backdrop-blur-md border-b border-[#1F2A24]/10 px-4 lg:px-8 py-3 flex justify-between items-center sticky top-0 z-20 shrink-0">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => setMobileMenuOpen(true)}
-              className="lg:hidden p-2.5 bg-[#20301F] rounded-lg text-[#F6F1E7] transition-colors cursor-pointer"
-            >
-              <Menu className="w-5 h-5" />
-            </button>
+          <div className="flex items-center gap-2 lg:gap-4">
+            {activeTab !== 'home' ? (
+              <button
+                onClick={() => handleTabChange('home')}
+                className="lg:hidden p-2.5 bg-[#20301F] hover:bg-[#2A3F27] rounded-lg text-[#F6F1E7] transition-colors cursor-pointer flex items-center justify-center active:scale-95"
+                title="Kembali ke Beranda"
+                aria-label="Kembali"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </button>
+            ) : (
+              <button
+                onClick={() => setMobileMenuOpen(true)}
+                className="lg:hidden p-2.5 bg-[#20301F] rounded-lg text-[#F6F1E7] transition-colors cursor-pointer"
+                title="Buka Menu"
+                aria-label="Menu"
+              >
+                <Menu className="w-5 h-5" />
+              </button>
+            )}
 
             <div className="flex items-center gap-3">
               <button
