@@ -122,7 +122,7 @@ export const CompleteProfileModal: React.FC<CompleteProfileModalProps> = ({
   return (
     <AnimatePresence>
       <div 
-        className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-slate-950/85 backdrop-blur-xl"
+        className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-slate-950/90 backdrop-blur-2xl"
         role="dialog"
         aria-modal="true"
       >

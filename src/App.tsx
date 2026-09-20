@@ -24,6 +24,7 @@ import AdminPage from './components/AdminPage';
 import CompleteProfileModal from './components/CompleteProfileModal';
 import ToastNotification, { Toast } from './components/ToastNotification';
 import AILibrarianAssistant from './components/AILibrarianAssistant';
+import { downloadPdfFile } from './utils/downloadHelper';
 
 // Lucide Icons for dashboard shell
 import { 
@@ -949,6 +950,8 @@ export default function App() {
 
     setIsSavingProfile(false);
     setNeedsProfileCompletion(false);
+    // Hapus alert lama yang meminta mengisi data profil
+    setToasts(prev => prev.filter(t => !t.message.toLowerCase().includes('lengkapi data') && !t.message.toLowerCase().includes('lengkapi profil')));
     addToast('🎉 Profil anggota berhasil dilengkapi! Selamat datang di Perpustakaan Kita.', 'success');
     await pushLog(updatedUser.email, updatedUser.name, 'update_profile', 'Lengkapi profil onboarding Google');
   };
@@ -975,6 +978,13 @@ export default function App() {
 
     await pushLog(updatedUser.email, updatedUser.name, 'update_profile', '');
     
+    // Check if profile is now complete and dismiss any incomplete profile alert
+    if (updatedUser.identityNumber && updatedUser.phone && (updatedUser.memberCategory || updatedUser.class)) {
+      updatedUser.isProfileCompleted = true;
+      setNeedsProfileCompletion(false);
+      setToasts(prev => prev.filter(t => !t.message.toLowerCase().includes('lengkapi data') && !t.message.toLowerCase().includes('lengkapi profil')));
+    }
+
     // Only show toast for profile edits, not for silent updates (like downloads removal)
     if (data.name || data.phone || data.memberCategory || data.identityNumber || data.avatarUrl || data.avatar) {
       addToast('Informasi profil berhasil diperbarui!', 'success');
@@ -1561,22 +1571,13 @@ export default function App() {
     setUsers(updatedUsers);
     localStorage.setItem('digital_library_users', JSON.stringify(updatedUsers));
 
-    // Trigger file download to device
+    // Trigger file download to device (mobile-ready with blob streaming)
     try {
-      const link = document.createElement('a');
-      link.href = pdfUrl;
-      link.download = `${book.title.replace(/[/\\?%*:|"<>]/g, '_')}.pdf`;
-      link.target = '_blank';
-      link.rel = 'noopener noreferrer';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      
-      addToast(`Berhasil mengunduh "${book.title}"! File PDF telah disimpan di perangkat Anda.`, 'success');
+      await downloadPdfFile(pdfUrl, book.title);
+      addToast(`Berhasil mengunduh "${book.title}"! File PDF telah tersimpan di perangkat Anda.`, 'success');
     } catch (err) {
       console.error('Download failed:', err);
       addToast('Gagal mengunduh file. Coba buka di tab baru.', 'error');
-      // Fallback: open in new tab
       window.open(pdfUrl, '_blank');
     }
 
@@ -1710,7 +1711,7 @@ export default function App() {
             categories={categories}
             borrowings={(currentUser.borrowings || []).map(b => ({ ...b, studentId: currentUser.id }))}
             notifications={notifications}
-            settings={settings}
+            settings={{ ...settings, libraryName: siteSettings.libraryName || settings.libraryName || 'Perpustakaan Kita' }}
             onRequestBorrow={() => {}} // Feature replaced with downloads
             onRequestReturn={handleReturnBook}
             onUpdateProfile={(data) => handleUpdateProfile(data)}
@@ -2106,6 +2107,15 @@ export default function App() {
         books={books}
         onNavigate={handleNavigate}
       />
+
+      {/* Gerbang Lengkapi Profil (Wajib untuk akun Google/pendaftar baru sebelum akses fitur) */}
+      {currentUser && (needsProfileCompletion || isProfileIncomplete(currentUser)) && (
+        <CompleteProfileModal
+          user={currentUser}
+          onSave={handleSaveCompletedProfile}
+          isLoading={isSavingProfile}
+        />
+      )}
     </div>
   );
 }

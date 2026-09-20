@@ -71,6 +71,7 @@ export interface Category {
 }
 
 export interface LibrarySettings {
+  libraryName?: string;
   maxBorrowBooks: number;
   maxBorrowDays?: number;
   finePerDay?: number;

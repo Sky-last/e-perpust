@@ -14,6 +14,7 @@ export const DEFAULT_CATEGORIES: Category[] = [
 
 // Default library settings (Bebas durasi & Tanpa Denda)
 export const DEFAULT_SETTINGS: LibrarySettings = {
+  libraryName: 'Perpustakaan Kita',
   maxBorrowBooks: 5,
   maxBorrowDays: 7
 };

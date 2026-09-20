@@ -46,7 +46,9 @@ import {
   RotateCcw,
   Plus,
   Printer,
-  CreditCard
+  CreditCard,
+  Lock,
+  AlertCircle
 } from 'lucide-react';
 import { User, Book, Category, Borrowing, LibrarySettings, Notification, DownloadedBook } from '../../types';
 import { uploadAvatar } from '../../lib/db';
@@ -57,6 +59,7 @@ import { BearMascotIcon } from '../AnimatedIcon';
 import { resolveBookPdfUrl } from '../../utils/pdfResolver';
 import { resolveUserMemberId } from '../../utils/memberId';
 import MemberCardModal from '../MemberCardModal';
+import { downloadPdfFile } from '../../utils/downloadHelper';
 
 interface UserDashboardProps {
   currentUser: User;
@@ -117,7 +120,12 @@ export default function UserDashboard({
   onMarkNotifRead,
   onDownloadBook
 }: UserDashboardProps) {
-  const [activeTab, setActiveTab] = useState<'home' | 'books' | 'history' | 'stats' | 'profile'>('home');
+  // Periksa apakah profil pengguna belum lengkap (terutama untuk akun Google atau pendaftar baru)
+  const isProfileIncomplete = !currentUser.identityNumber || !currentUser.phone || !currentUser.memberCategory;
+
+  const [activeTab, setActiveTab] = useState<'home' | 'books' | 'history' | 'stats' | 'profile'>(() => {
+    return isProfileIncomplete ? 'profile' : 'home';
+  });
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [sortBy, setSortBy] = useState<'populer' | 'abjad' | 'terbaru' | 'tersedia'>('populer');
@@ -132,9 +140,18 @@ export default function UserDashboard({
   const [isBorrowingModalOpen, setIsBorrowingModalOpen] = useState(false);
   const [borrowSuccess, setBorrowSuccess] = useState(false);
 
-  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [isEditingProfile, setIsEditingProfile] = useState<boolean>(() => isProfileIncomplete);
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const [showMemberCard, setShowMemberCard] = useState(false);
+
+  const handleTabChange = (tabId: 'home' | 'books' | 'history' | 'stats' | 'profile') => {
+    if (isProfileIncomplete && tabId !== 'profile') {
+      setActiveTab('profile');
+      setIsEditingProfile(true);
+      return;
+    }
+    setActiveTab(tabId);
+  };
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -174,6 +191,8 @@ export default function UserDashboard({
   const [editClass, _setEditClass] = useState(currentUser.class || '');
   const [editMemberCategory, setEditMemberCategory] = useState(currentUser.memberCategory || 'Masyarakat Umum');
   const [editIdentityNumber, setEditIdentityNumber] = useState(currentUser.identityNumber || currentUser.nisn || '');
+  const [editInstitution, setEditInstitution] = useState(currentUser.institution || currentUser.class || '');
+  const [editAddress, setEditAddress] = useState(currentUser.address || '');
 
   // Sync edit state when currentUser changes from parent (e.g. after save or avatar update)
   React.useEffect(() => {
@@ -182,6 +201,8 @@ export default function UserDashboard({
       setEditPhone(currentUser.phone || '');
       setEditMemberCategory(currentUser.memberCategory || 'Masyarakat Umum');
       setEditIdentityNumber(currentUser.identityNumber || currentUser.nisn || '');
+      setEditInstitution(currentUser.institution || currentUser.class || '');
+      setEditAddress(currentUser.address || '');
     }
   }, [currentUser, isEditingProfile]);
 
@@ -400,12 +421,29 @@ export default function UserDashboard({
   };
 
   const handleSaveProfile = () => {
+    if (!editName.trim()) {
+      alert('Nama lengkap tidak boleh kosong.');
+      return;
+    }
+    if (!editIdentityNumber.trim()) {
+      alert('Nomor Identitas (NIM/NISN/NIK) wajib diisi.');
+      return;
+    }
+    if (!editPhone.trim() || editPhone.trim().length < 8) {
+      alert('Nomor WhatsApp / HP tidak valid.');
+      return;
+    }
+
     onUpdateProfile({
-      name: editName,
-      phone: editPhone,
+      name: editName.trim(),
+      phone: editPhone.trim(),
       class: editMemberCategory,
       memberCategory: editMemberCategory,
-      identityNumber: editIdentityNumber
+      identityNumber: editIdentityNumber.trim(),
+      nisn: editIdentityNumber.trim(),
+      institution: editInstitution.trim(),
+      address: editAddress.trim(),
+      isProfileCompleted: true
     });
     setIsEditingProfile(false);
   };
@@ -471,13 +509,14 @@ export default function UserDashboard({
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeTab === item.id;
+              const isLocked = isProfileIncomplete && item.id !== 'profile';
               return (
                 <button
                   key={item.id}
-                  onClick={() => setActiveTab(item.id as any)}
+                  onClick={() => handleTabChange(item.id as any)}
                   className={`w-full flex items-center gap-3.5 px-3.5 py-3 text-xs rounded-lg transition-colors cursor-pointer relative ${
                     isActive ? 'text-[#20301F]' : 'text-[#CBD5C9] hover:text-white hover:bg-white/5'
-                  }`}
+                  } ${isLocked ? 'opacity-60' : ''}`}
                 >
                   {isActive && (
                     <motion.div
@@ -488,11 +527,14 @@ export default function UserDashboard({
                   )}
                   <Icon className="w-4 h-4 relative z-10 shrink-0" />
                   {!sidebarCollapsed && (
-                    <div className="text-left min-w-0 relative z-10">
-                      <span className="block truncate font-bold text-[11px] tracking-wide">{item.label}</span>
-                      <span className={`text-[9px] block truncate font-medium ${isActive ? 'text-[#20301F]/70' : 'text-[#CBD5C9]/60'}`}>
-                        {item.desc}
-                      </span>
+                    <div className="text-left min-w-0 relative z-10 flex-1 flex items-center justify-between">
+                      <div>
+                        <span className="block truncate font-bold text-[11px] tracking-wide">{item.label}</span>
+                        <span className={`text-[9px] block truncate font-medium ${isActive ? 'text-[#20301F]/70' : 'text-[#CBD5C9]/60'}`}>
+                          {item.desc}
+                        </span>
+                      </div>
+                      {isLocked && <Lock className="w-3 h-3 text-[#C08B34] shrink-0" />}
                     </div>
                   )}
                 </button>
@@ -598,16 +640,20 @@ export default function UserDashboard({
                 {navItems.map((item) => {
                   const Icon = item.icon;
                   const isActive = activeTab === item.id;
+                  const isLocked = isProfileIncomplete && item.id !== 'profile';
                   return (
                     <button
                       key={item.id}
-                      onClick={() => { setActiveTab(item.id as any); setMobileMenuOpen(false); }}
-                      className={`w-full flex items-center gap-3.5 px-4 py-3 text-xs font-bold rounded-lg transition-colors cursor-pointer ${
+                      onClick={() => { handleTabChange(item.id as any); setMobileMenuOpen(false); }}
+                      className={`w-full flex items-center justify-between px-4 py-3 text-xs font-bold rounded-lg transition-colors cursor-pointer ${
                         isActive ? 'bg-[#C08B34] text-[#20301F]' : 'text-[#CBD5C9] hover:text-white hover:bg-white/5'
                       }`}
                     >
-                      <Icon className="w-4.5 h-4.5" />
-                      <span className="flex-1 text-left">{item.label}</span>
+                      <div className="flex items-center gap-3.5">
+                        <Icon className="w-4.5 h-4.5" />
+                        <span className="text-left">{item.label}</span>
+                      </div>
+                      {isLocked && <Lock className="w-3.5 h-3.5 text-[#C08B34]" />}
                     </button>
                   );
                 })}
@@ -669,7 +715,7 @@ export default function UserDashboard({
 
           <div className="flex items-center gap-2 sm:gap-3">
             <button
-              onClick={() => setActiveTab('books')}
+              onClick={() => handleTabChange('books')}
               className="hidden sm:flex items-center gap-2 px-4 py-2 bg-[#20301F] hover:bg-[#2A3F27] text-[#F6F1E7] rounded-lg text-xs font-bold transition-colors cursor-pointer active:scale-95"
             >
               <Compass className="w-4 h-4 text-[#C08B34]" />
@@ -737,6 +783,39 @@ export default function UserDashboard({
 
         <main className="flex-1 overflow-y-auto p-4 lg:p-8 pb-24 lg:pb-8">
           <div className="max-w-6xl mx-auto space-y-6">
+            {/* Banner Peringatan Lengkapi Data Profil (Otomatis hilang setelah disimpan) */}
+            {isProfileIncomplete && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-amber-500/10 border-2 border-amber-500/30 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm"
+              >
+                <div className="flex items-center gap-3.5">
+                  <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-500 flex items-center justify-center shrink-0">
+                    <AlertCircle className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs sm:text-sm font-black text-[#1F2A24] flex items-center gap-2">
+                      <span>Data Profil Anggota Belum Lengkap</span>
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500 text-[#20301F] font-bold">Wajib Diisi</span>
+                    </h4>
+                    <p className="text-[11px] text-[#1F2A24]/70 mt-0.5 leading-relaxed">
+                      Lengkapi Nomor Identitas (NIM/NISN/NIK) dan Nomor WhatsApp Anda untuk membuka akses katalog, peminjaman, pembaca e-book 3D, dan unduhan file.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    setActiveTab('profile');
+                    setIsEditingProfile(true);
+                  }}
+                  className="px-4 py-2.5 bg-[#20301F] hover:bg-[#2A3F27] text-[#F6F1E7] rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 active:scale-95 shadow"
+                >
+                  Lengkapi Data Sekarang
+                </button>
+              </motion.div>
+            )}
+
             <AnimatePresence mode="wait">
 
               {/* ── TAB: HOME ── */}
@@ -762,13 +841,13 @@ export default function UserDashboard({
 
                         <div className="pt-2 flex flex-wrap items-center gap-3 text-[11px] font-bold">
                           <button
-                            onClick={() => setActiveTab('books')}
+                            onClick={() => handleTabChange('books')}
                             className="px-6 py-3 bg-[#C08B34] hover:bg-[#D19A42] text-[#20301F] rounded-lg transition-colors flex items-center gap-2 cursor-pointer active:scale-95"
                           >
                             <BookOpen className="w-4 h-4" /> Buka Katalog
                           </button>
                           <button
-                            onClick={() => setActiveTab('stats')}
+                            onClick={() => handleTabChange('stats')}
                             className="px-5 py-3 bg-white/5 hover:bg-white/10 text-[#F6F1E7] rounded-lg transition-colors flex items-center gap-2 cursor-pointer border border-white/10"
                           >
                             <TrendingUp className="w-4 h-4 text-[#C08B34]" /> Lihat Almanak Baca
@@ -1224,14 +1303,7 @@ export default function UserDashboard({
                                     } else {
                                       const pdfPath = bookObj.pdfUrl || resolveBookPdfUrl(bookObj);
                                       if (pdfPath) {
-                                        const a = document.createElement('a');
-                                        a.href = pdfPath;
-                                        a.download = `${bookObj.title.replace(/[/\\?%*:|"<>]/g, '_')}.pdf`;
-                                        a.target = '_blank';
-                                        a.rel = 'noopener noreferrer';
-                                        document.body.appendChild(a);
-                                        a.click();
-                                        document.body.removeChild(a);
+                                        downloadPdfFile(pdfPath, bookObj.title);
                                       }
                                     }
                                   }}
@@ -1833,14 +1905,39 @@ export default function UserDashboard({
                         </div>
                       </div>
 
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-[#1F2A24]/50 font-bold mb-1.5 uppercase text-[10px] tracking-wide">NIK / NIM / NISN</label>
+                          <input
+                            type="text"
+                            disabled={!isEditingProfile}
+                            value={editIdentityNumber}
+                            onChange={(e) => setEditIdentityNumber(e.target.value)}
+                            placeholder="Nomor identitas KTP / kartu pelajar..."
+                            className="w-full px-4 py-3 bg-[#F6F1E7] border border-[#1F2A24]/10 rounded-lg text-xs text-[#1F2A24] disabled:opacity-60 focus:outline-none focus:border-[#C08B34] font-semibold"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[#1F2A24]/50 font-bold mb-1.5 uppercase text-[10px] tracking-wide">Instansi / Sekolah / Kampus</label>
+                          <input
+                            type="text"
+                            disabled={!isEditingProfile}
+                            value={editInstitution}
+                            onChange={(e) => setEditInstitution(e.target.value)}
+                            placeholder="Nama sekolah / universitas / kantor..."
+                            className="w-full px-4 py-3 bg-[#F6F1E7] border border-[#1F2A24]/10 rounded-lg text-xs text-[#1F2A24] disabled:opacity-60 focus:outline-none focus:border-[#C08B34] font-semibold"
+                          />
+                        </div>
+                      </div>
+
                       <div>
-                        <label className="block text-[#1F2A24]/50 font-bold mb-1.5 uppercase text-[10px] tracking-wide">NIK / Nomor Identitas</label>
+                        <label className="block text-[#1F2A24]/50 font-bold mb-1.5 uppercase text-[10px] tracking-wide">Alamat Lengkap (Domisili)</label>
                         <input
                           type="text"
                           disabled={!isEditingProfile}
-                          value={editIdentityNumber}
-                          onChange={(e) => setEditIdentityNumber(e.target.value)}
-                          placeholder="Nomor identitas KTP / kartu pelajar..."
+                          value={editAddress}
+                          onChange={(e) => setEditAddress(e.target.value)}
+                          placeholder="Kota / Alamat domisili saat ini..."
                           className="w-full px-4 py-3 bg-[#F6F1E7] border border-[#1F2A24]/10 rounded-lg text-xs text-[#1F2A24] disabled:opacity-60 focus:outline-none focus:border-[#C08B34] font-semibold"
                         />
                       </div>
@@ -1981,16 +2078,20 @@ export default function UserDashboard({
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
+          const isLocked = isProfileIncomplete && item.id !== 'profile';
           return (
             <button
               key={item.id}
-              onClick={() => setActiveTab(item.id as any)}
-              className={`flex flex-col items-center gap-1 p-2 rounded-lg text-[10px] font-bold transition-colors cursor-pointer ${
+              onClick={() => handleTabChange(item.id as any)}
+              className={`flex flex-col items-center gap-1 p-2 rounded-lg text-[10px] font-bold transition-colors cursor-pointer relative ${
                 isActive ? 'text-[#C08B34] bg-white/5' : 'text-[#CBD5C9]/60 hover:text-[#CBD5C9]'
               }`}
             >
               <Icon className="w-5 h-5" />
               <span>{item.label}</span>
+              {isLocked && (
+                <Lock className="w-2.5 h-2.5 text-[#C08B34] absolute top-1.5 right-2" />
+              )}
             </button>
           );
         })}
