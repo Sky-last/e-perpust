@@ -458,18 +458,6 @@ export default function App() {
 
     const handlePopState = (event: PopStateEvent) => {
       // 1. Close global top-level modals first
-      if (readerBook) {
-        setReaderBook(null);
-        return;
-      }
-      if (isBook3DModalOpen) {
-        setIsBook3DModalOpen(false);
-        return;
-      }
-      if (pinjamModalBook) {
-        setPinjamModalBook(null);
-        return;
-      }
       if (selectedBookId) {
         setSelectedBookId(null);
         return;
@@ -498,7 +486,7 @@ export default function App() {
 
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
-  }, [readerBook, isBook3DModalOpen, pinjamModalBook, selectedBookId, currentView]);
+  }, [selectedBookId, currentView]);
 
 
   // SYSTEM LOG PUSHER
