@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { BookOpen, Eye, EyeOff, Mail, Lock, ArrowLeft, Shield, Sparkles, CheckCircle2 } from 'lucide-react';
+import { BookOpen, Eye, EyeOff, Mail, Lock, ArrowLeft, Shield, Sparkles, CheckCircle2, AlertCircle, X, KeyRound } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ViewType, Book } from '../types';
 import Book3D from './Book3D';
 import { soundFX } from '../utils/audio';
@@ -7,7 +8,7 @@ import { InteractiveMascot } from './InteractiveMascot';
 
 interface LoginPageProps {
   onNavigate: (view: ViewType) => void;
-  onLogin: (email: string, password: string) => boolean | Promise<boolean>;
+  onLogin: (email: string, password: string) => Promise<boolean | { success: boolean; message?: string }> | boolean | { success: boolean; message?: string };
   addToast: (message: string, type: 'success' | 'error' | 'info') => void;
   onGoogleAuth?: () => Promise<void>;
 }
@@ -21,6 +22,9 @@ export default function LoginPage({ onNavigate, onLogin, addToast, onGoogleAuth 
   const [isFocusEmail, setIsFocusEmail] = useState(false);
   const [isFocusPassword, setIsFocusPassword] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [errorField, setErrorField] = useState<'email' | 'password' | 'both' | null>(null);
+  const [isShaking, setIsShaking] = useState(false);
 
   // Pre-fill email from pending verification or previous login
   useEffect(() => {
@@ -53,55 +57,99 @@ export default function LoginPage({ onNavigate, onLogin, addToast, onGoogleAuth 
     isbn: '978-602-LOGIN-SYS',
   };
 
+  const triggerError = (msg: string, field: 'email' | 'password' | 'both') => {
+    setErrorMessage(msg);
+    setErrorField(field);
+    setIsShaking(true);
+    setTimeout(() => setIsShaking(false), 500);
+    soundFX.playError();
+    addToast(msg, 'error');
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     soundFX.playClick();
+    setErrorMessage(null);
+    setErrorField(null);
 
-    if (!email || !password) {
-      addToast('Email dan password wajib diisi!', 'error');
+    const trimmedEmail = email.trim();
+
+    if (!trimmedEmail && !password) {
+      triggerError('Email dan password wajib diisi!', 'both');
+      return;
+    }
+
+    if (!trimmedEmail) {
+      triggerError('Alamat email belum diisi!', 'email');
       return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      addToast('Format email tidak valid!', 'error');
+    if (!emailRegex.test(trimmedEmail)) {
+      triggerError('Format email tidak valid (contoh: user@pustaka.com)!', 'email');
+      return;
+    }
+
+    if (!password) {
+      triggerError('Kata sandi / password wajib diisi!', 'password');
       return;
     }
 
     if (password.length < 4) {
-      addToast('Password minimal harus 4 karakter!', 'error');
+      triggerError('Password minimal harus 4 karakter!', 'password');
       return;
     }
 
     setIsLoading(true);
 
     try {
-      const success = await onLogin(email, password);
+      const result = await onLogin(trimmedEmail, password);
       setIsLoading(false);
-      if (success) {
+
+      const isSuccessResult = typeof result === 'boolean' ? result : result?.success;
+      const responseMsg = typeof result === 'object' && result?.message ? result.message : undefined;
+
+      if (isSuccessResult) {
         setIsSuccess(true);
+        setErrorMessage(null);
+        setErrorField(null);
         soundFX.playBookOpen();
+      } else {
+        const failureMessage = responseMsg || 'Email atau password yang Anda masukkan salah. Silakan periksa kembali.';
+        const lower = failureMessage.toLowerCase();
+        let targetField: 'email' | 'password' | 'both' = 'both';
+        if (lower.includes('password') || lower.includes('kata sandi')) {
+          targetField = 'password';
+        } else if (lower.includes('email') || lower.includes('belum terdaftar')) {
+          targetField = 'email';
+        }
+
+        triggerError(failureMessage, targetField);
       }
     } catch (err: any) {
       setIsLoading(false);
-      addToast(err.message || 'Gagal masuk ke sistem. Silakan coba lagi.', 'error');
+      const errText = err?.message || 'Gagal masuk ke sistem. Silakan periksa kembali kredensial Anda.';
+      triggerError(errText, 'both');
     }
   };
 
   const handleGoogleLogin = async () => {
     soundFX.playClick();
+    setErrorMessage(null);
+    setErrorField(null);
     setIsLoading(true);
     try {
       if (onGoogleAuth) {
         await onGoogleAuth();
       } else {
-        const success = await onLogin('user@pustaka.com', 'user');
-        if (success) {
+        const result = await onLogin('user@pustaka.com', 'user');
+        const isSuccessResult = typeof result === 'boolean' ? result : result?.success;
+        if (isSuccessResult) {
           soundFX.playBookOpen();
         }
       }
     } catch (err: any) {
-      addToast(err.message || 'Gagal masuk menggunakan Google!', 'error');
+      triggerError(err.message || 'Gagal masuk menggunakan Google!', 'both');
     } finally {
       setIsLoading(false);
     }
@@ -196,10 +244,11 @@ export default function LoginPage({ onNavigate, onLogin, addToast, onGoogleAuth 
               showPassword={showPassword}
               emailLength={email.length}
               isSuccess={isSuccess}
+              isError={Boolean(errorMessage)}
             />
           </div>
 
-          <div className="space-y-1 mb-5 text-center sm:text-left">
+          <div className="space-y-1 mb-4 text-center sm:text-left">
             <h3 className="text-2xl font-black text-white">Masuk ke Akun Anda</h3>
             <p className="text-xs text-slate-400 font-medium">
               Belum punya akun?{' '}
@@ -215,6 +264,86 @@ export default function LoginPage({ onNavigate, onLogin, addToast, onGoogleAuth 
             </p>
           </div>
 
+          {/* ALERT NOTIFIKASI ERROR (SALAH PASSWORD / EMAIL) */}
+          <AnimatePresence>
+            {errorMessage && (
+              <motion.div
+                initial={{ opacity: 0, y: -10, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -10, scale: 0.98 }}
+                transition={{ duration: 0.2 }}
+                role="alert"
+                aria-live="assertive"
+                className={`mb-4 p-3.5 sm:p-4 rounded-2xl bg-rose-500/15 border border-rose-500/40 text-rose-200 shadow-xl shadow-rose-950/40 backdrop-blur-md flex items-start gap-3 relative overflow-hidden ${
+                  isShaking ? 'animate-shake' : ''
+                }`}
+              >
+                <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-rose-500 to-red-600 rounded-l" />
+                <div className="p-1.5 rounded-xl bg-rose-500/25 text-rose-400 shrink-0 mt-0.5 border border-rose-500/30">
+                  <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5" />
+                </div>
+                <div className="flex-1 min-w-0 pr-1">
+                  <div className="flex items-center justify-between gap-2">
+                    <h4 className="font-extrabold text-xs sm:text-sm text-rose-300 tracking-tight">
+                      {errorField === 'password'
+                        ? 'Password Tidak Sesuai!'
+                        : errorField === 'email'
+                        ? 'Email Belum Sesuai!'
+                        : 'Kredensial Login Salah!'}
+                    </h4>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setErrorMessage(null);
+                        setErrorField(null);
+                      }}
+                      className="text-rose-400/80 hover:text-white transition-colors p-1 rounded-lg hover:bg-rose-500/20 cursor-pointer"
+                      aria-label="Tutup pesan peringatan"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                  <p className="text-xs text-rose-200/90 font-medium mt-1 leading-relaxed">
+                    {errorMessage}
+                  </p>
+                  
+                  {/* Actionable quick hints inside the alert */}
+                  {errorField === 'password' && (
+                    <div className="mt-2.5 pt-2 border-t border-rose-500/20 flex flex-wrap items-center justify-between gap-2 text-[11px]">
+                      <span className="text-rose-300/80">Lupa kata sandi Anda?</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          soundFX.playClick();
+                          addToast('Demo password: user / admin / staf', 'info');
+                        }}
+                        className="font-bold text-rose-300 hover:text-white underline cursor-pointer"
+                      >
+                        Gunakan Akun Demo
+                      </button>
+                    </div>
+                  )}
+
+                  {errorField === 'email' && (
+                    <div className="mt-2.5 pt-2 border-t border-rose-500/20 flex flex-wrap items-center justify-between gap-2 text-[11px]">
+                      <span className="text-rose-300/80">Belum pernah mendaftar?</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          soundFX.playClick();
+                          onNavigate('register');
+                        }}
+                        className="font-bold text-rose-300 hover:text-white underline cursor-pointer"
+                      >
+                        Daftar Akun Baru
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Email */}
             <div className="space-y-1.5">
@@ -222,18 +351,36 @@ export default function LoginPage({ onNavigate, onLogin, addToast, onGoogleAuth 
                 Alamat Email
               </label>
               <div className="relative">
-                <Mail className="w-4.5 h-4.5 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <Mail className={`w-4.5 h-4.5 absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors ${
+                  errorField === 'email' || errorField === 'both' ? 'text-rose-400' : 'text-slate-500'
+                }`} />
                 <input
                   type="email"
                   required
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (errorMessage) {
+                      setErrorMessage(null);
+                      setErrorField(null);
+                    }
+                  }}
                   onFocus={() => setIsFocusEmail(true)}
                   onBlur={() => setIsFocusEmail(false)}
                   placeholder="name@example.com"
-                  className="w-full pl-10 pr-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all font-medium"
+                  className={`w-full pl-10 pr-4 py-3 bg-slate-950 border rounded-xl text-xs text-white placeholder-slate-600 outline-none transition-all font-medium ${
+                    errorField === 'email' || errorField === 'both'
+                      ? 'border-rose-500/80 ring-2 ring-rose-500/25 bg-rose-950/20 text-rose-100 placeholder-rose-300/40'
+                      : 'border-slate-800 focus:border-blue-500 focus:ring-1 focus:ring-blue-500'
+                  }`}
                 />
               </div>
+              {(errorField === 'email' || errorField === 'both') && (
+                <p className="text-[11px] text-rose-400 font-medium flex items-center gap-1.5 pt-0.5">
+                  <AlertCircle className="w-3 h-3 shrink-0" />
+                  <span>Pastikan alamat email Anda sudah terdaftar dan pengetikannya benar.</span>
+                </p>
+              )}
             </div>
 
             {/* Password */}
@@ -251,16 +398,28 @@ export default function LoginPage({ onNavigate, onLogin, addToast, onGoogleAuth 
                 </button>
               </div>
               <div className="relative">
-                <Lock className="w-4.5 h-4.5 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <Lock className={`w-4.5 h-4.5 absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors ${
+                  errorField === 'password' || errorField === 'both' ? 'text-rose-400' : 'text-slate-500'
+                }`} />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   required
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (errorMessage) {
+                      setErrorMessage(null);
+                      setErrorField(null);
+                    }
+                  }}
                   onFocus={() => setIsFocusPassword(true)}
                   onBlur={() => setIsFocusPassword(false)}
                   placeholder="Masukkan password Anda..."
-                  className="w-full pl-10 pr-10 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all font-medium"
+                  className={`w-full pl-10 pr-10 py-3 bg-slate-950 border rounded-xl text-xs text-white placeholder-slate-600 outline-none transition-all font-medium ${
+                    errorField === 'password' || errorField === 'both'
+                      ? 'border-rose-500/80 ring-2 ring-rose-500/25 bg-rose-950/20 text-rose-100 placeholder-rose-300/40'
+                      : 'border-slate-800 focus:border-blue-500 focus:ring-1 focus:ring-blue-500'
+                  }`}
                 />
                 <button
                   type="button"
@@ -270,6 +429,12 @@ export default function LoginPage({ onNavigate, onLogin, addToast, onGoogleAuth 
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
+              {(errorField === 'password' || errorField === 'both') && (
+                <p className="text-[11px] text-rose-400 font-medium flex items-center gap-1.5 pt-0.5">
+                  <AlertCircle className="w-3 h-3 shrink-0" />
+                  <span>Kata sandi tidak sesuai. Periksa huruf besar/kecil atau spasi.</span>
+                </p>
+              )}
             </div>
 
             {/* Remember Me */}

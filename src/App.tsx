@@ -558,48 +558,68 @@ export default function App() {
   };
 
   // AUTHENTICATION LOGICS
-  const handleLogin = async (email: string, pass: string): Promise<boolean> => {
+  const handleLogin = async (email: string, pass: string): Promise<{ success: boolean; message?: string } | boolean> => {
+    const trimmedEmail = email.trim();
     if (isSupabaseConfigured) {
       try {
         const { data, error } = await supabase.auth.signInWithPassword({
-          email,
+          email: trimmedEmail,
           password: pass
         });
 
         if (error) {
+          const lowerErr = (error.message || '').toLowerCase();
           // Check if error is due to unverified email
-          if (error.message.includes('Email not confirmed') || error.message.includes('email_not_confirmed')) {
-            addToast('📧 Email Anda belum diverifikasi. Silakan cek inbox dan klik link verifikasi.', 'error');
+          if (lowerErr.includes('email not confirmed') || lowerErr.includes('email_not_confirmed')) {
+            const unverifiedMsg = '📧 Email Anda belum diverifikasi. Silakan cek inbox email dan klik link verifikasi.';
+            addToast(unverifiedMsg, 'error');
             // Store email and redirect to verification page
-            localStorage.setItem('pending_verification_email', email);
+            localStorage.setItem('pending_verification_email', trimmedEmail);
             setCurrentView('email-verification');
-            return false;
+            return { success: false, message: unverifiedMsg };
           }
 
           // Check local fallback users for demo credentials (admin / staf / siswa)
-          const localUser = users.find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === pass);
+          const localUser = users.find(u => u.email.toLowerCase() === trimmedEmail.toLowerCase() && u.password === pass);
           if (localUser) {
             setCurrentUser(localUser);
             localStorage.setItem('digital_library_active_user', localUser.email);
             setFavorites(localUser.favorites || []);
             addToast('Berhasil masuk ke Perpustakaan Kita (Sesi Demo)!', 'success');
             setCurrentView('dashboard');
-            return true;
+            return { success: true };
           }
 
-          addToast(error.message || 'Email atau password yang Anda masukkan tidak sesuai!', 'error');
-          return false;
+          // Format Indonesian friendly message
+          const userWithSameEmail = users.find(u => u.email.toLowerCase() === trimmedEmail.toLowerCase());
+          let errorMessage = 'Email atau password yang Anda masukkan salah!';
+          
+          if (lowerErr.includes('invalid login credentials') || lowerErr.includes('invalid_grant')) {
+            if (userWithSameEmail) {
+              errorMessage = 'Password yang Anda masukkan salah! Silakan periksa kembali kata sandi Anda.';
+            } else {
+              errorMessage = 'Email belum terdaftar atau password salah. Pastikan akun sudah terdaftar dan kredensial benar.';
+            }
+          } else if (lowerErr.includes('email not confirmed')) {
+            errorMessage = 'Email Anda belum diverifikasi. Silakan cek inbox email Anda.';
+          } else if (error.message) {
+            errorMessage = error.message;
+          }
+
+          addToast(errorMessage, 'error');
+          return { success: false, message: errorMessage };
         }
 
         if (data.user) {
           // Double check: verify email is confirmed
           if (!data.user.email_confirmed_at) {
-            addToast('📧 Email Anda belum diverifikasi. Silakan cek inbox dan klik link verifikasi.', 'error');
-            localStorage.setItem('pending_verification_email', email);
+            const unconfirmedMsg = '📧 Email Anda belum diverifikasi. Silakan cek inbox dan klik link verifikasi.';
+            addToast(unconfirmedMsg, 'error');
+            localStorage.setItem('pending_verification_email', trimmedEmail);
             setCurrentView('email-verification');
             // Logout user
             await supabase.auth.signOut();
-            return false;
+            return { success: false, message: unconfirmedMsg };
           }
 
           let profile = await getUserProfile(data.user.id);
@@ -607,8 +627,8 @@ export default function App() {
             // Fallback profile if Supabase profile row isn't found
             profile = {
               id: data.user.id,
-              name: data.user.user_metadata?.name || email.split('@')[0],
-              email: data.user.email || email,
+              name: data.user.user_metadata?.name || trimmedEmail.split('@')[0],
+              email: data.user.email || trimmedEmail,
               role: UserRole.USER,
               badge: 'Reguler',
               favorites: [],
@@ -626,17 +646,19 @@ export default function App() {
           }
           addToast('Berhasil masuk ke Perpustakaan Kita!', 'success');
           setCurrentView('dashboard');
-          return true;
+          return { success: true };
         }
-        return false;
+        return { success: false, message: 'Gagal memverifikasi pengguna. Silakan coba lagi.' };
       } catch (err: any) {
-        addToast(err.message || 'Terjadi kesalahan saat login', 'error');
-        return false;
+        const errorText = err.message || 'Terjadi kesalahan saat login';
+        addToast(errorText, 'error');
+        return { success: false, message: errorText };
       }
     }
 
     // LocalStorage fallback
-    const foundUser = users.find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === pass);
+    const userWithSameEmail = users.find(u => u.email.toLowerCase() === trimmedEmail.toLowerCase());
+    const foundUser = users.find(u => u.email.toLowerCase() === trimmedEmail.toLowerCase() && u.password === pass);
     if (foundUser) {
       setCurrentUser(foundUser);
       localStorage.setItem('digital_library_active_user', foundUser.email);
@@ -656,9 +678,17 @@ export default function App() {
       }
       addToast('Berhasil masuk ke Perpustakaan Kita!', 'success');
       setCurrentView('dashboard');
-      return true;
+      return { success: true };
     }
-    return false;
+
+    let failureMsg = 'Email atau password yang Anda masukkan salah!';
+    if (userWithSameEmail) {
+      failureMsg = 'Password yang Anda masukkan salah! Silakan periksa kembali kata sandi Anda.';
+    } else {
+      failureMsg = 'Alamat email belum terdaftar di sistem. Silakan periksa kembali atau daftar akun baru.';
+    }
+    addToast(failureMsg, 'error');
+    return { success: false, message: failureMsg };
   };
 
   const handleRegister = async (

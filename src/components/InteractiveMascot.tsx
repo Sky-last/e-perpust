@@ -7,6 +7,7 @@ interface InteractiveMascotProps {
   showPassword?: boolean;
   emailLength?: number;
   isSuccess?: boolean;
+  isError?: boolean;
 }
 
 export const InteractiveMascot: React.FC<InteractiveMascotProps> = ({
@@ -15,6 +16,7 @@ export const InteractiveMascot: React.FC<InteractiveMascotProps> = ({
   showPassword = false,
   emailLength = 0,
   isSuccess = false,
+  isError = false,
 }) => {
   const [isBlinking, setIsBlinking] = useState(false);
 
@@ -46,6 +48,10 @@ export const InteractiveMascot: React.FC<InteractiveMascotProps> = ({
       // Wave happily
       return { x: -10, y: -35, rotate: -25, scale: 1.1 };
     }
+    if (isError) {
+      // Worried hands
+      return { x: 8, y: -18, rotate: -10, scale: 1.02 };
+    }
     return { x: 0, y: 0, rotate: 0, scale: 1 };
   };
 
@@ -61,6 +67,10 @@ export const InteractiveMascot: React.FC<InteractiveMascotProps> = ({
     if (isSuccess) {
       // Wave happily
       return { x: 10, y: -35, rotate: 25, scale: 1.1 };
+    }
+    if (isError) {
+      // Worried hands
+      return { x: -8, y: -18, rotate: 10, scale: 1.02 };
     }
     return { x: 0, y: 0, rotate: 0, scale: 1 };
   };
@@ -123,10 +133,10 @@ export const InteractiveMascot: React.FC<InteractiveMascotProps> = ({
             stroke="#38bdf8"
             strokeWidth="2"
             animate={{
-              scale: isSuccess ? [1, 1.05, 1] : 1,
-              rotate: isSuccess ? [0, 3, -3, 0] : 0,
+              scale: isSuccess ? [1, 1.05, 1] : isError ? [1, 0.98, 1] : 1,
+              rotate: isSuccess ? [0, 3, -3, 0] : isError ? [0, -5, 5, -4, 4, 0] : 0,
             }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: isError ? 0.45 : 0.5 }}
           />
 
           {/* CHEEK BLUSH */}
@@ -183,6 +193,9 @@ export const InteractiveMascot: React.FC<InteractiveMascotProps> = ({
           {isSuccess ? (
             // Happy Smile
             <path d="M 90 110 Q 100 122 110 110" fill="none" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" />
+          ) : isError ? (
+            // Worried / sad mouth
+            <path d="M 92 114 Q 100 107 108 114" fill="none" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" />
           ) : (
             // Cute neutral mouth
             <path d="M 93 110 Q 100 114 107 110" fill="none" stroke="#0f172a" strokeWidth="2" strokeLinecap="round" />
