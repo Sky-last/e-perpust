@@ -10,6 +10,7 @@ import BookOpen3DModal from './BookOpen3DModal';
 import EBookReader3D from './EBookReader3D';
 import { BearMascotIcon } from './AnimatedIcon';
 import { soundFX } from '../utils/audio';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
 interface LandingPageProps {
   books: Book[];
@@ -649,17 +650,35 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
                   </div>
                 ) : (
                   <form
-                    onSubmit={(e) => {
+                    onSubmit={async (e) => {
                       e.preventDefault();
                       soundFX.playClick();
                       
-                      // Save feedback to localStorage
+                      const feedbackData = {
+                        name: contactName.trim(),
+                        email: contactEmail.trim(),
+                        message: contactMessage.trim()
+                      };
+
+                      // Save to Supabase if configured
+                      if (isSupabaseConfigured) {
+                        try {
+                          await supabase.from('feedbacks').insert({
+                            name: feedbackData.name,
+                            email: feedbackData.email,
+                            message: feedbackData.message,
+                            is_read: false
+                          });
+                        } catch (err) {
+                          console.error('Failed to save feedback to Supabase:', err);
+                        }
+                      }
+
+                      // Also save feedback to localStorage as local fallback
                       try {
                         const newFeedback = {
                           id: 'fb-' + Date.now(),
-                          name: contactName.trim(),
-                          email: contactEmail.trim(),
-                          message: contactMessage.trim(),
+                          ...feedbackData,
                           createdAt: new Date().toISOString(),
                           isRead: false
                         };

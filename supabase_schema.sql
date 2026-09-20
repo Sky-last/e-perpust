@@ -192,7 +192,33 @@ ALTER TABLE public.chat_messages ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Semua orang bisa melihat dan mengirim chat_messages" ON public.chat_messages
   FOR ALL USING (true) WITH CHECK (true);
 
--- Aktifkan Supabase Realtime untuk tabel chat_messages
-ALTER PUBLICATION supabase_realtime ADD TABLE public.chat_messages;
+-- 9. Tabel Pesan & Masukan (User Feedbacks)
+CREATE TABLE IF NOT EXISTS public.feedbacks (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  message TEXT NOT NULL,
+  is_read BOOLEAN DEFAULT false,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
+);
 
+ALTER TABLE public.feedbacks ENABLE ROW LEVEL SECURITY;
 
+-- Siapa saja bisa mengirim pesan/masukan dari form kontak landing page
+CREATE POLICY "Siapa saja bisa kirim feedback" ON public.feedbacks
+  FOR INSERT WITH CHECK (true);
+
+-- Admin dan Staf bisa melihat feedback
+CREATE POLICY "Admin dan Staf bisa melihat feedback" ON public.feedbacks
+  FOR SELECT USING (true);
+
+-- Admin dan Staf bisa mengubah status feedback (read/unread)
+CREATE POLICY "Admin dan Staf bisa mengubah feedback" ON public.feedbacks
+  FOR UPDATE USING (true);
+
+-- Admin dan Staf bisa menghapus feedback
+CREATE POLICY "Admin dan Staf bisa menghapus feedback" ON public.feedbacks
+  FOR DELETE USING (true);
+
+-- Aktifkan Supabase Realtime untuk tabel feedbacks
+ALTER PUBLICATION supabase_realtime ADD TABLE public.feedbacks;

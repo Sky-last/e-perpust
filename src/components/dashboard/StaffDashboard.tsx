@@ -44,6 +44,8 @@ import { DEFAULT_SITE_SETTINGS, DEFAULT_FEEDBACKS } from '../../data/seedData';
 import Book3D from '../Book3D';
 import { resolveUserMemberId } from '../../utils/memberId';
 import MemberCardModal from '../MemberCardModal';
+import { supabase, isSupabaseConfigured } from '../../lib/supabase';
+
 import { printOfficialReport } from '../../utils/printReportHelper';
 
 
@@ -123,37 +125,120 @@ export default function StaffDashboard({
   const [feedbackFilter, setFeedbackFilter] = useState<'all' | 'unread' | 'read'>('all');
   const [selectedFeedback, setSelectedFeedback] = useState<UserFeedback | null>(null);
 
+  // Fetch feedback from Supabase
+  const fetchFeedbacksFromSupabase = async () => {
+    if (!isSupabaseConfigured) return;
+    try {
+      const { data, error } = await supabase
+        .from('feedbacks')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (!error && data) {
+        const mapped: UserFeedback[] = data.map((item: any) => ({
+          id: item.id,
+          name: item.name,
+          email: item.email,
+          message: item.message,
+          isRead: item.is_read,
+          createdAt: item.created_at
+        }));
+        setFeedbacks(mapped);
+        try {
+          localStorage.setItem('perpustakaan_user_feedbacks', JSON.stringify(mapped));
+        } catch (e) {}
+      }
+    } catch (err) {
+      console.error('Error fetching feedbacks from Supabase:', err);
+    }
+  };
+
+  useEffect(() => {
+    if (isSupabaseConfigured) {
+      fetchFeedbacksFromSupabase();
+
+      // Realtime listener for feedbacks
+      const channel = supabase
+        .channel('public:feedbacks')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'feedbacks' }, () => {
+          fetchFeedbacksFromSupabase();
+        })
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
+    }
+  }, []);
+
   useEffect(() => {
     const handleFeedbackSubmitted = () => {
-      try {
-        const saved = localStorage.getItem('perpustakaan_user_feedbacks');
-        if (saved) setFeedbacks(JSON.parse(saved));
-      } catch (e) {}
+      if (isSupabaseConfigured) {
+        fetchFeedbacksFromSupabase();
+      } else {
+        try {
+          const saved = localStorage.getItem('perpustakaan_user_feedbacks');
+          if (saved) setFeedbacks(JSON.parse(saved));
+        } catch (e) {}
+      }
     };
     window.addEventListener('user_feedback_submitted', handleFeedbackSubmitted);
     return () => window.removeEventListener('user_feedback_submitted', handleFeedbackSubmitted);
   }, []);
 
-  const handleMarkFeedbackRead = (id: string) => {
+  const handleMarkFeedbackRead = async (id: string) => {
     const updated = feedbacks.map(f => f.id === id ? { ...f, isRead: true } : f);
     setFeedbacks(updated);
+    if (selectedFeedback?.id === id) {
+      setSelectedFeedback(prev => prev ? { ...prev, isRead: true } : null);
+    }
+
+    if (isSupabaseConfigured) {
+      try {
+        await supabase.from('feedbacks').update({ is_read: true }).eq('id', id);
+      } catch (err) {
+        console.error('Failed to update feedback read status in Supabase:', err);
+      }
+    }
+
     try {
       localStorage.setItem('perpustakaan_user_feedbacks', JSON.stringify(updated));
     } catch (e) {}
   };
 
-  const handleMarkAllFeedbacksRead = () => {
+  const handleMarkAllFeedbacksRead = async () => {
     const updated = feedbacks.map(f => ({ ...f, isRead: true }));
     setFeedbacks(updated);
+    if (selectedFeedback) {
+      setSelectedFeedback(prev => prev ? { ...prev, isRead: true } : null);
+    }
+
+    if (isSupabaseConfigured) {
+      try {
+        await supabase.from('feedbacks').update({ is_read: true }).filter('id', 'neq', '');
+      } catch (err) {
+        console.error('Failed to mark all feedbacks as read in Supabase:', err);
+      }
+    }
+
     try {
       localStorage.setItem('perpustakaan_user_feedbacks', JSON.stringify(updated));
     } catch (e) {}
   };
 
-  const handleDeleteFeedback = (id: string) => {
+  const handleDeleteFeedback = async (id: string) => {
     const updated = feedbacks.filter(f => f.id !== id);
     setFeedbacks(updated);
     if (selectedFeedback?.id === id) setSelectedFeedback(null);
+
+    if (isSupabaseConfigured) {
+      try {
+        await supabase.from('feedbacks').delete().eq('id', id);
+      } catch (err) {
+        console.error('Failed to delete feedback in Supabase:', err);
+      }
+    }
+
     try {
       localStorage.setItem('perpustakaan_user_feedbacks', JSON.stringify(updated));
     } catch (e) {}
