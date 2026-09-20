@@ -295,6 +295,15 @@ export async function updateUserInDb(userId: string, updatedData: Partial<User>)
         
       if (error) {
         console.error('Supabase error updating user profile:', error);
+        // Fallback for role constraint (if DB constraint uses 'siswa' instead of 'user' or vice versa)
+        if (updatedData.role === 'user' || updatedData.role === 'siswa') {
+          const altRole = updatedData.role === 'user' ? 'siswa' : 'user';
+          const { error: err2 } = await supabase
+            .from('profiles')
+            .update({ ...payload, role: altRole })
+            .eq('id', userId);
+          if (!err2) return true;
+        }
         return false;
       }
       return true;

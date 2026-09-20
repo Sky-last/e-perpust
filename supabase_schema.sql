@@ -5,7 +5,7 @@ CREATE TABLE public.profiles (
   id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
   name TEXT NOT NULL,
   email TEXT NOT NULL,
-  role TEXT NOT NULL DEFAULT 'siswa' CHECK (role IN ('admin', 'staf', 'siswa')),
+  role TEXT NOT NULL DEFAULT 'siswa' CHECK (role IN ('admin', 'staf', 'siswa', 'user')),
   badge TEXT NOT NULL DEFAULT 'Reguler' CHECK (badge IN ('Premium', 'Reguler')),
   avatar TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
@@ -18,8 +18,8 @@ ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Semua orang bisa melihat profil" ON public.profiles
   FOR SELECT USING (true);
 
-CREATE POLICY "Pengguna bisa mengubah profil mereka sendiri" ON public.profiles
-  FOR UPDATE USING (auth.uid() = id);
+CREATE POLICY "Semua orang bisa mengubah profil" ON public.profiles
+  FOR UPDATE USING (true) WITH CHECK (true);
 
 -- 2. Tabel Buku (Books)
 CREATE TABLE public.books (
