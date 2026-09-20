@@ -533,9 +533,10 @@ export default function LoginPage({ onNavigate, onLogin, addToast, onGoogleAuth 
                 <button
                   type="button"
                   onClick={() => handleOpenForgotPassword(email)}
-                  className="text-[11px] font-bold text-blue-400 hover:text-blue-300 cursor-pointer"
+                  className="text-xs font-extrabold text-blue-400 hover:text-blue-300 flex items-center gap-1 bg-blue-500/10 hover:bg-blue-500/20 px-2.5 py-1 rounded-lg border border-blue-500/20 transition-all cursor-pointer hover:border-blue-500/40"
                 >
-                  Lupa password?
+                  <KeyRound className="w-3.5 h-3.5" />
+                  <span>Lupa password?</span>
                 </button>
               </div>
               <div className="relative">
