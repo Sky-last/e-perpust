@@ -401,8 +401,8 @@ export function printOfficialReport({
           <p>Mengetahui,</p>
           <p><strong>Kepala Perpustakaan</strong></p>
           <div class="signature-space"></div>
-          <p class="signature-name">( Dra. Hj. Sri Wahyuni, M.Pd )</p>
-          <p>NIP. 197005121995122001</p>
+          <p class="signature-name">( M.Arifin )</p>
+          <p>NIRM. 2023020458</p>
         </div>
 
         <div class="signature-box">

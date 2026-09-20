@@ -104,7 +104,7 @@ export default function App() {
     async function initData() {
       // Force refresh if cached books count does not match catalog or contains old structure
       const cacheVersion = localStorage.getItem('digital_library_version');
-      const CURRENT_VERSION = '3.0.0-catalog-updated';
+      const CURRENT_VERSION = '3.1.0-comics-reordered';
       if (cacheVersion !== CURRENT_VERSION) {
         localStorage.removeItem('digital_library_books');
         localStorage.setItem('digital_library_version', CURRENT_VERSION);
@@ -381,7 +381,6 @@ export default function App() {
           addToast('👋 Akun Google berhasil masuk! Mohon lengkapi data profil keanggotaan Anda.', 'info');
         } else {
           setNeedsProfileCompletion(false);
-          addToast('✅ Berhasil masuk ke Perpustakaan Kita!', 'success');
         }
         
         setCurrentView('dashboard');

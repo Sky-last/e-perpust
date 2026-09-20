@@ -886,40 +886,6 @@ export const INITIAL_BOOKS: Book[] = [
     isActive: true
   },
   {
-    id: "buku-053",
-    title: "Whiz Comics No. 2 (Debut of Captain Marvel / Shazam)",
-    author: "Bill Parker & C. C. Beck",
-    category: "Komik & Novel Grafis",
-    publisher: "Fawcett Publications",
-    isbn: "978-1-60549-012-3",
-    description: "Salah satu komik terpenting sepanjang masa era Golden Age: kemunculan perdana Billy Batson mengucapkan kata ajaib SHAZAM!",
-    year: 1940,
-    rating: 5.0,
-    status: 'Tersedia',
-
-    coverColor: "from-red-800 to-yellow-950",
-    coverUrl: "/buku_sampul/cover_Whiz_Comics_No_2.jpg",
-    pdfUrl: "/buku_digital/Whiz_Comics_No_2.pdf",
-    isActive: true
-  },
-  {
-    id: "buku-054",
-    title: "All-Negro Comics (Historic 1947 First Edition)",
-    author: "Orrin C. Evans",
-    category: "Komik & Novel Grafis",
-    publisher: "All-Negro Comics, Inc.",
-    isbn: "978-1-68405-123-8",
-    description: "Buku komik bersejarah pertama di dunia yang seluruhnya ditulis dan digambar oleh para seniman Afrika-Amerika di Philadelphia.",
-    year: 1947,
-    rating: 5.0,
-    status: 'Tersedia',
-
-    coverColor: "from-amber-700 to-stone-950",
-    coverUrl: "/buku_sampul/cover_All_Negro_Comics.jpg",
-    pdfUrl: "/buku_digital/All_Negro_Comics.pdf",
-    isActive: true
-  },
-  {
     id: "buku-055",
     title: "Buck Rogers 2429 A.D. Daily Newspaper Strips (1929)",
     author: "Philip Francis Nowlan & Dick Calkins",
@@ -1359,6 +1325,40 @@ export const INITIAL_BOOKS: Book[] = [
     coverColor: "from-teal-800 to-emerald-950",
     coverUrl: "/buku_sampul/cover_Towards_Democracy.jpg",
     pdfUrl: "/buku_digital/Towards_Democracy.pdf",
+    isActive: true
+  },
+  {
+    id: "buku-053",
+    title: "Whiz Comics No. 2 (Debut of Captain Marvel / Shazam)",
+    author: "Bill Parker & C. C. Beck",
+    category: "Komik & Novel Grafis",
+    publisher: "Fawcett Publications",
+    isbn: "978-1-60549-012-3",
+    description: "Salah satu komik terpenting sepanjang masa era Golden Age: kemunculan perdana Billy Batson mengucapkan kata ajaib SHAZAM!",
+    year: 1940,
+    rating: 5.0,
+    status: 'Tersedia',
+
+    coverColor: "from-red-800 to-yellow-950",
+    coverUrl: "/buku_sampul/cover_Whiz_Comics_No_2.jpg",
+    pdfUrl: "/buku_digital/Whiz_Comics_No_2.pdf",
+    isActive: true
+  },
+  {
+    id: "buku-054",
+    title: "All-Negro Comics (Historic 1947 First Edition)",
+    author: "Orrin C. Evans",
+    category: "Komik & Novel Grafis",
+    publisher: "All-Negro Comics, Inc.",
+    isbn: "978-1-68405-123-8",
+    description: "Buku komik bersejarah pertama di dunia yang seluruhnya ditulis dan digambar oleh para seniman Afrika-Amerika di Philadelphia.",
+    year: 1947,
+    rating: 5.0,
+    status: 'Tersedia',
+
+    coverColor: "from-amber-700 to-stone-950",
+    coverUrl: "/buku_sampul/cover_All_Negro_Comics.jpg",
+    pdfUrl: "/buku_digital/All_Negro_Comics.pdf",
     isActive: true
   },
 ];
