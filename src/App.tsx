@@ -92,10 +92,14 @@ export default function App() {
   const [isSavingProfile, setIsSavingProfile] = useState(false);
 
   // Helper: periksa apakah data profil perpustakaan belum lengkap
+  // Hanya berlaku untuk akun Google (authProvider === 'google') yang belum isi identitas.
+  // Akun yang daftar via email sudah mengisi data saat registrasi, jadi tidak perlu.
   const isProfileIncomplete = (user: User | null): boolean => {
     if (!user) return false;
     if (['admin', 'staf', UserRole.ADMIN].includes(user.role as any)) return false;
     if (user.isProfileCompleted === true) return false;
+    // Hanya paksa lengkapi profil jika login via Google dan data identitas kosong
+    if (user.authProvider !== 'google') return false;
     return Boolean(!user.identityNumber || !user.phone || !user.memberCategory);
   };
 
@@ -1486,6 +1490,11 @@ export default function App() {
           if (currentUser && u.id === currentUser.id) {
             setCurrentUser(updated);
             localStorage.setItem('digital_library_active_user_data', JSON.stringify(updated));
+            // Jika role berubah menjadi admin, pindahkan ke dashboard admin
+            if (updatedData.role && updatedData.role !== currentUser.role) {
+              // Trigger re-render dengan sedikit delay agar state terupdate
+              setTimeout(() => setCurrentView('dashboard'), 100);
+            }
           }
           return updated;
         }

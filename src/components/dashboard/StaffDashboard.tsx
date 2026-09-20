@@ -1543,8 +1543,10 @@ export default function StaffDashboard({
                         <tr>
                           <th className="p-4">Nama & Email</th>
                           <th className="p-4">Role / Peran</th>
-                          <th className="p-4">Keanggotaan</th>
-                          <th className="p-4">NISN / NIP / NIK</th>
+                          <th className="p-4">No. Identitas (NIK)</th>
+                          <th className="p-4">Kategori</th>
+                          <th className="p-4">No. Telepon</th>
+                          <th className="p-4">No. Anggota</th>
                           <th className="p-4 text-right">Aksi</th>
                         </tr>
                       </thead>
@@ -1590,34 +1592,14 @@ export default function StaffDashboard({
                                   </span>
                                 )}
                               </td>
+                              <td className="p-4 text-slate-400 font-mono text-[11px]">{u.identityNumber || u.nisn || '-'}</td>
                               <td className="p-4">
-                                {isAdmin ? (
-                                  <select
-                                    value={u.badge || 'Reguler'}
-                                    onChange={(e) => {
-                                      e.stopPropagation();
-                                      e.preventDefault();
-                                      const newBadge = e.target.value as 'Premium' | 'Reguler';
-                                      console.log('Updating user badge:', { userId: u.id, userName: u.name, newBadge });
-                                      try {
-                                        onUpdateUser(u.id, { badge: newBadge });
-                                      } catch (error) {
-                                        console.error('Error updating user badge:', error);
-                                      }
-                                    }}
-                                    onClick={(e) => e.stopPropagation()}
-                                    className="bg-slate-950 border border-slate-800 text-amber-300 text-[11px] font-bold rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-amber-500 cursor-pointer"
-                                  >
-                                    <option value="Reguler">Reguler</option>
-                                    <option value="Premium">Premium ⭐</option>
-                                  </select>
-                                ) : (
-                                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${u.badge === 'Premium' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' : 'bg-slate-800 text-slate-400'}`}>
-                                    {u.badge || 'Reguler'}
-                                  </span>
-                                )}
+                                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-300">
+                                  {u.memberCategory || u.class || '-'}
+                                </span>
                               </td>
-                              <td className="p-4 text-slate-400 font-mono">{resolveUserMemberId(u)}</td>
+                              <td className="p-4 text-slate-400 text-[11px]">{u.phone || '-'}</td>
+                              <td className="p-4 text-slate-400 font-mono text-[11px]">{resolveUserMemberId(u)}</td>
                               <td className="p-4 text-right">
                                 <div className="flex justify-end items-center gap-1.5">
                                   <button
@@ -2669,10 +2651,7 @@ export default function StaffDashboard({
                   </div>
                   <div>
                     <label className="block text-[10px] font-extrabold uppercase text-slate-400 mb-1">Keanggotaan</label>
-                    <select value={uBadge} onChange={e => setUBadge(e.target.value as any)} className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-bold focus:outline-none focus:border-cyan-500 cursor-pointer">
-                      <option value="Reguler">Reguler</option>
-                      <option value="Premium">Premium ⭐</option>
-                    </select>
+                    <span className="inline-block w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-slate-400 font-bold text-xs">Reguler</span>
                   </div>
                 </div>
                 {(String(uRole).toLowerCase() === 'user' || uRole === UserRole.USER) ? (
