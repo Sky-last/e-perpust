@@ -44,7 +44,9 @@ import {
   Play,
   Pause,
   RotateCcw,
-  Plus
+  Plus,
+  Printer,
+  CreditCard
 } from 'lucide-react';
 import { User, Book, Category, Borrowing, LibrarySettings, Notification, DownloadedBook } from '../../types';
 import { uploadAvatar } from '../../lib/db';
@@ -53,6 +55,8 @@ import BookOpen3DModal from '../BookOpen3DModal';
 import EBookReader3D from '../EBookReader3D';
 import { BearMascotIcon } from '../AnimatedIcon';
 import { resolveBookPdfUrl } from '../../utils/pdfResolver';
+import { resolveUserMemberId } from '../../utils/memberId';
+import MemberCardModal from '../MemberCardModal';
 
 interface UserDashboardProps {
   currentUser: User;
@@ -130,6 +134,7 @@ export default function UserDashboard({
 
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+  const [showMemberCard, setShowMemberCard] = useState(false);
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -1653,9 +1658,19 @@ export default function UserDashboard({
                           Kartu Anggota Digital
                         </span>
                       </div>
-                      <span className="hidden sm:inline-block font-mono-lib text-[9px] uppercase tracking-[0.15em] text-[#CBD5C9] border border-white/10 px-2.5 py-1 rounded-full">
-                        Perpustakaan Kita
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setShowMemberCard(true)}
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-white/10 hover:bg-white/20 text-[#F6F1E7] rounded-xl text-[10px] sm:text-xs font-bold transition-all cursor-pointer border border-white/15 active:scale-95 shadow-sm"
+                        >
+                          <CreditCard className="w-3.5 h-3.5 text-[#C08B34]" />
+                          Cetak Kartu
+                        </button>
+                        <span className="hidden sm:inline-block font-mono-lib text-[9px] uppercase tracking-[0.15em] text-[#CBD5C9] border border-white/10 px-2.5 py-1 rounded-full">
+                          {settings?.libraryName || 'Perpustakaan Kita'}
+                        </span>
+                      </div>
                     </div>
 
                     {/* Card body */}
@@ -1714,7 +1729,7 @@ export default function UserDashboard({
                           {currentUser.name}
                         </h3>
                         <p className="font-mono-lib text-[10px] sm:text-[11px] text-[#CBD5C9] truncate">
-                          No. ID: {currentUser.identityNumber || currentUser.nisn || '—'}
+                          No. ID: {resolveUserMemberId(currentUser)}
                         </p>
                         <p className="text-[11px] sm:text-xs text-[#C08B34] font-bold">
                           {currentUser.memberCategory || currentUser.class || 'Masyarakat Umum'}
@@ -1980,6 +1995,15 @@ export default function UserDashboard({
           );
         })}
       </div>
+
+      {/* Modal Kartu Anggota */}
+      {showMemberCard && (
+        <MemberCardModal
+          user={currentUser}
+          libraryName={settings?.libraryName || 'Perpustakaan Kita'}
+          onClose={() => setShowMemberCard(false)}
+        />
+      )}
 
     </div>
   );

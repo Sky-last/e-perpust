@@ -36,11 +36,14 @@ import {
   Phone,
   Mail,
   CheckCircle,
-  HelpCircle
+  HelpCircle,
+  CreditCard
 } from 'lucide-react';
 import { User, Book, Category, Borrowing, LibrarySettings, SiteSettings, UserRole } from '../../types';
 import { DEFAULT_SITE_SETTINGS } from '../../data/seedData';
 import Book3D from '../Book3D';
+import { resolveUserMemberId } from '../../utils/memberId';
+import MemberCardModal from '../MemberCardModal';
 
 interface StaffDashboardProps {
   currentUser: User;
@@ -111,6 +114,7 @@ export default function StaffDashboard({
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [isUserModalOpen, setIsUserModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [cardUser, setCardUser] = useState<User | null>(null);
 
   // Forms
   const [bookTitle, setBookTitle] = useState('');
@@ -1522,14 +1526,24 @@ export default function StaffDashboard({
                                   </span>
                                 )}
                               </td>
-                              <td className="p-4 text-slate-400 font-mono">{u.identityNumber || u.nisn || u.nip || '-'}</td>
+                              <td className="p-4 text-slate-400 font-mono">{resolveUserMemberId(u)}</td>
                               <td className="p-4 text-right">
-                                {isAdmin && (
-                                  <div className="flex justify-end gap-1.5">
-                                    <button onClick={() => handleOpenUserModal(u)} className="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-cyan-400 rounded-lg font-bold transition-all cursor-pointer">Edit</button>
-                                    <button onClick={() => { if (window.confirm(`Hapus user ${u.name}?`)) onDeleteUser(u.id); }} className="px-3 py-1 bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 rounded-lg font-bold transition-all cursor-pointer">Hapus</button>
-                                  </div>
-                                )}
+                                <div className="flex justify-end items-center gap-1.5">
+                                  <button
+                                    onClick={() => setCardUser(u)}
+                                    className="px-2.5 py-1 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1 active:scale-95"
+                                    title="Cetak Kartu Anggota"
+                                  >
+                                    <CreditCard className="w-3.5 h-3.5" />
+                                    <span>Kartu</span>
+                                  </button>
+                                  {isAdmin && (
+                                    <>
+                                      <button onClick={() => handleOpenUserModal(u)} className="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-cyan-400 rounded-lg font-bold transition-all cursor-pointer">Edit</button>
+                                      <button onClick={() => { if (window.confirm(`Hapus user ${u.name}?`)) onDeleteUser(u.id); }} className="px-3 py-1 bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 rounded-lg font-bold transition-all cursor-pointer">Hapus</button>
+                                    </>
+                                  )}
+                                </div>
                               </td>
                             </tr>
                           );
@@ -2441,6 +2455,15 @@ export default function StaffDashboard({
           </div>
         )}
       </AnimatePresence>
+
+      {/* Modal Cetak Kartu Anggota */}
+      {cardUser && (
+        <MemberCardModal
+          user={cardUser}
+          libraryName={siteSettings?.libraryName || 'Perpustakaan Kita'}
+          onClose={() => setCardUser(null)}
+        />
+      )}
 
     </div>
   );
