@@ -452,7 +452,7 @@ export default function App() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    // Set initial history state if empty & push root guard
+    // Set initial history state if empty & push root guard buffer
     try {
       if (!window.history.state || (!window.history.state.view && !window.history.state.modal)) {
         window.history.replaceState({ view: 'root_guard' }, '', window.location.pathname);
@@ -465,12 +465,12 @@ export default function App() {
 
       const state = event.state;
 
-      // 1. Abaikan jika popstate berasal dari penutupan modal lokal / sub-komponen
+      // 1. Abaikan jika popstate ditangani oleh modal lokal (sudah ditangani listener lokal)
       if (state?.modal || state?.userDashboardModal || state?.dashboardModal) {
         return;
       }
 
-      // 2. Navigasi view normal berdasarkan riwayat history
+      // 2. Navigasi view normal berdasarkan riwayat history jika view valid & bukan root_guard
       if (state && state.view && state.view !== 'root_guard') {
         setCurrentView(state.view);
         if (state.selectedId) {
@@ -481,26 +481,30 @@ export default function App() {
         return;
       }
 
-      // 3. Penanganan khusus jika sedang di detail-buku: kembali ke katalog
+      // 3. Penanganan saat menekan Back hingga ke ujung/root_guard
       if (currentView === 'detail-buku') {
         setCurrentView('katalog');
         setSelectedBookId(null);
+        try {
+          window.history.pushState({ view: 'katalog' }, '', window.location.pathname);
+        } catch (e) {}
         return;
       }
 
-      // 4. Jika sedang di dashboard pengguna, jangan paksa keluar ke landing
-      if (currentView === 'dashboard') {
-        return;
-      }
-
-      // 5. Fallback ke landing jika mencapai root_guard atau history kosong
       if (currentView !== 'landing') {
         setCurrentView('landing');
         setSelectedBookId(null);
         try {
           window.history.pushState({ view: 'landing' }, '', window.location.pathname);
         } catch (e) {}
+        return;
       }
+
+      // 4. Jika SUDAH berada di 'landing' dan menekan tombol Back:
+      // PREVENT BROWSER TAB CLOSE dengan mere-push state landing secara otomatis
+      try {
+        window.history.pushState({ view: 'landing' }, '', window.location.pathname);
+      } catch (e) {}
     };
 
     window.addEventListener('popstate', handlePopState);

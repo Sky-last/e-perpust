@@ -48,6 +48,24 @@ export default function LoginPage({ onNavigate, onLogin, addToast, onGoogleAuth 
     setIsForgotPasswordModalOpen(true);
   };
 
+  // Close Forgot Password modal on browser back button
+  useEffect(() => {
+    if (!isForgotPasswordModalOpen || typeof window === 'undefined') return;
+
+    try {
+      window.history.pushState({ modal: 'forgot_password' }, '');
+    } catch (e) {}
+
+    const handleModalPopState = () => {
+      setIsForgotPasswordModalOpen(false);
+      setResetStatus('idle');
+      setIsLocalResetStep(false);
+    };
+
+    window.addEventListener('popstate', handleModalPopState);
+    return () => window.removeEventListener('popstate', handleModalPopState);
+  }, [isForgotPasswordModalOpen]);
+
   const handleSendResetInstruction = async (e: React.FormEvent) => {
     e.preventDefault();
     soundFX.playClick();
