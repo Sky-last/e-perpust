@@ -5,6 +5,8 @@ import { ViewType, Book } from '../types';
 import Book3D from './Book3D';
 import { soundFX } from '../utils/audio';
 import { InteractiveMascot } from './InteractiveMascot';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
+
 
 interface LoginPageProps {
   onNavigate: (view: ViewType) => void;
@@ -25,6 +27,148 @@ export default function LoginPage({ onNavigate, onLogin, addToast, onGoogleAuth 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [errorField, setErrorField] = useState<'email' | 'password' | 'both' | null>(null);
   const [isShaking, setIsShaking] = useState(false);
+
+  // Forgot Password Modal States
+  const [isForgotPasswordModalOpen, setIsForgotPasswordModalOpen] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
+  const [isResetLoading, setIsResetLoading] = useState(false);
+  const [resetStatus, setResetStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [resetMessage, setResetMessage] = useState<string | null>(null);
+  const [isLocalResetStep, setIsLocalResetStep] = useState(false);
+  const [newLocalPassword, setNewLocalPassword] = useState('');
+  const [showNewPassword, setShowNewPassword] = useState(false);
+
+  const handleOpenForgotPassword = (initialEmail?: string) => {
+    soundFX.playClick();
+    setResetEmail(initialEmail || email || '');
+    setResetStatus('idle');
+    setResetMessage(null);
+    setIsLocalResetStep(false);
+    setNewLocalPassword('');
+    setIsForgotPasswordModalOpen(true);
+  };
+
+  const handleSendResetInstruction = async (e: React.FormEvent) => {
+    e.preventDefault();
+    soundFX.playClick();
+    setResetMessage(null);
+    setResetStatus('idle');
+
+    const trimmedResetEmail = resetEmail.trim();
+    if (!trimmedResetEmail) {
+      setResetStatus('error');
+      setResetMessage('Silakan masukkan alamat email Anda terlebih dahulu.');
+      soundFX.playError();
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(trimmedResetEmail)) {
+      setResetStatus('error');
+      setResetMessage('Format email tidak valid (contoh: user@pustaka.com).');
+      soundFX.playError();
+      return;
+    }
+
+    setIsResetLoading(true);
+
+    let supabaseSent = false;
+    if (isSupabaseConfigured) {
+      try {
+        const { error } = await supabase.auth.resetPasswordForEmail(trimmedResetEmail, {
+          redirectTo: `${window.location.origin}/?view=login`
+        });
+        if (!error) {
+          supabaseSent = true;
+        }
+      } catch (err) {
+        console.warn('Supabase reset password error:', err);
+      }
+    }
+
+    setIsResetLoading(false);
+
+    if (supabaseSent) {
+      setResetStatus('success');
+      setResetMessage(`Instruksi & tautan pemulihan kata sandi telah dikirim ke ${trimmedResetEmail}. Silakan periksa inbox atau folder spam email Anda.`);
+      soundFX.playBookOpen();
+      addToast('Tautan reset password berhasil dikirim ke email!', 'success');
+      return;
+    }
+
+    // Check if user exists in local storage / demo users
+    const savedUsersStr = localStorage.getItem('digital_library_users');
+    let localUsers: any[] = [];
+    try {
+      if (savedUsersStr) localUsers = JSON.parse(savedUsersStr);
+    } catch (e) {}
+
+    const defaultDemoEmails = ['user@pustaka.com', 'admin@pustaka.com', 'staf@pustaka.com'];
+    const existsLocally = localUsers.some((u: any) => u.email.toLowerCase() === trimmedResetEmail.toLowerCase()) ||
+      defaultDemoEmails.includes(trimmedResetEmail.toLowerCase());
+
+    if (existsLocally) {
+      setIsLocalResetStep(true);
+      setResetStatus('idle');
+      setResetMessage('Akun terverifikasi. Masukkan kata sandi baru untuk akun Anda di bawah ini:');
+      addToast('Akun ditemukan. Silakan buat password baru Anda.', 'info');
+    } else {
+      setResetStatus('success');
+      setResetMessage(`Jika email ${trimmedResetEmail} terdaftar di sistem kami, instruksi pemulihan kata sandi telah dikirimkan ke email tersebut.`);
+      soundFX.playBookOpen();
+    }
+  };
+
+  const handleUpdateLocalPassword = (e: React.FormEvent) => {
+    e.preventDefault();
+    soundFX.playClick();
+    if (!newLocalPassword || newLocalPassword.length < 4) {
+      setResetStatus('error');
+      setResetMessage('Password baru minimal harus 4 karakter!');
+      soundFX.playError();
+      return;
+    }
+
+    try {
+      const savedUsersStr = localStorage.getItem('digital_library_users');
+      let localUsers: any[] = savedUsersStr ? JSON.parse(savedUsersStr) : [];
+      const trimmedResetEmail = resetEmail.trim().toLowerCase();
+
+      let userFound = false;
+      localUsers = localUsers.map((u: any) => {
+        if (u.email.toLowerCase() === trimmedResetEmail) {
+          userFound = true;
+          return { ...u, password: newLocalPassword };
+        }
+        return u;
+      });
+
+      if (!userFound) {
+        localUsers.push({
+          id: 'user-' + Date.now(),
+          name: trimmedResetEmail.split('@')[0],
+          email: trimmedResetEmail,
+          password: newLocalPassword,
+          role: trimmedResetEmail.includes('admin') ? 'admin' : trimmedResetEmail.includes('staf') ? 'staf' : 'siswa',
+          badge: 'Reguler'
+        });
+      }
+
+      localStorage.setItem('digital_library_users', JSON.stringify(localUsers));
+
+      setPassword(newLocalPassword);
+      setEmail(resetEmail);
+
+      setResetStatus('success');
+      setIsLocalResetStep(false);
+      setResetMessage('Kata sandi Anda berhasil diperbarui! Silakan gunakan kata sandi baru ini untuk masuk.');
+      soundFX.playBookOpen();
+      addToast('Password berhasil diperbarui! Silakan masuk.', 'success');
+    } catch (err: any) {
+      setResetStatus('error');
+      setResetMessage('Gagal memperbarui kata sandi. Silakan coba lagi.');
+    }
+  };
 
   // Pre-fill email from pending verification or previous login
   useEffect(() => {
@@ -313,13 +457,10 @@ export default function LoginPage({ onNavigate, onLogin, addToast, onGoogleAuth 
                       <span className="text-rose-300/80">Lupa kata sandi Anda?</span>
                       <button
                         type="button"
-                        onClick={() => {
-                          soundFX.playClick();
-                          addToast('Demo password: user / admin / staf', 'info');
-                        }}
+                        onClick={() => handleOpenForgotPassword(email)}
                         className="font-bold text-rose-300 hover:text-white underline cursor-pointer"
                       >
-                        Gunakan Akun Demo
+                        Reset Kata Sandi
                       </button>
                     </div>
                   )}
@@ -391,7 +532,7 @@ export default function LoginPage({ onNavigate, onLogin, addToast, onGoogleAuth 
                 </label>
                 <button
                   type="button"
-                  onClick={() => addToast('Demo pass: user / admin / staf', 'info')}
+                  onClick={() => handleOpenForgotPassword(email)}
                   className="text-[11px] font-bold text-blue-400 hover:text-blue-300 cursor-pointer"
                 >
                   Lupa password?
@@ -490,6 +631,198 @@ export default function LoginPage({ onNavigate, onLogin, addToast, onGoogleAuth 
           </div>
         </div>
       </div>
+
+      {/* FORGOT PASSWORD MODAL */}
+      <AnimatePresence>
+        {isForgotPasswordModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md"
+            onClick={() => {
+              setIsForgotPasswordModalOpen(false);
+              setResetStatus('idle');
+              setIsLocalResetStep(false);
+            }}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl shadow-blue-950/50 relative overflow-hidden"
+            >
+              {/* Top ambient glow */}
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-1 bg-gradient-to-r from-transparent via-blue-500 to-transparent" />
+              <div className="absolute -top-12 -left-12 w-32 h-32 bg-blue-600/20 rounded-full blur-2xl pointer-events-none" />
+
+              {/* Close Button */}
+              <button
+                type="button"
+                onClick={() => {
+                  soundFX.playClick();
+                  setIsForgotPasswordModalOpen(false);
+                  setResetStatus('idle');
+                  setIsLocalResetStep(false);
+                }}
+                className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white bg-slate-800/50 hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+
+              {/* Header Icon & Title */}
+              <div className="flex items-center gap-3.5 mb-5">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500/20 to-indigo-500/20 border border-blue-500/30 flex items-center justify-center text-blue-400 shadow-inner">
+                  <KeyRound className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-black text-white">Lupa Kata Sandi?</h3>
+                  <p className="text-xs text-slate-400 font-medium">Pemulihan akses akun Perpustakaan Kita</p>
+                </div>
+              </div>
+
+              {/* Feedback messages */}
+              {resetMessage && (
+                <div className={`mb-4 p-3.5 rounded-2xl text-xs font-medium border flex items-start gap-2.5 ${
+                  resetStatus === 'success'
+                    ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-200'
+                    : resetStatus === 'error'
+                    ? 'bg-rose-500/15 border-rose-500/30 text-rose-200'
+                    : 'bg-blue-500/15 border-blue-500/30 text-blue-200'
+                }`}>
+                  {resetStatus === 'success' ? (
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  ) : resetStatus === 'error' ? (
+                    <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+                  ) : (
+                    <Sparkles className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
+                  )}
+                  <div className="flex-1 leading-relaxed">{resetMessage}</div>
+                </div>
+              )}
+
+              {/* Form step 1: Request Reset */}
+              {!isLocalResetStep && resetStatus !== 'success' && (
+                <form onSubmit={handleSendResetInstruction} className="space-y-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider">
+                      Alamat Email Terdaftar
+                    </label>
+                    <div className="relative">
+                      <Mail className="w-4.5 h-4.5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
+                      <input
+                        type="email"
+                        required
+                        value={resetEmail}
+                        onChange={(e) => setResetEmail(e.target.value)}
+                        placeholder="contoh: user@pustaka.com"
+                        className="w-full pl-10 pr-4 py-3 bg-slate-950 border border-slate-800 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 rounded-xl text-xs text-white placeholder-slate-600 outline-none transition-all font-medium"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="pt-2 flex items-center justify-end gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        soundFX.playClick();
+                        setIsForgotPasswordModalOpen(false);
+                      }}
+                      className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl text-xs transition-colors cursor-pointer"
+                    >
+                      Batal
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={isResetLoading}
+                      className="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold rounded-xl text-xs shadow-lg shadow-blue-500/25 transition-all cursor-pointer flex items-center gap-2"
+                    >
+                      {isResetLoading ? (
+                        <span className="inline-block animate-spin rounded-full h-3.5 w-3.5 border-2 border-white border-t-transparent" />
+                      ) : (
+                        <>
+                          <KeyRound className="w-3.5 h-3.5" />
+                          <span>Kirim Instruksi Reset</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </form>
+              )}
+
+              {/* Form step 2: Direct Reset for Local/Demo accounts */}
+              {isLocalResetStep && (
+                <form onSubmit={handleUpdateLocalPassword} className="space-y-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider">
+                      Password Baru
+                    </label>
+                    <div className="relative">
+                      <Lock className="w-4.5 h-4.5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
+                      <input
+                        type={showNewPassword ? 'text' : 'password'}
+                        required
+                        value={newLocalPassword}
+                        onChange={(e) => setNewLocalPassword(e.target.value)}
+                        placeholder="Masukkan password baru..."
+                        className="w-full pl-10 pr-10 py-3 bg-slate-950 border border-slate-800 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 rounded-xl text-xs text-white placeholder-slate-600 outline-none transition-all font-medium"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowNewPassword(!showNewPassword)}
+                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 cursor-pointer"
+                      >
+                        {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                    <p className="text-[10px] text-slate-500">Minimal 4 karakter.</p>
+                  </div>
+
+                  <div className="pt-2 flex items-center justify-end gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        soundFX.playClick();
+                        setIsLocalResetStep(false);
+                        setResetStatus('idle');
+                      }}
+                      className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl text-xs transition-colors cursor-pointer"
+                    >
+                      Kembali
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-extrabold rounded-xl text-xs shadow-lg shadow-emerald-500/25 transition-all cursor-pointer flex items-center gap-2"
+                    >
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      <span>Simpan Password Baru</span>
+                    </button>
+                  </div>
+                </form>
+              )}
+
+              {/* Done / Success Close action */}
+              {resetStatus === 'success' && !isLocalResetStep && (
+                <div className="pt-3 flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      soundFX.playClick();
+                      setIsForgotPasswordModalOpen(false);
+                      setResetStatus('idle');
+                    }}
+                    className="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-xl text-xs shadow-lg transition-all cursor-pointer"
+                  >
+                    Kembali ke Form Login
+                  </button>
+                </div>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
