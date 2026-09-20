@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Dokumentasi Fitur Perpustakaan Digital</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+    
+    @page {
+      size: A4;
+      margin: 18mm 16mm 18mm 16mm;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: #1e293b;
+      background-color: #ffffff;
+      line-height: 1.6;
+      font-size: 10.5pt;
+    }
+
+    /* Cover Page */
+    .cover-page {
+      height: 100vh;
+      max-height: 250mm;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      page-break-after: always;
+      background: linear-gradient(145deg, #0f172a 0%, #1e1b4b 50%, #0369a1 100%);
+      color: #ffffff;
+      padding: 40px 35px;
+      border-radius: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cover-badge {
+      display: inline-block;
+      padding: 6px 16px;
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      color: #38bdf8;
+      font-weight: 800;
+      font-size: 9pt;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      border-radius: 999px;
+      width: fit-content;
+    }
+
+    .cover-title {
+      font-size: 28pt;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-top: 20px;
+      color: #ffffff;
+      letter-spacing: -0.5px;
+    }
+
+    .cover-subtitle {
+      font-size: 13pt;
+      font-weight: 500;
+      color: #94a3b8;
+      margin-top: 15px;
+      line-height: 1.5;
+    }
+
+    .cover-meta {
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      padding-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 9.5pt;
+      color: #cbd5e1;
+    }
+
+    /* Standard Page Elements */
+    .page {
+      page-break-after: always;
+      padding: 10px 0;
+    }
+
+    .page:last-child {
+      page-break-after: auto;
+    }
+
+    h1, h2, h3, h4 {
+      color: #0f172a;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+    }
+
+    h1 {
+      font-size: 20pt;
+      margin-bottom: 8px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #2563eb;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    h2 {
+      font-size: 14pt;
+      margin-top: 22px;
+      margin-bottom: 10px;
+      color: #1e40af;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    h3 {
+      font-size: 11pt;
+      margin-top: 14px;
+      margin-bottom: 6px;
+      color: #334155;
+    }
+
+    p {
+      margin-bottom: 8px;
+      color: #334155;
+      text-align: justify;
+    }
+
+    /* Cards & Features Box */
+    .feature-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-left: 4px solid #2563eb;
+      padding: 12px 14px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      page-break-inside: avoid;
+    }
+
+    .feature-card.admin {
+      border-left-color: #7c3aed;
+      background: #faf5ff;
+    }
+
+    .feature-card.user {
+      border-left-color: #059669;
+      background: #f0fdf4;
+    }
+
+    .feature-title {
+      font-size: 11pt;
+      font-weight: 700;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    .badge {
+      font-size: 7.5pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 6px;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-blue { background: #dbeafe; color: #1e40af; }
+    .badge-purple { background: #ede9fe; color: #6d28d9; }
+    .badge-green { background: #d1fae5; color: #047857; }
+    .badge-amber { background: #fef3c7; color: #b45309; }
+
+    .feature-desc {
+      font-size: 9.5pt;
+      color: #475569;
+      line-height: 1.5;
+    }
+
+    .feature-steps {
+      margin-top: 6px;
+      padding-left: 18px;
+      font-size: 9pt;
+      color: #334155;
+    }
+
+    .feature-steps li {
+      margin-bottom: 3px;
+    }
+
+    /* Highlights Table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0;
+      font-size: 9pt;
+      page-break-inside: avoid;
+    }
+
+    th, td {
+      border: 1px solid #cbd5e1;
+      padding: 7px 10px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #0f172a;
+      color: #ffffff;
+      font-weight: 700;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f8fafc;
+    }
+
+    .footer-note {
+      margin-top: 25px;
+      padding: 12px;
+      background: #eff6ff;
+      border: 1px dashed #93c5fd;
+      border-radius: 8px;
+      font-size: 8.5pt;
+      color: #1e40af;
+      page-break-inside: avoid;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- COVER PAGE -->
+  <div class="cover-page">
+    <div>
+      <div class="cover-badge">Dokumentasi & Panduan Resmi</div>
+      <h1 class="cover-title">Perpustakaan Digital Modern</h1>
+      <p class="cover-subtitle">Panduan Lengkap Fitur Aplikasi: Halaman Pengunjung, Dashboard Pengguna (User), dan Dashboard Administrator (Admin)</p>
+    </div>
+
+    <div style="margin: 30px 0;">
+      <div style="background: rgba(255,255,255,0.08); padding: 18px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.12);">
+        <p style="color: #38bdf8; font-weight: 700; font-size: 11pt; margin-bottom: 6px;">🎯 Tujuan Buku Panduan Ini</p>
+        <p style="color: #e2e8f0; font-size: 9.5pt; text-align: left; margin-bottom: 0;">
+          Dokumen ini disusun untuk memberikan penjelasan menyeluruh dan ramah pembaca tentang seluruh fitur yang tersedia di sistem perpustakaan digital, cara penggunaannya, serta hak akses bagi setiap peran (User dan Administrator).
+        </p>
+      </div>
+    </div>
+
+    <div class="cover-meta">
+      <div>
+        <strong>Aplikasi:</strong> Perpustakaan Kita (E-Perpust)<br>
+        <strong>Status Sistem:</strong> Produksi (Online)
+      </div>
+      <div style="text-align: right;">
+        <strong>Tahun Rilis:</strong> 2026<br>
+        <strong>Versi Dokumen:</strong> 2.0.0
+      </div>
+    </div>
+  </div>
+
+  <!-- BAGIAN 1: PENDAHULUAN & ARSITEKTUR -->
+  <div class="page">
+    <h1>1. Mengenal Perpustakaan Digital</h1>
+    <p>
+      <strong>Perpustakaan Digital (Perpustakaan Kita)</strong> adalah platform web modern untuk manajemen dan peminjaman buku digital yang dirancang dengan antarmuka futuristik, interaktif, dan mudah digunakan. Sistem ini menggabungkan visual 3 dimensi (3D), animasi maskot yang responsif, serta integrasi database cloud real-time via <strong>Supabase</strong>.
+    </p>
+
+    <h2>Pembagian Peran Pengguna (User Roles)</h2>
+    <p>Sistem ini memiliki dua peran utama yang memiliki fungsi dan antarmuka berbeda:</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 20%;">Peran (Role)</th>
+          <th style="width: 45%;">Deskripsi & Hak Akses</th>
+          <th style="width: 35%;">Halaman Utama</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong style="color: #059669;">User (Pemustaka)</strong></td>
+          <td>Membaca e-book, menjelajahi katalog buku, menyimpan favorit, mengunduh bahan bacaan, serta memiliki Kartu Anggota Digital.</td>
+          <td>Landing Page & User Dashboard</td>
+        </tr>
+        <tr>
+          <td><strong style="color: #7c3aed;">Administrator (Admin)</strong></td>
+          <td>Memiliki kendali penuh: mengelola koleksi buku (tambah/edit/hapus), mengelola anggota, mengatur role user, membalas pesan saran, dan cetak laporan.</td>
+          <td>Staff / Administrator Dashboard</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>Teknologi & Keunggulan Utama</h2>
+    <div class="feature-card">
+      <div class="feature-title">
+        <span>🚀 Pengalaman 3 Dimensi & Animasi Interaktif</span>
+        <span class="badge badge-blue">Visual WOW</span>
+      </div>
+      <div class="feature-desc">
+        Buku dapat dilihat dalam bentuk 3D yang dapat diputar (360° rotation) dan dibuka menggunakan efek membalik halaman seperti buku asli (*3D Flipbook*). Maskot virtual cerdas juga turut menemani pengguna saat mengisi formulir masuk.
+      </div>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-title">
+        <span>☁️ Cloud Database & Realtime Sync</span>
+        <span class="badge badge-purple">Supabase Cloud</span>
+      </div>
+      <div class="feature-desc">
+        Data buku, data anggota, pesan saran pengunjung, dan status terbaca tersimpan secara terpusat di cloud Supabase dengan proteksi Row Level Security (RLS) serta sinkronisasi otomatis antar-perangkat.
+      </div>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-title">
+        <span>🛡️ Perlindungan Navigasi Browser Ramah Pengguna</span>
+        <span class="badge badge-green">Anti-Close Guard</span>
+      </div>
+      <div class="feature-desc">
+        Tombol <em>Back</em> pada browser dan tombol kembali pada smartphone dirancang pintar: menekan tombol kembali akan menutup jendela modal atau kembali ke halaman sebelumnya, tanpa keluar atau menutup tab browser secara tiba-tiba.
+      </div>
+    </div>
+  </div>
+
+  <!-- BAGIAN 2: FITUR WEBSITE PUBLIK (LANDING PAGE) -->
+  <div class="page">
+    <h1>2. Fitur Halaman Utama (Landing Page)</h1>
+    <p>Halaman depan dapat diakses oleh semua pengunjung publik tanpa harus masuk terlebih dahulu.</p>
+
+    <div class="feature-card">
+      <div class="feature-title">
+        <span>1. Navigasi Cerdas & Switch Mode Gelap / Terang</span>
+        <span class="badge badge-blue">Navigasi</span>
+      </div>
+      <div class="feature-desc">
+        Pengunjung dapat beralih antara Mode Gelap (*Dark Mode*) dan Mode Terang (*Light Mode*) dengan sekali klik. Navigasi dilengkapi tombol pintas ke Beranda, Koleksi Buku, Visi Perpustakaan, Kontak, serta Tombol Masuk/Daftar.
+      </div>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-title">
+        <span>2. Hero Banner Interaktif & Efek Partikel 3D</span>
+        <span class="badge badge-blue">Tampilan Depan</span>
+      </div>
+      <div class="feature-desc">
+        Menampilkan teks sambutan dinamis, animasi partikel bercahaya yang bergerak mengikuti kursor mouse, tombol cepat jelajahi buku, serta bar statistik jumlah koleksi buku, pembaca aktif, dan rating perpustakaan.
+      </div>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-title">
+        <span>3. Etalase Rak Buku 3D (*BookShelf 3D & Room*)</span>
+        <span class="badge badge-purple">Fitur Interaktif</span>
+      </div>
+      <div class="feature-desc">
+        Menampilkan visualisasi rak buku perpustakaan secara 3D. Pengunjung dapat memilih salah satu buku untuk melihat model 3D sampul buku dan langsung membaca ulasan ringkasnya.
+      </div>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-title">
+        <span>4. Pembaca E-Book Interaktif 3D (*3D Flipbook Reader*)</span>
+        <span class="badge badge-green">Membaca Digital</span>
+      </div>
+      <div class="feature-desc">
+        Buku berformat PDF dapat dibaca langsung di browser dengan sensasi membuka lembaran buku nyata, dukungan audio balik halaman, fitur zoom pembesar teks, serta fitur pembaca suara (*Text-to-Speech*).
+      </div>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-title">
+        <span>5. Formulir Kirim Pesan & Masukan (*Feedback*)</span>
+        <span class="badge badge-amber">Komunikasi</span>
+      </div>
+      <div class="feature-desc">
+        Pengunjung dapat mengirim kritik, saran, atau pertanyaan secara langsung lewat form kontak. Pesan otomatis tersimpan ke database Supabase dan langsung diterima oleh Admin secara real-time.
+      </div>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-title">
+        <span>6. Banner Pengumuman Resmi (*Announcement Bar*)</span>
+        <span class="badge badge-blue">Informasi</span>
+      </div>
+      <div class="feature-desc">
+        Menampilkan pesan atau pengumuman penting di bagian atas website (misalnya jam layanan, jadwal libur, atau peluncuran koleksi baru) yang dapat diatur dari Dashboard Admin.
+      </div>
+    </div>
+  </div>
+
+  <!-- BAGIAN 3: LOGIN, REGISTER & LUPA PASSWORD -->
+  <div class="page">
+    <h1>3. Autentikasi & Akun Anggota</h1>
+    <p>Sistem otentikasi dirancang aman, fleksibel, serta dilengkapi panduan ramah jika terjadi kendala.</p>
+
+    <div class="feature-card">
+      <div class="feature-title">
+        <span>1. Halaman Masuk (*Login Page*) & Maskot Cerdas</span>
+        <span class="badge badge-blue">Autentikasi</span>
+      </div>
+      <div class="feature-desc">
+        Pengguna memasukkan email dan kata sandi. Terdapat maskot beruang interaktif (*Interactive Mascot*) yang bereaksi lucu: memperhatikan saat mengetik email, menutup mata saat mengetik password, dan tersenyum ketika login berhasil.
+      </div>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-title">
+        <span>2. Alert Peringatan Khusus Salah Password / Email</span>
+        <span class="badge badge-amber">Bantuan Cepat</span>
+      </div>
+      <div class="feature-desc">
+        Jika kata sandi tidak cocok atau email belum terdaftar, sistem menampilkan banner peringatan merah animasi getar (*shake*) disertai suara *sound effect* peringatan, serta tombol saran langsung untuk membuat akun baru atau mereset password.
+      </div>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-title">
+        <span>3. Fitur Lupa Kata Sandi (*Reset Password Modal*)</span>
+        <span class="badge badge-green">Pemulihan Akun</span>
+      </div>
+      <div class="feature-desc">
+        Tombol ber-badge kunci 🔑 <strong>"Lupa password?"</strong> membuka jendela pemulihan akun:
+        <ul class="feature-steps">
+          <li><strong>Mode Online (Supabase):</strong> Mengirim link reset kata sandi resmi langsung ke inbox email pengguna.</li>
+          <li><strong>Mode Akun Demo / Lokal:</strong> Mengizinkan pengguna memasukkan kata sandi baru secara langsung di jendela modal tanpa harus keluar aplikasi.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-title">
+        <span>4. Masuk Cepat dengan Google (*Google Sign-In*)</span>
+        <span class="badge badge-blue">1-Klik OAuth</span>
+      </div>
+      <div class="feature-desc">
+        Memungkinkan anggota mendaftar atau masuk dengan sekali klik menggunakan akun Google resmi tanpa perlu menghafal kata sandi terpisah.
+      </div>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-title">
+        <span>5. Pendaftaran Akun Gratis (*Register Page*)</span>
+        <span class="badge badge-green">Registrasi</span>
+      </div>
+      <div class="feature-desc">
+        Calon anggota cukup mengisi Nama Lengkap, Email, dan Kata Sandi. Akun langsung aktif dengan hak akses default sebagai <strong>User (Pemustaka)</strong>.
+      </div>
+    </div>
+  </div>
+
+  <!-- BAGIAN 4: DASHBOARD PENGGUNA (USER) -->
+  <div class="page">
+    <h1>4. Dashboard Pengguna (User / Pemustaka)</h1>
+    <p>Area personal bagi setiap anggota terdaftar untuk menikmati buku dan mengelola bacaan.</p>
+
+    <div class="feature-card user">
+      <div class="feature-title">
+        <span>1. Beranda Anggota (*Home View*)</span>
+        <span class="badge badge-green">Personal Area</span>
+      </div>
+      <div class="feature-desc">
+        Menyapa pengguna dengan nama mereka, menampilkan ringkasan buku yang sedang dibaca, buku favorit yang disimpan, serta rekomendasi buku terbaik untuk dibaca hari ini.
+      </div>
+    </div>
+
+    <div class="feature-card user">
+      <div class="feature-title">
+        <span>2. Pencarian Pintar & Filter Koleksi Buku (*Books Catalog*)</span>
+        <span class="badge badge-green">Eksplorasi</span>
+      </div>
+      <div class="feature-desc">
+        Fitur pencarian instan berdasarkan kata kunci judul buku, nama pengarang, maupun nomor ISBN. Dilengkapi filter kategori (Teknologi, Fiksi, Sains, dsb.) dan pengurutan rating tertinggi.
+      </div>
+    </div>
+
+    <div class="feature-card user">
+      <div class="feature-title">
+        <span>3. Ruang Baca E-Book & Unduh Offline</span>
+        <span class="badge badge-green">Fitur Membaca</span>
+      </div>
+      <div class="feature-desc">
+        Anggota dapat membaca e-book langsung dengan tampilan layar penuh (*full screen*), mengatur ukuran huruf, menandai halaman terakhir yang dibaca, atau mengunduh buku untuk dibaca saat luring.
+      </div>
+    </div>
+
+    <div class="feature-card user">
+      <div class="feature-title">
+        <span>4. Kartu Anggota Digital (*Digital Member Card*)</span>
+        <span class="badge badge-blue">Identitas Resmi</span>
+      </div>
+      <div class="feature-desc">
+        Setiap anggota memiliki kartu perpustakaan digital eksklusif lengkap dengan Nomor Identitas Anggota unik (contoh: <code>PK-2026-583739</code>), nama lengkap, kategori pemustaka, barcode, dan tombol <strong>Cetak Kartu</strong>.
+      </div>
+    </div>
+
+    <div class="feature-card user">
+      <div class="feature-title">
+        <span>5. Pengaturan Profil & Data Diri (*Profile Completion*)</span>
+        <span class="badge badge-green">Biodata</span>
+      </div>
+      <div class="feature-desc">
+        Anggota dapat melengkapi identitas berupa Nomor Induk Kependudukan (NIK), No. Telepon WhatsApp, Instansi/Sekolah, dan Kategori Pemustaka (Masyarakat Umum atau Pelajar/Mahasiswa).
+      </div>
+    </div>
+  </div>
+
+  <!-- BAGIAN 5: DASHBOARD ADMIN -->
+  <div class="page">
+    <h1>5. Dashboard Administrator (Admin)</h1>
+    <p>Pusat kendali operasional perpustakaan digital bagi petugas dan administrator sistem.</p>
+
+    <div class="feature-card admin">
+      <div class="feature-title">
+        <span>1. Ringkasan Eksekutif (*Dashboard Overview*)</span>
+        <span class="badge badge-purple">Statistik</span>
+      </div>
+      <div class="feature-desc">
+        Menampilkan metrik performa utama perpustakaan secara grafis: Total Judul Buku, Total Anggota Terdaftar, Total Buku yang Dibaca, serta Indikator Pesan Baru yang belum dibaca.
+      </div>
+    </div>
+
+    <div class="feature-card admin">
+      <div class="feature-title">
+        <span>2. Manajemen Koleksi Buku (*Buku CRUD*)</span>
+        <span class="badge badge-purple">Koleksi</span>
+      </div>
+      <div class="feature-desc">
+        Administrator dapat dengan mudah:
+        <ul class="feature-steps">
+          <li><strong>Tambah Buku Baru:</strong> Mengisi judul, pengarang, penerbit, nomor ISBN, sinopsis, tahun terbit, dan rak buku.</li>
+          <li><strong>Upload File PDF E-Book & Sampul:</strong> Menautkan berkas buku digital agar pemustaka dapat membacanya.</li>
+          <li><strong>Edit & Hapus Buku:</strong> Memperbarui informasi buku sewaktu-waktu atau menghapus buku yang sudah tidak berlaku.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="feature-card admin">
+      <div class="feature-title">
+        <span>3. Kelola Anggota & Pengubahan Role (*Role Management*)</span>
+        <span class="badge badge-purple">Keanggotaan</span>
+      </div>
+      <div class="feature-desc">
+        Tabel interaktif seluruh pengguna. Admin dapat <strong>mengubah hak akses pengguna secara langsung</strong> lewat menu dropdown antara:
+        <ul class="feature-steps">
+          <li><strong>Administrator (Admin):</strong> Membuka akses penuh ke dashboard operasional admin.</li>
+          <li><strong>User (Pemustaka):</strong> Mengembalikan akun ke akses pengguna biasa.</li>
+        </ul>
+        Perubahan tersinkronisasi langsung ke database cloud Supabase.
+      </div>
+    </div>
+
+    <div class="feature-card admin">
+      <div class="feature-title">
+        <span>4. Menu Pesan & Masukan Pengunjung (*Feedbacks*)</span>
+        <span class="badge badge-purple">Inbox Saran</span>
+      </div>
+      <div class="feature-desc">
+        Menampilkan seluruh pesan yang dikirim pengunjung dari landing page. Terdapat label status <em>Belum Dibaca</em>, tombol <em>Tandai Sudah Dibaca</em>, tombol <em>Tandai Semua Dibaca</em>, dan tombol <em>Hapus Pesan</em> dengan dukungan pembaruan otomatis (Realtime).
+      </div>
+    </div>
+
+    <div class="feature-card admin">
+      <div class="feature-title">
+        <span>5. Pengaturan Website Dinamis (*CMS Site Settings*)</span>
+        <span class="badge badge-purple">CMS Kustomisasi</span>
+      </div>
+      <div class="feature-desc">
+        Admin dapat mengubah nama perpustakaan, tagline, teks banner pengumuman, alamat kantor, nomor telepon, dan jam layanan tanpa menyentuh kode program.
+      </div>
+    </div>
+
+    <div class="feature-card admin">
+      <div class="feature-title">
+        <span>6. Pembuatan Laporan Resmi Siap Cetak (*Official Report Print*)</span>
+        <span class="badge badge-purple">Pelaporan</span>
+      </div>
+      <div class="feature-desc">
+        Menghasilkan lembar laporan rekapitulasi data buku dan sirkulasi pemustaka lengkap dengan kop surat resmi dan tanda tangan untuk keperluan pengarsipan fisik.
+      </div>
+    </div>
+
+    <div class="footer-note">
+      <strong>💡 Tips Penggunaan:</strong> Seluruh data operasional tersinkronisasi dengan aman. Pastikan untuk selalu memeriksa menu <em>Pesan & Masukan</em> secara berkala untuk merespons saran dari pembaca perpustakaan.
+    </div>
+  </div>
+
+</body>
+</html>
