@@ -402,10 +402,22 @@ export default function App() {
     };
   }, []);
 
-  // TOAST WRAPPERS
+  // TOAST WRAPPERS WITH DEDUPLICATION & OVERLAP PREVENTION
   const addToast = (message: string, type: 'success' | 'error' | 'info') => {
-    const id = Math.random().toString(36).substr(2, 9);
-    setToasts(prev => [...prev, { id, message, type }]);
+    setToasts(prev => {
+      // 1. Abaikan jika pesan yang sama persis sudah ada di layar
+      if (prev.some(t => t.message === message)) return prev;
+
+      // 2. Jika notifikasi adalah status login berhasil, hapus notifikasi login lama agar tidak nimpah/ganda
+      const isLoginAlert = message.toLowerCase().includes('berhasil masuk');
+      const filtered = isLoginAlert
+        ? prev.filter(t => !t.message.toLowerCase().includes('berhasil masuk'))
+        : prev;
+
+      const id = Math.random().toString(36).substr(2, 9);
+      // Batasi maksimal 2 notifikasi aktif agar tetap rapi dan tidak menutupi tampilan
+      return [...filtered.slice(-1), { id, message, type }];
+    });
   };
 
   const handleDismissToast = (id: string) => {
