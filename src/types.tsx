@@ -193,3 +193,13 @@ export interface RouteState {
   view: ViewType;
   selectedBookId?: string;
 }
+
+export interface UserFeedback {
+  id: string;
+  name: string;
+  email: string;
+  message: string;
+  createdAt: string;
+  isRead: boolean;
+}
+

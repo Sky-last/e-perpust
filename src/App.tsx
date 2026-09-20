@@ -448,13 +448,35 @@ export default function App() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    // Set initial history state if empty
-    if (!window.history.state || !window.history.state.view) {
-      window.history.replaceState({ view: 'landing' }, '', window.location.pathname);
-    }
+    // Set initial history state if empty & push root guard
+    try {
+      if (!window.history.state || !window.history.state.view) {
+        window.history.replaceState({ view: 'root_guard' }, '', window.location.pathname);
+        window.history.pushState({ view: currentView }, '', window.location.pathname);
+      }
+    } catch (e) {}
 
     const handlePopState = (event: PopStateEvent) => {
-      if (event.state && event.state.view) {
+      // 1. Close global top-level modals first
+      if (readerBook) {
+        setReaderBook(null);
+        return;
+      }
+      if (isBook3DModalOpen) {
+        setIsBook3DModalOpen(false);
+        return;
+      }
+      if (pinjamModalBook) {
+        setPinjamModalBook(null);
+        return;
+      }
+      if (selectedBookId) {
+        setSelectedBookId(null);
+        return;
+      }
+
+      // 2. Handle view navigation
+      if (event.state && event.state.view && event.state.view !== 'root_guard') {
         setCurrentView(event.state.view);
         if (event.state.selectedId) {
           setSelectedBookId(event.state.selectedId);
@@ -463,15 +485,21 @@ export default function App() {
         }
       } else {
         // Fallback: stay on landing page instead of closing the web app
-        setCurrentView('landing');
+        if (currentView !== 'landing') {
+          setCurrentView('landing');
+        }
         setSelectedBookId(null);
+        try {
+          window.history.pushState({ view: 'landing' }, '', window.location.pathname);
+        } catch (e) {}
       }
       setSidebarOpen(false);
     };
 
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
-  }, []);
+  }, [readerBook, isBook3DModalOpen, pinjamModalBook, selectedBookId, currentView]);
+
 
   // SYSTEM LOG PUSHER
   const pushLog = async (email: string, name: string, type: 'pinjam' | 'kembali' | 'perpanjang' | 'register' | 'update_profile', bookTitle: string) => {

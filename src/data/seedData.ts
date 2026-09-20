@@ -1,4 +1,25 @@
-import { Category, LibrarySettings, SiteSettings, User, UserRole } from '../types';
+import { Category, LibrarySettings, SiteSettings, User, UserFeedback, UserRole } from '../types';
+
+// Default seed user feedbacks
+export const DEFAULT_FEEDBACKS: UserFeedback[] = [
+  {
+    id: 'fb-1',
+    name: 'Budi Santoso',
+    email: 'budi.santoso@gmail.com',
+    message: 'Halo Admin, koleksi buku teknologi di perpustakaan ini sangat membantu! Bisakah ditambah koleksi tentang Cloud Computing?',
+    createdAt: '2026-09-18T10:30:00.000Z',
+    isRead: false
+  },
+  {
+    id: 'fb-2',
+    name: 'Siti Rahmawati',
+    email: 'siti.rahma@yahoo.com',
+    message: 'Mohon info bagaimana cara memperpanjang durasi peminjaman e-book? Terima kasih atas layanannya yang luar biasa!',
+    createdAt: '2026-09-15T14:15:00.000Z',
+    isRead: true
+  }
+];
+
 
 // Default categories for the library
 export const DEFAULT_CATEGORIES: Category[] = [

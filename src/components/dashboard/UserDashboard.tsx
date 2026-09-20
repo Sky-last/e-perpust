@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Home,
@@ -144,11 +144,60 @@ export default function UserDashboard({
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const [showMemberCard, setShowMemberCard] = useState(false);
 
+  // Push history state saat modal di UserDashboard terbuka agar tombol back HP menutup modal terlebih dahulu
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (selectedBook || readingBook3D || isBorrowingModalOpen || showMemberCard) {
+      try {
+        window.history.pushState({ userDashboardModal: true }, '');
+      } catch (e) {}
+    }
+  }, [selectedBook, readingBook3D, isBorrowingModalOpen, showMemberCard]);
+
+  // Handler tombol Back fisik HP (Hardware Back / Popstate) untuk UserDashboard
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const handlePopState = () => {
+      // 1. Tutup modal aktif terlebih dahulu jika ada
+      if (readingBook3D) {
+        setReadingBook3D(null);
+        return;
+      }
+      if (isBorrowingModalOpen) {
+        setIsBorrowingModalOpen(false);
+        return;
+      }
+      if (selectedBook) {
+        setSelectedBook(null);
+        return;
+      }
+      if (showMemberCard) {
+        setShowMemberCard(false);
+        return;
+      }
+
+      // 2. Kembali ke tab utama ('home') jika sedang berada di sub-tab lain
+      if (activeTab !== 'home' && !isProfileIncomplete) {
+        setActiveTab('home');
+        return;
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [readingBook3D, isBorrowingModalOpen, selectedBook, showMemberCard, activeTab, isProfileIncomplete]);
+
   const handleTabChange = (tabId: 'home' | 'books' | 'history' | 'stats' | 'profile') => {
     if (isProfileIncomplete && tabId !== 'profile') {
       setActiveTab('profile');
       setIsEditingProfile(true);
       return;
+    }
+    if (typeof window !== 'undefined' && tabId !== activeTab) {
+      try {
+        window.history.pushState({ dashboardTab: tabId }, '');
+      } catch (e) {}
     }
     setActiveTab(tabId);
   };
@@ -169,6 +218,7 @@ export default function UserDashboard({
     }
     return name.slice(0, 2).toUpperCase();
   };
+
 
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

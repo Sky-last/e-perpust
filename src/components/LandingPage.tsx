@@ -652,6 +652,26 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
                     onSubmit={(e) => {
                       e.preventDefault();
                       soundFX.playClick();
+                      
+                      // Save feedback to localStorage
+                      try {
+                        const newFeedback = {
+                          id: 'fb-' + Date.now(),
+                          name: contactName.trim(),
+                          email: contactEmail.trim(),
+                          message: contactMessage.trim(),
+                          createdAt: new Date().toISOString(),
+                          isRead: false
+                        };
+                        const existingStr = localStorage.getItem('perpustakaan_user_feedbacks');
+                        const existing = existingStr ? JSON.parse(existingStr) : [];
+                        const updated = [newFeedback, ...existing];
+                        localStorage.setItem('perpustakaan_user_feedbacks', JSON.stringify(updated));
+                        window.dispatchEvent(new Event('user_feedback_submitted'));
+                      } catch (err) {
+                        console.error('Failed to save user feedback:', err);
+                      }
+
                       setContactSubmitted(true);
                       setContactName('');
                       setContactEmail('');
@@ -659,6 +679,7 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
                     }}
                     className="space-y-4"
                   >
+
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${sub}`}>Nama Lengkap</label>

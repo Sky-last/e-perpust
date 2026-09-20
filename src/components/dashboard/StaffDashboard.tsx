@@ -39,11 +39,13 @@ import {
   HelpCircle,
   CreditCard
 } from 'lucide-react';
-import { User, Book, Category, Borrowing, LibrarySettings, SiteSettings, UserRole } from '../../types';
-import { DEFAULT_SITE_SETTINGS } from '../../data/seedData';
+import { User, Book, Category, Borrowing, LibrarySettings, SiteSettings, UserRole, UserFeedback } from '../../types';
+import { DEFAULT_SITE_SETTINGS, DEFAULT_FEEDBACKS } from '../../data/seedData';
 import Book3D from '../Book3D';
 import { resolveUserMemberId } from '../../utils/memberId';
 import MemberCardModal from '../MemberCardModal';
+import { printOfficialReport } from '../../utils/printReportHelper';
+
 
 interface StaffDashboardProps {
   currentUser: User;
@@ -99,13 +101,66 @@ export default function StaffDashboard({
     return normalizedRole === 'admin' || role === UserRole.ADMIN;
   }, [currentUser.role]);
 
-  const [activeMenu, setActiveMenu] = useState<'dashboard' | 'books' | 'categories' | 'transactions' | 'users' | 'reports' | 'cms'>('dashboard');
+  const [activeMenu, setActiveMenu] = useState<'dashboard' | 'books' | 'categories' | 'transactions' | 'users' | 'reports' | 'cms' | 'messages'>('dashboard');
   const [searchQuery, setSearchQuery] = useState('');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const chartRef = useRef<HTMLCanvasElement>(null);
   
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
+
+  // User Feedback state management
+  const [feedbacks, setFeedbacks] = useState<UserFeedback[]>(() => {
+    try {
+      const saved = localStorage.getItem('perpustakaan_user_feedbacks');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {
+      console.error('Failed to load feedbacks:', e);
+    }
+    return DEFAULT_FEEDBACKS;
+  });
+
+  const [feedbackFilter, setFeedbackFilter] = useState<'all' | 'unread' | 'read'>('all');
+  const [selectedFeedback, setSelectedFeedback] = useState<UserFeedback | null>(null);
+
+  useEffect(() => {
+    const handleFeedbackSubmitted = () => {
+      try {
+        const saved = localStorage.getItem('perpustakaan_user_feedbacks');
+        if (saved) setFeedbacks(JSON.parse(saved));
+      } catch (e) {}
+    };
+    window.addEventListener('user_feedback_submitted', handleFeedbackSubmitted);
+    return () => window.removeEventListener('user_feedback_submitted', handleFeedbackSubmitted);
+  }, []);
+
+  const handleMarkFeedbackRead = (id: string) => {
+    const updated = feedbacks.map(f => f.id === id ? { ...f, isRead: true } : f);
+    setFeedbacks(updated);
+    try {
+      localStorage.setItem('perpustakaan_user_feedbacks', JSON.stringify(updated));
+    } catch (e) {}
+  };
+
+  const handleMarkAllFeedbacksRead = () => {
+    const updated = feedbacks.map(f => ({ ...f, isRead: true }));
+    setFeedbacks(updated);
+    try {
+      localStorage.setItem('perpustakaan_user_feedbacks', JSON.stringify(updated));
+    } catch (e) {}
+  };
+
+  const handleDeleteFeedback = (id: string) => {
+    const updated = feedbacks.filter(f => f.id !== id);
+    setFeedbacks(updated);
+    if (selectedFeedback?.id === id) setSelectedFeedback(null);
+    try {
+      localStorage.setItem('perpustakaan_user_feedbacks', JSON.stringify(updated));
+    } catch (e) {}
+  };
+
+  const unreadFeedbackCount = feedbacks.filter(f => !f.isRead).length;
+
 
   // Modals / Editors states
   const [editingBook, setEditingBook] = useState<Book | null>(null);
@@ -716,6 +771,7 @@ export default function StaffDashboard({
     { id: 'categories', label: 'Kategori Genre', icon: FolderClosed },
     { id: 'transactions', label: 'Sirkulasi Unduhan', icon: Download },
     { id: 'users', label: 'Kelola Anggota', icon: Users },
+    { id: 'messages', label: 'Pesan & Masukan', icon: Mail, badge: unreadFeedbackCount },
     { id: 'cms', label: 'Pengaturan Web (CMS)', icon: Globe },
     { id: 'reports', label: 'Laporan & Rekap', icon: FileSpreadsheet },
   ];
@@ -757,20 +813,28 @@ export default function StaffDashboard({
             {menuItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeMenu === item.id;
+              const hasBadge = Boolean(item.badge && item.badge > 0);
               return (
                 <motion.button
                   key={item.id}
                   onClick={() => setActiveMenu(item.id as any)}
                   whileHover={{ x: 3 }}
                   whileTap={{ scale: 0.98 }}
-                  className={`w-full flex items-center gap-3.5 px-3.5 py-3 text-xs font-bold rounded-xl transition-all cursor-pointer relative overflow-hidden ${
+                  className={`w-full flex items-center justify-between px-3.5 py-3 text-xs font-bold rounded-xl transition-all cursor-pointer relative overflow-hidden ${
                     isActive 
                       ? 'bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/25 border border-white/10' 
                       : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
                   }`}
                 >
-                  <Icon className={`w-4.5 h-4.5 shrink-0 ${isActive ? 'text-cyan-200' : 'text-slate-400'}`} />
-                  {!sidebarCollapsed && <span className="truncate">{item.label}</span>}
+                  <div className="flex items-center gap-3.5 min-w-0">
+                    <Icon className={`w-4.5 h-4.5 shrink-0 ${isActive ? 'text-cyan-200' : 'text-slate-400'}`} />
+                    {!sidebarCollapsed && <span className="truncate">{item.label}</span>}
+                  </div>
+                  {hasBadge && (
+                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${isActive ? 'bg-amber-400 text-slate-950' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'}`}>
+                      {item.badge}
+                    </span>
+                  )}
                   {isActive && <div className="absolute left-0 top-0 bottom-0 w-1 bg-cyan-400 shadow-[0_0_12px_#38bdf8]" />}
                 </motion.button>
               );
@@ -822,13 +886,22 @@ export default function StaffDashboard({
                 {menuItems.map((item) => {
                   const Icon = item.icon;
                   const isActive = activeMenu === item.id;
+                  const hasBadge = Boolean(item.badge && item.badge > 0);
                   return (
-                    <button key={item.id} onClick={() => { setActiveMenu(item.id as any); setMobileMenuOpen(false); }} className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold rounded-xl ${isActive ? 'bg-blue-600 text-white' : 'text-slate-400'}`}>
-                      <Icon className="w-4.5 h-4.5" /> <span>{item.label}</span>
+                    <button key={item.id} onClick={() => { setActiveMenu(item.id as any); setMobileMenuOpen(false); }} className={`w-full flex items-center justify-between px-4 py-3 text-xs font-bold rounded-xl ${isActive ? 'bg-blue-600 text-white' : 'text-slate-400'}`}>
+                      <div className="flex items-center gap-3">
+                        <Icon className="w-4.5 h-4.5" /> <span>{item.label}</span>
+                      </div>
+                      {hasBadge && (
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-400 text-slate-950">
+                          {item.badge}
+                        </span>
+                      )}
                     </button>
                   );
                 })}
               </div>
+
 
               <div className="p-4 border-t border-slate-800 shrink-0 space-y-3 bg-slate-900/40">
                 <div className="flex items-center gap-3 p-2.5 bg-slate-800/50 rounded-xl border border-slate-750/50">
@@ -1085,10 +1158,19 @@ export default function StaffDashboard({
                   </div>
                   <div className="flex items-center gap-2">
                     <button 
-                      onClick={() => window.print()}
+                      onClick={() => {
+                        printOfficialReport({
+                          siteSettings,
+                          books,
+                          categories,
+                          users,
+                          allDownloads,
+                          adminUser: currentUser
+                        });
+                      }}
                       className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl border border-slate-700 flex items-center gap-1.5 transition-all cursor-pointer shadow-md"
                     >
-                      <Download className="w-4 h-4 text-cyan-400" /> Cetak PDF
+                      <Download className="w-4 h-4 text-cyan-400" /> Cetak PDF Laporan
                     </button>
                     <button 
                       onClick={() => {
@@ -1408,10 +1490,19 @@ export default function StaffDashboard({
                         <FileSpreadsheet className="w-4 h-4" /> Export CSV
                       </button>
                       <button 
-                        onClick={() => window.print()}
+                        onClick={() => {
+                          printOfficialReport({
+                            siteSettings,
+                            books,
+                            categories,
+                            users,
+                            allDownloads,
+                            adminUser: currentUser
+                          });
+                        }}
                         className="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl shadow-lg flex items-center gap-2 transition-all cursor-pointer"
                       >
-                        <Download className="w-4 h-4" /> Cetak PDF
+                        <Download className="w-4 h-4" /> Cetak PDF Laporan Resmi
                       </button>
                     </div>
                   </div>
@@ -2069,6 +2160,184 @@ export default function StaffDashboard({
 
               </motion.div>
             )}
+
+            {/* ── PESAN & MASUKAN USER TAB ── */}
+            {activeMenu === 'messages' && (
+              <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+                
+                {/* Header Section */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
+                  <div>
+                    <span className="text-[10px] bg-amber-500/10 text-amber-400 font-extrabold px-3 py-1 rounded-full uppercase border border-amber-500/20 inline-flex items-center gap-1.5">
+                      <Mail className="w-3 h-3" /> Masukan &amp; Feedback Pengunjung
+                    </span>
+                    <h2 className="text-lg lg:text-xl font-black text-white mt-2 flex items-center gap-2">
+                      Pesan Masukan dari Form Website
+                    </h2>
+                    <p className="text-xs text-slate-400 mt-0.5">
+                      Daftar pertanyaan, kendala unduhan, dan saran yang dikirimkan pengunjung melalui form kontak di Landing Page.
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    {unreadFeedbackCount > 0 && (
+                      <button
+                        onClick={handleMarkAllFeedbacksRead}
+                        className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-cyan-300 text-xs font-bold rounded-xl border border-slate-700 transition-all cursor-pointer flex items-center gap-2"
+                      >
+                        <CheckCircle className="w-4 h-4 text-emerald-400" />
+                        <span>Tandai Semua Dibaca</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Filter & Search Bar */}
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl">
+                  {/* Search */}
+                  <div className="relative w-full sm:w-80">
+                    <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="text"
+                      placeholder="Cari nama, email, atau pesan..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full pl-10 pr-4 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500"
+                    />
+                  </div>
+
+                  {/* Filter Tabs */}
+                  <div className="flex items-center gap-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800 w-full sm:w-auto">
+                    {[
+                      { id: 'all', label: 'Semua', count: feedbacks.length },
+                      { id: 'unread', label: 'Belum Dibaca', count: unreadFeedbackCount },
+                      { id: 'read', label: 'Sudah Dibaca', count: feedbacks.length - unreadFeedbackCount }
+                    ].map((tab) => (
+                      <button
+                        key={tab.id}
+                        onClick={() => setFeedbackFilter(tab.id as any)}
+                        className={`flex-1 sm:flex-none px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+                          feedbackFilter === tab.id
+                            ? 'bg-blue-600 text-white shadow-md'
+                            : 'text-slate-400 hover:text-white'
+                        }`}
+                      >
+                        <span>{tab.label}</span>
+                        <span className={`px-1.5 py-0.2 rounded-full text-[9px] font-black ${
+                          feedbackFilter === tab.id ? 'bg-white/20 text-white' : 'bg-slate-800 text-slate-400'
+                        }`}>
+                          {tab.count}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Feedback List */}
+                <div className="space-y-3">
+                  {feedbacks
+                    .filter((f) => {
+                      const matchesSearch =
+                        f.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                        f.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                        f.message.toLowerCase().includes(searchQuery.toLowerCase());
+                      const matchesFilter =
+                        feedbackFilter === 'all'
+                          ? true
+                          : feedbackFilter === 'unread'
+                          ? !f.isRead
+                          : f.isRead;
+                      return matchesSearch && matchesFilter;
+                    })
+                    .map((item) => (
+                      <motion.div
+                        key={item.id}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className={`p-5 rounded-2xl border transition-all ${
+                          !item.isRead
+                            ? 'bg-slate-900/90 border-amber-500/40 shadow-lg shadow-amber-500/5'
+                            : 'bg-slate-900 border-slate-800'
+                        }`}
+                      >
+                        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 pb-3 border-b border-slate-800/80">
+                          <div className="flex items-center gap-3">
+                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-sm text-white shrink-0 ${
+                              !item.isRead ? 'bg-gradient-to-tr from-amber-500 to-orange-600 ring-2 ring-amber-500/30' : 'bg-slate-800 text-slate-400'
+                            }`}>
+                              {item.name.substring(0, 2).toUpperCase()}
+                            </div>
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <h4 className="text-sm font-black text-white">{item.name}</h4>
+                                {!item.isRead ? (
+                                  <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                                    Belum Dibaca
+                                  </span>
+                                ) : (
+                                  <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-slate-800 text-slate-400">
+                                    Sudah Dibaca
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-xs text-cyan-400 font-medium mt-0.5">{item.email}</p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-3 self-end sm:self-auto">
+                            <span className="text-[10px] text-slate-500 font-mono">
+                              {new Date(item.createdAt).toLocaleString('id-ID', {
+                                day: 'numeric',
+                                month: 'short',
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              })}
+                            </span>
+
+                            <div className="flex items-center gap-1">
+                              {!item.isRead && (
+                                <button
+                                  onClick={() => handleMarkFeedbackRead(item.id)}
+                                  className="p-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-lg text-xs font-bold transition-all cursor-pointer"
+                                  title="Tandai Sudah Dibaca"
+                                >
+                                  <CheckCircle className="w-4 h-4" />
+                                </button>
+                              )}
+                              <button
+                                onClick={() => {
+                                  if (window.confirm(`Hapus masukan dari ${item.name}?`)) {
+                                    handleDeleteFeedback(item.id);
+                                  }
+                                }}
+                                className="p-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 rounded-lg text-xs font-bold transition-all cursor-pointer"
+                                title="Hapus Masukan"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="mt-3 text-xs text-slate-300 leading-relaxed font-sans bg-slate-950/50 p-4 rounded-xl border border-slate-800/60">
+                          {item.message}
+                        </div>
+                      </motion.div>
+                    ))}
+
+                  {feedbacks.length === 0 && (
+                    <div className="text-center py-12 bg-slate-900 border border-slate-800 rounded-2xl">
+                      <Mail className="w-12 h-12 text-slate-600 mx-auto mb-3" />
+                      <h4 className="text-sm font-bold text-white">Belum Ada Masukan</h4>
+                      <p className="text-xs text-slate-500 mt-1">Pesan yang dikirimkan pengunjung dari Landing Page akan muncul di sini.</p>
+                    </div>
+                  )}
+                </div>
+
+              </motion.div>
+            )}
+
 
           </div>
         </main>
