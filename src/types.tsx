@@ -132,11 +132,14 @@ export interface SiteSettings {
 
 export interface Notification {
   id: string;
-  userId: string;
+  userId?: string;
+  type?: string;
   title: string;
   message: string;
   date: string;
   read: boolean;
+  bookId?: string;
+  bookTitle?: string;
 }
 
 export interface User {

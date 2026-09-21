@@ -40,18 +40,7 @@ export default function EBookReader3D({ book, onClose, currentUser, initialMode 
       mode,
       initialMode
     });
-
-    // Auto-track as downloaded when user opens reader (especially for mobile auto-download)
-    if (currentUser && onDownloadBook && !hasTrackedDownload.current) {
-      // Check if not already downloaded
-      const alreadyDownloaded = (currentUser.downloads || []).some(d => d.bookId === book.id);
-      if (!alreadyDownloaded) {
-        console.log('📥 Auto-tracking book as downloaded (reader opened):', book.title);
-        hasTrackedDownload.current = true;
-        onDownloadBook(book);
-      }
-    }
-  }, [book.id, currentUser, onDownloadBook]); // Safe dependencies with ref guard
+  }, [book.id]); // Safe dependencies with ref guard
 
   // PDF Availability State — skip HEAD check, load iframe directly
   const [pdfStatus, setPdfStatus] = useState<'checking' | 'valid' | 'invalid'>('valid');

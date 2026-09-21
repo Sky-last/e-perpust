@@ -1277,6 +1277,21 @@ export default function App() {
       status: 'Tersedia'
     };
 
+    const newNotif: Notification = {
+      id: `notif_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
+      type: 'admin_new_book',
+      title: '📚 Buku Baru Tersedia!',
+      message: `"${newBook.title}" baru saja ditambahkan ke koleksi perpustakaan. Selamat membaca!`,
+      date: new Date().toISOString(),
+      read: false,
+      bookId: newBook.id,
+      bookTitle: newBook.title
+    };
+
+    const nextNotifications = [newNotif, ...notifications];
+    setNotifications(nextNotifications);
+    localStorage.setItem('digital_library_notifications', JSON.stringify(nextNotifications));
+
     if (isSupabaseConfigured) {
       await saveBook(newBook, true);
       const booksList = await getBooks();
@@ -1598,17 +1613,17 @@ export default function App() {
       return;
     }
 
+    // Trigger file download to device FIRST (handles blob, CORS, data URIs, mobile browsers)
+    let downloadSuccess = false;
     try {
-      // Validate PDF exists before download
-      const response = await fetch(pdfUrl, { method: 'HEAD' });
-      if (!response.ok) {
-        addToast(`File PDF tidak ditemukan. Status: ${response.status}`, 'error');
-        console.error('PDF not found:', pdfUrl, response.status);
-        return;
-      }
+      downloadSuccess = await downloadPdfFile(pdfUrl, book.title);
     } catch (err) {
-      console.error('Failed to validate PDF:', err);
-      addToast('Gagal memvalidasi file PDF. Coba lagi nanti.', 'error');
+      console.error('Download failed:', err);
+      downloadSuccess = false;
+    }
+
+    if (!downloadSuccess) {
+      addToast('Gagal mengunduh file PDF atau unduhan dibatalkan.', 'error');
       return;
     }
 
@@ -1653,15 +1668,7 @@ export default function App() {
     setUsers(updatedUsers);
     localStorage.setItem('digital_library_users', JSON.stringify(updatedUsers));
 
-    // Trigger file download to device (mobile-ready with blob streaming)
-    try {
-      await downloadPdfFile(pdfUrl, book.title);
-      addToast(`Berhasil mengunduh "${book.title}"! File PDF telah tersimpan di perangkat Anda.`, 'success');
-    } catch (err) {
-      console.error('Download failed:', err);
-      addToast('Gagal mengunduh file. Coba buka di tab baru.', 'error');
-      window.open(pdfUrl, '_blank');
-    }
+    addToast(`Berhasil mengunduh "${book.title}"! File PDF telah tersimpan di perangkat Anda.`, 'success');
 
     // Add log
     try {

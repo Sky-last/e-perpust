@@ -151,7 +151,7 @@ export default function UserDashboard({
     if (selectedBook || isBorrowingModalOpen || showMemberCard) {
       try {
         window.history.pushState({ view: 'dashboard', userDashboardModal: true }, '');
-      } catch (e) {}
+      } catch (e) { }
     }
   }, [selectedBook, isBorrowingModalOpen, showMemberCard]);
 
@@ -204,7 +204,7 @@ export default function UserDashboard({
     if (typeof window !== 'undefined' && tabId !== activeTab) {
       try {
         window.history.pushState({ view: 'dashboard', dashboardTab: tabId }, '');
-      } catch (e) {}
+      } catch (e) { }
     }
     setActiveTab(tabId);
   };
@@ -281,7 +281,7 @@ export default function UserDashboard({
   // Reading notes for Almanak Baca
   const [readingNote, setReadingNote] = useState('');
   const [selectedNoteBook, setSelectedNoteBook] = useState('');
-  const [savedNotes, setSavedNotes] = useState<{id: string; text: string; date: string; bookTitle?: string}[]>(() => {
+  const [savedNotes, setSavedNotes] = useState<{ id: string; text: string; date: string; bookTitle?: string }[]>(() => {
     const stored = localStorage.getItem(`reading_notes_${currentUser.id}`);
     return stored ? JSON.parse(stored) : [];
   });
@@ -374,7 +374,7 @@ export default function UserDashboard({
 
   const filteredBooks = books.filter((book) => {
     // Filter by search query (title, author, publisher, ISBN)
-    const matchesSearch = searchQuery === '' || 
+    const matchesSearch = searchQuery === '' ||
       book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       book.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
       book.publisher.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -417,7 +417,7 @@ export default function UserDashboard({
           const parsed = JSON.parse(activeData);
           parsed.readBooks = updated;
           localStorage.setItem('digital_library_active_user_data', JSON.stringify(parsed));
-        } catch(_e) {}
+        } catch (_e) { }
       }
     }
   };
@@ -582,9 +582,8 @@ export default function UserDashboard({
                 <button
                   key={item.id}
                   onClick={() => handleTabChange(item.id as any)}
-                  className={`w-full flex items-center gap-3.5 px-3.5 py-3 text-xs rounded-lg transition-colors cursor-pointer relative ${
-                    isActive ? 'text-[#20301F]' : 'text-[#CBD5C9] hover:text-white hover:bg-white/5'
-                  } ${isLocked ? 'opacity-60' : ''}`}
+                  className={`w-full flex items-center gap-3.5 px-3.5 py-3 text-xs rounded-lg transition-colors cursor-pointer relative ${isActive ? 'text-[#20301F]' : 'text-[#CBD5C9] hover:text-white hover:bg-white/5'
+                    } ${isLocked ? 'opacity-60' : ''}`}
                 >
                   {isActive && (
                     <motion.div
@@ -713,9 +712,8 @@ export default function UserDashboard({
                     <button
                       key={item.id}
                       onClick={() => { handleTabChange(item.id as any); setMobileMenuOpen(false); }}
-                      className={`w-full flex items-center justify-between px-4 py-3 text-xs font-bold rounded-lg transition-colors cursor-pointer ${
-                        isActive ? 'bg-[#C08B34] text-[#20301F]' : 'text-[#CBD5C9] hover:text-white hover:bg-white/5'
-                      }`}
+                      className={`w-full flex items-center justify-between px-4 py-3 text-xs font-bold rounded-lg transition-colors cursor-pointer ${isActive ? 'bg-[#C08B34] text-[#20301F]' : 'text-[#CBD5C9] hover:text-white hover:bg-white/5'
+                        }`}
                     >
                       <div className="flex items-center gap-3.5">
                         <Icon className="w-4.5 h-4.5" />
@@ -827,7 +825,7 @@ export default function UserDashboard({
                       <h3 className="text-xs font-bold text-[#1F2A24]">Notifikasi</h3>
                       <span className="font-mono-lib text-[10px] bg-[#20301F] text-[#C08B34] font-bold px-2 py-0.5 rounded">{myUnreadNotifications.length} Baru</span>
                     </div>
-                    {notifications.filter(n => n.userId === currentUser.id).length === 0 ? (
+                    {notifications.filter(n => !n.userId || n.userId === currentUser.id).length === 0 ? (
                       <div className="text-center py-6 text-[#1F2A24]/40">
                         <Bell className="w-7 h-7 mx-auto mb-2" />
                         <p className="text-xs font-medium">Belum ada notifikasi.</p>
@@ -835,16 +833,15 @@ export default function UserDashboard({
                     ) : (
                       <div className="space-y-2">
                         {notifications
-                          .filter(n => n.userId === currentUser.id)
+                          .filter(n => !n.userId || n.userId === currentUser.id)
                           .map(n => (
                             <button
                               key={n.id}
                               onClick={() => onMarkNotifRead(n.id)}
-                              className={`w-full p-3 rounded-lg text-left transition-colors cursor-pointer border ${
-                                n.read
+                              className={`w-full p-3 rounded-lg text-left transition-colors cursor-pointer border ${n.read
                                   ? 'bg-[#F6F1E7]/60 opacity-60 border-[#1F2A24]/10'
                                   : 'bg-[#C08B34]/10 border-[#C08B34]/30 hover:bg-[#C08B34]/15'
-                              }`}
+                                }`}
                             >
                               <h4 className="text-xs font-bold text-[#1F2A24]">{n.title}</h4>
                               <p className="text-[10px] text-[#1F2A24]/60 mt-1 leading-relaxed">{n.message}</p>
@@ -1081,9 +1078,8 @@ export default function UserDashboard({
                         return (
                           <div
                             key={badge.label}
-                            className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-[10px] font-bold border transition-colors ${
-                              unlocked ? 'border-[#C08B34]/40 bg-[#C08B34]/10 text-[#8A5F22]' : 'border-[#1F2A24]/10 bg-[#F6F1E7] text-[#1F2A24]/30'
-                            }`}
+                            className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-[10px] font-bold border transition-colors ${unlocked ? 'border-[#C08B34]/40 bg-[#C08B34]/10 text-[#8A5F22]' : 'border-[#1F2A24]/10 bg-[#F6F1E7] text-[#1F2A24]/30'
+                              }`}
                             title={unlocked ? 'Terbuka' : `Selesaikan ${badge.min} buku untuk membuka`}
                           >
                             {unlocked && <Trophy className="w-3.5 h-3.5" />}
@@ -1119,11 +1115,10 @@ export default function UserDashboard({
                     <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
                       <button
                         onClick={() => setSelectedCategory('all')}
-                        className={`px-3.5 py-1.5 rounded-lg text-[10px] font-bold transition-colors shrink-0 cursor-pointer border ${
-                          selectedCategory === 'all'
+                        className={`px-3.5 py-1.5 rounded-lg text-[10px] font-bold transition-colors shrink-0 cursor-pointer border ${selectedCategory === 'all'
                             ? 'bg-[#20301F] text-[#F6F1E7] border-[#20301F]'
                             : 'bg-[#F6F1E7] text-[#1F2A24]/60 border-[#1F2A24]/10 hover:text-[#1F2A24]'
-                        }`}
+                          }`}
                       >
                         Semua ({books.length})
                       </button>
@@ -1135,11 +1130,10 @@ export default function UserDashboard({
                           <button
                             key={cat.id}
                             onClick={() => { setSelectedCategory(cat.id); setActiveTab('books'); }}
-                            className={`px-3.5 py-1.5 rounded-lg text-[10px] font-bold transition-colors shrink-0 cursor-pointer border ${
-                              selectedCategory === cat.id
+                            className={`px-3.5 py-1.5 rounded-lg text-[10px] font-bold transition-colors shrink-0 cursor-pointer border ${selectedCategory === cat.id
                                 ? 'bg-[#20301F] text-[#F6F1E7] border-[#20301F]'
                                 : 'bg-[#F6F1E7] text-[#1F2A24]/60 border-[#1F2A24]/10 hover:text-[#1F2A24]'
-                            }`}
+                              }`}
                           >
                             {cat.name} ({count})
                           </button>
@@ -1202,11 +1196,10 @@ export default function UserDashboard({
                           <button
                             key={s.key}
                             onClick={() => setSortBy(s.key as any)}
-                            className={`px-3.5 py-1.5 rounded-lg text-[10px] font-bold transition-colors shrink-0 cursor-pointer border ${
-                              sortBy === s.key
+                            className={`px-3.5 py-1.5 rounded-lg text-[10px] font-bold transition-colors shrink-0 cursor-pointer border ${sortBy === s.key
                                 ? 'bg-[#20301F] text-[#F6F1E7] border-[#20301F]'
                                 : 'bg-[#F6F1E7] text-[#1F2A24]/60 border-[#1F2A24]/10 hover:text-[#1F2A24]'
-                            }`}
+                              }`}
                           >
                             {s.label}
                           </button>
@@ -1217,11 +1210,10 @@ export default function UserDashboard({
                     <div className="flex gap-2 overflow-x-auto pb-1.5 scrollbar-thin">
                       <button
                         onClick={() => setSelectedCategory('all')}
-                        className={`px-4 py-2 rounded-lg text-xs font-bold transition-colors shrink-0 cursor-pointer border ${
-                          selectedCategory === 'all'
+                        className={`px-4 py-2 rounded-lg text-xs font-bold transition-colors shrink-0 cursor-pointer border ${selectedCategory === 'all'
                             ? 'bg-[#20301F] text-[#F6F1E7] border-[#20301F]'
                             : 'bg-[#F6F1E7] text-[#1F2A24]/60 border-[#1F2A24]/10 hover:text-[#1F2A24]'
-                        }`}
+                          }`}
                       >
                         Semua Kategori ({books.length})
                       </button>
@@ -1233,11 +1225,10 @@ export default function UserDashboard({
                           <button
                             key={cat.id}
                             onClick={() => setSelectedCategory(cat.id)}
-                            className={`px-4 py-2 rounded-lg text-xs font-bold transition-colors shrink-0 cursor-pointer border ${
-                              selectedCategory === cat.id
+                            className={`px-4 py-2 rounded-lg text-xs font-bold transition-colors shrink-0 cursor-pointer border ${selectedCategory === cat.id
                                 ? 'bg-[#20301F] text-[#F6F1E7] border-[#20301F]'
                                 : 'bg-[#F6F1E7] text-[#1F2A24]/60 border-[#1F2A24]/10 hover:text-[#1F2A24]'
-                            }`}
+                              }`}
                           >
                             {cat.name} ({count})
                           </button>
@@ -1670,11 +1661,10 @@ export default function UserDashboard({
                       <button
                         onClick={handleMarkTodayStreak}
                         disabled={hasMarkedTodayStreak}
-                        className={`w-full py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-95 shadow-sm ${
-                          hasMarkedTodayStreak
+                        className={`w-full py-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-95 shadow-sm ${hasMarkedTodayStreak
                             ? 'bg-[#5F7A63]/15 text-[#5F7A63] border border-[#5F7A63]/30 cursor-default'
                             : 'bg-[#B4573F] hover:bg-[#C8644A] text-white shadow-[#B4573F]/20'
-                        }`}
+                          }`}
                       >
                         <Flame className={`w-4 h-4 ${hasMarkedTodayStreak ? 'fill-current' : ''}`} />
                         <span>{hasMarkedTodayStreak ? 'Aktivitas Hari Ini Selesai (+1 Streak)' : 'Tandai Saya Sudah Membaca Hari Ini! 🔥'}</span>
@@ -2040,13 +2030,13 @@ export default function UserDashboard({
             pdfUrl: selectedBook.pdfUrl || resolveBookPdfUrl(selectedBook)
           }}
           onClose={() => setSelectedBook(null)}
-          onReadEbook={(b) => { 
+          onReadEbook={(b) => {
             console.log('onReadEbook called with:', b.title, 'pdfUrl:', b.pdfUrl);
-            setSelectedBook(null); 
+            setSelectedBook(null);
             setReadingBook3D({
               ...b,
               pdfUrl: b.pdfUrl || resolveBookPdfUrl(b)
-            }); 
+            });
           }}
           onPinjam={() => {
             if (onDownloadBook && selectedBook) {
@@ -2164,9 +2154,8 @@ export default function UserDashboard({
             <button
               key={item.id}
               onClick={() => handleTabChange(item.id as any)}
-              className={`flex flex-col items-center gap-1 p-2 rounded-lg text-[10px] font-bold transition-colors cursor-pointer relative ${
-                isActive ? 'text-[#C08B34] bg-white/5' : 'text-[#CBD5C9]/60 hover:text-[#CBD5C9]'
-              }`}
+              className={`flex flex-col items-center gap-1 p-2 rounded-lg text-[10px] font-bold transition-colors cursor-pointer relative ${isActive ? 'text-[#C08B34] bg-white/5' : 'text-[#CBD5C9]/60 hover:text-[#CBD5C9]'
+                }`}
             >
               <Icon className="w-5 h-5" />
               <span>{item.label}</span>

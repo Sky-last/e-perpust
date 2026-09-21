@@ -45,11 +45,265 @@ export default function MemberCardModal({ user, libraryName = 'Perpustakaan Kita
   const isPremium = user.badge === 'Premium';
 
   const handlePrint = useCallback(() => {
-    const originalTitle = document.title;
-    document.title = `Kartu Anggota - ${user.name}`;
-    window.print();
-    setTimeout(() => { document.title = originalTitle; }, 1000);
-  }, [user.name]);
+    const printWindow = window.open('', '_blank', 'width=800,height=600');
+    if (!printWindow) {
+      window.print();
+      return;
+    }
+
+    const avatarSrc = user.avatarUrl || user.avatar || '';
+    const initialLetter = user.name ? user.name.charAt(0).toUpperCase() : 'U';
+
+    const html = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8" />
+        <title>Kartu Anggota - ${user.name}</title>
+        <style>
+          @page {
+            size: A4 portrait;
+            margin: 0;
+          }
+          * {
+            box-sizing: border-box;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
+          }
+          body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #0f172a;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          }
+          .card-container {
+            width: 85.6mm;
+            height: 54mm;
+            border-radius: 4mm;
+            padding: 4mm 5mm;
+            position: relative;
+            overflow: hidden;
+            background: ${isPremium ? 'linear-gradient(135deg, #1a1209 0%, #2d1f06 50%, #0f0d08 100%)' : 'linear-gradient(135deg, #0f1f10 0%, #1a2f1b 50%, #0a180b 100%)'};
+            color: #ffffff;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+          }
+          .accent-line {
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: ${isPremium ? 'linear-gradient(90deg, #f59e0b, #fbbf24, #f97316)' : 'linear-gradient(90deg, #34d399, #86efac, #14b8a6)'};
+          }
+          .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+          }
+          .header-title {
+            font-size: 8px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: ${isPremium ? '#fcd34d' : '#6ee7b7'};
+          }
+          .header-sub {
+            font-size: 6.5px;
+            color: rgba(255,255,255,0.5);
+            text-transform: uppercase;
+          }
+          .badge {
+            font-size: 7px;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 10px;
+            border: 1px solid ${isPremium ? 'rgba(245, 158, 11, 0.4)' : 'rgba(16, 185, 129, 0.4)'};
+            background: ${isPremium ? 'rgba(245, 158, 11, 0.2)' : 'rgba(16, 185, 129, 0.2)'};
+            color: ${isPremium ? '#fcd34d' : '#6ee7b7'};
+          }
+          .body-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 4px;
+          }
+          .avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1.5px solid ${isPremium ? 'rgba(245, 158, 11, 0.6)' : 'rgba(16, 185, 129, 0.5)'};
+            background: #1e293b;
+          }
+          .avatar-fallback {
+            width: 38px;
+            height: 38px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 900;
+            background: ${isPremium ? 'linear-gradient(135deg, #d97706, #c2410c)' : 'linear-gradient(135deg, #059669, #0d9488)'};
+            color: #ffffff;
+            border: 1.5px solid ${isPremium ? 'rgba(245, 158, 11, 0.6)' : 'rgba(16, 185, 129, 0.5)'};
+          }
+          .user-info {
+            flex: 1;
+            min-width: 0;
+          }
+          .user-name {
+            font-size: 10px;
+            font-weight: 900;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+          .user-category {
+            font-size: 8px;
+            font-weight: 700;
+            color: ${isPremium ? '#fcd34d' : '#6ee7b7'};
+            margin-top: 1px;
+          }
+          .user-sub {
+            font-size: 7px;
+            color: rgba(255,255,255,0.5);
+            margin-top: 1px;
+          }
+          .footer-row {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            margin-top: 4px;
+          }
+          .member-id-label {
+            font-size: 6px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.4);
+            font-weight: 700;
+          }
+          .member-id-val {
+            font-family: monospace;
+            font-size: 11px;
+            font-weight: 900;
+            color: ${isPremium ? '#fcd34d' : '#6ee7b7'};
+            letter-spacing: 0.5px;
+          }
+          .dates {
+            display: flex;
+            gap: 8px;
+            margin-top: 2px;
+          }
+          .date-item p {
+            margin: 0;
+          }
+          .date-lbl {
+            font-size: 5.5px;
+            color: rgba(255,255,255,0.3);
+            text-transform: uppercase;
+            font-weight: 700;
+          }
+          .date-val {
+            font-size: 7.5px;
+            color: rgba(255,255,255,0.7);
+            font-weight: 700;
+          }
+          .barcode {
+            width: 80px;
+            text-align: right;
+          }
+          .barcode svg {
+            width: 100%;
+            height: 16px;
+            color: ${isPremium ? '#f59e0b' : '#10b981'};
+          }
+          .barcode-text {
+            font-size: 5.5px;
+            font-family: monospace;
+            color: rgba(255,255,255,0.4);
+            letter-spacing: 1px;
+            margin-top: 1px;
+          }
+          @media print {
+            body {
+              background-color: transparent !important;
+            }
+            .card-container {
+              position: fixed;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+            }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="card-container">
+          <div class="accent-line"></div>
+          <div class="header">
+            <div>
+              <div class="header-title">${libraryName}</div>
+              <div class="header-sub">Kartu Anggota Resmi</div>
+            </div>
+            <div class="badge">${user.badge || 'Reguler'}</div>
+          </div>
+          <div class="body-row">
+            ${avatarSrc 
+              ? `<img src="${avatarSrc}" class="avatar" />`
+              : `<div class="avatar-fallback">${initialLetter}</div>`
+            }
+            <div class="user-info">
+              <div class="user-name">${user.name}</div>
+              <div class="user-category">${user.memberCategory || user.class || 'Masyarakat Umum'}</div>
+              <div class="user-sub">${user.institution || user.occupation || user.address || 'Anggota Perpustakaan'}</div>
+            </div>
+          </div>
+          <div class="footer-row">
+            <div>
+              <div class="member-id-label">No. Anggota</div>
+              <div class="member-id-val">${memberId}</div>
+              <div class="dates">
+                <div class="date-item">
+                  <p class="date-lbl">Berlaku Dari</p>
+                  <p class="date-val">${fmtDate()}</p>
+                </div>
+                <div class="date-item">
+                  <p class="date-lbl">Berlaku s.d.</p>
+                  <p class="date-val">${expiryDate()}</p>
+                </div>
+              </div>
+            </div>
+            <div class="barcode">
+              <svg viewBox="0 0 60 20" preserveAspectRatio="none">
+                ${[...Array(60)].map((_, i) => {
+                  const thick = (memberId.charCodeAt(i % memberId.length) + i) % 3 !== 0;
+                  return `<rect x="${i}" y="0" width="${thick ? 0.7 : 0.35}" height="20" fill="currentColor" opacity="${thick ? 1 : 0.5}" />`;
+                }).join('')}
+              </svg>
+              <div class="barcode-text">${memberId}</div>
+            </div>
+          </div>
+        </div>
+        <script>
+          window.onload = function() {
+            setTimeout(function() {
+              window.print();
+            }, 300);
+          };
+        </script>
+      </body>
+      </html>
+    `;
+
+    printWindow.document.write(html);
+    printWindow.document.close();
+  }, [user, libraryName, memberId, isPremium]);
 
   return (
     <AnimatePresence>
