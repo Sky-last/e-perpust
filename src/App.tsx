@@ -1339,22 +1339,19 @@ export default function App() {
     const targetBook = books.find(b => b.id === id);
     const title = targetBook ? targetBook.title : 'Buku';
 
-    if (isSupabaseConfigured) {
-      const ok = await removeBook(id);
-      if (ok) {
-        const booksList = await getBooks();
-        setBooks(booksList);
-        addToast(`Buku "${title}" berhasil dihapus dari database!`, 'success');
-      } else {
-        addToast('Gagal menghapus buku.', 'error');
-      }
-      return;
-    }
-
-    // LocalStorage fallback
+    // Optimistic update: Hapus dari state & localStorage seketika
     const updatedBooks = books.filter(b => b.id !== id);
     setBooks(updatedBooks);
     localStorage.setItem('digital_library_books', JSON.stringify(updatedBooks));
+
+    if (isSupabaseConfigured) {
+      try {
+        await removeBook(id);
+      } catch (e) {
+        console.warn('Supabase removeBook warning:', e);
+      }
+    }
+
     addToast(`Buku "${title}" berhasil dihapus!`, 'success');
   };
 

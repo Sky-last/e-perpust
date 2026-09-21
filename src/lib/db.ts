@@ -147,25 +147,28 @@ export async function saveBook(book: Partial<Book>, isNew: boolean): Promise<Boo
 }
 
 export async function removeBook(id: string): Promise<boolean> {
+  const stored = localStorage.getItem('digital_library_books');
+  if (stored) {
+    try {
+      const list: Book[] = JSON.parse(stored);
+      const updated = list.filter(b => b.id !== id);
+      localStorage.setItem('digital_library_books', JSON.stringify(updated));
+    } catch (e) {}
+  }
+
   if (isSupabaseConfigured) {
     try {
       const { error } = await supabase.from('books').delete().eq('id', id);
-      if (error) throw error;
+      if (error) {
+        console.warn('Supabase error deleting book:', error);
+      }
       return true;
     } catch (e) {
-      console.error('Supabase error deleting book:', e);
+      console.warn('Supabase error deleting book:', e);
     }
   }
 
-  // LocalStorage fallback
-  const stored = localStorage.getItem('digital_library_books');
-  if (stored) {
-    const list: Book[] = JSON.parse(stored);
-    const updated = list.filter(b => b.id !== id);
-    localStorage.setItem('digital_library_books', JSON.stringify(updated));
-    return true;
-  }
-  return false;
+  return true;
 }
 
 // ==========================================
