@@ -230,16 +230,27 @@ export default function UserDashboard({
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Ukuran foto terlalu besar (maksimal 5MB). Silakan pilih foto lain.');
+      e.target.value = '';
+      return;
+    }
+
     setIsUploadingAvatar(true);
     try {
       const url = await uploadAvatar(currentUser.id, file);
       if (url) {
         onUpdateProfile({ avatarUrl: url, avatar: url });
+      } else {
+        alert('Gagal mengunggah foto profil. Silakan coba lagi.');
       }
     } catch (err) {
       console.error('Failed to upload avatar:', err);
+      alert('Terjadi kesalahan saat mengunggah foto profil.');
     } finally {
       setIsUploadingAvatar(false);
+      e.target.value = '';
     }
   };
 

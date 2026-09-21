@@ -1035,10 +1035,18 @@ export default function App() {
     setCurrentUser(updatedUser);
     localStorage.setItem('digital_library_active_user_data', JSON.stringify(updatedUser));
 
-    // Update users list in localStorage
-    const updatedUsers = users.map(u => u.id === currentUser.id ? updatedUser : u);
-    setUsers(updatedUsers);
-    localStorage.setItem('digital_library_users', JSON.stringify(updatedUsers));
+    // Update users list in state & localStorage (matching by id OR email)
+    setUsers(prevUsers => {
+      const exists = prevUsers.some(u => u.id === updatedUser.id || u.email.toLowerCase() === updatedUser.email.toLowerCase());
+      let nextUsers: User[];
+      if (exists) {
+        nextUsers = prevUsers.map(u => (u.id === updatedUser.id || u.email.toLowerCase() === updatedUser.email.toLowerCase()) ? updatedUser : u);
+      } else {
+        nextUsers = [...prevUsers, updatedUser];
+      }
+      localStorage.setItem('digital_library_users', JSON.stringify(nextUsers));
+      return nextUsers;
+    });
 
     if (isSupabaseConfigured) {
       // Sync to Supabase in background (non-blocking for downloads/local fields)

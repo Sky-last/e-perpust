@@ -37,7 +37,8 @@ import {
   Mail,
   CheckCircle,
   HelpCircle,
-  CreditCard
+  CreditCard,
+  Loader2
 } from 'lucide-react';
 import { User, Book, Category, Borrowing, LibrarySettings, SiteSettings, UserRole, UserFeedback } from '../../types';
 import { DEFAULT_SITE_SETTINGS, DEFAULT_FEEDBACKS } from '../../data/seedData';
@@ -45,6 +46,7 @@ import Book3D from '../Book3D';
 import { resolveUserMemberId } from '../../utils/memberId';
 import MemberCardModal from '../MemberCardModal';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
+import { uploadAvatar } from '../../lib/db';
 
 import { printOfficialReport } from '../../utils/printReportHelper';
 
@@ -281,6 +283,7 @@ export default function StaffDashboard({
   const [uClass, setUClass] = useState('Umum');
   const [uPhone, setUPhone] = useState('');
   const [uAvatarUrl, setUAvatarUrl] = useState('');
+  const [isUploadingStaffAvatar, setIsUploadingStaffAvatar] = useState(false);
 
   const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'approved' | 'returned'>('all');
 
@@ -779,10 +782,39 @@ export default function StaffDashboard({
     setIsCategoryModalOpen(false);
   };
 
+  const handleStaffAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      alert('Mohon pilih file gambar (.jpg, .png, .webp)');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Ukuran foto terlalu besar (maksimal 5MB).');
+      return;
+    }
+
+    try {
+      setIsUploadingStaffAvatar(true);
+      const targetId = editingUser?.id || `user-${Date.now()}`;
+      const url = await uploadAvatar(targetId, file);
+      if (url) {
+        setUAvatarUrl(url);
+      }
+    } catch (err) {
+      console.error('Failed to upload staff avatar:', err);
+      alert('Gagal mengunggah foto profil');
+    } finally {
+      setIsUploadingStaffAvatar(false);
+      e.target.value = '';
+    }
+  };
+
   const handleOpenUserModal = (user: User | null = null) => {
     if (user) {
       setEditingUser(user);
       setUName(user.name);
+      setUEmail(user.email);
       const normRole = (user.role === 'admin' || (user.role as any) === UserRole.ADMIN) ? 'admin' : 'user';
       setURole(normRole);
       setUBadge(user.badge || 'Reguler');
@@ -929,9 +961,17 @@ export default function StaffDashboard({
 
         <div className="p-4 border-t border-slate-800/80 space-y-3 shrink-0 bg-slate-900/40">
           <div className="flex items-center gap-3 p-2.5 bg-slate-800/50 rounded-xl border border-slate-750/50">
-            <div className="w-9 h-9 rounded-lg bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center font-black text-white text-xs ring-2 ring-cyan-500/30">
-              {currentUser.name.substring(0, 2).toUpperCase()}
-            </div>
+            {currentUser.avatarUrl || currentUser.avatar ? (
+              <img
+                src={currentUser.avatarUrl || currentUser.avatar}
+                alt={currentUser.name}
+                className="w-9 h-9 rounded-lg object-cover ring-2 ring-cyan-500/40 shrink-0 bg-slate-800"
+              />
+            ) : (
+              <div className="w-9 h-9 rounded-lg bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center font-black text-white text-xs ring-2 ring-cyan-500/30 shrink-0">
+                {currentUser.name ? currentUser.name.substring(0, 2).toUpperCase() : 'US'}
+              </div>
+            )}
             {!sidebarCollapsed && (
               <div className="min-w-0 flex-1">
                 <h4 className="text-[11px] font-bold text-white truncate">{currentUser.name}</h4>
@@ -990,9 +1030,17 @@ export default function StaffDashboard({
 
               <div className="p-4 border-t border-slate-800 shrink-0 space-y-3 bg-slate-900/40">
                 <div className="flex items-center gap-3 p-2.5 bg-slate-800/50 rounded-xl border border-slate-750/50">
-                  <div className="w-9 h-9 rounded-lg bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center font-black text-white text-xs ring-2 ring-cyan-500/30">
-                    {currentUser.name.substring(0, 2).toUpperCase()}
-                  </div>
+                  {currentUser.avatarUrl || currentUser.avatar ? (
+                    <img
+                      src={currentUser.avatarUrl || currentUser.avatar}
+                      alt={currentUser.name}
+                      className="w-9 h-9 rounded-lg object-cover ring-2 ring-cyan-500/40 shrink-0 bg-slate-800"
+                    />
+                  ) : (
+                    <div className="w-9 h-9 rounded-lg bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center font-black text-white text-xs ring-2 ring-cyan-500/30 shrink-0">
+                      {currentUser.name ? currentUser.name.substring(0, 2).toUpperCase() : 'US'}
+                    </div>
+                  )}
                   <div className="min-w-0 flex-1">
                     <h4 className="text-[11px] font-bold text-white truncate">{currentUser.name}</h4>
                     <p className="text-[9px] text-cyan-400 font-semibold truncate mt-0.5">{currentUser.role}</p>
@@ -1644,9 +1692,17 @@ export default function StaffDashboard({
                             <tr key={u.id} className="hover:bg-slate-800/40 transition-colors">
                               <td className="p-4 font-bold text-white">
                                 <div className="flex items-center gap-3">
-                                  <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-cyan-600 to-blue-600 flex items-center justify-center font-black text-xs text-white uppercase shrink-0">
-                                    {u.name ? u.name.substring(0, 2) : 'US'}
-                                  </div>
+                                  {u.avatarUrl || u.avatar ? (
+                                    <img
+                                      src={u.avatarUrl || u.avatar}
+                                      alt={u.name}
+                                      className="w-8 h-8 rounded-full object-cover ring-2 ring-cyan-500/40 shrink-0 bg-slate-800"
+                                    />
+                                  ) : (
+                                    <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-cyan-600 to-blue-600 flex items-center justify-center font-black text-xs text-white uppercase shrink-0">
+                                      {u.name ? u.name.substring(0, 2) : 'US'}
+                                    </div>
+                                  )}
                                   <div>
                                     <div className="font-extrabold text-white text-xs">{u.name}</div>
                                     <span className="text-[10px] text-slate-400 font-normal">{u.email}</span>
@@ -2764,7 +2820,7 @@ export default function StaffDashboard({
                   <label className="block text-[10px] font-extrabold uppercase text-slate-400 mb-1">Foto Profil / URL Avatar</label>
                   <div className="flex items-center gap-3">
                     {uAvatarUrl ? (
-                      <img src={uAvatarUrl} alt="Preview" className="w-10 h-10 rounded-xl object-cover ring-1 ring-cyan-500 shrink-0" />
+                      <img src={uAvatarUrl} alt="Preview" className="w-10 h-10 rounded-xl object-cover ring-1 ring-cyan-500 shrink-0 bg-slate-800" />
                     ) : (
                       <div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-slate-400 font-bold shrink-0 text-[10px]">
                         Foto
@@ -2777,6 +2833,17 @@ export default function StaffDashboard({
                       onChange={e => setUAvatarUrl(e.target.value)}
                       className="flex-1 p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-semibold focus:outline-none focus:border-cyan-500 text-xs"
                     />
+                    <label className="flex items-center gap-1.5 px-3 py-2 bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-slate-750 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0">
+                      {isUploadingStaffAvatar ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
+                      <span>Upload</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        disabled={isUploadingStaffAvatar}
+                        onChange={handleStaffAvatarUpload}
+                        className="hidden"
+                      />
+                    </label>
                   </div>
                 </div>
                 <div className="flex justify-end gap-2 pt-3 border-t border-slate-800">
