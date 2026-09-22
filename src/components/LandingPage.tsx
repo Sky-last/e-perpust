@@ -3,6 +3,7 @@ import { Star, Heart, ArrowRight, Users, BookMarked, CheckCircle, Sun, Moon, Spa
 import { Book, ViewType, User, SiteSettings } from '../types';
 import { DEFAULT_SITE_SETTINGS } from '../data/seedData';
 import Book3D from './Book3D';
+import BookShelf3D from './BookShelf3D';
 import FloatingParticles from './FloatingParticles';
 import Library3DRoom from './Library3DRoom';
 import BookOpen3DModal from './BookOpen3DModal';
@@ -115,6 +116,8 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
   const topBook = books.find(b => b.id === 'bks-1');
   const otherBooks = sortedBooks.filter(b => b.id !== 'bks-1').slice(0, 4);
   const displayBooks = topBook ? [topBook, ...otherBooks] : sortedBooks;
+  
+  const shelfBooks = books.slice(0, 18);
   const totalUniqueBooks = books.length;
 
   const handleOpen3DBook = (id: string) => {
@@ -380,12 +383,19 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
             ))}
           </div>
         </div>
+      </section>
 
-        {/* Scroll Down Indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 animate-scroll-bounce cursor-pointer"
-          onClick={() => document.getElementById('tentang')?.scrollIntoView({ behavior: 'smooth' })}>
-          <span className={`text-[10px] font-bold uppercase tracking-widest ${sub}`}>Gulir ke bawah</span>
-          <ChevronDown className={`w-5 h-5 ${sub}`} />
+      {/* 3D Bookshelf */}
+      <section className="relative z-10 mt-16 px-0">
+        <div className="max-w-7xl mx-auto px-6 mb-4">
+          <p className={`text-xs font-bold uppercase tracking-widest ${sub}`}>
+            {cfg.bookshelfTitle || 'Drag rak buku untuk memilih koleksi'}
+          </p>
+        </div>
+        <div className={`border-t border-b py-6 ${dk ? 'border-slate-800 bg-slate-900/50' : 'border-slate-200 bg-slate-100/50'}`}>
+          <div className="max-w-7xl mx-auto px-6">
+            <BookShelf3D books={shelfBooks} onBookClick={handleOpen3DBook} />
+          </div>
         </div>
       </section>
 
