@@ -819,7 +819,7 @@ export default function UserDashboard({
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 8, scale: 0.97 }}
                     transition={{ duration: 0.16 }}
-                    className="absolute right-0 top-12 w-80 bg-white border border-[#1F2A24]/10 shadow-xl rounded-xl p-4 z-50 max-h-96 overflow-y-auto"
+                    className="absolute right-0 top-12 w-80 max-w-[calc(100vw-2rem)] bg-white border border-[#1F2A24]/10 shadow-xl rounded-xl p-4 z-50 max-h-96 overflow-y-auto"
                   >
                     <div className="flex items-center justify-between pb-2 mb-3 border-b border-[#1F2A24]/10">
                       <h3 className="text-xs font-bold text-[#1F2A24]">Notifikasi</h3>

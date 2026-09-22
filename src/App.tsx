@@ -1811,6 +1811,8 @@ export default function App() {
                 localStorage.setItem('digital_library_settings', JSON.stringify(s));
                 addToast('Pengaturan diperbarui', 'success');
               }}
+              notifications={notifications}
+              onMarkNotifRead={handleMarkNotifRead}
             />
           );
         }

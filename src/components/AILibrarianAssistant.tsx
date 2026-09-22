@@ -312,7 +312,7 @@ export default function AILibrarianAssistant({ books, onNavigate }: AILibrarianA
   return (
     <>
       {/* Floating Trigger Button */}
-      <div className="fixed bottom-20 right-5 sm:right-6 z-40">
+      <div className="fixed bottom-20 lg:bottom-6 right-5 sm:right-6 z-[45]">
         <button
           onClick={toggleAssistant}
           onMouseEnter={() => soundFX.playHover()}

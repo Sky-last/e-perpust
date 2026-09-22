@@ -38,9 +38,10 @@ import {
   CheckCircle,
   HelpCircle,
   CreditCard,
-  Loader2
+  Loader2,
+  Bell
 } from 'lucide-react';
-import { User, Book, Category, Borrowing, LibrarySettings, SiteSettings, UserRole, UserFeedback } from '../../types';
+import { User, Book, Category, Borrowing, LibrarySettings, SiteSettings, UserRole, UserFeedback, Notification } from '../../types';
 import { DEFAULT_SITE_SETTINGS, DEFAULT_FEEDBACKS } from '../../data/seedData';
 import Book3D from '../Book3D';
 import { resolveUserMemberId } from '../../utils/memberId';
@@ -73,6 +74,8 @@ interface StaffDashboardProps {
   onAddUser: (newUser: User) => void;
   onDeleteUser: (userId: string) => void;
   onUpdateSettings?: (newSettings: LibrarySettings) => void;
+  notifications?: Notification[];
+  onMarkNotifRead?: (notifId: string) => void;
 }
 
 export default function StaffDashboard({
@@ -96,7 +99,9 @@ export default function StaffDashboard({
   onUpdateUser,
   onAddUser,
   onDeleteUser,
-  onUpdateSettings
+  onUpdateSettings,
+  notifications = [],
+  onMarkNotifRead
 }: StaffDashboardProps) {
   // Check admin dengan role admin
   const isAdmin = React.useMemo(() => {
@@ -109,6 +114,7 @@ export default function StaffDashboard({
   const [searchQuery, setSearchQuery] = useState('');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
   const chartRef = useRef<HTMLCanvasElement>(null);
   
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
@@ -1072,6 +1078,68 @@ export default function StaffDashboard({
                 {currentUser.name}
               </h1>
             </div>
+          </div>
+
+          {/* Notification Bell */}
+          <div className="relative">
+            <button
+              onClick={() => setShowNotifications(!showNotifications)}
+              className="relative p-2 bg-slate-800 rounded-xl text-slate-300 cursor-pointer hover:bg-slate-700 transition-colors"
+              title="Notifikasi"
+            >
+              <Bell className="w-5 h-5" />
+              {notifications.filter(n => !n.read && (!n.userId || n.userId === currentUser.id)).length > 0 && (
+                <span className="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-red-500 border-2 border-slate-900" />
+              )}
+            </button>
+
+            {/* Notification Dropdown */}
+            <AnimatePresence>
+              {showNotifications && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8, scale: 0.97 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 8, scale: 0.97 }}
+                  transition={{ duration: 0.16 }}
+                  className="absolute right-0 top-14 w-80 max-w-[calc(100vw-2rem)] bg-slate-900 border border-slate-700 shadow-2xl rounded-xl p-4 z-50 max-h-96 overflow-y-auto"
+                >
+                  <div className="flex items-center justify-between pb-2 mb-3 border-b border-slate-700">
+                    <h3 className="text-xs font-bold text-white">Notifikasi</h3>
+                    <span className="text-[10px] bg-cyan-500/20 text-cyan-400 font-bold px-2 py-0.5 rounded">
+                      {notifications.filter(n => !n.read && (!n.userId || n.userId === currentUser.id)).length} Baru
+                    </span>
+                  </div>
+                  {notifications.filter(n => !n.userId || n.userId === currentUser.id).length === 0 ? (
+                    <div className="text-center py-6 text-slate-400">
+                      <Bell className="w-7 h-7 mx-auto mb-2 opacity-50" />
+                      <p className="text-xs font-medium">Belum ada notifikasi.</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {notifications
+                        .filter(n => !n.userId || n.userId === currentUser.id)
+                        .map(n => (
+                          <button
+                            key={n.id}
+                            onClick={() => onMarkNotifRead && onMarkNotifRead(n.id)}
+                            className={`w-full p-3 rounded-lg text-left transition-colors cursor-pointer border ${
+                              n.read
+                                ? 'bg-slate-800/60 opacity-60 border-slate-700'
+                                : 'bg-cyan-500/10 border-cyan-500/30 hover:bg-cyan-500/15'
+                            }`}
+                          >
+                            <h4 className="text-xs font-bold text-white">{n.title}</h4>
+                            <p className="text-[10px] text-slate-300 mt-1 leading-relaxed">{n.message}</p>
+                            <span className="text-[9px] text-slate-400 block mt-1.5 font-semibold">
+                              {new Date(n.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                            </span>
+                          </button>
+                        ))}
+                    </div>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </header>
 
