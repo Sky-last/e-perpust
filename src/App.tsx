@@ -7,7 +7,8 @@ import {
   updateUserBadge, makeBorrowing, returnBorrowing, extendBorrowing, 
   saveFavorite, getSystemLogs, addSystemLog, getAllUsers,
   notifyAllUsersNewBook, notifyAdminUserDownload,
-  getSiteSettings, updateSiteSettings
+  getSiteSettings, updateSiteSettings,
+  getNotifications, markNotificationAsRead
 } from './lib/db';
 import { resolveBookPdfUrl } from './utils/pdfResolver';
 
@@ -78,12 +79,19 @@ export default function App() {
   });
   
   // Mark notification as read handler
-  const handleMarkNotifRead = (notifId: string) => {
+  const handleMarkNotifRead = async (notifId: string) => {
     const updatedNotifs = notifications.map(n => 
       n.id === notifId ? { ...n, read: true } : n
     );
     setNotifications(updatedNotifs);
     localStorage.setItem('digital_library_notifications', JSON.stringify(updatedNotifs));
+    
+    // Sync to Supabase
+    try {
+      await markNotificationAsRead(notifId);
+    } catch (e) {
+      console.warn('Failed to mark notification as read in Supabase:', e);
+    }
   };
   
   // Interaction state
@@ -166,6 +174,16 @@ export default function App() {
             setFavorites(profile.favorites || []);
             localStorage.setItem('digital_library_active_user', profile.email);
             localStorage.setItem('digital_library_active_user_data', JSON.stringify(profile));
+            
+            // Load notifications for this user
+            try {
+              const userNotifications = await getNotifications(profile.id);
+              setNotifications(userNotifications);
+              localStorage.setItem('digital_library_notifications', JSON.stringify(userNotifications));
+            } catch (e) {
+              console.warn('Failed to load notifications:', e);
+            }
+            
             if (isProfileIncomplete(profile)) {
               setNeedsProfileCompletion(true);
             } else {
@@ -643,6 +661,16 @@ export default function App() {
           setFavorites(profile.favorites || []);
           localStorage.setItem('digital_library_active_user', profile.email);
           localStorage.setItem('digital_library_active_user_data', JSON.stringify(profile));
+          
+          // Load notifications for this user
+          try {
+            const userNotifications = await getNotifications(profile.id);
+            setNotifications(userNotifications);
+            localStorage.setItem('digital_library_notifications', JSON.stringify(userNotifications));
+          } catch (e) {
+            console.warn('Failed to load notifications:', e);
+          }
+          
           if (isProfileIncomplete(profile)) {
             setNeedsProfileCompletion(true);
           } else {
@@ -1547,7 +1575,7 @@ export default function App() {
   };
 
   // Debounced update untuk menghindari terlalu banyak toast
-  const updateUserDebounced = useRef<NodeJS.Timeout | null>(null);
+  const updateUserDebounced = useRef<number | null>(null);
 
   const handleUpdateUser = async (userId: string, updatedData: Partial<User>) => {
     try {
@@ -1610,20 +1638,7 @@ export default function App() {
       return;
     }
 
-    // Trigger file download to device FIRST (handles blob, CORS, data URIs, mobile browsers)
-    let downloadSuccess = false;
-    try {
-      downloadSuccess = await downloadPdfFile(pdfUrl, book.title);
-    } catch (err) {
-      console.error('Download failed:', err);
-      downloadSuccess = false;
-    }
-
-    if (!downloadSuccess) {
-      addToast('Gagal mengunduh file PDF atau unduhan dibatalkan.', 'error');
-      return;
-    }
-
+    // Track download FIRST (before actual download)
     const downloadItem: DownloadedBook = {
       id: 'dl_' + Date.now(),
       bookId: book.id,
@@ -1665,7 +1680,18 @@ export default function App() {
     setUsers(updatedUsers);
     localStorage.setItem('digital_library_users', JSON.stringify(updatedUsers));
 
-    addToast(`Berhasil mengunduh "${book.title}"! File PDF telah tersimpan di perangkat Anda.`, 'success');
+    // THEN trigger file download (this may fail but download is already tracked)
+    try {
+      const downloadSuccess = await downloadPdfFile(pdfUrl, book.title);
+      if (downloadSuccess) {
+        addToast(`Berhasil mengunduh "${book.title}"! File PDF telah tersimpan di perangkat Anda.`, 'success');
+      } else {
+        addToast(`Download "${book.title}" dimulai. Periksa folder Downloads Anda.`, 'info');
+      }
+    } catch (err) {
+      console.error('Download failed:', err);
+      addToast(`Mencoba mengunduh "${book.title}". Jika tidak otomatis, coba buka manual dari reader.`, 'info');
+    }
 
     // Add log
     try {

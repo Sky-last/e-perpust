@@ -606,19 +606,7 @@ export async function uploadEbook(bookId: string, file: File): Promise<string | 
 // 8. NOTIFICATIONS APIS
 // ==========================================
 
-export interface Notification {
-  id: string;
-  userId: string;
-  type: 'admin_new_book' | 'user_review' | 'user_download' | 'system';
-  title: string;
-  message: string;
-  bookId?: string;
-  bookTitle?: string;
-  fromUserName?: string;
-  fromUserEmail?: string;
-  isRead: boolean;
-  createdAt: string;
-}
+import { Notification } from '../types';
 
 export async function getNotifications(userId: string): Promise<Notification[]> {
   if (isSupabaseConfigured) {
@@ -640,10 +628,8 @@ export async function getNotifications(userId: string): Promise<Notification[]> 
         message: n.message,
         bookId: n.book_id,
         bookTitle: n.book_title,
-        fromUserName: n.from_user_name,
-        fromUserEmail: n.from_user_email,
-        isRead: n.is_read,
-        createdAt: n.created_at
+        read: n.is_read,
+        date: n.created_at
       }));
     } catch (e) {
       console.error('Supabase error fetching notifications:', e);
