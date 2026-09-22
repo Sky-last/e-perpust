@@ -25,7 +25,7 @@ interface LandingPageProps {
 export default function LandingPage({ books, onNavigate, onToggleFavorite, favorites, currentUser, onDownloadBook, siteSettings }: LandingPageProps) {
   const cfg = siteSettings || DEFAULT_SITE_SETTINGS;
   const [darkMode, setDarkMode] = useState(true);
-  const [activeSection, setActiveSection] = useState<'home' | 'katalog' | 'tentang' | 'kontak'>('home');
+  const [activeSection, setActiveSection] = useState<'home' | 'katalog' | 'tentang'>('home');
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [typedText, setTypedText] = useState('');
@@ -35,12 +35,6 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
   // Interactive 3D Modals State
   const [selectedBook3D, setSelectedBook3D] = useState<Book | null>(null);
   const [readingBook3D, setReadingBook3D] = useState<Book | null>(null);
-
-  // Contact Form State
-  const [contactName, setContactName] = useState('');
-  const [contactEmail, setContactEmail] = useState('');
-  const [contactMessage, setContactMessage] = useState('');
-  const [contactSubmitted, setContactSubmitted] = useState(false);
 
   const heroRef = useRef<HTMLDivElement>(null);
   const cursorGlowRef = useRef<HTMLDivElement>(null);
@@ -96,10 +90,8 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
       const scrollY = window.scrollY;
       if (scrollY < 100) { setActiveSection('home'); return; }
       const tentang = document.getElementById('tentang');
-      const kontak = document.getElementById('kontak');
       const pos = scrollY + 150;
-      if (kontak && pos >= kontak.offsetTop) setActiveSection('kontak');
-      else if (tentang && pos >= tentang.offsetTop) setActiveSection('tentang');
+      if (tentang && pos >= tentang.offsetTop) setActiveSection('tentang');
       else setActiveSection('home');
     };
     window.addEventListener('scroll', handleScroll);
@@ -171,7 +163,7 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
 
           {/* Desktop Links */}
           <div className="hidden md:flex items-center gap-8">
-            {(['Home', 'Katalog', 'Tentang', 'Kontak'] as const).map(item => {
+            {(['Home', 'Katalog', 'Tentang'] as const).map(item => {
               const key = item.toLowerCase() as typeof activeSection;
               const isActive = activeSection === key;
               return (
@@ -253,16 +245,6 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
                 className={`w-full text-left px-4 py-3 text-sm font-bold rounded-xl transition-all flex items-center justify-between ${activeSection === 'tentang' ? 'bg-blue-600/20 text-blue-400' : `${sub} hover:bg-slate-800/40`}`}
               >
                 <span>Tentang</span>
-              </button>
-              <button
-                onClick={() => {
-                  soundFX.playClick();
-                  setMobileMenuOpen(false);
-                  document.getElementById('kontak')?.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className={`w-full text-left px-4 py-3 text-sm font-bold rounded-xl transition-all flex items-center justify-between ${activeSection === 'kontak' ? 'bg-blue-600/20 text-blue-400' : `${sub} hover:bg-slate-800/40`}`}
-              >
-                <span>Kontak</span>
               </button>
             </div>
 
@@ -553,198 +535,6 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
                   </div>
                 );
               })}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CONTACT SECTION */}
-      <section id="kontak" className={`py-20 px-6 border-t ${dk ? 'border-slate-800 bg-slate-950' : 'border-slate-200 bg-slate-50/50'}`}>
-        <div className="max-w-7xl mx-auto space-y-12">
-          <div className="reveal text-center max-w-2xl mx-auto space-y-3">
-            <span className="text-blue-400 text-xs font-black uppercase tracking-widest px-3 py-1 bg-blue-500/10 rounded-full border border-blue-500/20">
-              {cfg.contactBadge || 'Hubungi Kami'}
-            </span>
-            <h2 className={`text-3xl md:text-4xl font-black ${text}`}>
-              {cfg.contactTitle || 'Layanan Informasi & Layanan Anggota'}
-            </h2>
-            <p className={`text-sm ${sub}`}>
-              {cfg.contactSubtitle || 'Punya pertanyaan mengenai koleksi e-book, unduhan buku digital, atau akun keanggotaan? Tim pustakawan kami siap membantu Anda.'}
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            {/* Left: Contact Info Cards */}
-            <div className="lg:col-span-5 space-y-4">
-              {[
-                {
-                  icon: MapPin,
-                  title: 'Alamat Perpustakaan',
-                  desc: cfg.contactAddress || 'Jl. Pemuda No. 123, Kompleks Pendidikan Utama, Jakarta Pusat 10110',
-                  color: 'text-blue-400 bg-blue-500/10 border-blue-500/20',
-                },
-                {
-                  icon: Phone,
-                  title: 'Telepon & WhatsApp',
-                  desc: cfg.contactPhone || '+62 812-3456-7890 / (021) 555-0192',
-                  color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
-                },
-                {
-                  icon: Mail,
-                  title: 'Email Resmi',
-                  desc: cfg.contactEmail || 'layanan@pustakadigital.sch.id / info@pustakadigital.id',
-                  color: 'text-purple-400 bg-purple-500/10 border-purple-500/20',
-                },
-                {
-                  icon: Clock,
-                  title: 'Jam Layanan Operasional',
-                  desc: cfg.serviceHours || 'Senin - Jumat: 07.30 - 16.00 WIB | Sabtu: 08.00 - 13.00 WIB',
-                  color: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
-                },
-              ].map((c, i) => (
-                <div key={i} className={`p-5 rounded-2xl border flex items-start gap-4 transition-all hover:scale-[1.02] ${card}`}>
-                  <div className={`p-3 rounded-xl border flex-shrink-0 ${c.color}`}>
-                    <c.icon className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h4 className={`text-sm font-extrabold ${text}`}>{c.title}</h4>
-                    <p className={`text-xs mt-1 leading-relaxed ${sub}`}>{c.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Right: Interactive Message Form */}
-            <div className={`lg:col-span-7 p-8 rounded-3xl border shadow-xl flex flex-col justify-between ${card}`}>
-              <div>
-                <div className="flex items-center gap-2 mb-6">
-                  <MessageSquare className="w-5 h-5 text-blue-400" />
-                  <h3 className={`text-xl font-black ${text}`}>Kirim Pesan atau Pertanyaan</h3>
-                </div>
-
-                {contactSubmitted ? (
-                  <div className="py-12 text-center space-y-4 animate-fadeIn">
-                    <div className="w-16 h-16 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto border border-emerald-500/30">
-                      <CheckCircle className="w-8 h-8" />
-                    </div>
-                    <h4 className={`text-xl font-bold ${text}`}>Pesan Anda Berhasil Terkirim!</h4>
-                    <p className={`text-xs max-w-md mx-auto ${sub}`}>
-                      Tanggapan akan dikirimkan ke email Anda dalam waktu 1x24 jam kerja. Terima kasih telah menghubungi {cfg.libraryName || 'Perpustakaan Kita'}.
-                    </p>
-                    <button
-                      onClick={() => {
-                        soundFX.playClick();
-                        setContactSubmitted(false);
-                      }}
-                      className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition-all cursor-pointer"
-                    >
-                      Kirim Pesan Lain
-                    </button>
-                  </div>
-                ) : (
-                  <form
-                    onSubmit={async (e) => {
-                      e.preventDefault();
-                      soundFX.playClick();
-                      
-                      const feedbackData = {
-                        name: contactName.trim(),
-                        email: contactEmail.trim(),
-                        message: contactMessage.trim()
-                      };
-
-                      // Save to Supabase if configured
-                      if (isSupabaseConfigured) {
-                        try {
-                          await supabase.from('feedbacks').insert({
-                            name: feedbackData.name,
-                            email: feedbackData.email,
-                            message: feedbackData.message,
-                            is_read: false
-                          });
-                        } catch (err) {
-                          console.error('Failed to save feedback to Supabase:', err);
-                        }
-                      }
-
-                      // Also save feedback to localStorage as local fallback
-                      try {
-                        const newFeedback = {
-                          id: 'fb-' + Date.now(),
-                          ...feedbackData,
-                          createdAt: new Date().toISOString(),
-                          isRead: false
-                        };
-                        const existingStr = localStorage.getItem('perpustakaan_user_feedbacks');
-                        const existing = existingStr ? JSON.parse(existingStr) : [];
-                        const updated = [newFeedback, ...existing];
-                        localStorage.setItem('perpustakaan_user_feedbacks', JSON.stringify(updated));
-                        window.dispatchEvent(new Event('user_feedback_submitted'));
-                      } catch (err) {
-                        console.error('Failed to save user feedback:', err);
-                      }
-
-                      setContactSubmitted(true);
-                      setContactName('');
-                      setContactEmail('');
-                      setContactMessage('');
-                    }}
-                    className="space-y-4"
-                  >
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${sub}`}>Nama Lengkap</label>
-                        <input
-                          type="text"
-                          required
-                          placeholder="Masukkan nama Anda..."
-                          value={contactName}
-                          onChange={(e) => setContactName(e.target.value)}
-                          className={`w-full px-4 py-3 rounded-xl border text-xs outline-none font-medium transition-all ${
-                            dk ? 'bg-slate-950 border-slate-800 text-white placeholder-slate-600 focus:border-blue-500' : 'bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400 focus:border-blue-500'
-                          }`}
-                        />
-                      </div>
-                      <div>
-                        <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${sub}`}>Email Aktif</label>
-                        <input
-                          type="email"
-                          required
-                          placeholder="nama@email.com"
-                          value={contactEmail}
-                          onChange={(e) => setContactEmail(e.target.value)}
-                          className={`w-full px-4 py-3 rounded-xl border text-xs outline-none font-medium transition-all ${
-                            dk ? 'bg-slate-950 border-slate-800 text-white placeholder-slate-600 focus:border-blue-500' : 'bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400 focus:border-blue-500'
-                          }`}
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${sub}`}>Pesan / Masukan</label>
-                      <textarea
-                        rows={4}
-                        required
-                        placeholder="Tuliskan pertanyaan atau kendala unduhan buku Anda di sini..."
-                        value={contactMessage}
-                        onChange={(e) => setContactMessage(e.target.value)}
-                        className={`w-full px-4 py-3 rounded-xl border text-xs outline-none font-medium transition-all leading-relaxed ${
-                          dk ? 'bg-slate-950 border-slate-800 text-white placeholder-slate-600 focus:border-blue-500' : 'bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400 focus:border-blue-500'
-                        }`}
-                      />
-                    </div>
-
-                    <button
-                      type="submit"
-                      className="w-full py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 flex items-center justify-center gap-2 transition-all cursor-pointer hover:scale-[1.01]"
-                    >
-                      <Send className="w-4 h-4" />
-                      <span>Kirim Pesan Sekarang</span>
-                    </button>
-                  </form>
-                )}
-              </div>
             </div>
           </div>
         </div>

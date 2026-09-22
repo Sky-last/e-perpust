@@ -110,7 +110,7 @@ export default function StaffDashboard({
     return normalizedRole === 'admin' || role === UserRole.ADMIN;
   }, [currentUser.role]);
 
-  const [activeMenu, setActiveMenu] = useState<'dashboard' | 'books' | 'categories' | 'transactions' | 'users' | 'reports' | 'cms' | 'messages'>('dashboard');
+  const [activeMenu, setActiveMenu] = useState<'dashboard' | 'books' | 'categories' | 'transactions' | 'users' | 'reports' | 'messages'>('dashboard');
   const [searchQuery, setSearchQuery] = useState('');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -895,7 +895,6 @@ export default function StaffDashboard({
     { id: 'transactions', label: 'Sirkulasi Unduhan', icon: Download },
     { id: 'users', label: 'Kelola Anggota', icon: Users },
     { id: 'messages', label: 'Pesan & Masukan', icon: Mail, badge: unreadFeedbackCount },
-    { id: 'cms', label: 'Pengaturan Web (CMS)', icon: Globe },
     { id: 'reports', label: 'Laporan & Rekap', icon: FileSpreadsheet },
   ];
 
@@ -1837,8 +1836,8 @@ export default function StaffDashboard({
               </motion.div>
             )}
 
-            {/* ── CMS / PENGATURAN WEBSITE TAB ── */}
-            {activeMenu === 'cms' && (
+            {/* ── PESAN & MASUKAN USER TAB ── */}
+            {activeMenu === 'messages' && (
               <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
                 
                 {/* Header CMS */}
