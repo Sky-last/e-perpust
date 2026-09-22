@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -39,7 +39,8 @@ import {
   HelpCircle,
   CreditCard,
   Loader2,
-  Bell
+  Bell,
+  MessageSquare
 } from 'lucide-react';
 import { User, Book, Category, Borrowing, LibrarySettings, SiteSettings, UserRole, UserFeedback, Notification } from '../../types';
 import { DEFAULT_SITE_SETTINGS, DEFAULT_FEEDBACKS } from '../../data/seedData';
@@ -110,7 +111,7 @@ export default function StaffDashboard({
     return normalizedRole === 'admin' || role === UserRole.ADMIN;
   }, [currentUser.role]);
 
-  const [activeMenu, setActiveMenu] = useState<'dashboard' | 'books' | 'categories' | 'transactions' | 'users' | 'reports' | 'messages'>('dashboard');
+  const [activeMenu, setActiveMenu] = useState<'dashboard' | 'books' | 'categories' | 'transactions' | 'users' | 'reports' | 'cms' | 'messages'>('dashboard');
   const [searchQuery, setSearchQuery] = useState('');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -895,13 +896,14 @@ export default function StaffDashboard({
     { id: 'transactions', label: 'Sirkulasi Unduhan', icon: Download },
     { id: 'users', label: 'Kelola Anggota', icon: Users },
     { id: 'messages', label: 'Pesan & Masukan', icon: Mail, badge: unreadFeedbackCount },
+    { id: 'cms', label: 'Pengaturan Web (CMS)', icon: Globe },
     { id: 'reports', label: 'Laporan & Rekap', icon: FileSpreadsheet },
   ];
 
   return (
     <div className="h-screen bg-slate-950 flex text-slate-100 overflow-hidden font-sans selection:bg-blue-500 selection:text-white" id="staff-dashboard">
       
-      {/* ── SIDEBAR ── */}
+      {/* â”€â”€ SIDEBAR â”€â”€ */}
       <aside className={`${sidebarCollapsed ? 'w-20' : 'w-72'} bg-slate-900/90 backdrop-blur-2xl border-r border-slate-800/80 shrink-0 hidden lg:flex flex-col shadow-2xl transition-all duration-300 h-screen sticky top-0 overflow-hidden z-20`}>
         <div className="p-5 border-b border-slate-800/80 flex items-center justify-between shrink-0">
           {!sidebarCollapsed ? (
@@ -1064,14 +1066,14 @@ export default function StaffDashboard({
         )}
       </AnimatePresence>
 
-      {/* ── MAIN CANVAS ── */}
+      {/* â”€â”€ MAIN CANVAS â”€â”€ */}
       <div className="flex-1 h-screen flex flex-col overflow-hidden">
         <header className="h-16 lg:h-20 bg-slate-900/60 backdrop-blur-md border-b border-slate-800/80 px-4 lg:px-8 flex items-center justify-between z-10 shrink-0">
           <div className="flex items-center gap-4">
             <button onClick={() => setMobileMenuOpen(true)} className="lg:hidden p-2 bg-slate-800 rounded-xl text-slate-300 cursor-pointer hover:bg-slate-700 transition-colors"><Menu className="w-5 h-5" /></button>
             <div>
               <span className="text-[9px] bg-cyan-500/10 text-cyan-400 font-extrabold px-2.5 py-0.5 rounded-full uppercase border border-cyan-500/20">
-                Administrator • Perpustakaan Kita
+                Administrator â€¢ Perpustakaan Kita
               </span>
               <h1 className="text-sm lg:text-base font-black text-white mt-1 flex items-center gap-2">
                 {currentUser.name}
@@ -1145,7 +1147,7 @@ export default function StaffDashboard({
         <main className="flex-1 overflow-y-auto p-4 lg:p-8 scrollbar-thin scrollbar-thumb-slate-800">
           <div className="max-w-6xl mx-auto space-y-6">
 
-            {/* ── DASHBOARD TAB ── */}
+            {/* â”€â”€ DASHBOARD TAB â”€â”€ */}
             {activeMenu === 'dashboard' && (
               <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
                 
@@ -1204,7 +1206,7 @@ export default function StaffDashboard({
                       <p className="text-[11px] text-slate-500 mt-0.5">Daftar pemustaka yang baru saja mengunduh e-book</p>
                     </div>
                     <button onClick={() => setActiveMenu('transactions')} className="text-xs text-cyan-400 hover:text-cyan-300 font-bold cursor-pointer">
-                      Lihat Semua Unduhan →
+                      Lihat Semua Unduhan â†’
                     </button>
                   </div>
                   <div className="overflow-x-auto">
@@ -1262,7 +1264,7 @@ export default function StaffDashboard({
               </motion.div>
             )}
 
-            {/* ── BOOKS TAB ── */}
+            {/* â”€â”€ BOOKS TAB â”€â”€ */}
             {activeMenu === 'books' && (
               <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
                 <div className="flex justify-between items-center gap-4">
@@ -1314,7 +1316,7 @@ export default function StaffDashboard({
               </motion.div>
             )}
 
-            {/* ── CATEGORIES TAB ── */}
+            {/* â”€â”€ CATEGORIES TAB â”€â”€ */}
             {activeMenu === 'categories' && (
               <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
                 <div className="flex justify-between items-center">
@@ -1346,7 +1348,7 @@ export default function StaffDashboard({
               </motion.div>
             )}
 
-            {/* ── TRANSACTIONS (UNDUHAN) TAB ── */}
+            {/* â”€â”€ TRANSACTIONS (UNDUHAN) TAB â”€â”€ */}
             {activeMenu === 'transactions' && (
               <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -1503,7 +1505,7 @@ export default function StaffDashboard({
               </motion.div>
             )}
 
-            {/* ── REPORTS TAB ── */}
+            {/* â”€â”€ REPORTS TAB â”€â”€ */}
             {activeMenu === 'reports' && (
               <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
                 <div>
@@ -1710,7 +1712,7 @@ export default function StaffDashboard({
               </motion.div>
             )}
 
-            {/* ── USERS TAB ── */}
+            {/* â”€â”€ USERS TAB â”€â”€ */}
             {activeMenu === 'users' && (
               <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -1836,8 +1838,8 @@ export default function StaffDashboard({
               </motion.div>
             )}
 
-            {/* ── PESAN & MASUKAN USER TAB ── */}
-            {activeMenu === 'messages' && (
+            {/* â”€â”€ CMS / PENGATURAN WEBSITE TAB â”€â”€ */}
+            {activeMenu === 'cms' && (
               <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
                 
                 {/* Header CMS */}
@@ -1846,512 +1848,43 @@ export default function StaffDashboard({
                     <span className="text-[10px] bg-blue-500/20 text-blue-400 font-extrabold px-3 py-1 rounded-full uppercase border border-blue-500/30 inline-flex items-center gap-1.5">
                       <Globe className="w-3 h-3" /> Content Management System
                     </span>
-                    <h2 className="text-lg lg:text-xl font-black text-white mt-2 flex items-center gap-2">
-                      Pengaturan Konten &amp; Tampilan Website
+                    <h2 className="text-lg lg:text-xl font-black text-white mt-2">
+                      Pengaturan Konten Website
                     </h2>
-                    <p className="text-xs text-slate-300 max-w-2xl mt-1 leading-relaxed">
-                      Ubah nama perpustakaan, teks slogan hero, alamat, kontak, jam operasional, hingga banner pengumuman.
-                      Semua perubahan tersimpan di database dan langsung aktif di halaman depan tanpa perlu ubah kode atau deploy ulang!
+                    <p className="text-xs text-slate-300 max-w-2xl mt-1">
+                      Ubah konten dan tampilan website tanpa perlu coding.
                     </p>
                   </div>
                   
-                  {/* Action Save Button in Header */}
-                  <div className="relative z-10 shrink-0 flex items-center gap-3">
+                  <div className="relative z-10 shrink-0">
                     {cmsSaveSuccess && (
-                      <span className="text-xs text-emerald-400 font-bold flex items-center gap-1.5 bg-emerald-500/15 border border-emerald-500/30 px-3 py-2 rounded-xl animate-fadeIn">
-                        <CheckCircle className="w-4 h-4" /> Berhasil Disimpan!
+                      <span className="text-xs text-emerald-400 font-bold flex items-center gap-1.5 bg-emerald-500/15 border border-emerald-500/30 px-3 py-2 rounded-xl">
+                        <CheckCircle className="w-4 h-4" /> Tersimpan!
                       </span>
                     )}
-                    <button
-                      type="button"
-                      onClick={handleSaveCmsSubmit}
-                      disabled={isSavingCms}
-                      className="px-5 py-3 bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-extrabold text-xs rounded-xl shadow-lg shadow-blue-500/25 flex items-center gap-2 transition-all cursor-pointer hover:scale-105 disabled:opacity-50"
-                    >
-                      {isSavingCms ? (
-                        <>
-                          <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                          Menyimpan...
-                        </>
-                      ) : (
-                        <>
-                          <Save className="w-4 h-4" /> Simpan Semua Perubahan
-                        </>
-                      )}
-                    </button>
                   </div>
                 </div>
 
-                {/* Form Container */}
-                <form onSubmit={handleSaveCmsSubmit} className="space-y-6">
-                  
-                  {/* Section 1: Identitas & Hero Section */}
-                  <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-5">
-                    <div className="flex items-center gap-3 pb-3 border-b border-slate-800">
-                      <div className="w-9 h-9 rounded-xl bg-blue-500/15 border border-blue-500/30 text-blue-400 flex items-center justify-center">
-                        <Sparkles className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-black text-white">1. Identitas &amp; Tampilan Utama (Hero Section)</h3>
-                        <p className="text-[11px] text-slate-400">Atur nama perpustakaan, teks slogan pembuka, dan deskripsi utama website.</p>
-                      </div>
-                    </div>
+                {/* Info Message */}
+                <div className="bg-blue-900/20 border border-blue-500/30 rounded-xl p-4">
+                  <p className="text-xs text-slate-300">
+                    â„¹ï¸ <strong>Section Kontak telah dihapus</strong> dari landing page. Pengaturan kontak tidak lagi tersedia di CMS ini.
+                  </p>
+                </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                      <div>
-                        <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
-                          Nama Perpustakaan (Branding Utama)
-                        </label>
-                        <input
-                          type="text"
-                          required
-                          value={cmsLibraryName}
-                          onChange={(e) => setCmsLibraryName(e.target.value)}
-                          placeholder="Contoh: Perpustakaan Kita"
-                          className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500 font-bold"
-                        />
-                        <p className="text-[10px] text-slate-500 mt-1">Ditampilkan di judul halaman, navbar, hero, dan footer.</p>
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
-                          Badge Teks di Atas Judul Hero
-                        </label>
-                        <input
-                          type="text"
-                          value={cmsHeroBadge}
-                          onChange={(e) => setCmsHeroBadge(e.target.value)}
-                          placeholder="Contoh: Platform Literasi Digital Modern"
-                          className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500"
-                        />
-                        <p className="text-[10px] text-slate-500 mt-1">Badge kecil bercahaya di atas judul utama.</p>
-                      </div>
-
-                      <div className="md:col-span-2">
-                        <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
-                          Kalimat Tagline / Pembuka Judul Hero
-                        </label>
-                        <input
-                          type="text"
-                          value={cmsLibraryTagline}
-                          onChange={(e) => setCmsLibraryTagline(e.target.value)}
-                          placeholder="Contoh: Eksplorasi Dunia Lewat"
-                          className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500"
-                        />
-                        <p className="text-[10px] text-slate-500 mt-1">
-                          Akan dirangkai dengan efek animasi ketik nama perpustakaan (misal: "Eksplorasi Dunia Lewat Perpustakaan Kita").
-                        </p>
-                      </div>
-
-                      <div className="md:col-span-2">
-                        <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
-                          Deskripsi / Subtitle Hero
-                        </label>
-                        <textarea
-                          rows={2}
-                          value={cmsHeroSubtitle}
-                          onChange={(e) => setCmsHeroSubtitle(e.target.value)}
-                          placeholder="Contoh: Akses koleksi buku dengan e-reader page flip interaktif serta ruang etalase koleksi unggulan."
-                          className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500 leading-relaxed"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
-                          Teks Tombol CTA — Jelajahi Katalog
-                        </label>
-                        <input
-                          type="text"
-                          value={cmsHeroCtaExplore}
-                          onChange={(e) => setCmsHeroCtaExplore(e.target.value)}
-                          placeholder="Contoh: Jelajahi Katalog"
-                          className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500"
-                        />
-                        <p className="text-[10px] text-slate-500 mt-1">Teks tombol pertama di hero section.</p>
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
-                          Teks Tombol CTA — Daftar
-                        </label>
-                        <input
-                          type="text"
-                          value={cmsHeroCtaRegister}
-                          onChange={(e) => setCmsHeroCtaRegister(e.target.value)}
-                          placeholder="Contoh: Daftar Gratis"
-                          className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500"
-                        />
-                        <p className="text-[10px] text-slate-500 mt-1">Teks tombol kedua (ajakan registrasi) di hero section.</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Section 2: Stats Bar */}
-                  <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-5">
-                    <div className="flex items-center gap-3 pb-3 border-b border-slate-800">
-                      <div className="w-9 h-9 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-400 flex items-center justify-center">
-                        <TrendingUp className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-black text-white">2. Angka Statistik Pencapaian (Stats Bar)</h3>
-                        <p className="text-[11px] text-slate-400">Angka yang ditampilkan di bawah hero section sebagai pencapaian perpustakaan.</p>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                      <div>
-                        <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Jumlah Anggota Aktif</label>
-                        <input type="text" value={cmsStatsMembersCount} onChange={(e) => setCmsStatsMembersCount(e.target.value)}
-                          placeholder="Contoh: 12,480+" className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-purple-500" />
-                        <p className="text-[10px] text-slate-500 mt-1">Label: Anggota Aktif</p>
-                      </div>
-                      <div>
-                        <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Jumlah Unduhan</label>
-                        <input type="text" value={cmsStatsBorrowCount} onChange={(e) => setCmsStatsBorrowCount(e.target.value)}
-                          placeholder="Contoh: 48,930+" className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-purple-500" />
-                        <p className="text-[10px] text-slate-500 mt-1">Label: Jumlah Unduhan</p>
-                      </div>
-                      <div>
-                        <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Teks Rating Platform</label>
-                        <input type="text" value={cmsStatsRatingText} onChange={(e) => setCmsStatsRatingText(e.target.value)}
-                          placeholder="Contoh: 4.9/5" className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-purple-500" />
-                        <p className="text-[10px] text-slate-500 mt-1">Label: Rating Platform</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Section 3: Rak Buku & Etalase */}
-                  <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-5">
-                    <div className="flex items-center gap-3 pb-3 border-b border-slate-800">
-                      <div className="w-9 h-9 rounded-xl bg-indigo-500/15 border border-indigo-500/30 text-indigo-400 flex items-center justify-center">
-                        <BookOpen className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-black text-white">3. Rak Buku &amp; Etalase 3D</h3>
-                        <p className="text-[11px] text-slate-400">Teks yang tampil di bagian rak buku interaktif dan etalase 3D.</p>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                      <div className="md:col-span-2">
-                        <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Judul Rak Buku (Drag Hint)</label>
-                        <input type="text" value={cmsBookshelfTitle} onChange={(e) => setCmsBookshelfTitle(e.target.value)}
-                          placeholder="Contoh: Drag rak buku untuk memilih koleksi" className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500" />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Badge Etalase 3D</label>
-                        <input type="text" value={cmsShowcaseBadge} onChange={(e) => setCmsShowcaseBadge(e.target.value)}
-                          placeholder="Contoh: Panggung Visualisasi Buku" className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500" />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Judul Etalase 3D</label>
-                        <input type="text" value={cmsShowcaseTitle} onChange={(e) => setCmsShowcaseTitle(e.target.value)}
-                          placeholder="Contoh: Etalase Koleksi Unggulan" className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500" />
-                      </div>
-                      <div className="md:col-span-2">
-                        <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Subtitle Etalase 3D</label>
-                        <input type="text" value={cmsShowcaseSubtitle} onChange={(e) => setCmsShowcaseSubtitle(e.target.value)}
-                          placeholder="Contoh: Sorotan buku digital interaktif dengan efek rotasi dan detail lengkap." className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500" />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Section 4: Koleksi Populer */}
-                  <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-5">
-                    <div className="flex items-center gap-3 pb-3 border-b border-slate-800">
-                      <div className="w-9 h-9 rounded-xl bg-pink-500/15 border border-pink-500/30 text-pink-400 flex items-center justify-center">
-                        <Sparkles className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-black text-white">4. Koleksi Populer</h3>
-                        <p className="text-[11px] text-slate-400">Label dan judul pada section buku-buku terpopuler di halaman utama.</p>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                      <div>
-                        <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Badge Koleksi Populer</label>
-                        <input type="text" value={cmsPopularBadge} onChange={(e) => setCmsPopularBadge(e.target.value)}
-                          placeholder="Contoh: Koleksi Pilihan" className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-pink-500" />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Judul Section Populer</label>
-                        <input type="text" value={cmsPopularTitle} onChange={(e) => setCmsPopularTitle(e.target.value)}
-                          placeholder="Contoh: Buku Terpopuler" className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-pink-500" />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Section 5: Tentang Kami */}
-                  <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-5">
-                    <div className="flex items-center gap-3 pb-3 border-b border-slate-800">
-                      <div className="w-9 h-9 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center">
-                        <HelpCircle className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-black text-white">5. Tentang Kami &amp; 3 Fitur Unggulan</h3>
-                        <p className="text-[11px] text-slate-400">Konten section "Tentang Platform" termasuk misi, deskripsi, dan tiga kartu fitur unggulan.</p>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                      <div>
-                        <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Badge Tentang Kami</label>
-                        <input type="text" value={cmsAboutBadge} onChange={(e) => setCmsAboutBadge(e.target.value)}
-                          placeholder="Contoh: Tentang Platform" className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500" />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Judul Tentang Kami</label>
-                        <input type="text" value={cmsAboutTitle} onChange={(e) => setCmsAboutTitle(e.target.value)}
-                          placeholder="Contoh: Misi Kami: Literasi untuk Semua" className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500" />
-                      </div>
-                      <div className="md:col-span-2">
-                        <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Deskripsi Tentang Kami</label>
-                        <textarea rows={3} value={cmsAboutDescription} onChange={(e) => setCmsAboutDescription(e.target.value)}
-                          placeholder="Contoh: Perpustakaan Kita adalah platform perpustakaan online modern..." className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500 leading-relaxed" />
-                      </div>
-
-                      {/* Feature 1 */}
-                      <div className="md:col-span-2">
-                        <p className="text-[11px] font-black text-emerald-400 uppercase tracking-wider mb-3">— Kartu Fitur 1</p>
-                      </div>
-                      <div>
-                        <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Judul Fitur 1</label>
-                        <input type="text" value={cmsAboutFeature1Title} onChange={(e) => setCmsAboutFeature1Title(e.target.value)}
-                          placeholder="Contoh: Animasi Buku Terbuka" className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500" />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Deskripsi Fitur 1</label>
-                        <input type="text" value={cmsAboutFeature1Desc} onChange={(e) => setCmsAboutFeature1Desc(e.target.value)}
-                          placeholder="Contoh: Visualisasi cover buku berputar..." className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500" />
-                      </div>
-
-                      {/* Feature 2 */}
-                      <div className="md:col-span-2">
-                        <p className="text-[11px] font-black text-emerald-400 uppercase tracking-wider mb-3">— Kartu Fitur 2</p>
-                      </div>
-                      <div>
-                        <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Judul Fitur 2</label>
-                        <input type="text" value={cmsAboutFeature2Title} onChange={(e) => setCmsAboutFeature2Title(e.target.value)}
-                          placeholder="Contoh: E-Reader Page Flip" className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500" />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Deskripsi Fitur 2</label>
-                        <input type="text" value={cmsAboutFeature2Desc} onChange={(e) => setCmsAboutFeature2Desc(e.target.value)}
-                          placeholder="Contoh: Membaca e-book PDF dengan efek membalik halaman..." className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500" />
-                      </div>
-
-                      {/* Feature 3 */}
-                      <div className="md:col-span-2">
-                        <p className="text-[11px] font-black text-emerald-400 uppercase tracking-wider mb-3">— Kartu Fitur 3</p>
-                      </div>
-                      <div>
-                        <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Judul Fitur 3</label>
-                        <input type="text" value={cmsAboutFeature3Title} onChange={(e) => setCmsAboutFeature3Title(e.target.value)}
-                          placeholder="Contoh: Showcase Room" className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500" />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Deskripsi Fitur 3</label>
-                        <input type="text" value={cmsAboutFeature3Desc} onChange={(e) => setCmsAboutFeature3Desc(e.target.value)}
-                          placeholder="Contoh: Putar kamera 360° untuk melihat panggung buku..." className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500" />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Section 6: Banner Pengumuman */}
-                  <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-5">
-                    <div className="flex items-center gap-3 pb-3 border-b border-slate-800">
-                      <div className="w-9 h-9 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-400 flex items-center justify-center">
-                        <Megaphone className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-black text-white">6. Banner Pengumuman (Header Announcement)</h3>
-                        <p className="text-[11px] text-slate-400">Pita pengumuman yang tampil di bagian paling atas halaman utama website.</p>
-                      </div>
-                    </div>
-
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-3 p-3.5 bg-slate-950/80 rounded-xl border border-slate-800">
-                        <input
-                          type="checkbox"
-                          id="announcement-toggle"
-                          checked={cmsAnnouncementEnabled}
-                          onChange={(e) => setCmsAnnouncementEnabled(e.target.checked)}
-                          className="w-4 h-4 rounded text-blue-600 bg-slate-900 border-slate-700 focus:ring-blue-500 cursor-pointer"
-                        />
-                        <label htmlFor="announcement-toggle" className="text-xs font-bold text-white cursor-pointer select-none">
-                          Aktifkan Banner Pengumuman di Atas Website
-                        </label>
-                        <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full ml-auto ${cmsAnnouncementEnabled ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-slate-800 text-slate-500'}`}>
-                          {cmsAnnouncementEnabled ? 'AKTIF' : 'NONAKTIF'}
-                        </span>
-                      </div>
-
-                      {cmsAnnouncementEnabled && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-fadeIn">
-                          <div className="md:col-span-2">
-                            <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
-                              Teks Isi Pengumuman
-                            </label>
-                            <input
-                              type="text"
-                              value={cmsAnnouncementText}
-                              onChange={(e) => setCmsAnnouncementText(e.target.value)}
-                              placeholder="Contoh: 🎉 Selamat datang di Perpustakaan Kita! Ratusan e-book baru siap dibaca secara gratis."
-                              className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-amber-500"
-                            />
-                          </div>
-                          <div className="md:col-span-2">
-                            <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
-                              Link Tautan Tujuan (Opsional)
-                            </label>
-                            <input
-                              type="text"
-                              value={cmsAnnouncementLink}
-                              onChange={(e) => setCmsAnnouncementLink(e.target.value)}
-                              placeholder="https://... atau biarkan kosong jika tidak ada tautan"
-                              className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-amber-500"
-                            />
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Section 3: Kontak & Jam Operasional */}
-                  <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-5">
-                    <div className="flex items-center gap-3 pb-3 border-b border-slate-800">
-                      <div className="w-9 h-9 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-400 flex items-center justify-center">
-                        <MapPin className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-black text-white">7. Informasi Kontak &amp; Jam Layanan Operasional</h3>
-                        <p className="text-[11px] text-slate-400">Kontak yang tampil pada section "Hubungi Kami" di halaman Landing Page.</p>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                      <div>
-                        <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Badge Section Kontak</label>
-                        <input type="text" value={cmsContactBadge} onChange={(e) => setCmsContactBadge(e.target.value)}
-                          placeholder="Contoh: Hubungi Kami" className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500" />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Judul Section Kontak</label>
-                        <input type="text" value={cmsContactTitle} onChange={(e) => setCmsContactTitle(e.target.value)}
-                          placeholder="Contoh: Layanan Informasi & Layanan Anggota" className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500" />
-                      </div>
-                      <div className="md:col-span-2">
-                        <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Subtitle / Kalimat Pembuka Kontak</label>
-                        <textarea rows={2} value={cmsContactSubtitle} onChange={(e) => setCmsContactSubtitle(e.target.value)}
-                          placeholder="Contoh: Punya pertanyaan mengenai koleksi e-book, unduhan buku digital, atau akun keanggotaan?..." className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500 leading-relaxed" />
-                      </div>
-                      <div className="md:col-span-2">
-                        <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
-                          Alamat Lengkap Perpustakaan
-                        </label>
-                        <input
-                          type="text"
-                          value={cmsContactAddress}
-                          onChange={(e) => setCmsContactAddress(e.target.value)}
-                          placeholder="Contoh: Jl. Pemuda No. 123, Kompleks Pendidikan Utama, Jakarta Pusat"
-                          className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
-                          Nomor Telepon &amp; WhatsApp
-                        </label>
-                        <input
-                          type="text"
-                          value={cmsContactPhone}
-                          onChange={(e) => setCmsContactPhone(e.target.value)}
-                          placeholder="Contoh: +62 812-3456-7890 / (021) 555-0192"
-                          className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
-                          Email Resmi Perpustakaan
-                        </label>
-                        <input
-                          type="text"
-                          value={cmsContactEmail}
-                          onChange={(e) => setCmsContactEmail(e.target.value)}
-                          placeholder="Contoh: layanan@pustakadigital.sch.id / info@pustakadigital.id"
-                          className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500"
-                        />
-                      </div>
-
-                      <div className="md:col-span-2">
-                        <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
-                          Jam Layanan Operasional
-                        </label>
-                        <input
-                          type="text"
-                          value={cmsServiceHours}
-                          onChange={(e) => setCmsServiceHours(e.target.value)}
-                          placeholder="Contoh: Senin - Jumat: 07.30 - 16.00 WIB | Sabtu: 08.00 - 13.00 WIB"
-                          className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Section 4: Footer Copyright */}
-                  <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-5">
-                    <div className="flex items-center gap-3 pb-3 border-b border-slate-800">
-                      <div className="w-9 h-9 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-400 flex items-center justify-center">
-                        <FileText className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-black text-white">8. Footer &amp; Hak Cipta</h3>
-                        <p className="text-[11px] text-slate-400">Teks hak cipta yang tertera di bagian paling bawah website.</p>
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
-                        Teks Hak Cipta (Footer Copyright)
-                      </label>
-                      <input
-                        type="text"
-                        value={cmsFooterCopyright}
-                        onChange={(e) => setCmsFooterCopyright(e.target.value)}
-                        placeholder="Contoh: © 2026 Perpustakaan Kita Indonesia. Hak Cipta Dilindungi."
-                        className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none focus:border-purple-500"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Bottom Action Button */}
-                  <div className="flex items-center justify-end gap-3 p-4 bg-slate-900/80 border border-slate-800 rounded-2xl">
-                    {cmsSaveSuccess && (
-                      <span className="text-xs text-emerald-400 font-bold flex items-center gap-1.5 mr-auto">
-                        <CheckCircle className="w-4 h-4" /> Pengaturan berhasil disimpan dan langsung diterapkan!
-                      </span>
-                    )}
-                    <button
-                      type="submit"
-                      disabled={isSavingCms}
-                      className="px-6 py-3.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-extrabold text-xs rounded-xl shadow-xl shadow-blue-500/25 flex items-center gap-2 transition-all cursor-pointer hover:scale-105 disabled:opacity-50"
-                    >
-                      {isSavingCms ? (
-                        <>
-                          <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                          Menyimpan Perubahan...
-                        </>
-                      ) : (
-                        <>
-                          <Save className="w-4 h-4" /> Simpan Pengaturan Website
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </form>
+                {/* Placeholder untuk form CMS lainnya bisa ditambahkan di sini */}
+                <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 text-center">
+                  <Globe className="w-12 h-12 text-slate-600 mx-auto mb-3" />
+                  <h3 className="text-sm font-bold text-white mb-2">Pengaturan CMS</h3>
+                  <p className="text-xs text-slate-400">
+                    Menu CMS masih aktif untuk pengaturan konten website lainnya di masa depan.
+                  </p>
+                </div>
 
               </motion.div>
             )}
 
-            {/* ── PESAN & MASUKAN USER TAB ── */}
+            {/* â”€â”€ PESAN & MASUKAN USER TAB â”€â”€ */}
             {activeMenu === 'messages' && (
               <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
                 
