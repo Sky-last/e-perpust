@@ -740,7 +740,13 @@ export default function App() {
           password: pass,
           options: {
             emailRedirectTo: `${window.location.origin}/`,
-            data: { name, phone, memberCategory, identityNumber }
+            data: { 
+              name, 
+              phone, 
+              memberCategory, 
+              identityNumber,
+              authProvider: 'email'
+            }
           }
         });
 
@@ -781,7 +787,8 @@ export default function App() {
               badge: 'Reguler',
               phone,
               member_category: memberCategory,
-              identity_number: identityNumber
+              identity_number: identityNumber,
+              auth_provider: 'email'
             });
           } catch (e) {
             console.error('Failed to insert profile row:', e);

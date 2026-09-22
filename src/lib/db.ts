@@ -195,6 +195,10 @@ export async function getUserProfile(userId: string): Promise<User | null> {
           if (user && user.id === userId) {
             const userName = user.user_metadata?.name || user.email?.split('@')[0] || 'Anggota';
             const userRole = user.user_metadata?.role || 'user';
+            const userPhone = user.user_metadata?.phone || undefined;
+            const userMemberCategory = user.user_metadata?.memberCategory || 'Masyarakat Umum';
+            const userIdentityNumber = user.user_metadata?.identityNumber || undefined;
+            const userAuthProvider = user.user_metadata?.authProvider || 'email';
 
             const newProfile = {
               id: userId,
@@ -202,6 +206,10 @@ export async function getUserProfile(userId: string): Promise<User | null> {
               email: user.email || '',
               role: userRole,
               badge: 'Reguler',
+              phone: userPhone,
+              member_category: userMemberCategory,
+              identity_number: userIdentityNumber,
+              auth_provider: userAuthProvider,
               avatar: undefined
             };
 
@@ -238,6 +246,7 @@ export async function getUserProfile(userId: string): Promise<User | null> {
         nisn: profile.identity_number || profile.nisn || undefined,
         institution: profile.institution || undefined,
         address: profile.address || undefined,
+        authProvider: profile.auth_provider || 'email',
         isProfileCompleted: Boolean(
           (profile.identity_number || profile.nisn) &&
           profile.phone &&
