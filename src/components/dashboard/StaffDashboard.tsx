@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -756,43 +756,84 @@ export default function StaffDashboard({
 
   const handleSaveBookSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (editingBook) {
-      onUpdateBook({
-        ...editingBook,
-        title: bookTitle,
-        author: bookAuthor,
-        publisher: bookPublisher,
-        isbn: bookIsbn,
-        year: bookYear,
-        categoryId: bookCategoryId,
-        category: categories.find(c => c.id === bookCategoryId)?.name || editingBook.category,
-        rackLocation: bookRack,
-        synopsis: bookSynopsis,
-        description: bookSynopsis,
-        coverUrl: bookCoverUrl || undefined,
-        pdfUrl: bookPdfUrl || undefined
-      });
-    } else {
-      onAddBook({
-        id: `book-${Date.now()}`,
-        title: bookTitle,
-        author: bookAuthor,
-        category: categories.find(c => c.id === bookCategoryId)?.name || 'Umum',
-        description: bookSynopsis,
-        publisher: bookPublisher,
-        isbn: bookIsbn,
-        year: bookYear,
-        rating: 0,
-        status: 'Tersedia',
-        coverColor: 'from-blue-600 to-indigo-900',
-        categoryId: bookCategoryId,
-        rackLocation: bookRack,
-        synopsis: bookSynopsis,
-        coverUrl: bookCoverUrl || undefined,
-        pdfUrl: bookPdfUrl || undefined
-      });
+    console.log('[DEBUG] handleSaveBookSubmit called', {
+      editingBook: !!editingBook,
+      bookTitle,
+      bookAuthor,
+      bookCategoryId
+    });
+    
+    try {
+      // Validasi input
+      if (!bookTitle.trim()) {
+        alert('Judul buku harus diisi!');
+        return;
+      }
+      if (!bookAuthor.trim()) {
+        alert('Nama penulis harus diisi!');
+        return;
+      }
+      if (!bookCategoryId) {
+        alert('Kategori buku harus dipilih!');
+        return;
+      }
+      
+      if (editingBook) {
+        onUpdateBook({
+          ...editingBook,
+          title: bookTitle,
+          author: bookAuthor,
+          publisher: bookPublisher,
+          isbn: bookIsbn,
+          year: bookYear,
+          categoryId: bookCategoryId,
+          category: categories.find(c => c.id === bookCategoryId)?.name || editingBook.category,
+          rackLocation: bookRack,
+          synopsis: bookSynopsis,
+          description: bookSynopsis,
+          coverUrl: bookCoverUrl || undefined,
+          pdfUrl: bookPdfUrl || undefined
+        });
+        console.log('[DEBUG] onUpdateBook called successfully');
+      } else {
+        console.log('[DEBUG] Adding new book with data:', {
+          title: bookTitle,
+          author: bookAuthor,
+          category: categories.find(c => c.id === bookCategoryId)?.name,
+          categoryId: bookCategoryId,
+          hasCover: !!bookCoverUrl,
+          hasPdf: !!bookPdfUrl
+        });
+        onAddBook({
+          id: `book-${Date.now()}`,
+          title: bookTitle,
+          author: bookAuthor,
+          category: categories.find(c => c.id === bookCategoryId)?.name || 'Umum',
+          description: bookSynopsis,
+          publisher: bookPublisher,
+          isbn: bookIsbn,
+          year: bookYear,
+          rating: 0,
+          status: 'Tersedia',
+          coverColor: 'from-blue-600 to-indigo-900',
+          categoryId: bookCategoryId,
+          rackLocation: bookRack,
+          synopsis: bookSynopsis,
+          coverUrl: bookCoverUrl || undefined,
+          pdfUrl: bookPdfUrl || undefined
+        });
+        console.log('[DEBUG] onAddBook called successfully');
+      }
+      
+      // Delay modal close sedikit untuk memastikan onAddBook selesai
+      setTimeout(() => {
+        console.log('[DEBUG] Closing modal...');
+        setIsBookModalOpen(false);
+      }, 100);
+    } catch (error) {
+      console.error('[ERROR] Failed to save book:', error);
+      alert('Terjadi kesalahan saat menyimpan buku: ' + (error as Error).message);
     }
-    setIsBookModalOpen(false);
   };
 
   const handleOpenCategoryModal = (cat: Category | null = null) => {

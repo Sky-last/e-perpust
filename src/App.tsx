@@ -1302,6 +1302,7 @@ export default function App() {
 
   // ADMIN SPECIFIC CALLBACKS
   const handleAddBook = async (bookData: Omit<Book, 'id' | 'status' | 'category' | 'description' | 'rating' | 'coverColor'> & { status?: Book['status'], category?: string, description?: string, rating?: number, coverColor?: string, id?: string }) => {
+    console.log('[DEBUG] handleAddBook called in App.tsx with data:', bookData);
     const bookCategory = bookData.category || (bookData.categoryId ? (categories.find(c => c.id === bookData.categoryId)?.name || 'Umum') : 'Umum');
     const newBookId = bookData.id || ('b_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5));
     
@@ -1326,8 +1327,10 @@ export default function App() {
     // 1. UPDATE STATE & LOCALSTORAGE SEGERA (OPTIMISTIC UPDATE)
     // Supaya langsung tampil di urutan paling depan tanpa delay
     const updatedBooks = [newBook, ...books.filter(b => b.id !== newBook.id)];
+    console.log('[DEBUG] Updating books state. Old count:', books.length, 'New count:', updatedBooks.length);
     setBooks(updatedBooks);
     localStorage.setItem('digital_library_books', JSON.stringify(updatedBooks));
+    console.log('[DEBUG] Books saved to localStorage');
     addToast(`Buku "${newBook.title}" berhasil ditambahkan ke katalog!`, 'success');
 
     // Notifikasi untuk Admin (Aktivitas manajemen)
