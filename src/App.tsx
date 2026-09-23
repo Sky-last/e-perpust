@@ -1582,7 +1582,7 @@ export default function App() {
   };
 
   // Debounced update untuk menghindari terlalu banyak toast
-  const updateUserDebounced = useRef<number | null>(null);
+  const updateUserDebounced = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleUpdateUser = async (userId: string, updatedData: Partial<User>) => {
     try {

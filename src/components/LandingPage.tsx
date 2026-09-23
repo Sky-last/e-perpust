@@ -25,12 +25,19 @@ interface LandingPageProps {
 export default function LandingPage({ books, onNavigate, onToggleFavorite, favorites, currentUser, onDownloadBook, siteSettings }: LandingPageProps) {
   const cfg = siteSettings || DEFAULT_SITE_SETTINGS;
   const [darkMode, setDarkMode] = useState(true);
-  const [activeSection, setActiveSection] = useState<'home' | 'katalog' | 'tentang'>('home');
+  const [activeSection, setActiveSection] = useState<'home' | 'katalog' | 'tentang' | 'masukan'>('home');
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [typedText, setTypedText] = useState('');
   const [cursorVisible, setCursorVisible] = useState(true);
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+
+  // Form Masukan / Feedback State
+  const [contactName, setContactName] = useState('');
+  const [contactEmail, setContactEmail] = useState('');
+  const [contactMessage, setContactMessage] = useState('');
+  const [contactSubmitted, setContactSubmitted] = useState(false);
+  const [isSubmittingContact, setIsSubmittingContact] = useState(false);
 
   // Interactive 3D Modals State
   const [selectedBook3D, setSelectedBook3D] = useState<Book | null>(null);
@@ -90,8 +97,10 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
       const scrollY = window.scrollY;
       if (scrollY < 100) { setActiveSection('home'); return; }
       const tentang = document.getElementById('tentang');
-      const pos = scrollY + 150;
-      if (tentang && pos >= tentang.offsetTop) setActiveSection('tentang');
+      const masukan = document.getElementById('masukan');
+      const pos = scrollY + 180;
+      if (masukan && pos >= masukan.offsetTop) setActiveSection('masukan');
+      else if (tentang && pos >= tentang.offsetTop) setActiveSection('tentang');
       else setActiveSection('home');
     };
     window.addEventListener('scroll', handleScroll);
@@ -163,7 +172,7 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
 
           {/* Desktop Links */}
           <div className="hidden md:flex items-center gap-8">
-            {(['Home', 'Katalog', 'Tentang'] as const).map(item => {
+            {(['Home', 'Katalog', 'Tentang', 'Masukan'] as const).map(item => {
               const key = item.toLowerCase() as typeof activeSection;
               const isActive = activeSection === key;
               return (
@@ -245,6 +254,16 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
                 className={`w-full text-left px-4 py-3 text-sm font-bold rounded-xl transition-all flex items-center justify-between ${activeSection === 'tentang' ? 'bg-blue-600/20 text-blue-400' : `${sub} hover:bg-slate-800/40`}`}
               >
                 <span>Tentang</span>
+              </button>
+              <button
+                onClick={() => {
+                  soundFX.playClick();
+                  setMobileMenuOpen(false);
+                  document.getElementById('masukan')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className={`w-full text-left px-4 py-3 text-sm font-bold rounded-xl transition-all flex items-center justify-between ${activeSection === 'masukan' ? 'bg-blue-600/20 text-blue-400' : `${sub} hover:bg-slate-800/40`}`}
+              >
+                <span>Masukan &amp; Saran</span>
               </button>
             </div>
 
@@ -536,6 +555,168 @@ export default function LandingPage({ books, onNavigate, onToggleFavorite, favor
                 );
               })}
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ======================================================== */}
+      {/* 8. FORM MASUKAN & SARAN PENGUNJUNG                       */}
+      {/* ======================================================== */}
+      <section id="masukan" className={`py-20 px-6 border-t ${dk ? 'border-slate-800 bg-slate-900/40' : 'border-slate-200 bg-slate-100/60'}`}>
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center max-w-2xl mx-auto mb-12">
+            <span className="text-[11px] font-extrabold uppercase tracking-widest px-3.5 py-1.5 rounded-full bg-blue-500/10 text-blue-500 border border-blue-500/20 inline-flex items-center gap-1.5">
+              <MessageSquare className="w-3.5 h-3.5" />
+              <span>{cfg.contactBadge || 'Masukan & Saran'}</span>
+            </span>
+            <h2 className={`text-3xl lg:text-4xl font-black mt-3 mb-4 tracking-tight ${text}`}>
+              {cfg.contactTitle || 'Kirim Masukan atau Pertanyaan'}
+            </h2>
+            <p className={`text-sm leading-relaxed ${sub}`}>
+              {cfg.contactSubtitle || 'Punya saran pengembangan koleksi buku digital, pertanyaan seputar perpustakaan, atau kendala unduhan? Kirimkan pesan Anda melalui formulir di bawah ini.'}
+            </p>
+          </div>
+
+          <div className={`p-6 sm:p-10 rounded-3xl border shadow-2xl relative overflow-hidden ${card}`}>
+            <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
+
+            {contactSubmitted ? (
+              <div className="py-12 text-center space-y-4 animate-fadeIn relative z-10">
+                <div className="w-16 h-16 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto border border-emerald-500/30">
+                  <CheckCircle className="w-8 h-8" />
+                </div>
+                <h4 className={`text-xl font-bold ${text}`}>Pesan Anda Berhasil Terkirim!</h4>
+                <p className={`text-xs max-w-md mx-auto ${sub}`}>
+                  Terima kasih atas pesan dan masukan Anda. Pesan telah kami terima dan tim {cfg.libraryName || 'Perpustakaan Kita'} akan segera menindaklanjutinya.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    soundFX.playClick();
+                    setContactSubmitted(false);
+                  }}
+                  className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition-all cursor-pointer shadow-lg shadow-blue-500/20 active:scale-95"
+                >
+                  Kirim Pesan Lain
+                </button>
+              </div>
+            ) : (
+              <form
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  if (!contactName.trim() || !contactEmail.trim() || !contactMessage.trim()) return;
+                  
+                  soundFX.playClick();
+                  setIsSubmittingContact(true);
+                  
+                  const feedbackData = {
+                    name: contactName.trim(),
+                    email: contactEmail.trim(),
+                    message: contactMessage.trim()
+                  };
+
+                  // Simpan ke Supabase jika terhubung
+                  if (isSupabaseConfigured) {
+                    try {
+                      await supabase.from('feedbacks').insert({
+                        name: feedbackData.name,
+                        email: feedbackData.email,
+                        message: feedbackData.message,
+                        is_read: false
+                      });
+                    } catch (err) {
+                      console.error('Failed to save feedback to Supabase:', err);
+                    }
+                  }
+
+                  // Simpan juga ke localStorage sebagai fallback instan
+                  try {
+                    const newFeedback = {
+                      id: 'fb-' + Date.now(),
+                      ...feedbackData,
+                      createdAt: new Date().toISOString(),
+                      isRead: false
+                    };
+                    const existingStr = localStorage.getItem('perpustakaan_user_feedbacks');
+                    const existing = existingStr ? JSON.parse(existingStr) : [];
+                    const updated = [newFeedback, ...existing];
+                    localStorage.setItem('perpustakaan_user_feedbacks', JSON.stringify(updated));
+                    window.dispatchEvent(new Event('user_feedback_submitted'));
+                  } catch (err) {
+                    console.error('Failed to save user feedback:', err);
+                  }
+
+                  setIsSubmittingContact(false);
+                  setContactSubmitted(true);
+                  setContactName('');
+                  setContactEmail('');
+                  setContactMessage('');
+                }}
+                className="space-y-5 relative z-10"
+              >
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${sub}`}>Nama Lengkap</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="Masukkan nama Anda..."
+                      value={contactName}
+                      onChange={(e) => setContactName(e.target.value)}
+                      className={`w-full px-4 py-3 rounded-xl border text-xs outline-none font-medium transition-all ${
+                        dk ? 'bg-slate-950 border-slate-800 text-white placeholder-slate-600 focus:border-blue-500' : 'bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400 focus:border-blue-500'
+                      }`}
+                    />
+                  </div>
+                  <div>
+                    <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${sub}`}>Email Aktif</label>
+                    <input
+                      type="email"
+                      required
+                      placeholder="nama@email.com"
+                      value={contactEmail}
+                      onChange={(e) => setContactEmail(e.target.value)}
+                      className={`w-full px-4 py-3 rounded-xl border text-xs outline-none font-medium transition-all ${
+                        dk ? 'bg-slate-950 border-slate-800 text-white placeholder-slate-600 focus:border-blue-500' : 'bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400 focus:border-blue-500'
+                      }`}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${sub}`}>Pesan / Masukan</label>
+                  <textarea
+                    rows={4}
+                    required
+                    placeholder="Tuliskan saran, pertanyaan, atau kendala Anda di sini..."
+                    value={contactMessage}
+                    onChange={(e) => setContactMessage(e.target.value)}
+                    className={`w-full px-4 py-3 rounded-xl border text-xs outline-none font-medium transition-all leading-relaxed ${
+                      dk ? 'bg-slate-950 border-slate-800 text-white placeholder-slate-600 focus:border-blue-500' : 'bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400 focus:border-blue-500'
+                    }`}
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isSubmittingContact}
+                  className="w-full py-3.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-extrabold text-xs rounded-xl shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2 transition-all cursor-pointer hover:scale-[1.01] active:scale-95 disabled:opacity-50"
+                >
+                  {isSubmittingContact ? (
+                    <>
+                      <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <span>Mengirim Masukan...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4" />
+                      <span>Kirim Masukan Sekarang</span>
+                    </>
+                  )}
+                </button>
+              </form>
+            )}
           </div>
         </div>
       </section>
