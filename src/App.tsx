@@ -2022,7 +2022,12 @@ export default function App() {
         <ToastNotification toasts={toasts} onDismiss={handleDismissToast} />
         {/* Chatbot DIHAPUS dari Dashboard Admin, HANYA tampil di Dashboard User */}
         {!isAdmin && (
-          <AILibrarianAssistant books={books} onNavigate={handleNavigate} />
+          <AILibrarianAssistant 
+            books={books} 
+            onNavigate={handleNavigate} 
+            currentUser={currentUser}
+            onDownloadBook={handleDownloadBook}
+          />
         )}
       </div>
     );
@@ -2247,6 +2252,8 @@ export default function App() {
       <AILibrarianAssistant
         books={books}
         onNavigate={handleNavigate}
+        currentUser={currentUser}
+        onDownloadBook={handleDownloadBook}
       />
 
       {/* Live Chat Admin Widget */}

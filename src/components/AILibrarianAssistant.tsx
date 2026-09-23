@@ -10,12 +10,15 @@ import {
   Sparkles,
   Zap
 } from 'lucide-react';
-import { Book } from '../types';
+import { Book, User } from '../types';
 import { soundFX } from '../utils/audio';
+import EBookReader3D from './EBookReader3D';
 
 interface AILibrarianAssistantProps {
   books: Book[];
   onNavigate: (view: any, bookId?: string) => void;
+  currentUser?: User | null;
+  onDownloadBook?: (book: Book) => void;
 }
 
 interface ChatMessage {
@@ -43,11 +46,12 @@ const CHARS_PER_TICK = 3;
 // Interval dalam ms
 const TYPING_INTERVAL_MS = 18;
 
-export default function AILibrarianAssistant({ books, onNavigate }: AILibrarianAssistantProps) {
+export default function AILibrarianAssistant({ books, onNavigate, currentUser, onDownloadBook }: AILibrarianAssistantProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [inputQuery, setInputQuery] = useState('');
   const [isListening, setIsListening] = useState(false);
   const [isStreaming, setIsStreaming] = useState(false);
+  const [readingBook, setReadingBook] = useState<Book | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const streamingRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const streamingMsgIdRef = useRef<string | null>(null);
@@ -450,14 +454,14 @@ export default function AILibrarianAssistant({ books, onNavigate }: AILibrarianA
                           <button
                             onClick={() => {
                               soundFX.playClick();
-                              onNavigate('detail-buku', book.id);
+                              setReadingBook(book);
                               setIsOpen(false);
                             }}
                             className="px-2.5 py-1 text-[10px] font-bold text-amber-300 hover:text-white bg-amber-500/20 hover:bg-amber-500 rounded-lg transition-colors shrink-0 flex items-center gap-1 cursor-pointer"
-                            title="Buka Buku"
+                            title="Baca E-Book Sekarang"
                           >
                             <BookOpen className="w-3 h-3" />
-                            <span>Buka</span>
+                            <span>Baca Buku</span>
                           </button>
                         </div>
                       ))}
@@ -541,6 +545,17 @@ export default function AILibrarianAssistant({ books, onNavigate }: AILibrarianA
           50% { opacity: 0; }
         }
       `}</style>
+
+      {/* 3D E-Book Reader Modal (Langsung render pembaca buku tanpa buka detail page) */}
+      {readingBook && (
+        <EBookReader3D
+          book={readingBook}
+          onClose={() => setReadingBook(null)}
+          currentUser={currentUser}
+          onNavigate={onNavigate}
+          onDownloadBook={onDownloadBook}
+        />
+      )}
     </>
   );
 }
