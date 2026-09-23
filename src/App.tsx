@@ -1301,20 +1301,52 @@ export default function App() {
   };
 
   // ADMIN SPECIFIC CALLBACKS
-  const handleAddBook = async (bookData: Omit<Book, 'id' | 'status' | 'category' | 'description' | 'rating' | 'coverColor'> & { status?: Book['status'], category?: string, description?: string, rating?: number, coverColor?: string }) => {
+  const handleAddBook = async (bookData: Omit<Book, 'id' | 'status' | 'category' | 'description' | 'rating' | 'coverColor'> & { status?: Book['status'], category?: string, description?: string, rating?: number, coverColor?: string, id?: string }) => {
+    const bookCategory = bookData.category || (bookData.categoryId ? (categories.find(c => c.id === bookData.categoryId)?.name || 'Umum') : 'Umum');
+    const newBookId = bookData.id || ('b_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5));
+    
     const newBook: Book = {
-      category: bookData.categoryId ? (categories.find(c => c.id === bookData.categoryId)?.name || '') : '',
-      description: bookData.synopsis || '',
-      rating: bookData.rating ?? 0,
-      coverColor: bookData.coverColor || 'from-blue-600 to-indigo-900',
-      ...bookData,
-      id: 'b_' + Math.random().toString(36).substr(2, 9),
+      id: newBookId,
+      category: bookCategory,
+      description: bookData.synopsis || bookData.description || '',
+      synopsis: bookData.synopsis || bookData.description || '',
+      rating: bookData.rating ?? 4.5,
       status: 'Tersedia',
-      addedAt: new Date().toISOString()
+      coverColor: bookData.coverColor || 'from-blue-600 to-indigo-900',
+      addedAt: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
+      ...bookData,
     } as Book;
 
-    const newNotif: Notification = {
-      id: `notif_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
+    // Pastikan field vital selalu ada
+    if (!newBook.id) newBook.id = newBookId;
+    if (!newBook.category) newBook.category = bookCategory;
+    newBook.addedAt = newBook.addedAt || new Date().toISOString();
+
+    // 1. UPDATE STATE & LOCALSTORAGE SEGERA (OPTIMISTIC UPDATE)
+    // Supaya langsung tampil di urutan paling depan tanpa delay
+    const updatedBooks = [newBook, ...books.filter(b => b.id !== newBook.id)];
+    setBooks(updatedBooks);
+    localStorage.setItem('digital_library_books', JSON.stringify(updatedBooks));
+    addToast(`Buku "${newBook.title}" berhasil ditambahkan ke katalog!`, 'success');
+
+    // Notifikasi untuk Admin (Aktivitas manajemen)
+    const adminNotif: Notification = {
+      id: `notif_adm_${Date.now()}`,
+      targetRole: 'admin',
+      type: 'book_added',
+      title: '📚 Buku Berhasil Ditambahkan',
+      message: `Buku "${newBook.title}" telah aktif dalam katalog perpustakaan.`,
+      date: new Date().toISOString(),
+      read: false,
+      bookId: newBook.id,
+      bookTitle: newBook.title
+    };
+
+    // Notifikasi untuk Pemustaka / Pengguna (Pengumuman buku baru)
+    const userNotif: Notification = {
+      id: `notif_usr_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
+      targetRole: 'user',
       type: 'admin_new_book',
       title: '📚 Buku Baru Tersedia!',
       message: `"${newBook.title}" baru saja ditambahkan ke koleksi perpustakaan. Selamat membaca!`,
@@ -1324,31 +1356,30 @@ export default function App() {
       bookTitle: newBook.title
     };
 
-    const nextNotifications = [newNotif, ...notifications];
+    const nextNotifications = [adminNotif, userNotif, ...notifications];
     setNotifications(nextNotifications);
     localStorage.setItem('digital_library_notifications', JSON.stringify(nextNotifications));
 
+    // 2. BACKGROUND SYNC DENGAN SUPABASE
     if (isSupabaseConfigured) {
-      await saveBook(newBook, true);
-      const booksList = await getBooks();
-      setBooks(booksList);
-      addToast(`Buku "${newBook.title}" berhasil ditambahkan ke database!`, 'success');
-      
-      // Notify all users about new book
       try {
-        await notifyAllUsersNewBook(newBook.title, newBook.id);
-      } catch (e) {
-        console.warn('Failed to send notifications:', e);
-      }
-      
-      return;
-    }
+        await saveBook(newBook, true);
+        const booksList = await getBooks();
+        // Pertahankan newBook di urutan terdepan saat merge
+        const merged = [newBook, ...booksList.filter(b => b.id !== newBook.id)];
+        setBooks(merged);
+        localStorage.setItem('digital_library_books', JSON.stringify(merged));
 
-    // LocalStorage fallback
-    const updatedBooks = [newBook, ...books];
-    setBooks(updatedBooks);
-    localStorage.setItem('digital_library_books', JSON.stringify(updatedBooks));
-    addToast(`Buku "${newBook.title}" berhasil ditambahkan!`, 'success');
+        // Notify all users in Supabase about new book
+        try {
+          await notifyAllUsersNewBook(newBook.title, newBook.id);
+        } catch (e) {
+          console.warn('Failed to send Supabase notifications:', e);
+        }
+      } catch (err) {
+        console.warn('Supabase book save warning:', err);
+      }
+    }
   };
 
   const handleEditBook = async (updatedBook: Book) => {
@@ -1596,8 +1627,24 @@ export default function App() {
           if (currentUser && u.id === currentUser.id) {
             setCurrentUser(updated);
             localStorage.setItem('digital_library_active_user_data', JSON.stringify(updated));
-            // Jika role berubah menjadi admin, pindahkan ke dashboard admin
+            // Jika role berubah menjadi admin, pindahkan ke dashboard admin dan buat notifikasi peran admin
             if (updatedData.role && updatedData.role !== currentUser.role) {
+              const isAdminNow = updatedData.role === 'admin' || (updatedData.role as any) === UserRole.ADMIN;
+              if (isAdminNow) {
+                const adminPromoNotif: Notification = {
+                  id: `notif_role_${Date.now()}`,
+                  userId: u.id,
+                  targetRole: 'admin',
+                  type: 'role_changed',
+                  title: '🛡️ Hak Akses Administrator Aktif',
+                  message: `Akun Anda (${u.name}) kini berstatus Administrator Perpustakaan. Anda memiliki akses penuh untuk menambah buku, mengelola anggota, dan CMS website.`,
+                  date: new Date().toISOString(),
+                  read: false
+                };
+                const nextNotifs = [adminPromoNotif, ...notifications];
+                setNotifications(nextNotifs);
+                localStorage.setItem('digital_library_notifications', JSON.stringify(nextNotifs));
+              }
               // Trigger re-render dengan sedikit delay agar state terupdate
               setTimeout(() => setCurrentView('dashboard'), 100);
             }
@@ -1712,6 +1759,23 @@ export default function App() {
       
       // Notify admin about download
       await notifyAdminUserDownload(currentUser.name, currentUser.email, book.title, book.id);
+
+      const adminDownloadNotif: Notification = {
+        id: `notif_dl_${Date.now()}`,
+        targetRole: 'admin',
+        type: 'user_download',
+        title: '📥 Buku Baru Diunduh',
+        message: `${currentUser.name} (${currentUser.email}) telah mengunduh buku "${book.title}".`,
+        date: new Date().toISOString(),
+        read: false,
+        bookId: book.id,
+        bookTitle: book.title
+      };
+      setNotifications(prev => {
+        const updated = [adminDownloadNotif, ...prev];
+        localStorage.setItem('digital_library_notifications', JSON.stringify(updated));
+        return updated;
+      });
     } catch (_e) {
       console.warn('Failed to log download or notify admin:', _e);
     }

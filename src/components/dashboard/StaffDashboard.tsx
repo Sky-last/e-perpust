@@ -640,12 +640,20 @@ export default function StaffDashboard({
       b.isbn.includes(searchQuery)
     )
     .sort((a, b) => {
-      // Buku terbaru di depan: prioritaskan addedAt/createdAt jika ada,
-      // fallback ke perbandingan id (id baru = Date.now() lebih besar)
+      // 1. Buku terbaru di depan berdasarkan addedAt / createdAt
       const timeA = (a as any).addedAt || (a as any).createdAt || '';
       const timeB = (b as any).addedAt || (b as any).createdAt || '';
       if (timeA && timeB) return timeB.localeCompare(timeA);
-      // Fallback: id yang mengandung angka lebih besar = lebih baru
+      if (timeA && !timeB) return -1; // a buku baru, tampilkan lebih dulu
+      if (!timeA && timeB) return 1;  // b buku baru, tampilkan lebih dulu
+
+      // 2. Buku custom (bukan buku bawaan 'eb-') selalu tampil di depan buku bawaan
+      const isCustomA = !a.id.startsWith('eb-');
+      const isCustomB = !b.id.startsWith('eb-');
+      if (isCustomA && !isCustomB) return -1;
+      if (!isCustomA && isCustomB) return 1;
+
+      // 3. Fallback perbandingan id
       return b.id.localeCompare(a.id);
     });
 
@@ -655,6 +663,25 @@ export default function StaffDashboard({
     (u.nisn && u.nisn.includes(searchQuery)) ||
     (u.nip && u.nip.includes(searchQuery))
   );
+
+  // Notifikasi khusus Admin:
+  // Menyaring aktivitas pengelolaan (unduhan buku oleh siswa, anggota baru, buku ditambahkan, masukan, peran admin aktif)
+  // dan mengecualikan pengumuman pembaca umum ("Selamat membaca!")
+  const adminNotifications = React.useMemo(() => {
+    return notifications.filter(n => {
+      // Jika khusus ditujukan untuk user biasa, jangan tampilkan di dashboard admin
+      if (n.targetRole === 'user') return false;
+      // Saring pengumuman pembaca ("Selamat membaca!")
+      if (n.type === 'admin_new_book' && n.message?.toLowerCase().includes('selamat membaca')) return false;
+      // Notifikasi eksplisit untuk admin atau untuk user ini
+      if (n.targetRole === 'admin' || n.targetRole === 'all') return true;
+      if (n.userId === currentUser.id) return true;
+      // Tipe-tipe notifikasi aktivitas admin
+      if (['user_download', 'new_user', 'user_feedback', 'book_added', 'system_admin', 'role_changed'].includes(n.type || '')) return true;
+      // Fallback
+      return !n.userId;
+    });
+  }, [notifications, currentUser.id]);
 
   const getCategoryName = (catId: string | undefined) => {
     if (!catId) return 'Lainnya';
@@ -1099,7 +1126,7 @@ export default function StaffDashboard({
               title="Notifikasi"
             >
               <Bell className="w-5 h-5" />
-              {notifications.filter(n => !n.read && (!n.userId || n.userId === currentUser.id)).length > 0 && (
+              {adminNotifications.filter(n => !n.read).length > 0 && (
                 <span className="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-red-500 border-2 border-slate-900" />
               )}
             </button>
@@ -1115,20 +1142,19 @@ export default function StaffDashboard({
                   className="absolute right-0 top-14 w-80 max-w-[calc(100vw-2rem)] bg-slate-900 border border-slate-700 shadow-2xl rounded-xl p-4 z-50 max-h-96 overflow-y-auto"
                 >
                   <div className="flex items-center justify-between pb-2 mb-3 border-b border-slate-700">
-                    <h3 className="text-xs font-bold text-white">Notifikasi</h3>
+                    <h3 className="text-xs font-bold text-white">Notifikasi Admin</h3>
                     <span className="text-[10px] bg-cyan-500/20 text-cyan-400 font-bold px-2 py-0.5 rounded">
-                      {notifications.filter(n => !n.read && (!n.userId || n.userId === currentUser.id)).length} Baru
+                      {adminNotifications.filter(n => !n.read).length} Baru
                     </span>
                   </div>
-                  {notifications.filter(n => !n.userId || n.userId === currentUser.id).length === 0 ? (
+                  {adminNotifications.length === 0 ? (
                     <div className="text-center py-6 text-slate-400">
                       <Bell className="w-7 h-7 mx-auto mb-2 opacity-50" />
-                      <p className="text-xs font-medium">Belum ada notifikasi.</p>
+                      <p className="text-xs font-medium">Belum ada notifikasi admin.</p>
                     </div>
                   ) : (
                     <div className="space-y-2">
-                      {notifications
-                        .filter(n => !n.userId || n.userId === currentUser.id)
+                      {adminNotifications
                         .map(n => (
                           <button
                             key={n.id}

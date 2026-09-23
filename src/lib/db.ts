@@ -58,10 +58,12 @@ export async function getBooks(): Promise<Book[]> {
             coverUrl: b.cover_url || `/buku_sampul/cover_${b.id}.jpg`,
             pdfUrl: b.pdf_url || resolveBookPdfUrl(b),
             isAiGenerated: b.is_ai_generated,
+            addedAt: b.created_at,
+            createdAt: b.created_at,
             isActive: true
           }));
 
-        catalogBooks = [...catalogBooks, ...customRemoteBooks];
+        catalogBooks = [...customRemoteBooks, ...catalogBooks];
       }
     } catch (e) {
       console.error('Supabase error fetching books, using full digital catalog:', e);
@@ -77,7 +79,7 @@ export async function getBooks(): Promise<Book[]> {
         catalogBooks = catalogBooks.map(initBook => {
           const found = parsed.find(b => b.id === initBook.id);
           if (found) {
-            return { ...initBook };
+            return { ...initBook, ...found };
           }
           return initBook;
         });
@@ -87,7 +89,7 @@ export async function getBooks(): Promise<Book[]> {
           !catalogBooks.some(cb => cb.id === b.id) &&
           b.isActive !== false
         );
-        catalogBooks = [...catalogBooks, ...customLocal];
+        catalogBooks = [...customLocal, ...catalogBooks];
       }
     } catch (e) { }
   }
@@ -99,33 +101,50 @@ export async function getBooks(): Promise<Book[]> {
 export async function saveBook(book: Partial<Book>, isNew: boolean): Promise<Book> {
   const fullBook: Book = {
     ...book,
-    status: 'Tersedia' // Default status for Book type compatibility
+    status: 'Tersedia', // Default status for Book type compatibility
+    addedAt: book.addedAt || new Date().toISOString(),
+    createdAt: book.createdAt || new Date().toISOString()
   } as Book;
 
   if (isSupabaseConfigured) {
     try {
-      const dbPayload = {
+      const dbPayload: Record<string, any> = {
         id: fullBook.id,
-        title: fullBook.title,
-        author: fullBook.author,
-        category: fullBook.category,
-        publisher: fullBook.publisher,
-        isbn: fullBook.isbn,
-        description: fullBook.description,
-        year: fullBook.year,
-        rating: fullBook.rating,
-        cover_color: fullBook.coverColor,
+        title: fullBook.title || 'Buku Baru',
+        author: fullBook.author || 'Anonim',
+        category: fullBook.category || 'Umum',
+        publisher: fullBook.publisher || 'Perpustakaan Digital',
+        isbn: fullBook.isbn || '-',
+        description: fullBook.description || fullBook.synopsis || '-',
+        year: fullBook.year || new Date().getFullYear(),
+        rating: fullBook.rating || 4.5,
+        cover_color: fullBook.coverColor || 'from-blue-600 to-indigo-900',
         cover_url: fullBook.coverUrl || null,
         pdf_url: fullBook.pdfUrl || null,
         is_ai_generated: fullBook.isAiGenerated || false
       };
 
       if (isNew) {
-        const { error } = await supabase.from('books').insert(dbPayload);
-        if (error) throw error;
+        let { error } = await supabase.from('books').insert(dbPayload);
+        if (error && (error.message?.includes('pdf_url') || error.details?.includes('pdf_url'))) {
+          // Retry without pdf_url if column doesn't exist in Supabase schema
+          const { pdf_url, ...withoutPdf } = dbPayload;
+          const retry = await supabase.from('books').insert(withoutPdf);
+          error = retry.error;
+        }
+        if (error) {
+          console.warn('Supabase insert book error (will use localStorage fallback):', error.message);
+        }
       } else {
-        const { error } = await supabase.from('books').update(dbPayload).eq('id', fullBook.id);
-        if (error) throw error;
+        let { error } = await supabase.from('books').update(dbPayload).eq('id', fullBook.id);
+        if (error && (error.message?.includes('pdf_url') || error.details?.includes('pdf_url'))) {
+          const { pdf_url, ...withoutPdf } = dbPayload;
+          const retry = await supabase.from('books').update(withoutPdf).eq('id', fullBook.id);
+          error = retry.error;
+        }
+        if (error) {
+          console.warn('Supabase update book error (will use localStorage fallback):', error.message);
+        }
       }
       return fullBook;
     } catch (e) {
@@ -138,7 +157,7 @@ export async function saveBook(book: Partial<Book>, isNew: boolean): Promise<Boo
   const list: Book[] = stored ? JSON.parse(stored) : INITIAL_BOOKS;
   let updatedList: Book[];
   if (isNew) {
-    updatedList = [fullBook, ...list];
+    updatedList = [fullBook, ...list.filter(b => b.id !== fullBook.id)];
   } else {
     updatedList = list.map(b => b.id === fullBook.id ? fullBook : b);
   }

@@ -423,7 +423,14 @@ export default function UserDashboard({
   };
 
   const myBorrowings = borrowings.filter((b) => !b.studentId || b.studentId === currentUser.id || b.userId === currentUser.id);
-  const myUnreadNotifications = notifications.filter(n => (!n.userId || n.userId === currentUser.id) && !n.read);
+  const myNotifications = React.useMemo(() => {
+    return notifications.filter(n => {
+      if (n.targetRole === 'admin') return false;
+      if (['user_download', 'new_user', 'book_added', 'user_feedback'].includes(n.type || '')) return false;
+      return !n.userId || n.userId === currentUser.id;
+    });
+  }, [notifications, currentUser.id]);
+  const myUnreadNotifications = myNotifications.filter(n => !n.read);
 
   // Count completed reads: union of downloads + readBooks (books fully read in reader)
   const readBooksSet = new Set([...userDownloads.map(d => d.bookId), ...(currentUser.readBooks || [])]);
@@ -825,15 +832,14 @@ export default function UserDashboard({
                       <h3 className="text-xs font-bold text-[#1F2A24]">Notifikasi</h3>
                       <span className="font-mono-lib text-[10px] bg-[#20301F] text-[#C08B34] font-bold px-2 py-0.5 rounded">{myUnreadNotifications.length} Baru</span>
                     </div>
-                    {notifications.filter(n => !n.userId || n.userId === currentUser.id).length === 0 ? (
+                    {myNotifications.length === 0 ? (
                       <div className="text-center py-6 text-[#1F2A24]/40">
                         <Bell className="w-7 h-7 mx-auto mb-2" />
                         <p className="text-xs font-medium">Belum ada notifikasi.</p>
                       </div>
                     ) : (
                       <div className="space-y-2">
-                        {notifications
-                          .filter(n => !n.userId || n.userId === currentUser.id)
+                        {myNotifications
                           .map(n => (
                             <button
                               key={n.id}

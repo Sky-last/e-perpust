@@ -24,6 +24,8 @@ export interface Book {
   isAiGenerated?: boolean;
   isActive?: boolean;     // For filtering deleted books
   rackLocation?: string;  // For StaffDashboard
+  addedAt?: string;
+  createdAt?: string;
 }
 
 export interface Rating {
@@ -133,6 +135,7 @@ export interface SiteSettings {
 export interface Notification {
   id: string;
   userId?: string;
+  targetRole?: 'admin' | 'user' | 'all';
   type?: string;
   title: string;
   message: string;
