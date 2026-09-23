@@ -484,7 +484,7 @@ export default function App() {
       const state = event.state;
 
       // 1. Abaikan jika popstate ditangani oleh modal lokal (sudah ditangani listener lokal)
-      if (state?.modal || state?.userDashboardModal || state?.dashboardModal) {
+      if (state?.modal || state?.userDashboardModal || state?.dashboardModal || state?.modal === 'reader3d') {
         return;
       }
 
@@ -1309,8 +1309,9 @@ export default function App() {
       coverColor: bookData.coverColor || 'from-blue-600 to-indigo-900',
       ...bookData,
       id: 'b_' + Math.random().toString(36).substr(2, 9),
-      status: 'Tersedia'
-    };
+      status: 'Tersedia',
+      addedAt: new Date().toISOString()
+    } as Book;
 
     const newNotif: Notification = {
       id: `notif_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,

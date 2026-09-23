@@ -128,6 +128,9 @@ export default function EBookReader3D({ book, onClose, currentUser, initialMode 
     if (typeof window === 'undefined') return;
     let closedViaPopstate = false;
 
+    // Simpan state sebelum reader dibuka, agar bisa kita restore tanpa memicu popstate
+    const prevState = window.history.state;
+
     try {
       window.history.pushState({ modal: 'reader3d' }, '');
     } catch (e) {}
@@ -141,9 +144,13 @@ export default function EBookReader3D({ book, onClose, currentUser, initialMode 
     window.addEventListener('popstate', handlePopState);
     return () => {
       window.removeEventListener('popstate', handlePopState);
+      // PERBAIKAN BUG: Jangan pakai history.back() karena akan memicu popstate
+      // di App.tsx dan mengubah currentView (keluar dari dashboard).
+      // Gunakan replaceState untuk menghapus entry 'reader3d' dari history
+      // TANPA memicu popstate event sama sekali.
       if (!closedViaPopstate && window.history.state?.modal === 'reader3d') {
         try {
-          window.history.back();
+          window.history.replaceState(prevState, '');
         } catch (e) {}
       }
     };

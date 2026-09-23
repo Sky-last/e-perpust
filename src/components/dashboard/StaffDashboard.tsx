@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -633,11 +633,21 @@ export default function StaffDashboard({
     });
   }, [totalDownloads, totalMembers, windowWidth, sidebarCollapsed, activeMenu]);
 
-  const filteredBooks = books.filter(b => 
-    b.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    b.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    b.isbn.includes(searchQuery)
-  );
+  const filteredBooks = books
+    .filter(b =>
+      b.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      b.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      b.isbn.includes(searchQuery)
+    )
+    .sort((a, b) => {
+      // Buku terbaru di depan: prioritaskan addedAt/createdAt jika ada,
+      // fallback ke perbandingan id (id baru = Date.now() lebih besar)
+      const timeA = (a as any).addedAt || (a as any).createdAt || '';
+      const timeB = (b as any).addedAt || (b as any).createdAt || '';
+      if (timeA && timeB) return timeB.localeCompare(timeA);
+      // Fallback: id yang mengandung angka lebih besar = lebih baru
+      return b.id.localeCompare(a.id);
+    });
 
   const filteredUsers = users.filter(u => 
     u.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
