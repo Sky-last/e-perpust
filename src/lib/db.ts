@@ -133,7 +133,10 @@ export async function saveBook(book: Partial<Book>, isNew: boolean): Promise<Boo
           error = retry.error;
         }
         if (error) {
-          console.warn('Supabase insert book error (will use localStorage fallback):', error.message);
+          console.error('[ERROR] Supabase insert book failed:', error.message);
+          throw new Error(`Gagal menyimpan ke database: ${error.message}`);
+        } else {
+          console.log('[DEBUG] Book inserted to Supabase successfully:', fullBook.id);
         }
       } else {
         let { error } = await supabase.from('books').update(dbPayload).eq('id', fullBook.id);
@@ -143,7 +146,10 @@ export async function saveBook(book: Partial<Book>, isNew: boolean): Promise<Boo
           error = retry.error;
         }
         if (error) {
-          console.warn('Supabase update book error (will use localStorage fallback):', error.message);
+          console.error('[ERROR] Supabase update book failed:', error.message);
+          throw new Error(`Gagal memperbarui database: ${error.message}`);
+        } else {
+          console.log('[DEBUG] Book updated in Supabase successfully:', fullBook.id);
         }
       }
       return fullBook;
@@ -161,7 +167,19 @@ export async function saveBook(book: Partial<Book>, isNew: boolean): Promise<Boo
   } else {
     updatedList = list.map(b => b.id === fullBook.id ? fullBook : b);
   }
-  localStorage.setItem('digital_library_books', JSON.stringify(updatedList));
+  
+  // Simpan tanpa base64 untuk hemat storage
+  try {
+    const booksForStorage = updatedList.map(b => ({
+      ...b,
+      coverUrl: b.coverUrl && b.coverUrl.startsWith('data:') ? undefined : b.coverUrl,
+      pdfUrl: b.pdfUrl && b.pdfUrl.startsWith('data:') ? undefined : b.pdfUrl
+    }));
+    localStorage.setItem('digital_library_books', JSON.stringify(booksForStorage));
+  } catch (e) {
+    console.error('[ERROR] QuotaExceeded: Failed to save to localStorage', e);
+  }
+  
   return fullBook;
 }
 
@@ -537,6 +555,86 @@ export async function addSystemLog(
 // ==========================================
 // 7. AVATAR / FOTO PROFIL
 // ==========================================
+
+/**
+ * Upload file (cover atau PDF) ke Supabase Storage
+ * @param file - File object dari input
+ * @param type - 'cover' atau 'pdf'
+ * @param bookId - ID buku untuk nama file
+ * @returns URL public dari file yang diupload
+ */
+export async function uploadBookFile(file: File, type: 'cover' | 'pdf', bookId: string): Promise<string | null> {
+  if (!isSupabaseConfigured) {
+    console.warn('Supabase not configured, cannot upload file');
+    return null;
+  }
+
+  try {
+    // Gunakan bucket yang sudah ada: buku_digital
+    const bucketName = 'buku_digital';
+    const fileExt = file.name.split('.').pop();
+    const folder = type === 'cover' ? 'covers' : 'pdfs';
+    const fileName = `${folder}/${bookId}_${Date.now()}.${fileExt}`;
+
+    console.log(`[DEBUG] Uploading ${type} to Supabase Storage:`, fileName);
+
+    // Upload file ke storage
+    const { data, error } = await supabase.storage
+      .from(bucketName)
+      .upload(fileName, file, {
+        cacheControl: '3600',
+        upsert: true
+      });
+
+    if (error) {
+      console.error(`[ERROR] Failed to upload ${type}:`, error);
+      throw error;
+    }
+
+    // Get public URL
+    const { data: urlData } = supabase.storage
+      .from(bucketName)
+      .getPublicUrl(fileName);
+
+    console.log(`[DEBUG] ${type} uploaded successfully:`, urlData.publicUrl);
+    return urlData.publicUrl;
+  } catch (error) {
+    console.error(`[ERROR] Exception during ${type} upload:`, error);
+    return null;
+  }
+}
+
+/**
+ * Delete file dari Supabase Storage
+ */
+export async function deleteBookFile(url: string, type: 'cover' | 'pdf'): Promise<boolean> {
+  if (!isSupabaseConfigured || !url) return false;
+
+  try {
+    const bucketName = 'buku_digital';
+    // Extract filename from URL (everything after /buku_digital/)
+    const urlParts = url.split('/buku_digital/');
+    if (urlParts.length < 2) return false;
+    
+    const filePath = urlParts[1];
+    console.log(`[DEBUG] Deleting ${type} from storage:`, filePath);
+
+    const { error } = await supabase.storage
+      .from(bucketName)
+      .remove([filePath]);
+
+    if (error) {
+      console.warn(`Failed to delete ${type} from storage:`, error);
+      return false;
+    }
+
+    console.log(`[DEBUG] ${type} deleted from storage successfully`);
+    return true;
+  } catch (error) {
+    console.error(`Exception deleting ${type}:`, error);
+    return false;
+  }
+}
 
 export async function uploadAvatar(userId: string, file: File): Promise<string | null> {
   const getBase64 = (f: File): Promise<string> => {

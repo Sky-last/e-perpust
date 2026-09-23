@@ -48,7 +48,7 @@ import Book3D from '../Book3D';
 import { resolveUserMemberId } from '../../utils/memberId';
 import MemberCardModal from '../MemberCardModal';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
-import { uploadAvatar } from '../../lib/db';
+import { uploadAvatar, uploadBookFile } from '../../lib/db';
 
 import { printOfficialReport } from '../../utils/printReportHelper';
 
@@ -692,34 +692,87 @@ export default function StaffDashboard({
     return users.find(u => u.id === uid)?.name || 'Pemustaka';
   };
 
-  const handleCoverUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      if (!file.type.startsWith('image/')) {
-        alert('Mohon pilih file gambar (.jpg, .png, .webp)');
-        return;
+    if (!file) return;
+    
+    if (!file.type.startsWith('image/')) {
+      alert('Mohon pilih file gambar (.jpg, .png, .webp)');
+      return;
+    }
+    
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Ukuran file terlalu besar (maksimal 5MB)');
+      return;
+    }
+
+    // Preview lokal dulu menggunakan base64
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setBookCoverUrl(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    // Upload ke Supabase Storage (async, tidak block UI)
+    if (isSupabaseConfigured) {
+      try {
+        const tempBookId = editingBook?.id || `temp_${Date.now()}`;
+        const publicUrl = await uploadBookFile(file, 'cover', tempBookId);
+        if (publicUrl) {
+          setBookCoverUrl(publicUrl);
+          console.log('[DEBUG] Cover uploaded to Supabase:', publicUrl);
+        }
+      } catch (error) {
+        console.warn('[WARN] Failed to upload cover to Supabase, using base64 preview:', error);
       }
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setBookCoverUrl(reader.result as string);
-      };
-      reader.readAsDataURL(file);
     }
   };
 
-  const handlePdfUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePdfUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
-        alert('Mohon pilih file dokumen dengan ekstensi .pdf');
-        return;
+    if (!file) return;
+    
+    if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+      alert('Mohon pilih file dokumen dengan ekstensi .pdf');
+      return;
+    }
+    
+    if (file.size > 50 * 1024 * 1024) {
+      alert('Ukuran PDF terlalu besar (maksimal 50MB)');
+      return;
+    }
+
+    setPdfFileName(file.name);
+
+    // Preview base64 untuk fallback (tidak disimpan ke localStorage)
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setBookPdfUrl(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    // Upload ke Supabase Storage (async)
+    if (isSupabaseConfigured) {
+      try {
+        const tempBookId = editingBook?.id || `temp_${Date.now()}`;
+        
+        // Show loading indicator
+        console.log('[DEBUG] Uploading PDF to Supabase...');
+        const publicUrl = await uploadBookFile(file, 'pdf', tempBookId);
+        
+        if (publicUrl) {
+          setBookPdfUrl(publicUrl);
+          console.log('[DEBUG] PDF uploaded to Supabase:', publicUrl);
+          alert(`✅ PDF "${file.name}" berhasil diupload!\n\nSize: ${(file.size / 1024 / 1024).toFixed(2)} MB`);
+        } else {
+          alert('⚠️ Upload PDF gagal. File akan disimpan sementara (tidak persisten).');
+        }
+      } catch (error) {
+        console.warn('[WARN] Failed to upload PDF to Supabase:', error);
+        alert('⚠️ Upload PDF ke server gagal. File hanya tersimpan sementara.');
       }
-      setPdfFileName(file.name);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setBookPdfUrl(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+    } else {
+      alert('⚠️ Supabase belum dikonfigurasi. PDF hanya disimpan sementara (akan hilang saat refresh).');
     }
   };
 
@@ -795,6 +848,9 @@ export default function StaffDashboard({
           pdfUrl: bookPdfUrl || undefined
         });
         console.log('[DEBUG] onUpdateBook called successfully');
+        
+        // Alert sukses untuk update buku
+        alert(`✅ Buku "${bookTitle}" berhasil diperbarui!\n\nPenulis: ${bookAuthor}\nKategori: ${categories.find(c => c.id === bookCategoryId)?.name || editingBook.category}`);
       } else {
         console.log('[DEBUG] Adding new book with data:', {
           title: bookTitle,
@@ -823,6 +879,9 @@ export default function StaffDashboard({
           pdfUrl: bookPdfUrl || undefined
         });
         console.log('[DEBUG] onAddBook called successfully');
+        
+        // Alert sukses untuk tambah buku
+        alert(`✅ Buku "${bookTitle}" berhasil ditambahkan ke katalog!\n\nPenulis: ${bookAuthor}\nKategori: ${categories.find(c => c.id === bookCategoryId)?.name || 'Umum'}`);
       }
       
       // Delay modal close sedikit untuk memastikan onAddBook selesai
@@ -857,12 +916,14 @@ export default function StaffDashboard({
         name: catName,
         description: catDesc
       });
+      alert(`✅ Kategori "${catName}" berhasil diperbarui!`);
     } else {
       onAddCategory({
         id: `cat-${Date.now()}`,
         name: catName,
         description: catDesc
       });
+      alert(`✅ Kategori "${catName}" berhasil ditambahkan!`);
     }
     setIsCategoryModalOpen(false);
   };

@@ -1329,8 +1329,38 @@ export default function App() {
     const updatedBooks = [newBook, ...books.filter(b => b.id !== newBook.id)];
     console.log('[DEBUG] Updating books state. Old count:', books.length, 'New count:', updatedBooks.length);
     setBooks(updatedBooks);
-    localStorage.setItem('digital_library_books', JSON.stringify(updatedBooks));
-    console.log('[DEBUG] Books saved to localStorage');
+    
+    // Simpan ke localStorage TANPA PDF/Cover base64 untuk menghemat storage
+    try {
+      const booksForStorage = updatedBooks.map(b => ({
+        ...b,
+        coverUrl: b.coverUrl && b.coverUrl.startsWith('data:') ? undefined : b.coverUrl, // Hapus base64
+        pdfUrl: b.pdfUrl && b.pdfUrl.startsWith('data:') ? undefined : b.pdfUrl // Hapus base64
+      }));
+      localStorage.setItem('digital_library_books', JSON.stringify(booksForStorage));
+      console.log('[DEBUG] Books saved to localStorage (without base64)');
+    } catch (storageError) {
+      console.error('[ERROR] Failed to save to localStorage:', storageError);
+      if (storageError instanceof DOMException && storageError.name === 'QuotaExceededError') {
+        // LocalStorage penuh, coba bersihkan data lama
+        console.warn('[WARN] LocalStorage full, attempting cleanup...');
+        try {
+          // Hapus data buku lama dari localStorage dan retry
+          localStorage.removeItem('digital_library_books');
+          const booksForStorage = updatedBooks.map(b => ({
+            ...b,
+            coverUrl: b.coverUrl && b.coverUrl.startsWith('data:') ? undefined : b.coverUrl,
+            pdfUrl: b.pdfUrl && b.pdfUrl.startsWith('data:') ? undefined : b.pdfUrl
+          }));
+          localStorage.setItem('digital_library_books', JSON.stringify(booksForStorage));
+          console.log('[DEBUG] LocalStorage cleared and books saved successfully');
+        } catch (retryError) {
+          console.error('[ERROR] Still failed after cleanup:', retryError);
+          alert('⚠️ Penyimpanan lokal penuh! Buku hanya tersimpan sementara di memori browser. Untuk penyimpanan permanen, pastikan Supabase terkonfigurasi dengan benar.');
+        }
+      }
+    }
+    
     addToast(`Buku "${newBook.title}" berhasil ditambahkan ke katalog!`, 'success');
 
     // Notifikasi untuk Admin (Aktivitas manajemen)
@@ -1366,12 +1396,42 @@ export default function App() {
     // 2. BACKGROUND SYNC DENGAN SUPABASE
     if (isSupabaseConfigured) {
       try {
+        console.log('[DEBUG] Saving to Supabase...');
         await saveBook(newBook, true);
-        const booksList = await getBooks();
-        // Pertahankan newBook di urutan terdepan saat merge
-        const merged = [newBook, ...booksList.filter(b => b.id !== newBook.id)];
-        setBooks(merged);
-        localStorage.setItem('digital_library_books', JSON.stringify(merged));
+        console.log('[DEBUG] Book saved to Supabase successfully');
+        
+        // Refresh dari Supabase tapi pastikan buku baru tetap ada
+        try {
+          const booksList = await getBooks();
+          console.log('[DEBUG] Fetched books from Supabase:', booksList.length);
+          
+          // Cek apakah buku baru ada di hasil Supabase
+          const bookExistsInSupabase = booksList.some(b => b.id === newBook.id);
+          console.log('[DEBUG] Book exists in Supabase?', bookExistsInSupabase);
+          
+          if (bookExistsInSupabase) {
+            // Buku berhasil disimpan di Supabase, gunakan data dari server
+            const merged = [newBook, ...booksList.filter(b => b.id !== newBook.id)];
+            setBooks(merged);
+            
+            // Simpan ke localStorage tanpa base64 untuk hemat storage
+            try {
+              const booksForStorage = merged.map(b => ({
+                ...b,
+                coverUrl: b.coverUrl && b.coverUrl.startsWith('data:') ? undefined : b.coverUrl,
+                pdfUrl: b.pdfUrl && b.pdfUrl.startsWith('data:') ? undefined : b.pdfUrl
+              }));
+              localStorage.setItem('digital_library_books', JSON.stringify(booksForStorage));
+            } catch (storageError) {
+              console.warn('[WARN] Failed to update localStorage after Supabase sync:', storageError);
+            }
+          } else {
+            // Buku TIDAK ada di Supabase (gagal save), pertahankan di localStorage
+            console.warn('[WARN] Book not found in Supabase after save, keeping in localStorage only');
+          }
+        } catch (fetchErr) {
+          console.warn('[WARN] Failed to fetch books after save:', fetchErr);
+        }
 
         // Notify all users in Supabase about new book
         try {
@@ -1381,6 +1441,7 @@ export default function App() {
         }
       } catch (err) {
         console.warn('Supabase book save warning:', err);
+        // Buku tetap ada di localStorage dari optimistic update di atas
       }
     }
   };
