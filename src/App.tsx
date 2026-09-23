@@ -1934,7 +1934,7 @@ export default function App() {
                 <button onClick={() => handleNavigate('landing')} className="relative px-4 py-2 text-sm font-semibold transition-all cursor-pointer rounded-xl text-slate-600 hover:text-blue-600 hover:bg-slate-50">Home</button>
                 <button onClick={() => handleNavigate('katalog')} className="relative px-4 py-2 text-sm font-semibold transition-all cursor-pointer rounded-xl text-slate-600 hover:text-blue-600 hover:bg-slate-50">Katalog</button>
                 <button onClick={() => { handleNavigate('landing'); setTimeout(() => document.getElementById('tentang')?.scrollIntoView({ behavior: 'smooth' }), 100); }} className="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-blue-600 hover:bg-slate-50 transition-all cursor-pointer rounded-xl">Tentang</button>
-                <button onClick={() => { handleNavigate('landing'); setTimeout(() => document.getElementById('kontak')?.scrollIntoView({ behavior: 'smooth' }), 100); }} className="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-blue-600 hover:bg-slate-50 transition-all cursor-pointer rounded-xl">Kontak</button>
+                <button onClick={() => { handleNavigate('landing'); setTimeout(() => document.getElementById('masukan')?.scrollIntoView({ behavior: 'smooth' }), 100); }} className="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-blue-600 hover:bg-slate-50 transition-all cursor-pointer rounded-xl">Masukan</button>
               </div>
 
               {/* Right Actions (desktop) */}
@@ -1980,7 +1980,7 @@ export default function App() {
                 <button onClick={() => { handleNavigate('landing'); setSidebarOpen(false); }} className="w-full text-left px-4 py-3 text-sm font-semibold text-slate-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all">Home</button>
                 <button onClick={() => { handleNavigate('katalog'); setSidebarOpen(false); }} className="w-full text-left px-4 py-3 text-sm font-semibold text-slate-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all">Katalog Buku</button>
                 <button onClick={() => { handleNavigate('landing'); setTimeout(() => document.getElementById('tentang')?.scrollIntoView({ behavior: 'smooth' }), 150); setSidebarOpen(false); }} className="w-full text-left px-4 py-3 text-sm font-semibold text-slate-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all">Tentang</button>
-                <button onClick={() => { handleNavigate('landing'); setTimeout(() => document.getElementById('kontak')?.scrollIntoView({ behavior: 'smooth' }), 150); setSidebarOpen(false); }} className="w-full text-left px-4 py-3 text-sm font-semibold text-slate-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all">Kontak</button>
+                <button onClick={() => { handleNavigate('landing'); setTimeout(() => document.getElementById('masukan')?.scrollIntoView({ behavior: 'smooth' }), 150); setSidebarOpen(false); }} className="w-full text-left px-4 py-3 text-sm font-semibold text-slate-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all">Masukan</button>
                 <div className="pt-2 border-t border-slate-100">
                   {!currentUser ? (
                     <button onClick={() => { handleNavigate('register'); setSidebarOpen(false); }} className="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-bold rounded-xl shadow-lg mt-1">Daftar Gratis Sekarang</button>

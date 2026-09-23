@@ -130,7 +130,7 @@ export default function KatalogPage({
 
           {/* Navigation Links */}
           <div className="hidden md:flex items-center gap-8">
-            {(['Home', 'Katalog', 'Tentang', 'Kontak'] as const).map(item => {
+            {(['Home', 'Katalog', 'Tentang', 'Masukan'] as const).map(item => {
               const isActive = item === 'Katalog';
               return (
                 <button key={item}
@@ -258,12 +258,12 @@ export default function KatalogPage({
                   setMobileMenuOpen(false);
                   onNavigate('landing');
                   setTimeout(() => {
-                    document.getElementById('kontak')?.scrollIntoView({ behavior: 'smooth' });
+                    document.getElementById('masukan')?.scrollIntoView({ behavior: 'smooth' });
                   }, 100);
                 }}
                 className={`w-full text-left px-4 py-3 text-sm font-bold rounded-xl transition-all flex items-center justify-between ${sub} hover:bg-slate-800/40`}
               >
-                <span>Kontak</span>
+                <span>Masukan &amp; Saran</span>
               </button>
             </div>
 
